@@ -302,9 +302,14 @@ long S_GetServerInformation(RPC2_Handle _cid, RPC2_Integer maxServers, RPC2_Inte
       return(CAENOSERVERS);
     }
 
+    LOG(0, ("GetServerInformation: maxServers = %d\n", maxServers));
+    *numServers = 0;
     LOG(0, ("GetServerInformation: numServers = %d\n", *numServers));
 
+    ServerPrint();
+
     *numServers = (long)srvent::srvtab->count();
+    LOG(0, ("GetServerInformation: numServers = %d\n", numServers));
 
     srv_iterator next;
     srvent *s;
