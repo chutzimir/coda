@@ -119,6 +119,7 @@ extern "C" {
 #include "timecalls.h"
 #endif _TIMECALLS_
 
+
 /* From Vol package. */
 extern void VCheckDiskUsage(Error *, Volume *, int );
 
