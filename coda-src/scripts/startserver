@@ -51,5 +51,5 @@ rm -f /vice/src/CRASH
 
 srv $* -nodumpvm `grep '^\-rvm ' /vice/srv.conf`
 
-rm /vice/srv/pid
-rm /vice/srv/CRASH
+rm -f /vice/srv/pid
+rm -f /vice/srv/CRASH
