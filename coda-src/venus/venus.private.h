@@ -132,7 +132,7 @@ const vuid_t V_UID = (vuid_t)0;	    /* UID that the venus process runs under. */
    negative number (-2) means its unsigned long representation is huge
    (4294967294).  This causes the "ar" program to screw up because it
    blindly does a sprintf() of the gid into the ".a" file. (Satya, 1/11/97) */
-const vuid_t V_GID = (vuid_t)99999;    /* GID that the venus process runs under. */
+const vuid_t V_GID = (vuid_t)65534;    /* GID that the venus process runs under. */
 #else
 /* On Mach and other systems with 16-bit gids, the -2 value gives a gid of 65534 */
 const vuid_t V_GID = (vuid_t)-2;    /* GID that the venus process runs under. */
