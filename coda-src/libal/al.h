@@ -138,4 +138,7 @@ extern int AL_PrintExternalAlist(AL_ExternalAccessList E);
 extern int AL_DisableGroup(int gid,  PRS_InternalCPS *ICPS);
 extern int AL_EnableGroup(int gid,  PRS_InternalCPS *ICPS);
 
+int CmpPlus(AL_AccessEntry *a, AL_AccessEntry *b);
+int CmpMinus(AL_AccessEntry *a, AL_AccessEntry *b);
+
 #endif

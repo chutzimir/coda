@@ -80,6 +80,9 @@ extern "C" {
 int main(int argc, char *argv[]) {
     char OutString[160];
     char *cp = OutString;
+    ClearToken clear;
+    EncryptedSecretToken secret;
+    int rc;
 
     /* Header. */
     sprintf(cp, "\nTokens held by the Cache Manager:\n\n");
@@ -90,9 +93,7 @@ int main(int argc, char *argv[]) {
     cp += strlen(cp);
 
     /* Get the tokens.  */
-    ClearToken clear;
-    EncryptedSecretToken secret;
-    int rc = U_GetLocalTokens(&clear, secret);
+    rc = U_GetLocalTokens(&clear, secret);
     if (rc < 0) {
 	if (errno == ENOTCONN)
 	    sprintf(cp, "Not Authenticated\n");

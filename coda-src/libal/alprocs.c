@@ -69,13 +69,10 @@ extern "C" {
 #include <sys/stat.h>
 #include <netinet/in.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
+
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
 
 #ifdef __BSD44__
 #define _POSIX_SOURCE
@@ -85,6 +82,7 @@ extern "C" {
 #include <stdarg.h>
 #include <util.h>
 
+#include <rpc2.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -82,7 +82,7 @@ extern int *Gseeks;	/* Gseeks[i] gives the position in protection data base to l
 				the entry for GID i */
 
 
-extern int CmpUn(IN int *u1, IN int *u2);
+extern int CmpUn(int *u1, int *u2);
 		    /* Takes a pair of pointers to elements in Usorted[] and returns -1, 0, 1 depending 
 		    whether the username corresponding to the  first element is less than, equal to,
 		    or greater than the second  */

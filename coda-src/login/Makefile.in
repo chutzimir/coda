@@ -86,11 +86,4 @@ ctokens: ctokens.o ${LIBS}
 testlog: testlog.o ${LIBS}
 	${CXX} $(LIBFLAGS) testlog.o ${LIBS} -o testlog
 
-# Dependencies
-clog.o:		clog.cc ${INCLDIR}/auth2.h ${INCLSPECIAL}/lwp.h ${INCLDIR}/rpc2.h
-cunlog.o:	cunlog.cc ${INCLDIR}/auth2.h
-cpasswd.o:	cpasswd.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h 
-ctokens.o:	ctokens.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h 
-testlog.o:	testlog.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h
-
 include $(MAKDIR)/configs/Makerules
