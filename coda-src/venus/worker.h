@@ -124,6 +124,7 @@ class worker : public vproc {
   friend void PrintWorkers(int);
   friend int MsgRead(msgent *);
   friend int MsgWrite(char *, int);
+  friend int WorkerCloseMuxfd();
   friend class vproc;
   friend class fsobj;
 
