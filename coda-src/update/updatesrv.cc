@@ -175,8 +175,14 @@ int main(int argc, char **argv)
 
     assert(LWP_Init(LWP_VERSION, LWP_MAX_PRIORITY - 1, &parentPid) == LWP_SUCCESS);
 
+#ifdef __CYGWIN32__
+	/* XXX -JJK */
+	portal1.Tag = RPC2_PORTALBYINETNUMBER;
+	portal1.Value.InetPortNumber = htons(1359);
+#else
     portal1.Tag = RPC2_PORTALBYNAME;
-    strcpy(portal1.Value.Name, pname);
+    strcpy(portal1.Value.Name, "coda_udpsrv");
+#endif
     portallist[0] = &portal1;
 
     SFTP_SetDefaults(&sftpi);
@@ -197,7 +203,7 @@ int main(int argc, char **argv)
     for (i = 0; i < lwps; i++) {
 	sprintf(sname, "ServerLWP-%d", i);
 	assert(LWP_CreateProcess((PFIC)ServerLWP, 
-				 16 * 1024, LWP_MAX_PRIORITY - 1,
+				 32 * 1024, LWP_MAX_PRIORITY - 1,
 				 (char *)&i, sname, &serverPid) 
 	       == LWP_SUCCESS);
     }
