@@ -285,8 +285,6 @@ EOF
 else
 	set HEXGROUPID=$4
 endif
-
-
 echo HexGroupId is $HEXGROUPID
 
 # Create the new volumes

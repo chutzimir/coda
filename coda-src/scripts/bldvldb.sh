@@ -1,4 +1,4 @@
-#!/bin/csh -f
+#!/bin/sh
 #ifndef _BLURB_
 #define _BLURB_
 #/*
@@ -33,21 +33,35 @@
 #static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-set path = ( $path /vice/bin )
+
+KLIST=/usr/misc/bin/klist
+KSRVTGT=/usr/local/bin/ksrvtgt
+THISHOST=`hostname | tr A-Z a-z`
+REMOTE=/vice/vol/remote
+
+PATH=$PATH:/vice/bin
+export PATH
 cd /vice/vol/remote
 
-set KLIST = /usr/misc/bin/klist
-set KSRVTGT = /usr/local/bin/ksrvtgt
-set THISHOST = `hostname | tr A-Z a-z`
 
-# Get the volume lists from the servers
+# Get the locally generated /vice/vol/VolumeList from 
+#  - all servers (if argc = 1)
+#  - the listed servers (if argc > 1) 
 
-foreach server (`awk '{ print $2 }' /vice/db/hosts`)
+if [ $#  = 0 ]; then
+	SERVERS=`awk '{ print $2 }' /vice/db/hosts`
+else
+	SERVERS=$*
+fi
+
+for server in $SERVERS
+do 
+    # XXXX change this to use updfetch
     # Get a ticket-granting-ticket (which is good for 5 mins only) if needed
     $KLIST -t
-    if ( $status != 0 ) then
-      $KSRVTGT rcmd $THISHOST
-    endif
+    if [ $? != 0 ]; then
+        $KSRVTGT rcmd $THISHOST
+    fi
 
     echo ${server}
 
@@ -57,22 +71,18 @@ foreach server (`awk '{ print $2 }' /vice/db/hosts`)
     # Get rid of it once Mach machines go away or if you are at a site where
     # it's not needed.
     
-    krcp -X ${server}:/vice/vol/VolumeList /vice/vol/remote/${server}.list.new
+    krcp -X ${server}:/vice/vol/VolumeList ${REMOTE}/${server}.list.new
 
-    #krcp ${server}:/vice/vol/VolumeList /vice/vol/remote/${server}.list.new
-
-    if (! -r /vice/vol/remote/${server}.list.new) then
+    if [ -r ${REMOTE}/${server}.list.new ]; then
+        mv ${REMOTE}/${server}.list.new ${REMOTE}/${server}.list
+    else 
         echo "Trouble getting new list for server $server"
-    endif
+    fi
 
-    if (-r /vice/vol/remote/${server}.list.new) then
-        mv /vice/vol/remote/${server}.list.new /vice/vol/remote/${server}.list
-    endif
-
-end
+done
 
 # Make on big list called composite
-cd /vice/vol/remote; cat *.list> ../BigVolumeList
+cd ${REMOTE}; cat *.list> ../BigVolumeList
 
 # Make a new vldb from the list
-/vice/bin/volutil makevldb  /vice/vol/BigVolumeList
+volutil makevldb  /vice/vol/BigVolumeList
