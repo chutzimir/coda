@@ -123,7 +123,7 @@ void volent::Reintegrate()
 
     /* enter the volume */
     vproc *v = VprocSelf();
-    v->Begin_VFS(vid, VFSOP_REINTEGRATE);
+    v->Begin_VFS(vid, CODA_REINTEGRATE);
     VOL_ASSERT(this, v->u.u_error == 0);
 
     /* prevent ASRs from slipping in and leaving records we might reintegrate. */

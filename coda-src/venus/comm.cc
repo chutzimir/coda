@@ -861,13 +861,6 @@ void DoProbes(int HowMany, unsigned long *Hosts) {
 
     free(Handles);
 
-    /* Clean up before returning. */
-    /* this looks insane: if it's called by vproc::do_ioctl(), Hosts points to
-       the middle of a msgbuffer ! If it's called by ProbeServers(), then
-       it should be ProbeServers() to do the free */
-#if 0
-    free(Hosts);
-#endif
     for (i = 0; i < HowMany; i++)
 	PutConn(&Connections[i]);
     free(Connections);

@@ -278,7 +278,7 @@ long CallBackFetch(RPC2_Handle RPCid, ViceFid *Fid, SE_Descriptor *BD) {
     /* Notify Codacon. */
     {
 	char *comp = f->comp;
-	char buf[CFS_MAXNAMLEN];
+	char buf[CODA_MAXNAMLEN];
 	if (comp[0] == '\0') {
 	    sprintf(buf, "[%x.%x.%x]", f->fid.Volume, f->fid.Vnode, f->fid.Unique);
 	    comp = buf;

@@ -3101,7 +3101,7 @@ int cmlent::WriteReintegrationHandle() {
 	/* Notify Codacon */
 	{
 	    char *comp = f->comp;
-	    char buf[CFS_MAXNAMLEN];
+	    char buf[CODA_MAXNAMLEN];
 	    if (comp[0] == '\0') {
 		sprintf(buf, "[%x.%x.%x]", f->fid.Volume, f->fid.Vnode, f->fid.Unique);
 		comp = buf;
@@ -3732,7 +3732,7 @@ int ClientModifyLog::CheckPoint(char *ckpdir) {
 	for (char *cp = mountpath; *cp; cp++)
 	    if (*cp == '/') *cp = '|';
     }
-    strncat(ckpname, mountpath, CFS_MAXNAMLEN - (int) strlen(vol->name) - 1 - 1);
+    strncat(ckpname, mountpath, CODA_MAXNAMLEN - (int) strlen(vol->name) - 1 - 1);
     (void) strcpy(lname, ckpname);
     (void) strcat(ckpname, ".tar");
     (void) strcat(lname, ".cml");
@@ -3909,7 +3909,7 @@ int cmlent::checkpoint(FILE *fp) {
 	    }
 
 	    GetPath(hdr.dbuf.name, &u.u_store.Fid);
-	    char CacheFileName[CFS_MAXNAMLEN];
+	    char CacheFileName[CODA_MAXNAMLEN];
 	    {
 		fsobj *f = FSDB->Find(&u.u_store.Fid);
 		ASSERT(f != 0);

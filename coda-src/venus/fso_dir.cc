@@ -190,7 +190,7 @@ int fsobj::dir_Lookup(char *Name, ViceFid *Fid)
 }
 
 
-/* Name buffer had better be CFS_MAXNAMLEN bytes or more! */
+/* Name buffer had better be CODA_MAXNAMLEN bytes or more! */
 int fsobj::dir_LookupByFid(char *Name, ViceFid *Fid) 
 {
 	if (!HAVEDATA(this)) { 
@@ -262,7 +262,7 @@ void fsobj::dir_TranslateFid(ViceFid *OldFid, ViceFid *NewFid)
 	if (FID_EQ(OldFid, NewFid)) 
 		return;
 
-	Name = (char *)malloc(CFS_MAXNAMLEN);
+	Name = (char *)malloc(CODA_MAXNAMLEN);
 	assert(Name);
 
 	while ( !dir_LookupByFid(Name, OldFid) ) {

@@ -41,7 +41,7 @@ include $(MAKDIR)/Makeconf
 EXECUTABLES = venus
 CSBINS      = venus
 LIBRARIES   = libfaketrace.a
-HEADERS	    = advice.h hdb.h newplumb.h venus_vnode.h
+HEADERS	    = advice.h hdb.h newplumb.h
 
 #Turn off data collection
 #CFLAGS = $(CFLAGS) -DVENUS -DTIMING -DDISABLE_VMON -DVENUSDEBUG -DRVM_USELWP

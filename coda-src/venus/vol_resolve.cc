@@ -86,7 +86,7 @@ void volent::Resolve() {
     vproc *v = VprocSelf();
 
     /* Grab control of the volume. */
-    v->Begin_VFS(vid, VFSOP_RESOLVE);
+    v->Begin_VFS(vid, CODA_RESOLVE);
     VOL_ASSERT(this, v->u.u_error == 0);
 
     /* Flush all COP2 entries. */
