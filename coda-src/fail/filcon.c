@@ -353,7 +353,7 @@ FailFilterSide getside()
     do {
 	printf("Side (in, out) ");
 	fflush(stdout);
-	gets(input);
+	fgets(input, 128, stdin);
 	p = input;
 	side = SideArg(&p);
     } while (side == noSide);
@@ -587,7 +587,7 @@ void cmdPurgeFilters(int argc, char **argv)
     
 	printf("Side (in, out, both) ");
 	fflush(stdout);
-	gets(p);
+	fgets(p, 128, stdin);
 	if (!strncmp("out", p, 3) || !strncmp("send", p, 4))
 	    side = sendSide;
 	else if (!strncmp("in", p, 2) || !strncmp("rec", p, 3))
