@@ -61,7 +61,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "lwp.h"
 #include "lwp.private.h"
 #include "timer.h"
-
+#include <assert.h>
 typedef unsigned char bool;
 #define NIL	0
 
@@ -176,7 +176,7 @@ void TM_Insert(tlistPtr, elem)
     struct TM_Elem *elem;
 {
     register struct TM_Elem *next;
-
+    assert(tlistPtr);
     /* TimeLeft must be set for function IOMGR with infinite timeouts */
     elem -> TimeLeft = elem -> TotalTime;
 
