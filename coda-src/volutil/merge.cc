@@ -159,6 +159,7 @@ void main(int argc, char **argv)
     }
 
     char *DumpBuf = (char *)malloc(DUMPBUFSIZE);
+    assert(DumpBuf != NULL);
     DumpBuffer_t *dbuf = InitDumpBuf((byte *)DumpBuf, (long)DUMPBUFSIZE, DumpFd);
     
     /* At this point both headers should have been read and checked. Write out
@@ -223,8 +224,9 @@ PRIVATE void BuildTable(dumpstream *dump, vtable *table)
     char *buf[SIZEOF_LARGEDISKVNODE];
     VnodeDiskObject *vdo = (VnodeDiskObject *)buf;
 
-    table->table = (ventry **)malloc(sizeof(ventry) * table->nslots);
-    bzero((void *)table->table, sizeof(ventry) * table->nslots);
+    table->table = (ventry **)malloc(sizeof(ventry*) * table->nslots);
+    assert(table->table != NULL);
+    bzero((void *)table->table, sizeof(ventry*) * table->nslots);
     for (int i = 0; i < table->nvnodes; i++) {
 	long offset;
 	int deleted;
@@ -237,6 +239,7 @@ PRIVATE void BuildTable(dumpstream *dump, vtable *table)
 	LogMsg(10, VolDebugLevel, stdout, "vnodeNum %d, offset %d", vnodeNumber, offset);
 	if (vdo->type != vNull) { /* Insert the vnode into the table */
 	    ventry *tmp = (ventry *)malloc(sizeof(ventry));
+	    assert(tmp != NULL);
 	    LogMsg(60, VolDebugLevel, stdout, "tmp %x", tmp);
 	    tmp->unique = vdo->uniquifier;
 	    tmp->offset = offset;
@@ -269,8 +272,9 @@ PRIVATE void ModifyTable(dumpstream *dump, VnodeClass vclass, vtable *Table)
     }
 
     if (nslots > Table->nslots) { /* "Grow" Vnode Array */
-	ventry **tmp = (ventry **)malloc(sizeof(ventry) * nslots);
-	bcopy((const void *)Table->table, (void *)tmp, sizeof(ventry) * Table->nslots);
+	ventry **tmp = (ventry **)malloc(sizeof(ventry*) * nslots);
+	assert(tmp != NULL);
+	bcopy((const void *)Table->table, (void *)tmp, sizeof(ventry*) * Table->nslots);
 	free(Table->table);
 	Table->nslots = nslots;
 	Table->table = tmp;
@@ -315,6 +319,7 @@ PRIVATE void ModifyTable(dumpstream *dump, VnodeClass vclass, vtable *Table)
 		ptr->dump = dump;
 	    } else {			/* Must be new, add the entry. */
 		ventry *tmp = (ventry *)malloc(sizeof(ventry));
+		assert(tmp != NULL);
 		tmp->unique = vdo->uniquifier;
 		tmp->offset = offset;
 		tmp->dump = dump;

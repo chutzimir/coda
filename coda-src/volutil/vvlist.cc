@@ -156,8 +156,9 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
     int vnum, unique, d, vvStoreIdHost, vvStoreIdUniquifier;
     nlists = listsize;
     assert(nlists > 0);
-    vvlist = (vvent **)malloc(sizeof(vvent) * nlists);
-    bzero((void *)vvlist, sizeof(vvent) * nlists);
+    vvlist = (vvent **)malloc(sizeof(vvent*) * nlists);
+    assert(vvlist != NULL);
+    bzero((void *)vvlist, sizeof(vvent*) * nlists);
     
     LogMsg(9, VolDebugLevel, stdout, "After malloc of vvlist, entering do loop");
     do {
@@ -173,14 +174,24 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
 		LogMsg(19, VolDebugLevel, stdout, "vvtable: found a vnode %d.%d StoreId %x.%x.",
 		    vnum, unique, vvStoreIdHost, vvStoreIdUniquifier);
 		vvent *tmp = (vvent *)malloc(sizeof(vvent));
+		assert(tmp != NULL);
 		tmp->StoreId.Host = vvStoreIdHost;
 		tmp->StoreId.Uniquifier = vvStoreIdUniquifier;
 		tmp->unique = unique;
 		tmp->isThere = 0;
 
-		vnum = vnodeIdToBitNumber(vnum);  /* Transform vnode to index */
-		tmp->next = vvlist[vnum];
-		vvlist[vnum] = tmp;
+		/* Transform vnode to index */
+		int bitnum = vnodeIdToBitNumber(vnum);
+
+		if (bitnum < 0 || bitnum >= nlists)
+		{
+		    LogMsg(0, VolDebugLevel, stdout, "vvtable: Vnode %d.%d StoreId %x.%x, has a bad index %d for vvlist[%d]\n",
+			   vnum, unique, vvStoreIdHost, vvStoreIdUniquifier, bitnum, nlists);
+		    assert(0);
+		}
+
+		tmp->next = vvlist[bitnum];
+		vvlist[bitnum] = tmp;
 	    }
 	}
     } while ((vclass == vLarge) ? strcmp(buffer, ENDLARGEINDEX) : !feof(Ancient));
@@ -228,7 +239,7 @@ int vvtable::IsModified(int vnodeIndex, long unique, ViceStoreId *StoreId)
 
 vvent_iterator::vvent_iterator(vvtable& table, int i)
 {
-    if ((i > table.nlists) || (i < 0)) 
+    if ((i >= table.nlists) || (i < 0)) 
 	cvvent = (vvent *)0;
     else
 	cvvent = table.vvlist[i];
