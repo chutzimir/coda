@@ -15,9 +15,16 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.4  1996/11/13 04:14:19  bnoble
+ * Merging BNOBLE_WORK_6_20_96 into main line
+ *
+ *
  * Revision 1.3  1996/11/08 18:06:11  bnoble
  * Minor changes in vnode operation signature, VOP_UPDATE signature, and
  * some newly defined bits in the include files.
+ *
+ * Revision 1.2.8.1  1996/06/26 16:28:26  bnoble
+ * Minor bug fixes
  *
  * Revision 1.2  1996/01/02 16:56:52  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
@@ -616,6 +623,9 @@ cfs_nb_rename(v)
     result = cfs_rename(ap->a_fdvp, fname, ap->a_tdvp, tname, fcnp->cn_cred,
 			fcnp->cn_proc);
     
+    /* XXX - do we need to call cache pureg on the moved vnode? */
+    cache_purge(ap->a_fvp);
+
     /* It seems to be incumbent on us to drop locks on all four vnodes */
     /* From-vnodes are not locked, only ref'd.  To-vnodes are locked. */
     

@@ -24,6 +24,12 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.3  1996/11/13 04:14:20  bnoble
+ * Merging BNOBLE_WORK_6_20_96 into main line
+ *
+ * Revision 1.2.8.1  1996/08/22 14:25:04  bnoble
+ * Added a return code from vc_nb_close
+ *
  * Revision 1.2  1996/01/02 16:56:58  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -187,6 +193,7 @@ vc_nb_close (dev, flag, mode, p)
     }
     
     MARK_VC_CLOSED(vcp);
+    return 0;
 }
 
 

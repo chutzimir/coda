@@ -198,6 +198,7 @@ typedef struct vnode *C_VNODE_T;           /* needed in cnode.h */
  */
 #endif /* KERNEL */
 #define LINKS           struct cnode *c_next     /* needed in cnode.h */
+
 #ifdef KERNEL 
 /* returns a cnode, not a vnode! */
 #define	CNODE_NEXT(cp)	((cp)->c_next)
