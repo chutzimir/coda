@@ -179,11 +179,10 @@ long CheckResRetCodes(unsigned long *rc, unsigned long *rh,
 		    /* non rpc error - drop this host too */
 		    hosts[i] = 0;
 		    error = rc[i];
-		    addr.s_addr = rh[i];
-#ifndef __CYGWIN32__
+		    addr.s_addr = ntohl(rh[i]);
 		    SLog(0,  "CheckRetCodes: server %s returned error %d)",
 			 inet_ntoa(addr), rc[i]);
-#else
+#if 0  /* used to be for Cygwin */
 		    SLog(0,  "CheckRetCodes: server %s returned error  %d)",
 			 rh[i], rc[i]);
 #endif
