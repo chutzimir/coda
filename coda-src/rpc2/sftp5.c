@@ -71,7 +71,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "se.h"
 #include "sftp.h"
 
-B_ShiftLeft(bMask, bShift)		/* rightmost bits are ZERO-filled */
+void B_ShiftLeft(bMask, bShift)		/* rightmost bits are ZERO-filled */
     unsigned int *bMask;		/* Bit string integer array */
     int bShift;		/* Amount to shift by */
     {
@@ -113,7 +113,7 @@ B_ShiftLeft(bMask, bShift)		/* rightmost bits are ZERO-filled */
     }
 
 
-B_ShiftRight(bMask, bShift)		/* leftmost bits are ONE-filled */
+void B_ShiftRight(bMask, bShift)		/* leftmost bits are ONE-filled */
     unsigned int *bMask;		/* Bit string integer array */
     int bShift;		/* Amount to shift by */
     {
@@ -154,14 +154,14 @@ B_ShiftRight(bMask, bShift)		/* leftmost bits are ONE-filled */
     }
 
 
-B_Assign(dest, src)
+void B_Assign(dest, src)
     register unsigned int *dest, *src;
     {
     bcopy(src, dest, sizeof(int)*BITMASKWIDTH);
     }
 
 
-B_CopyToPacket(bMask, whichPacket)
+void B_CopyToPacket(bMask, whichPacket)
     register unsigned int *bMask;
     register RPC2_PacketBuffer *whichPacket;
     {
@@ -170,7 +170,7 @@ B_CopyToPacket(bMask, whichPacket)
     whichPacket->Header.BitMask1 = (unsigned) bMask[1];
     }
 
-B_CopyFromPacket(whichPacket, bMask)
+void B_CopyFromPacket(whichPacket, bMask)
     register unsigned int *bMask;
     register RPC2_PacketBuffer *whichPacket;
     {
@@ -180,7 +180,7 @@ B_CopyFromPacket(whichPacket, bMask)
     }
 
 
-B_And(arg1, arg2)	    /* *arg1 = *arg1 & *arg2 */
+void B_And(arg1, arg2)	    /* *arg1 = *arg1 & *arg2 */
     unsigned int    *arg1, *arg2;
     {
     int	i;

@@ -4034,7 +4034,7 @@ static int WriteData(FILE *wrfp, char *rdfn) {
 	char buf[TBLOCK];
 	int cc = fread(buf, (int) sizeof(char), TBLOCK, rdfp);
 	if (cc < TBLOCK)
-	    bzero((void *)buf + cc, TBLOCK - cc);
+	    bzero((char *)buf + cc, TBLOCK - cc);
 	if (fwrite(buf, TBLOCK, 1, wrfp) != 1) {
 	    LOG(0, ("WriteData: (%s) fwrite (%d)", rdfn, errno));
 	    code = (errno ? errno : ENOSPC);

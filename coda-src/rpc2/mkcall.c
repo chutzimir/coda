@@ -128,4 +128,5 @@ mkcall(ClientHandler, ArgCount, HowMany, ConnList, offset, rpcval, args)
 		assert(ArgCount <= 12);
 	}
 	/*NOTREACHED*/
+        return -1;
 }

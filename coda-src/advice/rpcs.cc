@@ -1206,7 +1206,7 @@ void InitReconFile(char *FileName, int venusmajor, int venusminor,
  ***************************  StopLight Support  ***************************
  ***************************************************************************/
 
-#ifdef 0
+#if 0
 
 long VSEmulating(RPC2_Handle _cid, RPC2_String VolumeName, VolumeId vid)
 {

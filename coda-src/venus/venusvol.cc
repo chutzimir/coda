@@ -1194,6 +1194,8 @@ int volent::Enter(int mode, vuid_t vuid) {
 	default:
 	    print(logFile); Choke("volent::Enter: bogus mode %d", mode);
     }
+
+    return -1;
 }
 
 /* local-repair modification */

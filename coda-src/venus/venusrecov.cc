@@ -861,7 +861,6 @@ static void Recov_AllocateVM(char **addr, unsigned long length)
     }
 
     LOG(0, ("Recov_AllocateVM: allocated %x bytes at %x\n", length, *addr));
-#endif
 }
 
 

@@ -102,7 +102,7 @@ long VMMaxFileSize; /* length of VMFileBuf, initially 0 */
 long VMCurrFileSize; /* number of useful bytes in VMFileBuf */
 char *VMFileBuf;    /* for FILEINVM transfers */
 
-main(argc, argv)
+void main(argc, argv)
     long argc;
     char *argv[];
 {

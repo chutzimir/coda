@@ -254,7 +254,7 @@ struct vmoe {
 
 /* ***** Private variables  ***** */
 
-static int VmonEnabled = 1;
+static int VmonEnabled = 0;
 static int VmonInited = 0;
 static olist *CEActiveList = 0;
 static olist *CEFreeList = 0;
@@ -305,10 +305,8 @@ int VmonPortal = DFLT_VMONPORTAL;	    /* may be overridden from command line */
 
 void VmonInit() {
 
-#ifndef __BSD44__
-    VmonEnabled = 0;
-    return;
-#endif
+    if (!VmonEnabled)
+	return;
 
     if (Simulating) {
 	VmonEnabled = 0;

@@ -76,7 +76,7 @@ double CIFactor(dFreedom)
     
     }
 
-CumStats(count, sum, sum2)
+void CumStats(count, sum, sum2)
     int count;
     double sum, sum2;
     {

@@ -152,7 +152,7 @@ backup: backup.o ${VLIBS}
 	$(CXX) $(LIBFLAGS) backup.o ${VLIBS} -lm -o backup
 
 readdump: readdump.o dumpstream.o dumpstuff.o ${VLIBS}
-	$(CXX) $(LIBFLAGS) readdump.o dumpstream.o dumpstuff.o ${VLIBS} -o readdump
+	$(CXX) $(LIBFLAGS) readdump.o dumpstream.o dumpstuff.o ${VLIBS} ${LIBBASE} -o readdump
 
 parserecdump: parserecdump.o ${VLIBS}
 	$(CXX) $(LIBFLAGS) parserecdump.o ${VLIBS} -o parserecdump

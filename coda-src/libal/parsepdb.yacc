@@ -90,9 +90,9 @@ int *temp_List;
 extern int yydebug;
 extern int yylex(void);
  
-PRIVATE void yyerror(IN char *s);
-PRIVATE int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a);
-PRIVATE void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c);
+static void yyerror(IN char *s);
+static int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a);
+static void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c);
 
 %}
 
@@ -308,7 +308,7 @@ MinusNumber	:	'-' DECNUMBER
 
 %%
 		/* Program Section */
-PRIVATE void yyerror(char *s)
+static void yyerror(char *s)
     {
     char msg[100];
     sprintf(msg, "\"%s\", line %d: %s\n", yyinFileName, SourceLineNumber, s);
@@ -316,7 +316,7 @@ PRIVATE void yyerror(char *s)
     };
 
 
-PRIVATE int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a)
+static int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a)
 /*  b current bound 
     c current count 
     s size of an element
@@ -338,7 +338,7 @@ PRIVATE int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a)
     else return(0);
     }
 
-PRIVATE void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c)
+static void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c)
     {
     /* Swap temp list with real one; then  empty temp list  */
     int *iptr, t;

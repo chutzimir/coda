@@ -355,7 +355,7 @@ extern long SFTP_DebugLevel;
 
 
 
-extern int sftp_Listener();
+extern void sftp_Listener();
 
 #define IsSource(sfe)\
     ((sfe->WhoAmI == SFCLIENT && sfe->SDesc && sfe->SDesc->Value.SmartFTPD.TransmissionDirection == CLIENTTOSERVER) ||\
@@ -445,8 +445,8 @@ extern void sftp_AllocPiggySDesc();
 extern void sftp_FreePiggySDesc();
 extern int sftp_AppendParmsToPacket();
 extern int sftp_ExtractParmsFromPacket();
-extern int sftp_AppendFileToPacket();
-extern int sftp_ExtractFileFromPacket();
+extern long sftp_AppendFileToPacket();
+extern long sftp_ExtractFileFromPacket();
 extern int sftp_AddPiggy();
 extern void sftp_SetError();
 

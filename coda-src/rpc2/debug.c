@@ -110,7 +110,7 @@ void rpc2_PrintTMElem(tPtr, tFile)
     FILE *tFile;
     {
     if (tFile == NULL) tFile = rpc2_logfile;	/* it's ok, call-by-value */
-    fprintf(tFile, "MyAddr = 0x%lx Next = 0x%lx  Prev = 0x%lx  TotalTime = %ld:%ld  TimeLeft = %ld:%ld  BackPointer = 0x%lx\n",
+    fprintf(tFile, "MyAddr = 0x%lx Next = 0x%lx  Prev = 0x%lx  TotalTime = %ld:%ld  TimeLeft = %ld:%ld  BackPointer = %p\n",
     	(long)tPtr, (long)tPtr->Next, (long)tPtr->Prev, tPtr->TotalTime.tv_sec, tPtr->TotalTime.tv_usec,
 	tPtr->TimeLeft.tv_sec, tPtr->TimeLeft.tv_usec, tPtr->BackPointer);
     (void) fflush(tFile);
@@ -126,8 +126,9 @@ void rpc2_PrintFilter(fPtr, tFile)
 	fPtr->OldOrNew == OLD ? "OLD" : (fPtr->OldOrNew == NEW ? "NEW" : (fPtr->OldOrNew == OLDORNEW ? "OLDORNEW" : "??????")));
     switch(fPtr->FromWhom)
 	{
-	case ONECONN:	fprintf(tFile, "WhichConn = 0x%lx", fPtr->ConnOrSubsys.WhichConn);
-	case ONESUBSYS: fprintf(tFile, "SubsysId = %ld", fPtr->ConnOrSubsys.SubsysId);
+	case ONECONN:	fprintf(tFile, "WhichConn = 0x%lx", fPtr->ConnOrSubsys.WhichConn); break;
+	case ONESUBSYS: fprintf(tFile, "SubsysId = %ld", fPtr->ConnOrSubsys.SubsysId); break;
+        case ANY:       break;
 	}
     fprintf(tFile, "\n");
     (void) fflush(tFile);
@@ -205,7 +206,7 @@ void rpc2_PrintHEntry(hPtr, tFile)
 	switch(hPtr->Log[ix].Tag) 
 	    {
 	    case RPC2_MEASURED_NLE:
-		fprintf(tFile, "\t\tentry %d: %ld.%06ld, conn %d, %d bytes, %d msec\n",
+		fprintf(tFile, "\t\tentry %d: %ld.%06ld, conn %d, %ld bytes, %ld msec\n",
 			ix, hPtr->Log[ix].TimeStamp.tv_sec, 
 			hPtr->Log[ix].TimeStamp.tv_usec,
 			hPtr->Log[ix].Value.Measured.Conn,

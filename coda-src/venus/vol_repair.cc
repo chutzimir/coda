@@ -153,6 +153,8 @@ int volent::Repair(ViceFid *RepairFid, char *RepairFile, vuid_t vuid,
 	return ERETRY;
     default: Choke("volent::Repair: bogus volume state %d", state);
     }
+
+    return -1;
 }
 
 int volent::ConnectedRepair(ViceFid *RepairFid, char *RepairFile, vuid_t vuid,

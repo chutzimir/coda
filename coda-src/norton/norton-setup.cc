@@ -63,10 +63,9 @@ extern "C" {
 }
 #endif __cplusplus
 
-#include <coda_dir.h>
+#include <codadir.h>
 #include <voltypes.h>
 #include <partition.h>
-#include <codadir.h>
 #include <rvmlib.h>
 #include <volume.h>
 

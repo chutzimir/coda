@@ -62,6 +62,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -881,7 +882,7 @@ bool XlateMcastPacket(pb, ThisHost, ThisPortal)
        be conservative for now. */
     if (TestState(me, SERVER, ~S_AWAITREQUEST) ||
         TestState(ce, SERVER, ~S_AWAITREQUEST) ||
-        h_Flags & RPC2_RETRY != 0) {BOGUS(pb); return(FALSE);}
+        (h_Flags & RPC2_RETRY) != 0) {BOGUS(pb); return(FALSE);}
 
     say(9, RPC2_DebugLevel, "Host = 0x%lx\tPortal = 0x%x\tMgrp = 0x%lx\n", ThisHost->Value.InetAddress, ThisPortal->Value.InetPortNumber, h_RemoteHandle);
 
