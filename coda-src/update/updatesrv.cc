@@ -125,6 +125,15 @@ int main(int argc, char **argv)
     RPC2_PortalIdent portal1, *portallist[1];
     RPC2_SubsysIdent server;
     SFTP_Initializer sftpi;
+    int rc;
+    
+    rc = chdir("/vice/srv");
+    if ( rc ) {
+	    perror("Cannot cd to /vice/srv");
+	    exit(1);
+    }
+
+
 
     UtilDetach();
 

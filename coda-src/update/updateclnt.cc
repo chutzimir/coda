@@ -149,6 +149,12 @@ int main(int argc, char **argv)
 	    dirfd,
             len,
 
+    rc = chdir("/vice/db");
+    if ( rc ) {
+	    perror("Cannot cd to /vice/db");
+	    exit(1);
+    }
+
 
     UtilDetach();
     *host = '\0';
