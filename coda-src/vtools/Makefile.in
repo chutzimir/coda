@@ -45,8 +45,6 @@ endif
 
 CBINS       = $(EXECUTABLES)
 
-RP2FILES    = $(VICE_RPC2)
-RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
 
 CMON_LIBS   =  $(LIBVICEDEP) $(LIBRPC2) $(LIBSE) $(LIBOLDLWP) $(LIBCURSES) $(LIBCOMPAT)
 CFS_LIBS    = $(LIBKERNDEP) $(LIBUTIL)
@@ -77,7 +75,5 @@ replay: replay.o
 up: up.o
 	$(CXX) $(LIBFLAGS)  up.o -o up
 
-vice.h vice.client.c: $(VICE_RPC2) $(VCRCOMMON_RPC2)
-cmon.o: $(INCLDIR)/vice.rpc2
 
 include $(MAKDIR)/configs/Makerules
