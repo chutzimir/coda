@@ -84,7 +84,6 @@ extern "C" {
 #include <stdio.h>
 #include <errno.h>
 #include <assert.h>
-#include <ci.h>
 #include <sys/types.h>
 #include <sys/param.h>
 #include <netinet/in.h>

@@ -55,7 +55,6 @@ static char *rcsid = "$Header$";
 #include <rpc2.h>
 #include "fail.h"
 
-#define NULL 0
 
 int Fcon_LWP();
 PRIVATE PrintRPCError(int, RPC2_Handle); /* forward decl to pacify gcc */

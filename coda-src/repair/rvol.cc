@@ -58,7 +58,6 @@ extern "C" {
 #endif
 #include <errno.h>
 #include <assert.h>
-#include <ci.h>
 #include <setjmp.h>
 #include <sys/types.h>
 #include <sys/dir.h>

@@ -66,7 +66,7 @@ extern "C" {
 #endif
 #include <errno.h>
 #include <assert.h> 
-extern int getbool(char *, int);
+#include <parser.h>
 #include <inodeops.h>
 
 #ifdef __cplusplus
@@ -487,7 +487,7 @@ int NameNameResolve(int first, int last, int nreplicas, resreplica *dirs, struct
 	resdir_entry *rde = sortedArrByName[i];
 	printf("Should %s%s be removed? ",
 	       dirs[rde->replicaid].path, rde->name);
-	answers[i-first] = getbool("", 0);
+	answers[i-first] = Parser_getbool("", 0);
     }
     int nobjects = last - first;
     int nyes = 0;

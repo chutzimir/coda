@@ -60,7 +60,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/param.h>
 
-extern int getbool(char *prompt, int defalt /* sic! */);
+#include <parser.h>
 
 #ifdef __cplusplus
 }
@@ -140,7 +140,7 @@ int RepairRename C_ARGS((int nreplicas, resreplica *dirs,
 	sprintf(curpath, "%s/%s", parentpath[i], childpath[i]);
 	if (prevset &&  (!strcmp(curpath, prevpath))) continue; 
 	sprintf(buf, "Do you want to preserve %s? ", curpath);
-	if (getbool(buf, 1)) break;
+	if (Parser_getbool(buf, 1)) break;
 	strcpy(prevpath, curpath);
 	prevset = 1;
     }

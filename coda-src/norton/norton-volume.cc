@@ -56,7 +56,7 @@ extern "C" {
 #include <camprivate.h>
 #include <coda_globals.h>
 
-#include "parser.h"
+#include <parser.h>
 #include "norton.h"
 
 
@@ -324,7 +324,7 @@ void show_volume(int argc, char *argv[]) {
     }
 
     if (!strcmp(argv[2], "*")) show_all_volumes();
-    else if (parse_int(argv[2], &volid) == 1) show_volume(volid);
+    else if (Parser_int(argv[2], &volid) == 1) show_volume(volid);
     else show_volume(argv[2]);
 }
 
@@ -393,7 +393,7 @@ void sh_delete_volume(int argc, char **argv)
 	fprintf(stderr, "Usage: delete volume  <name> | <volid>");
 	return;
     }
-    else if (parse_int(argv[2], &volid) == 1) 
+    else if (Parser_int(argv[2], &volid) == 1) 
 	delete_volume_byid(volid);
     else 
 	delete_volume_byname(argv[2]);
@@ -408,7 +408,7 @@ void show_volume_details(int argc, char *argv[]) {
 	return;
     }
 
-    if (parse_int(argv[3], &volid) == 1) show_volume_details(volid);
+    if (Parser_int(argv[3], &volid) == 1) show_volume_details(volid);
     else show_volume_details(argv[3]);
 }
 
@@ -450,7 +450,7 @@ void show_index(int argc, char *argv[]) {
 	return;
     }
 
-    if (parse_int(argv[2], &volid) == 1) show_index(volid);
+    if (Parser_int(argv[2], &volid) == 1) show_index(volid);
     else show_index(argv[2]);
 }
 

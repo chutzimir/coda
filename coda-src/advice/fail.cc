@@ -49,8 +49,6 @@ extern "C" {
 #include <sys/types.h>
 
 #include <assert.h>
-#include <ci.h>
-#include <del.h>
 #include <ctype.h>
 #include <fail.h>
 #include <netdb.h>

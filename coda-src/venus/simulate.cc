@@ -86,8 +86,6 @@ extern "C" {
 #include <stdlib.h>
 #endif
 
-#include <libcs.h>
-
 #ifdef __cplusplus
 }
 #endif __cplusplus

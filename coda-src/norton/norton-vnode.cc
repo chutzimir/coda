@@ -57,7 +57,7 @@ extern "C" {
 #include <camprivate.h>
 #include <coda_globals.h>
 
-#include "parser.h"
+#include <parser.h>
 #include "norton.h"
 
 
@@ -94,13 +94,13 @@ void show_vnode(int argc, char *argv[]) {
 
 
     if ((argc != 5) ||
-	(parse_int(argv[2], &volid) != 1) ||
-	(parse_int(argv[4], &unique) != 1)) {
+	(Parser_int(argv[2], &volid) != 1) ||
+	(Parser_int(argv[4], &unique) != 1)) {
 	fprintf(stderr, "Usage: show vnode <volid> [<vnode> | ?] <unique> \n");
 	return;
     }
 
-    if (parse_int(argv[3], &vnode) == 1) {
+    if (Parser_int(argv[3], &vnode) == 1) {
 	show_vnode(volid, vnode, unique);
     }
     else if (*argv[3] == '?') {

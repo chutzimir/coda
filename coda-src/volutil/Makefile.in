@@ -79,8 +79,9 @@ LIBS =	${LIBVOL} \
 	${LIBOLDLWP} \
 	${LIBSYSENT} \
 	${LIBMACH}  \
-	$(LIBCS)\
-	$(LIBCOMPAT)
+	${LIBREADLINE} \
+	$(LIBCOMPAT) \
+	-ltermcap
         
 
 #HFILES= $(INCLDIR)/voldump.rpc2 $(INCLDIR)/volutil.rpc2 \

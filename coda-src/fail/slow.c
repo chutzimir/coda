@@ -42,7 +42,6 @@ static char *rcsid = "$Header$";
 #include <ctype.h>
 #include <netdb.h>
 #include <sys/socket.h>
-#include <del.h>
 #include "fail.h"
 
 extern void ntohFF(FailFilter *);
@@ -50,7 +49,6 @@ extern void htonFF(FailFilter *);
 void PrintError();
 void PrintUsage();
 
-#define MAXHOSTNAMELEN 32
 char *host1 = NULL;
 char *host2 = NULL;
 short port1 = 0;
