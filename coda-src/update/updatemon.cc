@@ -75,18 +75,17 @@ extern "C" {
 
 static struct timeval  tp;
 
-#define MONITORNAME "UpdateMonitor"
-
 main(int argc, char *argv[], char *envp[])
 {
     FILE * file;
     int    child;
+    char *childname;
     register int    i;
     register int    len, lenmon;
 
     gettimeofday(&tp, 0);
 
-    if(strcmp(argv[1], "-s") == 0) { /* starting updatesrv */
+    if(strcmp(argv[1], "-s") == 0) { /* server case */
 	chdir("/vice");
 	for(i = 2; i < argc ; i++) { /* chdir to prefix operand if it exists */
 	    if(strcmp(argv[i],"-p") == 0) {
@@ -94,13 +93,16 @@ main(int argc, char *argv[], char *envp[])
 		break;
 	    }
 	}
+	childname = "updatesrv";
     }
     else { /* starting updateclnt */
 	chdir("/vice/srv");
+	childname = "updateclnt";
     }
 
     if(!(file = fopen("UpdateMonitor", "w"))) {
-	printf("Could not open UpdateMonitor at %s\n", ctime((long *)&tp.tv_sec));
+	fprintf(stderr, "Could not open UpdateMonitor at %s\n", 
+		ctime((long *)&tp.tv_sec));
 	exit(-1);
     }
     
@@ -109,27 +111,21 @@ main(int argc, char *argv[], char *envp[])
 
     child = fork();
     if (child) {
-	len = strlen(argv[0]);
-	lenmon = strlen(MONITORNAME);
-	for(i = 0; i < len; i++) {
-	    if(i < lenmon)
-		*(argv[0]+i) = MONITORNAME[i];
-	    else
-		*(argv[0]+i) = ' ';
-	}
-
+	/* don't do anything until child exits */
 	while (child != wait(0));
 	gettimeofday(&tp, 0);
 	printf("UpdateMonitor is Restarting at %s", ctime((long *)&tp.tv_sec));
+	fprintf(file, "UpdateMonitor is Restarting at %s", 
+		ctime((long *)&tp.tv_sec));
 	execve("/vice/bin/updatemon", argv, envp);
+    } else {    /* child */
+	gettimeofday( &tp, 0);
+	argv[0] = childname;
+	if(argc > 1 && (strcmp(argv[1],"-s") == 0)) {
+	    execve("/vice/bin/updatesrv", argv, envp);
+	} else {
+	    execve("/vice/bin/updateclnt", argv, envp);
+	}
     }
-    gettimeofday( &tp, 0);
-
-    if(argc > 1 && (strcmp(argv[1],"-s") == 0)) {
-	execve("/vice/bin/updatesrv", argv, envp);
-    }
-    else {
-	execve("/vice/bin/updateclnt", argv, envp);
-    }
-
+    return 0; /* not reached */
 }
