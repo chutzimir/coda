@@ -4584,6 +4584,7 @@ PRIVATE void Perform_CLMS(ClientEntry *client, VolumeId VSGVolnum,
 			   RPC2_Unsigned Length, Date_t Mtime, RPC2_Unsigned Mode,
 			   int ReplicatedOp, ViceStoreId *StoreId, DirInode **CowInode,
 			  int *nblocks, RPC2_Integer *vsptr) {
+    int error;
     *nblocks = 0;
     ViceFid Did;
     Did.Volume = V_id(volptr);
@@ -4608,7 +4609,12 @@ PRIVATE void Perform_CLMS(ClientEntry *client, VolumeId VSGVolnum,
     /* Add the name to the parent. */
     DirHandle dh;
     SetDirHandle(&dh, dirvptr);
-    assert(Create((long *)&dh, (char *)Name, (long *)&Fid) == 0);
+    error =Create((long *)&dh, (char *)Name, (long *)&Fid);
+    if ( error ) {
+	    eprint("Create returns %d on %s (Fid %x, %x, %x)",
+		   error, Name, Fid.Volume, Fid.Vnode, Fid.Unique);
+	    assert(0);
+    }
     DFlush();
     int newlength = ::Length((long *)&dh);
     int newblocks = (int) (nBlocks(newlength) - nBlocks(dirvptr->disk.length));
