@@ -100,7 +100,7 @@ set N=0
 set ENTRY=($VOLNAME $HEXGROUPID $NSERVERS 0 0 0 0 0 0 0 0 $VSGADDR)
 foreach SERVER ($SERVERS)
 	echo "creating volume" $VOLNAME.$N on $SERVER
-	set vol_msg=`/vice/bin/volutil -h $SERVER create_rep $PARTITION $VOLNAME.$N $HEXGROUPID`
+	set vol_msg=`volutil -h $SERVER create_rep $PARTITION $VOLNAME.$N $HEXGROUPID`
 	echo $vol_msg
 	@ IX = $N + 4
 	set ENTRY[$IX]=`echo $vol_msg |awk '{print $7}'`

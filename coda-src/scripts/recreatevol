@@ -65,7 +65,7 @@ if ($VOLNAME == `awk ' $1 ~ /^'$1'$/  {print $1}' /vice/vol/AllVolumes` ||\
 	exit
 endif
 
-set vol_msg=`/vice/bin/volutil -h $SERVER create $PARTITION $VOLNAME`
+set vol_msg=`volutil -h $SERVER create $PARTITION $VOLNAME`
 echo $vol_msg
 
 set VOLID=`echo $vol_msg | awk '{print $7}'`

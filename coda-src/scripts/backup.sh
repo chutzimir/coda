@@ -50,13 +50,13 @@ mail -s dumplist weblist@coda.cs.cmu.edu < $DUMPLIST
 mail -s dumplist hmpierce@cs.cmu.edu < $DUMPLIST
 
 # run backup
-/vice/bin/backup -t 135 /vice/db/dumplist /backup > $BACKUPLOG 2>&1
+backup -t 135 /vice/db/dumplist /backup > $BACKUPLOG 2>&1
 if [ $? != 0 ]; then
       echo "Coda backup program failed" | mail -s "** backup failure!! **" $ADDR
 fi
 
 #dump to tape
-/vice/bin/tape.pl --tape $TAPE --dir $BACKUPDIR --size 4000000 >> $BACKUPLOG 2>&1
+tape.pl --tape $TAPE --dir $BACKUPDIR --size 4000000 >> $BACKUPLOG 2>&1
 if [ $? != 0 ]; then
       echo "Coda tape.pl program failed" | mail -s "** dump failure!! **" $ADDR
 fi

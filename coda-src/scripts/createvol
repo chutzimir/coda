@@ -85,8 +85,8 @@ if ($VOLNAME == `awk ' $1 ~ /^'$1'$/  {print $1}' /vice/vol/AllVolumes` ||\
 	exit
 endif
 
-/vice/bin/volutil -h $SERVER create $PARTITION $VOLNAME
-/vice/bin/bldvldb.sh
+volutil -h $SERVER create $PARTITION $VOLNAME
+bldvldb.sh
 
 echo -n "Do you wish this volume to be Backed Up (y/n)? [n] "
 set _ans_ = "$<"

@@ -36,7 +36,7 @@
 THISHOST=`hostname | tr A-Z a-z`
 REMOTE=/vice/vol/remote
 
-PATH=$PATH:/vice/bin
+PATH=/sbin:/usr/sbin:$PATH
 export PATH
 cd /vice/vol/remote
 
