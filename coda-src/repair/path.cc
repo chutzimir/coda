@@ -63,6 +63,11 @@ extern "C" {
 #include <strings.h>
 #include <sys/stat.h>
 #include <rpc2.h>
+#if LINUX || __NetBSD__
+#include <stdlib.h>
+#include <unistd.h>
+#define MAXSYMLINKS 16
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
