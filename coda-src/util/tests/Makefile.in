@@ -38,12 +38,12 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-# example test program
+LIBS = $(LIBKVM)
 
-#OBJECTS = test.o
-#TESTS = test
+OBJECTS = proctest.o
+TEST = proctest
 
-#test: test.o
-#	$(CC) -o test test.o -L../libutil.a
+proctest: proctest.o
+	$(CC) -o proctest proctest.o ../libutil.a $(LIBS)
 
 include $(MAKDIR)/configs/Makerules
