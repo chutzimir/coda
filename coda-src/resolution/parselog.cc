@@ -133,6 +133,7 @@ static void ReadOpsFromBuf(char *buf, int bufsize,
     char *tmpptr = buf;
     int index = 0;
     while (tmpptr < (buf + bufsize)) {
+	CODA_ASSERT(index < nentries);
 	rsle *r = &((*RemoteLogEntries)[index]);
 	r->InitFromRecleBuf(&tmpptr);
 	index++;
