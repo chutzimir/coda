@@ -77,11 +77,12 @@ extern "C" {
 #include <util.h>
 #include <rpc2.h>
 
+#include "auth2.h"
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include "auth2.h"
 
 static int Key1IsValid = FALSE;
 static int Key2IsValid = FALSE;

@@ -78,29 +78,32 @@ extern "C" {
 #include <sys/signal.h>
 #include <errno.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
 #include <ctype.h>
 #include <lwp.h>
 #include <rpc2.h>
-
+#include <util.h>
+#include "auth2.h"
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-
-#include <util.h>
 #include <prs.h>
 #include <al.h>
-#include "auth2.h"
 
 extern int AL_DebugLevel;
 
+/* per-connection info */
+struct UserInfo	 {
+	int ViceId;	/* from NewConnection */
+	int HasQuit; /* TRUE iff Quit() was received on this connection */
+	PRS_InternalCPS *UserCPS;
+	int LastUsed;	/* timestamped at each RPC call; for gc'ing */
+};
+
+PRIVATE int DoRedirectLog = 1;	/* set to zero by -r switch on command line */
 
 PRIVATE void InitGlobals(int argc, char **argv);
 PRIVATE void InitLog();
@@ -154,15 +157,6 @@ PRIVATE int PWCount = 0;
 
 PRIVATE int CheckOnly = 0;	/* only allow password checking at this server */
 
-struct UserInfo	
-    {/* per-connection info */
-    int ViceId;	/* from NewConnection */
-    int HasQuit; /* TRUE iff Quit() was received on this connection */
-    PRS_InternalCPS *UserCPS;
-    int LastUsed;	/* timestamped at each RPC call; for gc'ing */
-    };
-
-PRIVATE int DoRedirectLog = 1;	/* set to zero by -r switch on command line */
 
 
 int main(int argc, char **argv)
@@ -346,16 +340,16 @@ PRIVATE void InitRPC()
     {
     PROCESS mylpid;
     RPC2_Integer rc;
-    RPC2_PortalIdent portalid, *portallist[1];
+    RPC2_PortalIdent portalid;
     RPC2_SubsysIdent subsysid;
 
+ 
     assert(LWP_Init(LWP_VERSION, LWP_MAX_PRIORITY-1, &mylpid) == LWP_SUCCESS);
 
     portalid.Tag = RPC2_PORTALBYNAME;
     strcpy(portalid.Value.Name, AUTH_SERVICE);
-    portallist[0] = &portalid;
-/*    assert (RPC2_Init(RPC2_VERSION, 0, portallist, 1, -1, NULL) == RPC2_SUCCESS); */
-    if ((rc = RPC2_Init(RPC2_VERSION, 0, portallist, 1, -1, NULL)) != RPC2_SUCCESS) {
+
+    if ((rc = RPC2_Init(RPC2_VERSION, 0, &portalid, -1, NULL)) != RPC2_SUCCESS) {
 	LogMsg(-1, 0, stdout, "RPC2_Init failed with %s", RPC2_ErrorMsg(rc));
 	exit(-1);
     }

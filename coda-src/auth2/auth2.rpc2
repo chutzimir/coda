@@ -126,6 +126,9 @@ typedef
 #define CRUNCHPWSIZE	16
 
 %{
+#ifdef __cplusplus
+extern "C" {
+#endif
 extern void U_HostToNetClearToken(ClearToken *cToken);
 extern void U_NetToHostClearToken(ClearToken *cToken);
 extern int U_Authenticate(char *uName, char *uPasswd, ClearToken *cToken, EncryptedSecretToken sToken);
@@ -137,6 +140,10 @@ extern char *U_Error(int rc);
 extern int U_SetLocalTokens(int setPag, ClearToken *cToken, EncryptedSecretToken sToken);
 extern int U_GetLocalTokens(ClearToken *cToken, EncryptedSecretToken sToken);
 extern int U_DeleteLocalTokens();
+#ifdef __cplusplus
+}
+#endif
+
 
 /* The password records in the password file; never transmitted across RPC interface */
 #define AUTHPWSIZE		16

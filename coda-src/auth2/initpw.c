@@ -104,6 +104,7 @@ int main(int argc, char **argv)
     register int i;
     char thisline[1000], *lastpart;
     RPC2_EncryptionKey thispw;
+    PROCESS mypid;
 
     /* Obtain invocation options */
     for (i = 1; i < argc; i++)
@@ -133,7 +134,6 @@ int main(int argc, char **argv)
     if (!KeyIsValid) 
 	fprintf(stderr, "WARNING: no key specified\n");
 
-    PROCESS mypid;
     assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mypid) == LWP_SUCCESS);
     while(TRUE)
 	{

@@ -76,19 +76,15 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
+#include "auth2.h"
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include "auth2.h"
 
 int main(int argc, char **argv);
 PRIVATE int AddNewUser (char *uid, char *pw);

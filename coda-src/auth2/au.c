@@ -74,24 +74,21 @@ extern "C" {
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <pwd.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
 #include <lwp.h>
 #include <rpc2.h>
 #include <se.h>
+#include <util.h>
+
+#include "auth2.h"
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <prs.h>
-#include "auth2.h"
 
 PRIVATE void SetGlobals(int argc, char **argv);
 PRIVATE int GetVid(char *s, int *id);
@@ -216,7 +213,8 @@ PRIVATE void SetGlobals(int argc, char **argv)
 	{
 	if (strcmp(argv[i], "-x") == 0)
 	    {
-	    DebugLevel++;
+	    RPC2_DebugLevel = 100;
+	    DebugLevel = 1000;
 	    continue;
 	    }
 

@@ -33,32 +33,37 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
+
+
+
+#/*
+#
+#                         IBM COPYRIGHT NOTICE
+#
+#                          Copyright (C) 1986
+#             International Business Machines Corporation
+#                         All Rights Reserved
+#
+#This  file  contains  some  code identical to or derived from the 1986
+#version of the Andrew File System ("AFS"), which is owned by  the  IBM
+#Corporation.    This  code is provded "AS IS" and IBM does not warrant
+#that it is free of infringement of  any  intellectual  rights  of  any
+#third  party.    IBM  disclaims  liability of any kind for any damages
+#whatsoever resulting directly or indirectly from use of this  software
+#or  of  any  derivative work.  Carnegie Mellon University has obtained
+#permission to distribute this code, which is based on Version 2 of AFS
+#and  does  not  contain the features and enhancements that are part of
+#Version 3 of AFS.  Version 3 of  AFS  is  commercially  available  and
+#supported by Transarc Corporation, Pittsburgh, PA.
+#
+#*/
+
+
+
+
 /*
+ -- Routine to add a new user to the auth data base from a list built during user int
 
-                         IBM COPYRIGHT NOTICE
-
-                          Copyright (C) 1986
-             International Business Machines Corporation
-                         All Rights Reserved
-
-This  file  contains  some  code identical to or derived from the 1986
-version of the Andrew File System ("AFS"), which is owned by  the  IBM
-Corporation.    This  code is provded "AS IS" and IBM does not warrant
-that it is free of infringement of  any  intellectual  rights  of  any
-third  party.    IBM  disclaims  liability of any kind for any damages
-whatsoever resulting directly or indirectly from use of this  software
-or  of  any  derivative work.  Carnegie Mellon University has obtained
-permission to distribute this code, which is based on Version 2 of AFS
-and  does  not  contain the features and enhancements that are part of
-Version 3 of AFS.  Version 3 of  AFS  is  commercially  available  and
-supported by Transarc Corporation, Pittsburgh, PA.
-
-*/
-
-
-
-/*
- -- Routine to delete a user from the auth data base using a list
 */
 
 #ifdef __cplusplus
@@ -79,14 +84,15 @@ extern "C" {
 #include <stdlib.h>
 #endif
 
+#include "auth2.h"
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include "auth2.h"
 
 int main(int argc, char **argv);
-PRIVATE int DeleteUser(char *uid);
+PRIVATE int AddNewUser (char *uid, char *pw);
 PRIVATE void MakeString(char *input);
 PRIVATE char *NextField(char *input);
 PRIVATE char *NextRecord(char *input);
@@ -100,6 +106,7 @@ int main(int argc, char **argv)
     char   *current;
     char   *next;
     char   *uid;
+    char   *pw;
     int    rc;
     int    fd;
     struct stat    buff;
@@ -108,7 +115,7 @@ int main(int argc, char **argv)
     char   *filenm = 0;
     char   *area = 0;
     RPC2_EncryptionKey	key;
-
+    
  /* parse arguments    */
     for (i = 1; i < argc; i++) {
 	if (argv[i][0] == '-') {
@@ -130,12 +137,12 @@ int main(int argc, char **argv)
     }
 
     if (!auid || !apw || !filenm) {
-	printf("usage: rmuser -f filename authuserid authpasswd\n");
+	printf("usage: newuser -f filename authuserid authpasswd\n");
 	fflush(stdout);
 	exit(-1);
     }
-
  /* Bind to auth server using auid and apw */
+
     U_InitRPC();
     bzero(key, sizeof(RPC2_EncryptionKey));
     strncpy(key, apw, sizeof(RPC2_EncryptionKey));
@@ -169,13 +176,16 @@ int main(int argc, char **argv)
     close(fd);
     *(area+buff.st_size+1) = '\0';
 
- /* parse data in area and pass it to DeleteUser. The first field in each line is the
+ /* parse data in area and pass it to AddNewUser. The first field in each line is the
     uid, the second field in each line is the password. Fields are blank separated */
+
     for(current = area; current < area+buff.st_size; current = next) {
 	next = NextRecord(current);	/* next line */
 	uid = current;				/* use first field  */
+	pw = NextField(uid);			/* use second field */
 	MakeString(uid);			/* make uid a string */
-	DeleteUser(uid);
+	MakeString(pw);			/* make pw a string */
+	AddNewUser(uid, pw);
     }
 
  /* clean up and Unbind the connection */
@@ -185,12 +195,16 @@ int main(int argc, char **argv)
 }
 
 
-PRIVATE int DeleteUser(char *uid)
+PRIVATE int AddNewUser (char *uid, char *pw)
 {
-    RPC2_Integer    vid;
-    int		    rc;
+    RPC2_Integer	vid;
+    int			rc;
+    RPC2_EncryptionKey  ek;
+    char		userid[256];
 
     /* get vid from input uid */
+    bzero(ek, sizeof(RPC2_EncryptionKey));
+    strncpy(ek, pw, sizeof(RPC2_EncryptionKey));
     rc = AuthNameToId(AuthID, uid, &vid);
     if(rc != AUTH_SUCCESS) {
 	printf("Name translation for %s failed %s\n",uid, U_Error(rc));
@@ -198,14 +212,17 @@ PRIVATE int DeleteUser(char *uid)
 	return(-1);
     }
 	
-    /* pass vid to the auth server */
-    rc = AuthDeleteUser(AuthID, vid);
+    /* pass vid and pw to auth server */
+    strcpy(userid,uid);
+    strcat(userid," ");
+    rc = AuthNewUser(AuthID, vid, ek, userid);
     if(rc != AUTH_SUCCESS) {
-	printf("Delete User for %s failed with %s\n",uid, U_Error(rc));
+	printf("Add User for %s failed with %s\n",uid, U_Error(rc));
 	fflush(stdout);
 	return(-1);
     }
     return(0);
+
 }
 
 
