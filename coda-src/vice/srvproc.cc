@@ -4909,8 +4909,7 @@ void PutObjects(int errorCode, Volume *volptr, int LockLevel,
         /* Back out new disk allocation on failure. */
         if (errorCode && volptr)
 	        if (blocks != 0 && AdjustDiskUsage(volptr, -blocks) != 0)
-	                SLog(0, 
-                               "PutObjects: AdjustDiskUsage(%x, %d) failed", 
+	                SLog(0, "PutObjects: AdjustDiskUsage(%x, %d) failed", 
                                V_id(volptr), -blocks);
 
        /* Record these handles since we will need them after the
@@ -4946,13 +4945,13 @@ START_TIMING(PutObjects_Transaction);
 		    /* Directory pages.  Be careful with cloned directories! */
                     SLog(10, "--PO: %s", FID_(&v->fid));
                     if (v->vptr->disk.type == vDirectory ) {
-                       /* sanitry */
-                       if ( v->d_inodemod ) {
+                       /* sanity */
+                       if ( !errorCode && v->d_inodemod ) {
                             CODA_ASSERT(v->vptr->dh);
                             SLog(10, "--PO: %s dirty %d", 
 			      FID_(&v->fid), DC_Dirty(v->vptr->dh));
                        }
-                       if ( v->vptr->dh && DC_Dirty(v->vptr->dh)) {
+                       if ( !errorCode && v->vptr->dh && DC_Dirty(v->vptr->dh)) {
                             CODA_ASSERT(v->d_inodemod);
 		       }
                        if (v->d_inodemod && DC_Dirty(v->vptr->dh)) {
