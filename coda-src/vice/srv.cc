@@ -1680,6 +1680,7 @@ PRIVATE void InitServerKeys(char *fkey1, char *fkey2)
 	    SetServerKeys(ptrkey1, NULL);
 	else
 	    SetServerKeys(ptrkey1, ptrkey2);
+	return;
     }
 
     /* one key */
