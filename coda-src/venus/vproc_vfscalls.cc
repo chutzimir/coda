@@ -1551,8 +1551,20 @@ void vproc::fsync(struct vnode *vp) {
 	if (u.u_error) break;
 
 	/* Get the object. */
-	u.u_error = FSDB->Get(&f, &cp->c_fid, CRTORUID(u.u_cred), RC_DATA);
+	u.u_error = FSDB->Get(&f, &cp->c_fid, CRTORUID(u.u_cred), RC_STATUS);
 	if (u.u_error) goto FreeLocks;
+
+	/* 
+	 * what we want: if the file is open for write, sync the
+	 * changes to it and flush associated RVM updates.
+	 * below is the heavy handed version.
+	 * NB: if this is changed to modify object state, this
+	 * operation can no longer be an observer!
+	 */
+	if (f->flags.owrite) {
+	    ::sync();
+	    RecovFlush();
+	}
 
 FreeLocks:
 	FSDB->Put(&f);

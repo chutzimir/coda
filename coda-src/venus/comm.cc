@@ -300,7 +300,7 @@ void CommInit() {
 
 /* *****  Connection  ***** */
 
-const int MAXCONNSPERUSER = 3;		    /* Max simultaneous conns per user per server. */
+const int MAXCONNSPERUSER = 9;		    /* Max simultaneous conns per user per server. */
 
 #define	CONNQ_LOCK()
 #define	CONNQ_UNLOCK()
@@ -1570,7 +1570,7 @@ RepOpCommCtxt::RepOpCommCtxt() {
 
 /* ***** Mgroup  ***** */
 
-const int MAXMGRPSPERUSER = 9;  /* Max simultaneous mgrps per user per vsg. */
+const int MAXMGRPSPERUSER = 27;  /* Max simultaneous mgrps per user per vsg. */
                                 /* 3 requests/AVSG member */
 #define	MGRPQ_LOCK()
 #define	MGRPQ_UNLOCK()
