@@ -71,17 +71,17 @@ typedef unsigned char bool;
 
 #define MILLION	1000000
 
-PRIVATE int globalInitDone = 0;
+static int globalInitDone = 0;
 
 /* declaration of private routines */
-PRIVATE void subtract C_ARGS((register struct timeval *t1, register struct timeval *t2, register struct timeval *t3));
-PRIVATE void add C_ARGS((register struct timeval *t1, register struct timeval *t2));
-PRIVATE bool blocking C_ARGS((register struct TM_Elem *t));
+static void subtract C_ARGS((register struct timeval *t1, register struct timeval *t2, register struct timeval *t3));
+static void add C_ARGS((register struct timeval *t1, register struct timeval *t2));
+static bool blocking C_ARGS((register struct TM_Elem *t));
 
 
 
 /* t1 = t2 - t3 */
-PRIVATE void subtract(t1, t2, t3)
+static void subtract(t1, t2, t3)
     register struct timeval *t1;
     register struct timeval *t2;
     register struct timeval *t3;
@@ -99,7 +99,7 @@ PRIVATE void subtract(t1, t2, t3)
 }
 
 /* t1 += t2; */
-PRIVATE void add(t1, t2)
+static void add(t1, t2)
     register struct timeval *t1;
     register struct timeval *t2;
 {
@@ -120,7 +120,7 @@ int TM_eql(t1, t2)
 }
 
 
-PRIVATE bool blocking(t)
+static bool blocking(t)
     register struct TM_Elem *t;
 {
     return (t->TotalTime.tv_sec < 0 || t->TotalTime.tv_usec < 0);

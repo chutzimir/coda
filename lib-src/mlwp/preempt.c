@@ -66,7 +66,7 @@ char PRE_Block = 0;		/* used in lwp.c and process.s */
 
 
 /* run the scheduler unless we are in a critical region */
-PRIVATE void AlarmHandler(int sig)
+static void AlarmHandler(int sig)
 {
     if (PRE_Block == 0 && lwp_cpptr->level == 0) {
 	PRE_BeginCritical();

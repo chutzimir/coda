@@ -83,14 +83,14 @@ typedef struct QUEUE {
 } queue;
 
 /* declaration of internal routines */
-PRIVATE queue *init();
-PRIVATE char empty C_ARGS((queue *q));
-PRIVATE void insert C_ARGS((queue *q, char *s));
-PRIVATE char *myremove C_ARGS((queue *q));
-PRIVATE void read_process C_ARGS((int id));
-PRIVATE void write_process();
+static queue *init();
+static char empty (queue *q);
+static void insert (queue *q, char *s);
+static char *myremove (queue *q);
+static void read_process (int id);
+static void write_process();
 
-PRIVATE char *messages[] =
+static char *messages[] =
     {
 	"Mary had a little lamb,",
 	"Its fleece was white as snow,",
@@ -135,7 +135,7 @@ PRIVATE char *messages[] =
 	0
     };
 
-PRIVATE queue *init(){
+static queue *init(){
 
     queue *q;
 
@@ -144,14 +144,14 @@ PRIVATE queue *init(){
     return(q);
 }
 
-PRIVATE char empty(q)
+static char empty(q)
     queue *q;
 {
 
     return (q->prev == q && q->next == q);
 }
 
-PRIVATE void insert(q, s)
+static void insert(q, s)
     queue *q;
     char *s;
 {
@@ -165,7 +165,7 @@ PRIVATE void insert(q, s)
     n -> next = q;
 }
 
-PRIVATE char *myremove(q)
+static char *myremove(q)
     queue *q;
 {
 
@@ -190,7 +190,7 @@ queue *q;
 int asleep;	/* Number of processes sleeping -- used for
 		   clean termination */
 
-PRIVATE void read_process(id)
+static void read_process(id)
     int id;
 {
 
@@ -228,7 +228,7 @@ PRIVATE void read_process(id)
     }
 }
 
-PRIVATE void write_process(){
+static void write_process(){
 
     char **mesg;
 
@@ -255,9 +255,7 @@ PRIVATE void write_process(){
 		3:	Present if lwp_debug to be set
 */
 
-main(argc, argv)
-    int argc;
-    char **argv;
+int main(int argc, char **argv)
 {
 
     int nreaders, i;

@@ -82,7 +82,7 @@ int ft_debug;
 #ifdef sun
 #include <nlist.h>
 
-PRIVATE  struct nlist nl[] = {
+static  struct nlist nl[] = {
     { "_time" },
 #define X_TIME		0
     { "" },
@@ -93,13 +93,13 @@ PRIVATE  struct nlist nl[] = {
 #define TRUE	1
 #define FALSE	0
 
-PRIVATE enum InitState { notTried, tried, done } initState = notTried;
+static enum InitState { notTried, tried, done } initState = notTried;
 
 #ifdef notdef
 #ifdef sun
-PRIVATE int memFd;	/* our fd on /dev/mem */
-PRIVATE char *mem;	/* pointer to our valloced memory */
-PRIVATE struct timeval *timeP;	/* pointer to time in our address space */
+static int memFd;	/* our fd on /dev/mem */
+static char *mem;	/* pointer to our valloced memory */
+static struct timeval *timeP;	/* pointer to time in our address space */
 #endif
 #endif notdef
 

@@ -55,6 +55,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
 #include <assert.h>
@@ -70,13 +71,10 @@ void OtherProcess()
 	}
     }
 
-main(argc, argv)
-    int argc;
-    char *argv[];
+int main(int argc, char **argv)
 {
     struct timeval t1, t2;
     struct timeval sleeptime;
-    int readfd, writefd, xfd;
     PROCESS pid, otherpid;
     register int i,  count, x;
     int j;
@@ -113,4 +111,7 @@ main(argc, argv)
 
     x = (t2.tv_sec -t1.tv_sec)*1000000 + (t2.tv_usec - t1.tv_usec);
     printf("%d milliseconds for %d MWaits (%f usec per Mwait and Signal)\n", x/1000, count, (float)(x/count));
-    }
+
+    return 0;
+
+}
