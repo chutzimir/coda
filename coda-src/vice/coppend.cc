@@ -196,7 +196,8 @@ void cpman::add(cpent *cpe) {
 }
 
 
-void cpman::remove(cpent *cpe) {
+void cpman::remove(cpent *cpe) 
+{
     ObtainWriteLock(&lock);
     objects.remove(&cpe->StoreId, cpe);
     ReleaseWriteLock(&lock);

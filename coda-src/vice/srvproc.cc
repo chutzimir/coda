@@ -2658,6 +2658,7 @@ void PutVolObj(Volume **volptr, int LockLevel, int Dequeue)
 
     VPutVolume(*volptr);
     *volptr = 0;
+    SLog(10, "Returning from PutVolObj");
 }
 
 
