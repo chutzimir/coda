@@ -669,6 +669,9 @@ log_t *make_log(log_dev_name,retval)
             free(log);
             return NULL;                /* no space for device name */
             }
+	/* first and foremost */
+	log->trunc_thread = (cthread_t) 0;
+
         log->status.valid = rvm_false;
         log->status.log_empty = rvm_false;
         log->status.trunc_state = 0;
