@@ -66,7 +66,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <string.h>
 #include <sys/types.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include <sys/time.h>
 #include <netdb.h>
 #include "timer.h"

@@ -64,7 +64,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <sys/stat.h>
 #include <signal.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
 #include "lwp.h"
 #include "timer.h"
 #include "rpc2.h"

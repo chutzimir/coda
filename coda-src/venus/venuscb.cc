@@ -56,7 +56,7 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+
 #ifdef __BSD44__
 #include <machine/endian.h>
 #endif

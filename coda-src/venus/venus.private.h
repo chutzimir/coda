@@ -133,8 +133,11 @@ const int FREE_FACTOR = 16;
 const int MAXHOSTS = 8;	/* The number of hosts we generally try to parse in a host list.  S/B in vice.h! */
 const int NFDS = 32;	/* IOMGR-enforced limit!  Kernel may allocate fds numbered higher than this! */
 /* definition of vuid_t that used to be here has been moved to vicedep/vcrcommon.rpc2  (Satya 3/23/92) */
+#ifdef DJGPP
+const vuid_t V_UID = (vuid_t)500;    /* UID that the venus process runs under. */
+#else
 const vuid_t V_UID = (vuid_t)0;	    /* UID that the venus process runs under. */
-
+#endif
 /* Group id fields are 32 bits in BSD44 (not 16 bits); the use of a small 
    negative number (-2) means its unsigned long representation is huge
    (4294967294).  This causes the "ar" program to screw up because it

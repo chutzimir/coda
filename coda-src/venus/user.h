@@ -119,7 +119,7 @@ class userent {
     void Reset();
     int Connect(RPC2_Handle *, int *, unsigned long);
     int GetWaitForever();
-    void SetWaitForever(int);
+    void SetWaitForever(int);   
 
     int GetUid() 
         { return(uid); }

@@ -73,7 +73,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "rpc2.private.h"
 
 
-
 /* Routines to allocate and manipulate the doubly-linked circular lists 
 	used elsewhere in rpc2 */
 
@@ -88,9 +87,8 @@ void rpc2_Replenish(whichList, whichCount, elemSize, creationCount, magicNumber)
 	Sets *whichCount to 1.
 	Bumps creationCount by 1.
     */
-    {
-    
-
+    {    
+	   
     *whichList = (struct LinkEntry *)malloc(elemSize);
     CODA_ASSERT(*whichList != NULL);
     bzero(*whichList, elemSize);

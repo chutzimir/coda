@@ -67,6 +67,10 @@ extern "C" {
 #include "auth2.h"
 #include "avenus.h"
 
+#ifdef __CYGWIN32__
+#include <windows.h>
+#endif
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -80,15 +84,27 @@ int main(int argc, char *argv[]) {
 
     /* Header. */
     fprintf(stdout, "\nToken held by the Cache Manager:\n\n");
+#ifdef __CYGWIN32__
+    fprintf(stdout, "Local username: %s\n", getlogin());
+#else
     fprintf(stdout, "Local uid: %d\n", getuid());
+#endif
 
     /* Get the tokens.  */
     rc = U_GetLocalTokens(&clear, secret);
     if (rc < 0) {
+#ifdef __CYGWIN32__
+	if ((rc * (-1)) == ENOTCONN)
+#else
 	if (errno == ENOTCONN)
+#endif
             fprintf(stdout, "Not Authenticated\n\n");
 	else
+#ifdef __CYGWIN32__
+	    fprintf(stdout, "\nGetLocalTokens error (%d)\n", rc*(-1));
+#else
 	    fprintf(stdout, "\nGetLocalTokens error (%d)\n", errno);
+#endif
 
 	exit(-1);
     }

@@ -535,7 +535,6 @@ struct vstab *getvsent() {
     return(&v);
 }    
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus

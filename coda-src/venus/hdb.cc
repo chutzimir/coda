@@ -382,7 +382,7 @@ int hdb::List(hdb_list_msg *m) {
     }
 
     /* Open the list file. */
-    int outfd = ::open(m->outfile, O_TRUNC | O_WRONLY | O_CREAT, 0600);
+    int outfd = ::open(m->outfile, O_TRUNC | O_WRONLY | O_CREAT | O_BINARY, 0600);
     if (outfd < 0) {
 	LOG(1, ("hdb::List: (%s, %d, %d) open failed (%d)\n",
 		m->outfile, m->luid, m->ruid, errno));
@@ -1194,7 +1194,7 @@ int hdb::Verify(hdb_verify_msg *m) {
     }
 
     /* Open the list file. */
-    int outfd = ::open(m->outfile, O_TRUNC | O_WRONLY | O_CREAT, 0600);
+    int outfd = ::open(m->outfile, O_TRUNC | O_WRONLY | O_CREAT | O_BINARY, 0600);
     if (outfd < 0) {
 	LOG(1, ("hdb::Verify: (%s, %d, %d, %d) open failed (%d)\n",
 		m->outfile, m->verbosity, m->luid, m->ruid, errno));

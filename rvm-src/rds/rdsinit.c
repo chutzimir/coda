@@ -312,7 +312,7 @@ static int get_valid_parm(argc, argv, pdatalen,
 	    *pstatic_addr = (char *)strtoul(string, NULL, 0);
         } while (!confirm_rounded_value((unsigned long *)pstatic_addr, 
 					base, RVM_PAGE_SIZE,UP,
-					0x4000000)); 
+					0x2000000)); 
 				/* note 0x4000000 is just a very loose lower
 				*  bound.  Actual number should be much
 				*  larger (and system-dependent)

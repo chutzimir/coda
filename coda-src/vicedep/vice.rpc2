@@ -400,7 +400,7 @@ ViceNewConnection (IN RPC2_Integer SideEffectType,
 27: ViceProbe	(IN RPC2_CountedBS Volumes,
 		 OUT RPC2_CountedBS VVs);
 
-28: ViceUnused7	();
+28: ViceUnused7 ();
 
 29: ViceCOP2	(IN RPC2_CountedBS COP2BS);
 

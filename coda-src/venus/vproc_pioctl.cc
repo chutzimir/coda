@@ -924,11 +924,11 @@ V_FreeLocks:
 #define secretp ((SecretToken *)(secretlen + 1))
 #define clearlen ((long *)(secretp + 1))
 #define clearp ((ClearToken *)(clearlen + 1))
-#define endp ((char *)(clearp + 1))
+#define endp ((char *)(clearp + 1)) 
 		    userent *ue;
-		    GetUser(&ue, CRTORUID(u.u_cred));
+		    GetUser(&ue, CRTORUID(u.u_cred));	   
 		    u.u_error = (int) ue->GetTokens(secretp, clearp);
-		    PutUser(&ue);
+		    PutUser(&ue);		   	
 		    if (u.u_error) break;
 
 		    *secretlen = (int)sizeof(SecretToken);

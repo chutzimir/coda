@@ -198,8 +198,8 @@ long open_dev(dev,flags,mode)
     dev->handle = 0;
 
     /* attempt to open */
-#ifdef DJGPP
-    handle = (long)open(dev->name,flags | O_BINARY ,mode);
+#if defined(DJGPP) || defined(__CYGWIN32__)
+    handle = (long)open(dev->name,flags | O_BINARY, mode);
 #else
     handle = (long)open(dev->name,flags ,mode);
 #endif 

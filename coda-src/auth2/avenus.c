@@ -66,7 +66,12 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 #define VIRTUE 1
 #define VICE 1
+
+#ifdef __CYGWIN32__
+#define VSTAB "c:\\usr\\coda\\etc\\vstab"
+#else
 #define VSTAB "/usr/coda/etc/vstab"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -92,6 +97,10 @@ extern "C" {
 #include "auth2.h"
 #undef VIRTUE
 #undef VICE
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 static void GetPathName();
 
@@ -154,7 +163,11 @@ int U_GetLocalTokens(OUT ClearToken *cToken, OUT EncryptedSecretToken sToken)
     GetPathName();
     rc = pioctl(pName, _VICEIOCTL(8), &buffer, 0);
     if(rc) {
+#ifdef __CYGWIN32__
+	return (rc);
+#else
 	return(-1);
+#endif
     }
     if(outbuff.sTokenSize != sizeof(EncryptedSecretToken))
 	    return(-1);
@@ -189,7 +202,7 @@ static void GetPathName()
     struct	stat	buff;
 
     bzero(pName,sizeof(pName));
-    if((fd = open(VSTAB,O_RDONLY,0)) >= 0) {
+    if((fd = open(VSTAB,O_RDONLY | O_BINARY,0)) >= 0) {
 	if(!(fstat(fd, &buff))) {
 	    area = (char *)malloc(buff.st_size);
 	    if(!area) {

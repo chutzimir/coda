@@ -40,7 +40,7 @@ EXECUTABLES = filerepair removeinc
 SCRIPTS     = xfrepair xaskuser
 CBINS       = $(EXECUTABLES) $(SCRIPTS)
 
-LIBS=	$(LIBDIRLIB)  $(LIBKERNDEP) $(LIBBASE)
+LIBS=	$(LIBDIRLIB)  $(LIBKERNDEP) $(LIBBASE) $(LIBUTIL)
 
 removeinc: removeinc.o $(LIBS)
 	$(CC) $(LIBFLAGS) $^ ${LIBS} -o removeinc

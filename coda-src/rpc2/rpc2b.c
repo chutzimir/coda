@@ -982,7 +982,8 @@ long rpc2_GetLocalHost(localhost, remotehost)
     }
 
     localhost->Tag = RPC2_HOSTBYINETADDR;
-    localhost->Value.InetAddress.s_addr = h->h_addr.s_addr;
+    memcpy(&localhost->Value.InetAddress, h->h_addr , sizeof(struct in_addr));
+    /*	     localhost->Value.InetAddress.s_addr = h->h_addr.s_addr;   */
     fprintf (stderr, "rpc2_GetLocalHost: name %s len %d ip %s\n",
 	     hostname, h->h_length, inet_ntoa(localhost->Value.InetAddress));
     return 0;

@@ -19,6 +19,7 @@ static char *rcsid = "$Header$";
  * this file was written to test the recoverable heap stuff for rvm.
  */
 
+#include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <rvm.h>
