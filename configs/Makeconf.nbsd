@@ -40,10 +40,10 @@ GFLAG         = -g
 CPP 	      = gcc -E -x c-header
 LIBCURSES     = -lcurses
 LIBCOMPAT     = /usr/lib/libcompat.a
-IFSNAME       = libifs.a
-IFSDIR	      = kernel-src/ifs/netbsd
+INODEFSNAME   = libinodefs.a
+INODEFSDIR    = kernel-src/inodefs/netbsd
 LIBTRACE      = ../venus/libfaketrace.a
-machine_ifs   = ifs
+machine_inodefs   = inodefs
 #for rvm
 LIBTHREADS    =
 LIBMACH       = 
