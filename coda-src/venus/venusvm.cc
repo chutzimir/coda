@@ -73,7 +73,7 @@ extern int nlist(const char*, struct nlist[]);
 #include <rpc2.h>
 #include <rds.h>
 #include <rvm.h>
-#include <cfs/cfs_opstats.h>
+#include <cfs/coda_opstats.h>
 
 #ifdef __cplusplus
 }

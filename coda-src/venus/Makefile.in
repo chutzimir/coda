@@ -82,7 +82,6 @@ LIBS=	$(LIBUTIL)\
 	$(LIBVV)\
 	$(LIBDIRLIB)\
 	$(LIBSYS)\
-#	$(LIBCS)\
 	$(LIBMACH)\
 	$(LIBCOMPAT)\
 	$(LIBVICEDEP)\
