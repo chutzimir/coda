@@ -169,7 +169,7 @@ int main(int argc, char **argv, char **envp)
 	if(child)
 	    while(child != wait(0));
 	else
-	    execve("/vice/bin/auth2", argv, envp);
+	    execvp("auth2", argv);
 	}
     LogMsg(-1, 0, stdout, "Auth Monitor shutdown complete\n");
     return(0);

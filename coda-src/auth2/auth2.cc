@@ -209,7 +209,7 @@ int main(int argc, char **argv)
 
 PRIVATE void InitGlobals(int argc, char **argv)
     /* Set globals from command line args */
-    {
+{
     register int i;
     int	len;
     struct stat buff;
@@ -219,8 +219,7 @@ PRIVATE void InitGlobals(int argc, char **argv)
 	*(argv[0]+i) = ' ';
     strcpy(argv[0], "auth2");
     bcopy(DefKey, FileKey, RPC2_KEYSIZE);
-    for (i = 1; i < argc; i++)
-	{
+    for (i = 1; i < argc; i++) {
 	if (argv[i] == 0) continue;	/* ignore NULL parms; this allows
 				    arguments to be passed in via authmon */
 	if (strcmp(argv[i], "-x") == 0 && i < argc - 1)
@@ -256,11 +255,13 @@ PRIVATE void InitGlobals(int argc, char **argv)
 	if (strcmp(argv[i], "-fk") == 0 && i < argc - 1)
 	    {
 	    strncpy((char *)FileKey, argv[++i], RPC2_KEYSIZE);
-				/* key to be used in decrypting passwords in PWFile */
+				/* key to be used in decrypting
+                                   passwords in PWFile */
 	    continue;
 	    }
-	/* The following parameter is ignored, it is use by authmon and may come   */
-	/* through on the input parameters			*/
+	/* The following parameter is ignored, it is use by authmon
+           and may come */
+	/* through on the input parameters */
 	if(strcmp(argv[i], "-d") == 0)
 	    {
 	    i++;
@@ -269,17 +270,11 @@ PRIVATE void InitGlobals(int argc, char **argv)
 
 	printf("Usage: auth2 [-r] [-chk] [-x debuglevel] [-p pwfile] [-tk tokenkey] [-fk filekey]\n");
 	exit(-1);
-	}    
+    }    
 
     CheckTokenKey();
-    if(stat("/vice/bin/auth2", &buff)) {
-	printf("stat for binaries failed\n");
-	fflush(stdout);
-    }
-    else {
-	AUTime = buff.st_mtime;
-    }
-    }
+    AUTime = buff.st_mtime;
+}
 
 
 PRIVATE void InitLog()
