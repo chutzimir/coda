@@ -238,7 +238,7 @@ int NewConn(char *hostname, short port, unsigned long *cid)
 {
     int rc;
     RPC2_HostIdent hident;
-    RPC2_PortalIdent pident;
+    RPC2_PortIdent pident;
     RPC2_SubsysIdent sident;
     RPC2_BindParms bparms;
 
@@ -248,7 +248,7 @@ int NewConn(char *hostname, short port, unsigned long *cid)
     sident.Value.SubsysId = FCONSUBSYSID;
     sident.Tag = RPC2_SUBSYSBYID;
 
-    pident.Tag = RPC2_PORTALBYINETNUMBER;
+    pident.Tag = RPC2_PORTBYINETNUMBER;
     pident.Value.InetPortNumber = htons(port);
 
     bparms.SecurityLevel = RPC2_OPENKIMONO;

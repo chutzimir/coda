@@ -88,7 +88,7 @@ int Fcon_LWP()
     while (1) {
 	cid = 0;
 	if ((err = RPC2_GetRequest(&reqfilter, &cid, &reqbuffer, NULL,
-				   NULL, NULL, NULL)) < RPC2_WLIMIT)
+				   NULL, 0, NULL)) < RPC2_WLIMIT)
 	    PrintRPCError(err, cid);
 	RPC2_SetColor(cid, FAIL_IMMUNECOLOR);
 	if ((err = Fcon_ExecuteRequest(cid, reqbuffer, (SE_Descriptor *) 0)) < RPC2_WLIMIT)

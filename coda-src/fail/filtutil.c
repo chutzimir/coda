@@ -398,7 +398,7 @@ int open_connection(target_t target)
 {
     int rc;
     static RPC2_HostIdent hident;
-    static RPC2_PortalIdent pident;
+    static RPC2_PortIdent pident;
     static RPC2_SubsysIdent sident;
     static RPC2_BindParms bparms;
 
@@ -410,7 +410,7 @@ int open_connection(target_t target)
     sident.Value.SubsysId = FCONSUBSYSID;
     sident.Tag = RPC2_SUBSYSBYID;
 
-    pident.Tag = RPC2_PORTALBYINETNUMBER;
+    pident.Tag = RPC2_PORTBYINETNUMBER;
     pident.Value.InetPortNumber = htons(target.server ? PORT_codasrv : PORT_venus);
 
     bparms.SecurityLevel = RPC2_OPENKIMONO;

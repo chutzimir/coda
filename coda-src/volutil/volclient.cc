@@ -2085,7 +2085,7 @@ static int V_BindToServer(char *fileserver, RPC2_Handle *RPCid)
     Sets RPCid to the value of the connection id.    */
 
     RPC2_HostIdent hident;
-    RPC2_PortalIdent pident;
+    RPC2_PortIdent pident;
     RPC2_SubsysIdent sident;
     long     rcode;
 
@@ -2093,10 +2093,10 @@ static int V_BindToServer(char *fileserver, RPC2_Handle *RPCid)
     strcpy(hident.Value.Name, fileserver);
 #ifdef __CYGWIN32__
 	/* XXX -JJK */
-	pident.Tag = RPC2_PORTALBYINETNUMBER;
+	pident.Tag = RPC2_PORTBYINETNUMBER;
 	pident.Value.InetPortNumber = htons(PORT_codasrv);
 #else
-    pident.Tag = RPC2_PORTALBYNAME;
+    pident.Tag = RPC2_PORTBYNAME;
     strcpy(pident.Value.Name, "codasrv");
 #endif
     sident.Tag = RPC2_SUBSYSBYID;

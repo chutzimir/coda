@@ -128,7 +128,7 @@ int main(int argc, char **argv)
     int     lwps = 2;
     int     badParm = 1;
     PROCESS parentPid, serverPid;
-    RPC2_PortalIdent portal1, *portallist[1];
+    RPC2_PortIdent port1, *portlist[1];
     RPC2_SubsysIdent server;
     SFTP_Initializer sftpi;
     int rc;
@@ -191,8 +191,8 @@ int main(int argc, char **argv)
 
     CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_MAX_PRIORITY - 1, &parentPid) == LWP_SUCCESS);
 
-    portal1.Tag = RPC2_PORTALBYINETNUMBER;
-    portal1.Value.InetPortNumber = 0;
+    port1.Tag = RPC2_PORTBYINETNUMBER;
+    port1.Value.InetPortNumber = 0;
 
     SFTP_SetDefaults(&sftpi);
     sftpi.PacketSize = 1024;
@@ -203,7 +203,7 @@ int main(int argc, char **argv)
     RPC2_Trace = 0;
     tp.tv_sec = 80;
     tp.tv_usec = 0;
-    CODA_ASSERT(RPC2_Init(RPC2_VERSION, 0, &portal1, 6, &tp) == RPC2_SUCCESS);
+    CODA_ASSERT(RPC2_Init(RPC2_VERSION, 0, &port1, 6, &tp) == RPC2_SUCCESS);
 
     /* register the port with the portmapper */
     portmapid = portmap_bind("localhost");
@@ -213,7 +213,7 @@ int main(int argc, char **argv)
     }
     rc = portmapper_client_register_sqsh(portmapid, 
 					 (unsigned char *) "codaupdate", 
-					 0, 17,  portal1.Value.InetPortNumber);
+					 0, 17,  port1.Value.InetPortNumber);
 
     if ( rc ) {
 	    fprintf(stderr, "Cannot register with rpc2portmap; exiting, rc = %i \n", rc);

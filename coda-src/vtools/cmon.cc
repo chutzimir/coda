@@ -171,7 +171,7 @@ static void srvlwp(int slot)
     {
     struct server *moi;
     RPC2_HostIdent hi;
-    RPC2_PortalIdent pi;
+    RPC2_PortIdent pi;
     RPC2_SubsysIdent si;
     RPC2_Handle cid;
     int rc;
@@ -180,7 +180,7 @@ static void srvlwp(int slot)
 
     hi.Tag = RPC2_HOSTBYNAME;
     strcpy(hi.Value.Name, moi->srvname);
-    pi.Tag = RPC2_PORTALBYINETNUMBER;
+    pi.Tag = RPC2_PORTBYINETNUMBER;
     pi.Value.InetPortNumber = htons(PORT_codasrv);
     si.Tag = RPC2_SUBSYSBYID;
     si.Value.SubsysId= SUBSYS_SRV;

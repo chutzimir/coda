@@ -183,7 +183,7 @@ void vproc::do_ioctl(ViceFid *fid, unsigned int com, struct ViceIoctl *data) {
 
 			/* This is drastic, but I'm having trouble getting rid of */
 			/* MiniCache vnodes that have the "wrong" type! -JJK */
-			(void)k_Purge();
+			(void)k_Purge(fid, 1);
 
 			f = FSDB->Find(fid);
 			if (f != 0) {
@@ -660,7 +660,7 @@ O_FreeLocks:
 
 		    /* This is drastic, but I'm having trouble getting rid of */
 		    /* MiniCache vnodes that have the "wrong" type! -JJK */
-		    (void)k_Purge();
+		    (void)k_Purge(fid, 1);
 
 		    break;
 		    }

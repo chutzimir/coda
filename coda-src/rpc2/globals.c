@@ -77,7 +77,7 @@ long RPC2_Perror=1, RPC2_DebugLevel=0, RPC2_Trace = 0; /* see rpc2.h */
 
 long rpc2_RequestSocket;
 RPC2_HostIdent rpc2_LocalHost;
-RPC2_PortalIdent rpc2_LocalPortal;
+RPC2_PortIdent rpc2_LocalPort;
 
 struct TM_Elem *rpc2_TimerQueue;
 struct CBUF_Header *rpc2_TraceBuffHeader = NULL;

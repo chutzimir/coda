@@ -700,10 +700,14 @@ void hdb::ValidateCacheStatus(vproc *vp, int *interrupt_failures, int *statusByt
 	/* Essentially, the else's of the above nested if's */
 	(*interrupt_failures)++;
 	if (g == NULL)
+	{
 	    LOG(0, ("Hoard Walk interrupted -- object missing! <%x.%x.%x>\n", tfid.Volume, tfid.Vnode, tfid.Unique));
+	}
 	else
+	{
 	    LOG(0, ("Hoard Walk interrupted -- object different! <%x.%x.%x>\n", g->fid.Volume, g->fid.Vnode, g->fid.Unique));
-	LOG(0, ("Number of interrupt failures = %d\n", interrupt_failures));
+	}
+	LOG(0, ("Number of interrupt failures = %d\n", *interrupt_failures));
 
 	/* 
 	 * Find some interesting info.  My goal is to see if there 

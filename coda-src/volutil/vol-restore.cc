@@ -129,7 +129,7 @@ long S_VolRestore(RPC2_Handle rpcid, RPC2_String formal_partition, RPC2_String f
     DumpBuffer_t *dbuf;
     char *DumpBuf;
     RPC2_HostIdent hid;
-    RPC2_PortalIdent pid;
+    RPC2_PortIdent pid;
     RPC2_SubsysIdent sid;
     RPC2_BindParms bparms;
     RPC2_Handle cid;
@@ -181,7 +181,7 @@ long S_VolRestore(RPC2_Handle rpcid, RPC2_String formal_partition, RPC2_String f
     }
 
     hid = peerinfo.RemoteHost;
-    pid = peerinfo.RemotePortal;
+    pid = peerinfo.RemotePort;
     sid.Tag = RPC2_SUBSYSBYID;
     sid.Value.SubsysId = VOLDUMP_SUBSYSTEMID;
     bparms.SecurityLevel = RPC2_OPENKIMONO;

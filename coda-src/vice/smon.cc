@@ -81,7 +81,7 @@ extern int nlist(const char*, struct nlist[]);
 /* *****  Private constants  ***** */
 
 #define	DFLT_MONDHOST	"barber.coda.cs.cmu.edu"
-#define	DFLT_MONDPORTAL	1356
+#define	DFLT_MONDPORT	1356
 
 static const int SmonMaxDataSize = 1024 * 1024;
 static const int SmonBindInterval = 300;
@@ -257,7 +257,7 @@ static int GetRawStatistics(SmonStatistics *);
 
 char *SmonHost = DFLT_MONDHOST;	/* may be overridden from command line */
 
-int SmonPortal = DFLT_MONDPORTAL;	/* may be overridden from command line */	    
+int SmonPort = DFLT_MONDPORT;	/* may be overridden from command line */	    
 /*  *****  Smon  *****  */
 
 void SmonInit()
@@ -371,7 +371,7 @@ static void CheckSOE()
 static int ValidateSmonHandle()
 {
     RPC2_HostIdent hid;
-    RPC2_PortalIdent pid;
+    RPC2_PortIdent pid;
     RPC2_SubsysIdent sid;
     RPC2_BindParms bp;
 
@@ -388,8 +388,8 @@ static int ValidateSmonHandle()
     hid.Tag = RPC2_HOSTBYNAME;
     strcpy(hid.Value.Name, SmonHost);
 
-    pid.Tag = RPC2_PORTALBYINETNUMBER;
-    pid.Value.InetPortNumber = htons(SmonPortal);
+    pid.Tag = RPC2_PORTBYINETNUMBER;
+    pid.Value.InetPortNumber = htons(SmonPort);
 
     sid.Tag = RPC2_SUBSYSBYID;
     sid.Value.SubsysId = MondSubsysId;
@@ -403,7 +403,7 @@ static int ValidateSmonHandle()
     long code = RPC2_NewBinding(&hid, &pid, &sid, &bp, &SmonHandle);
 
     LogMsg(1, SrvDebugLevel, stdout, "ValidateSmonHandle: bind to [ %s, %d, %d ] returned (%d, %d)",
-	     SmonHost, SmonPortal, MondSubsysId, code, SmonHandle);
+	     SmonHost, SmonPort, MondSubsysId, code, SmonHandle);
     if (code != 0) {
 	SmonHandle = 0;
 	return(0);

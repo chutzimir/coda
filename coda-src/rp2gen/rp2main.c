@@ -131,6 +131,7 @@ static int32_t h_hack_begin();
 static int32_t h_hack_end();
 static int32_t header();
 static int32_t do_procs();
+static int32_t SetupFiles();
 
 
 main(argc, argv)

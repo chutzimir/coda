@@ -56,6 +56,7 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #ifdef __BSD44__
 #include <machine/endian.h>
 #endif
@@ -328,15 +329,17 @@ long CallBackConnect(RPC2_Handle RPCid, RPC2_Integer SideEffectType,
 		     RPC2_Integer SecurityLevel, RPC2_Integer EncryptionType,
 		     RPC2_Integer AuthType, RPC2_CountedBS *ClientIdent) 
 {
-    /* Get the {host,portal} pair for this call. */
+    /* Get the {host,port} pair for this call. */
     RPC2_PeerInfo thePeer;
     RPC2_GetPeerInfo(RPCid, &thePeer);
     if (thePeer.RemoteHost.Tag != RPC2_HOSTBYINETADDR ||
-	 thePeer.RemotePortal.Tag != RPC2_PORTALBYINETNUMBER)
+	 thePeer.RemotePort.Tag != RPC2_PORTBYINETNUMBER)
 	CHOKE("CallBackConnect: getpeerinfo returned bogus type!");
-    unsigned long host = ntohl(thePeer.RemoteHost.Value.InetAddress);
-    unsigned short portal = ntohs(thePeer.RemotePortal.Value.InetPortNumber);
-    LOG(100, ("CallBackConnect: host = %x, portal = %d\n", host, portal));
+
+    unsigned long host = ntohl(thePeer.RemoteHost.Value.InetAddress.s_addr);
+    unsigned short port = ntohs(thePeer.RemotePort.Value.InetPortNumber);
+    LOG(100, ("CallBackConnect: host = %x, port = %d\n",
+	      inet_ntoa(thePeer.RemoteHost.Value.InetAddress), port));
 
     /* Get the server entry and install the new connid. */
     /* It is NOT a fatal error if the srvent doesn't already exist, because the server may be */

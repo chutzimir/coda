@@ -87,7 +87,7 @@ void rpc2_ClockTick()
     {/* Non terminating LWP */
     struct SL_Entry *sl;
     struct timeval tval;
-    register long timenow;
+    long timenow;
     
     sl = rpc2_AllocSle(OTHER, NULL);
     tval.tv_sec = TICKINTERVAL;
@@ -104,8 +104,8 @@ void rpc2_ClockTick()
 
 	if (RPC2_Trace && rpc2_TraceBuffHeader)
 	    {
-	    register struct TraceElem *te;
-	    register struct te_CLOCKTICK *tea;
+	    struct TraceElem *te;
+	    struct te_CLOCKTICK *tea;
 	    te = (struct TraceElem *)CBUF_NextSlot(rpc2_TraceBuffHeader);
 	    tea = &te->Args.ClockTickEntry;
 	    te->CallCode = CLOCKTICK;

@@ -16,7 +16,7 @@ int portmapper_is_local_connection(RPC2_Handle cid)
 
 	RPC2_GetPeerInfo(cid, &pi);
 
-	ip = ntohl(pi.RemoteHost.Value.InetAddress);
+	ip = ntohl(pi.RemoteHost.Value.InetAddress.s_addr);
 
 	/* 127.0.0.1 */
 #ifdef __CYGWIN32__	

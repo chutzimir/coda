@@ -64,13 +64,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <stdio.h>
 #include "rpc2.h"
 
-int
-mkcall(ClientHandler, ArgCount, HowMany, ConnList, offset, rpcval, args)
-	int (*ClientHandler)();
-	int ArgCount, HowMany;
-	RPC2_Handle ConnList[];
-	long offset, rpcval;
-	int *args;
+int mkcall(long (*ClientHandler)(), int ArgCount, int HowMany,
+	   RPC2_Handle ConnList[], long offset, long rpcval, int *args)
 {
 	switch (ArgCount) {
 	    case 0:

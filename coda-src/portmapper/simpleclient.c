@@ -29,7 +29,7 @@ void main(void)
 {
 	RPC2_BindParms bp;
 	RPC2_HostIdent hident;
-	RPC2_PortalIdent pident;
+	RPC2_PortIdent pident;
 	RPC2_SubsysIdent sident;
 	RPC2_CountedBS cident;
 	long	rc;
@@ -46,7 +46,7 @@ void main(void)
 	hident.Tag = RPC2_HOSTBYNAME;
 	strcpy(hident.Value.Name, "localhost");
 
-	pident.Tag = RPC2_PORTALBYINETNUMBER;
+	pident.Tag = RPC2_PORTBYINETNUMBER;
 	pident.Value.InetPortNumber = ntohs(PORT_rpc2portmap);
 
 	sident.Tag = RPC2_SUBSYSBYID;

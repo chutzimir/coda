@@ -306,7 +306,7 @@ static void ParseCmdline(int argc, char **argv) {
 	    else if (STREQ(argv[i], "-mondhost"))
 		i++, VmonHost = argv[i];
 	    else if (STREQ(argv[i], "-mondportal"))
-		i++, VmonPortal = atoi(argv[i]);
+		i++, VmonPort = atoi(argv[i]);
 	    else if (STREQ(argv[i], "-init"))        /* brain wipe rvm */
 		InitMetaData = 1;
 	    else if (STREQ(argv[i], "-rvmt"))

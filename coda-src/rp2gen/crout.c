@@ -1325,11 +1325,13 @@ static check_new_connection(proc)
     /* Check argument types */
     for (formals = proc->formals, len=0; *formals!=NIL; formals++, len++) ;
     formals = proc->formals;
-    if (len != 5 || formals[0]->type->type->tag != RPC2_INTEGER_TAG ||
-		    formals[1]->type->type->tag != RPC2_INTEGER_TAG ||
-		    formals[2]->type->type->tag != RPC2_INTEGER_TAG ||
-		    formals[3]->type->type->tag != RPC2_INTEGER_TAG ||
-		    formals[4]->type->type->tag != RPC2_COUNTEDBS_TAG) {
+    if (len != 5 ||
+	formals[0]->type->type->tag != RPC2_INTEGER_TAG || /* SideEffectType */
+	formals[1]->type->type->tag != RPC2_INTEGER_TAG || /* SecurityLevel */
+	formals[2]->type->type->tag != RPC2_INTEGER_TAG || /* EncryptionType */
+	formals[3]->type->type->tag != RPC2_INTEGER_TAG || /* AuthType */
+/*	formals[4]->type->type->tag != RPC2_INTEGER_TAG || * BirthTime */
+	formals[4]->type->type->tag != RPC2_COUNTEDBS_TAG) { /* ClientIdent */
 	puts("RP2GEN: bad parameters for NEW_CONNECTION procedure");
 	exit(1);
     }

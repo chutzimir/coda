@@ -144,7 +144,7 @@ long portmap_bind(char *host)
 {
 	RPC2_BindParms bp;
 	RPC2_HostIdent hident;
-	RPC2_PortalIdent pident;
+	RPC2_PortIdent pident;
 	RPC2_SubsysIdent sident;
 	RPC2_CountedBS cident;
 	long	rc;
@@ -154,7 +154,7 @@ long portmap_bind(char *host)
 	hident.Tag = RPC2_HOSTBYNAME;
 	strcpy(hident.Value.Name, host);
 
-	pident.Tag = RPC2_PORTALBYINETNUMBER;
+	pident.Tag = RPC2_PORTBYINETNUMBER;
 	pident.Value.InetPortNumber = ntohs(PORT_rpc2portmap);
 
 	sident.Tag = RPC2_SUBSYSBYID;

@@ -317,7 +317,7 @@ static int Delay_LWP()
 	    dq = &DelayQueues.queues[i];
 
 	    if (dq->numPackets) {		/* Something is waiting. */
-		if ((dq->timer.tv_sec == NULL) && (dq->timer.tv_usec == NULL)) {
+		if ((dq->timer.tv_sec == 0) && (dq->timer.tv_usec == 0)) {
 		    /* Expired event: send packet, set new timer */
 		    packetInfo *pp = dq->delayQueue;
 		    

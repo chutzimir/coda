@@ -1145,7 +1145,7 @@ static void V_BindToServer(char *fileserver, RPC2_Handle *RPCid)
     Sets RPCid to the value of the connection id.    */
 
     RPC2_HostIdent hident;
-    RPC2_PortalIdent pident;
+    RPC2_PortIdent pident;
     RPC2_SubsysIdent sident;
     RPC2_BindParms bparms;
     RPC2_Handle rpcid;
@@ -1153,7 +1153,7 @@ static void V_BindToServer(char *fileserver, RPC2_Handle *RPCid)
 
     hident.Tag = RPC2_HOSTBYNAME;
     strcpy(hident.Value.Name, fileserver);
-    pident.Tag = RPC2_PORTALBYNAME;
+    pident.Tag = RPC2_PORTBYNAME;
     strcpy(pident.Value.Name, "codasrv");
     sident.Tag = RPC2_SUBSYSBYID;
     sident.Value.SubsysId = UTIL_SUBSYSID;

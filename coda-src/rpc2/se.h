@@ -195,7 +195,7 @@ typedef struct SFTPI
     			this many packets in total; -1 (default) says no limit;
 			Caveat user: packet starvation can cause mysterious
 			RPC2_SEFAIL2s */
-    RPC2_PortalIdent Portal;	/* initialization required on server side */
+    RPC2_PortIdent Port;	/* initialization required on server side */
     } SFTP_Initializer;
 
 

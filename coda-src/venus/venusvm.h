@@ -96,7 +96,7 @@ extern void VmonPrint(int);
 
 
 extern char *VmonHost;
-extern int VmonPortal;
+extern int VmonPort;
 
 extern void VmonInit();
 extern void VmonEnqueueSession(VmonSessionId, VolumeId, UserId, VmonAVSG *,

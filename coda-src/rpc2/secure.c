@@ -100,8 +100,8 @@ void rpc2_Encrypt(IN FromBuffer, OUT ToBuffer, IN HowManyBytes, IN WhichKey, IN 
 	     C version below  --- Satya 3/7/1990 */
 
     {
-    register unsigned char *p, *q, *r, *s;
-    register long i;
+    unsigned char *p, *q, *r, *s;
+    long i;
     
     PRE_BeginCritical();
     CODA_ASSERT(EncryptionType == RPC2_XOR);	/* for now */
@@ -162,7 +162,7 @@ long rpc2_TrueRandom()
     */
     {
     struct timeval tp;
-    register long x=0;
+    long x=0;
 
     PRE_BeginCritical();
     while (x == 0)
@@ -188,8 +188,8 @@ long rpc2_NextRandom(StatePtr)
 	NOTE: The numbers are less than 2**30 to make overflow problems unlikely.
     */
     {
-    register char *s;
-    register long x;
+    char *s;
+    long x;
 
     PRE_BeginCritical();
     if (StatePtr == NULL) StatePtr = RNState;	/* it's ok, call by value */
@@ -211,7 +211,7 @@ long rpc2_NextRandom(StatePtr)
 	uses random().
     */
     {
-    register long x;
+    long x;
 
     PRE_BeginCritical();
     while ((x = rand()) > 1073741824);	/* 2**30 */
@@ -222,7 +222,7 @@ long rpc2_NextRandom(StatePtr)
 #endif
 
 
-void rpc2_ApplyE(register RPC2_PacketBuffer *pb,     register struct CEntry *ce)
+void rpc2_ApplyE(RPC2_PacketBuffer *pb,     struct CEntry *ce)
 {
 	switch((int)ce->SecurityLevel) {
 	case RPC2_OPENKIMONO:
@@ -245,7 +245,7 @@ void rpc2_ApplyE(register RPC2_PacketBuffer *pb,     register struct CEntry *ce)
 	pb->Header.Flags = htonl(RPC2_ENCRYPTED | ntohl(pb->Header.Flags));
 }
 
-void rpc2_ApplyD(register RPC2_PacketBuffer *pb, register struct CEntry *ce)
+void rpc2_ApplyD(RPC2_PacketBuffer *pb, struct CEntry *ce)
 {
 
 	switch((int)ce->SecurityLevel) {
