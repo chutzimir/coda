@@ -49,3 +49,11 @@ create index i_resid on rvm_res_entry (vice_index, volume);
 create index i_srvovrflid on srv_overflow (vice_index, start_time,
                                            end_time, cnt);
 create index i_viceid on vice_instances (host, birth_time);
+create index i_adviceid on advice_stats (venus_index, uid);
+create index i_vcbid on vcb_stats (venus_index, volume);
+create index i_iotinfoid on iot_info (venus_index, tid);
+create index i_iotstatsid on iot_stats (venus_index);
+create index i_subtreestatsid on subtree_stats (venus_index);
+create index i_repairid on repair_stats (venus_index);
+create index i_rwsstatsid on rws_stats (venus_index, time, volume_id, rw_sharing_count, disc_read_count, disc_duration);
+

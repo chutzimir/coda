@@ -2120,6 +2120,7 @@ RPC2_String *AppName;
     $ long life_cycle;
     $ long pred_num;
     $ long succ_num;
+    $ long dummy;
 
     LogMsg(100, LogLevel,LogFile, "SpoolIotInfoRecord: Venus = [%x %d]",
 			    Venus->IPAddress, Venus->BirthTime);
@@ -2142,6 +2143,15 @@ RPC2_String *AppName;
     life_cycle = Info->LifeCycle;
     pred_num = Info->PredNum;
     succ_num = Info->SuccNum;
+
+    $ select tid into $dummy from iot_info
+	where venus_index = $venus_index
+	    and tid = $tid;
+
+    if (sqlca.sqlcode != SQLNOTFOUND) {
+	LogMsg(100, LogLevel,LogFile, "SpoolIotInfoRecord: Duplicate IotInfo Record");
+	return 0;
+    }
 
     $ begin work;
     code = CheckSQL("Begin transaction",1);
@@ -2339,12 +2349,12 @@ LocalSubtreeStats *Stats;
     	}
 	
 	$ insert into subtree_stats
-	  (venus_index, time, 
+	  (venus_index, time, subtree_num,
 	   max_subtree_size, avg_subtree_size,
 	   max_subtree_hgt, avg_subtree_hgt,
 	   max_mutation_num, avg_mutation_num)
 	    values 
-	      ($venus_index, $time, 
+	      ($venus_index, $time, $subtree_num,
 	       $max_subtree_size, $avg_subtree_size,
 	       $max_subtree_hgt, $avg_subtree_hgt,
 	       $max_mutation_num, $avg_mutation_num);
@@ -2376,14 +2386,6 @@ RepairSessionStats *Stats;
 	$ long local_view_num;
 	$ long keep_local_num;
 	$ long list_local_num;
-	$ long new_command1_num;
-	$ long new_command2_num;
-	$ long new_command3_num;
-	$ long new_command4_num;
-	$ long new_command5_num;
-	$ long new_command6_num;
-	$ long new_command7_num;
-	$ long new_command8_num;
 	$ long rep_mutation_num;
 	$ long miss_target_num;
 	$ long miss_parent_num;
@@ -2412,14 +2414,6 @@ RepairSessionStats *Stats;
 	local_view_num = Stats->LocalViewNum;
 	keep_local_num = Stats->KeepLocalNum;
 	list_local_num = Stats->ListLocalNum;
-	new_command1_num = Stats->NewCommand1Num;
-	new_command2_num = Stats->NewCommand2Num;
-	new_command3_num = Stats->NewCommand3Num;
-	new_command4_num = Stats->NewCommand4Num;
-	new_command5_num = Stats->NewCommand5Num;
-	new_command6_num = Stats->NewCommand6Num;
-	new_command7_num = Stats->NewCommand7Num;
-	new_command8_num = Stats->NewCommand8Num;
 	rep_mutation_num = Stats->RepMutationNum;
 	miss_target_num = Stats->MissTargetNum;
 	miss_parent_num = Stats->MissParentNum;
@@ -2465,17 +2459,15 @@ RepairSessionStats *Stats;
 	
 	$ insert into repair_stats
 	  (venus_index, time, session_num, commit_num, abort_num,
-	   global_view_num, local_view_num, keep_local_num,
-	   new_command1_num, new_command2_num, new_command3_num, new_command4_num,
-	   new_command5_num, new_command6_num, new_command7_num, new_command8_num,
-	   miss_target_num, miss_parent_num, acl_deny_num,
+	   check_num, preserve_num, discard_num, remove_num,	
+	   global_view_num, local_view_num, keep_local_num, list_local_num,
+	   rep_mutation_num, miss_target_num, miss_parent_num, acl_deny_num,
 	   update_update_num, name_name_num, remove_update_num)
 	    values 
 	      ($venus_index, $time, $session_num, $commit_num, $abort_num,
-	       $global_view_num, $local_view_num, $keep_local_num,
-	       $new_command1_num, $new_command2_num, $new_command3_num, $new_command4_num,
-	       $new_command5_num, $new_command6_num, $new_command7_num, $new_command8_num,
-	       $miss_target_num, $miss_parent_num, $acl_deny_num,
+	       $check_num, $preserve_num, $discard_num, $remove_num,	
+	       $global_view_num, $local_view_num, $keep_local_num, $list_local_num,
+	       $rep_mutation_num, $miss_target_num, $miss_parent_num, $acl_deny_num,
 	       $update_update_num, $name_name_num, $remove_update_num);
 
 	code += CheckSQL("Insert into repair_stats", 1);
@@ -2493,12 +2485,12 @@ ReadWriteSharingStats *Stats;
 {
 	int code = 0;
 	$ long time;
-	$ long inserttime;
 	$ long venus_index;
 	$ long volume_id;
 	$ long rw_sharing_count;
 	$ long disc_read_count;
 	$ long disc_duration;
+	$ long dummy;
 
 	LogMsg(100, LogLevel,LogFile,
 		"SpoolRwsStatsRecord: Venus = [%x %d], Time = %d",
@@ -2512,6 +2504,19 @@ ReadWriteSharingStats *Stats;
 	rw_sharing_count = Stats->RwSharingCount;
 	disc_read_count = Stats->DiscReadCount;
 	disc_duration = Stats->DiscDuration;
+
+	$ select volume_id into $dummy from rws_stats
+	    where venus_index = $venus_index
+	    and time = $time
+	    and volume_id = $volume_id
+	    and rw_sharing_count = $rw_sharing_count
+	    and disc_read_count = $disc_read_count
+	    and disc_duration = $disc_duration;
+
+        if (sqlca.sqlcode != SQLNOTFOUND) {
+	    LogMsg(100, LogLevel,LogFile, "SpoolRwsStatsRecord: Duplicate RwsStats Record\n");
+	    return 0;
+        }
 
         $ begin work;
         code = CheckSQL("Begin transaction",1);
@@ -2532,4 +2537,3 @@ ReadWriteSharingStats *Stats;
 	  $ commit work;
 	return code;
 }
-
