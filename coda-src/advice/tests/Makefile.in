@@ -46,4 +46,6 @@ include $(MAKDIR)/Makeconf
 #test: test.o
 #	$(CC) -o test test.o -L../libutil.a
 
+replacementlog_test: ../replacementlog.o
+
 include $(MAKDIR)/configs/Makerules
