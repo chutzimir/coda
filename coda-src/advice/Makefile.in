@@ -39,7 +39,6 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 EXECUTABLES = advice_srv
-SCRIPTS     = advice_install.sh
 CSBINS      = $(EXECUTABLES)
 CBINS       = $(SCRIPTS)
 # HEADERS     = advice_srv.h console_handler.h counters.h data.h filecopy.h globals.h helpers.h conversions.h miss.h mybstree.h portability_problems.h rpc_setup.h volent.h
