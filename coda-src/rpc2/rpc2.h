@@ -77,7 +77,7 @@ Used in inital packet exchange to verify that the client and server
 speak exactly the same protocol.  Orthogonal to RPC2_VERSION.  We need
 this in the header at the very beginning, else we cannot change packet
 formats in a detectable manner.  */
-#define RPC2_PROTOVERSION 7
+#define RPC2_PROTOVERSION 8
 
 
 /*
