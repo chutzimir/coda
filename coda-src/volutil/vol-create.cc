@@ -294,12 +294,12 @@ static int ViceCreateRoot(Volume *vp)
     vn->delete_me = 0;
     vn->vnodeNumber = (VnodeId)bitNumberToVnodeNumber(0, vLarge);
     vn->volumePtr = vp;
-    bcopy((const void *)vnode, (void *)&vn->disk, sizeof(VnodeDiskObject));
+    memcpy((const void *)&vn->disk, (void *)vnode, sizeof(VnodeDiskObject));
     VN_DCommit(vn);   
     DC_SetDirty(vn->dh, 0);
     VN_PutDirHandle(vn);
 
-    bcopy((const void *)&(vn->disk), (void *) vnode, sizeof(VnodeDiskObject));
+    memcpy((void *) vnode, (const void *)&(vn->disk), sizeof(VnodeDiskObject));
     CODA_ASSERT(vnode->inodeNumber != 0);
     CODA_ASSERT(vnode->uniquifier == 1);
 
