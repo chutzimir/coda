@@ -80,7 +80,9 @@ extern "C" {
 #include <libc.h>
 #include <sysent.h>
 #include <a.out.h>
-
+#if defined(__linux__) && defined(sparc)
+#define getpagesize() PAGE_SIZE
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
