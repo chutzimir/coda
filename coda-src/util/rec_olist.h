@@ -105,6 +105,7 @@ class rec_olist {
 class rec_olist_iterator {
     rec_olist *clist;				    /* current rec_olist */
     rec_olink *clink;				    /* current rec_olink */
+    rec_olink *nlink;				    /* next rec_olink in list */
 
   public:
     rec_olist_iterator(rec_olist&);
