@@ -412,7 +412,7 @@ int repair_parsefile(char *fname, int *hdcount, struct listhdr **hdarray)
 	
     {
     int rc, lineno;
-    char line[100];
+    char line[MAXPATHLEN];
     FILE *rf;
     struct repair rentry;
 
