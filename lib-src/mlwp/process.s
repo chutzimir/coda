@@ -452,7 +452,7 @@ returnto:
 
 #ifdef __STDC__
 
-#ifdef	__FreeBSD_version
+#if	defined(__FreeBSD__) && defined(__ELF__)
 #include <machine/asm.h>
 #define SYMB(x)	ENTRY(x)
 #define EXT(x)	CNAME(x)
