@@ -41,7 +41,7 @@ static char *rcsid = "$Header$";
 *                       RVM log recovery support
 *
 */
-
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/time.h>
 #include "rvm_private.h"

@@ -72,19 +72,11 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/time.h>
 #include <signal.h>
-#if !defined(__GLIBC__)
-#include <sysent.h>
-#endif
 #include <strings.h>
 #include <inodeops.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #ifdef _TIMECALLS_
 #include "histo.h"

@@ -86,10 +86,6 @@ extern "C" {
 #endif
 #include <stdarg.h>
 #include <stdlib.h>
-#if !defined(__GLIBC__)
-#include <sysent.h>
-#include <libc.h>
-#endif
 
 #include <lwp.h>
 #include <timer.h>

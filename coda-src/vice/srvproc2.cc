@@ -84,18 +84,9 @@ extern "C" {
 extern int nlist(const char*, struct nlist[]);
 #endif
 
-#ifdef __MACH__
-#include <sys/dk.h>
-#endif
 #include <strings.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#include <mach.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>

@@ -84,16 +84,16 @@ LIBS=	${LIBVICEERROR}\
 	$(LIBCOMPAT)
 
 updatesrv: updatesrv.o update.server.o ${LIBS}
-	$(CXX) $(LIBLAGS) updatesrv.o update.server.o ${LIBS} -o updatesrv
+	$(CXX) $(LIBFLAGS) updatesrv.o update.server.o ${LIBS} -o updatesrv
 
 updateclnt: updateclnt.o update.client.o  ${LIBS}
-	$(CXX) $(LIBLAGS) updateclnt.o update.client.o  ${LIBS} -o updateclnt
+	$(CXX) $(LIBFLAGS) updateclnt.o update.client.o  ${LIBS} -o updateclnt
 
 updfetch: updfetch.o update.client.o  ${LIBS}
-	$(CXX) $(LIBLAGS) updfetch.o update.client.o  ${LIBS} -o updfetch
+	$(CXX) $(LIBFLAGS) updfetch.o update.client.o  ${LIBS} -o updfetch
 
 updatemon: updatemon.o
-	$(CXX) $(LIBLAGS) updatemon.o -o updatemon
+	$(CXX) $(LIBFLAGS) updatemon.o -o updatemon
 
 
 include $(MAKDIR)/configs/Makerules

@@ -84,10 +84,6 @@ extern "C" {
 #include <stdarg.h>
 #include <assert.h>
 #include <signal.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#include <sysent.h>
-#endif
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>

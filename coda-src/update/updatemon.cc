@@ -61,10 +61,6 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdarg.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#include <sysent.h>
-#endif
 #include <sys/file.h>
 #include <sys/time.h>
 #include <sys/types.h>

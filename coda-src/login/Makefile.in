@@ -67,7 +67,6 @@ LIBS=	${LIBAUTH2}	\
 	${LIBRPC2}	\
 	${LIBOLDLWP} 	\
 	${LIBKERNDEP}	\
-	$(LIBFLAGS)	\
 	$(LIBCOMPAT)
 
 clog: clog.o ${LIBS}

@@ -73,10 +73,6 @@ extern "C" {
 #include <netdb.h>
 #include <sys/types.h>
 #include <netinet/in.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#include <sysent.h>
-#endif
 
 #ifdef __cplusplus
 }

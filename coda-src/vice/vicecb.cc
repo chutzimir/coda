@@ -74,10 +74,6 @@ extern "C" {
 
 #include <stdio.h>
 
-#if !defined(__GLIBC__)
-#include <libc.h>
-#include <sysent.h>
-#endif
 
 #include <rpc2.h>
 #include <sys/types.h>

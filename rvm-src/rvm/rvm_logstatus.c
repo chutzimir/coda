@@ -42,6 +42,7 @@ static char *rcsid = "$Header$";
 *
 */
 
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/errno.h>
 #include "rvm_private.h"

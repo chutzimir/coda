@@ -58,9 +58,6 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <netinet/in.h>
-#if !defined(__GLIBC__)
-#include <sysent.h>
-#endif
 #include <struct.h>
 #include <inodeops.h>
 

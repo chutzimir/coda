@@ -86,11 +86,6 @@ extern "C" {
 #include <inodeops.h>
 #endif
 
-#if !defined(__GLIBC__)
-#include <libc.h>
-#include <sysent.h>
-#endif
-
 #include <lwp.h>
 #include <lock.h>
 #include <util.h>

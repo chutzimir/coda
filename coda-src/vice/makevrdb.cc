@@ -51,7 +51,6 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/file.h>
 #include <libc.h>
-#include <sysent.h>
 
 #ifdef __cplusplus
 }

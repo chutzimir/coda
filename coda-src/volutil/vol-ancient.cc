@@ -42,9 +42,6 @@ extern "C" {
 
 #include <sys/types.h>
 #include <sys/errno.h>
-#if !defined(__GLIBC__)
-#include <sysent.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>
