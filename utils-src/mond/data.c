@@ -45,9 +45,8 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-//#include <stdlib.h>
 #include "coda_assert.h"
-#include <libc.h>
+#include <stdlib.h>
 #include "lock.h"
 
 #ifdef __cplusplus

@@ -54,7 +54,7 @@ extern "C" {
 #include <sys/time.h>
 #include <sys/errno.h>
 #include <netinet/in.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <netdb.h>
 #include <signal.h>
 #include <stdio.h>

@@ -66,17 +66,12 @@ extern "C" {
 #include <sys/stat.h>
 #include <stdio.h>
 #include <sys/file.h>
-
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

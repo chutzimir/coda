@@ -68,10 +68,7 @@ static char *rcsid = "$Header$";
 #endif  /* c_plusplus || __STDC__ */
 #endif  /* C_ARGS */
 
-/* define bool, TRUE, and FALSE if libc.h hasn't been included
-   these definitions will not be repeated in libc.h if it is
-   included later.
-*/
+/* define bool, TRUE, and FALSE */
 
 #ifndef TRUE
 #define TRUE 1

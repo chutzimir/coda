@@ -50,15 +50,8 @@ extern "C" {
 #include <sys/stat.h>
 #include "coda_assert.h"
 #include <stdio.h>
-
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-
 #include <struct.h>
 #include <inodeops.h>
 #include <rpc2.h>

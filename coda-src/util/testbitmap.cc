@@ -41,9 +41,6 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef __MACH__
-#include <libc.h>
-#endif /* __MACH__ */
    
 #ifdef __cplusplus
 }

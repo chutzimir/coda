@@ -43,7 +43,7 @@ extern "C" {
 #include <sys/file.h>
 #include <sys/time.h>
 #include <sys/errno.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
 #include <netinet/in.h>

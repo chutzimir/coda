@@ -76,12 +76,13 @@ extern "C" {
 #include <sys/time.h>
 #include <sys/ioctl.h>
 #include <sys/viceioctl.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <sysent.h>
 #include <a.out.h>
 #if defined(__linux__) && defined(sparc)
 #define getpagesize() PAGE_SIZE
 #endif
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -52,18 +52,13 @@ extern "C" {
 #include <sys/time.h>
 #include <string.h>
 #include <stdio.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <struct.h>
-
 #include <lwp.h>
 #include <lock.h>
 #include <rvmlib.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

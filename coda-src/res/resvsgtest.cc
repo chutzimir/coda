@@ -46,7 +46,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <strings.h>
 #include <netdb.h>
 

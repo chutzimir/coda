@@ -50,7 +50,7 @@ static char *rcsid = "$Header$";
 #include <sys/time.h>
 #include <strings.h>
 #include <errno.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <lwp.h>
 #include <rpc2.h>

@@ -77,13 +77,8 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #ifdef __cplusplus
 }

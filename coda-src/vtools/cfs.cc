@@ -44,13 +44,8 @@ extern "C" {
 #include <stdio.h>
 #include <errno.h>
 #include <sys/ioctl.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <strings.h>
 #include "coda_assert.h"
 #include <sys/socket.h>

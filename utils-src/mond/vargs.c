@@ -41,7 +41,7 @@ extern "C" {
 #include <signal.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include <libc.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 }

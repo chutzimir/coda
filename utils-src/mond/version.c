@@ -38,7 +38,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-#include <libc.h>
+#include <stdlib.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <sys/socket.h>

@@ -65,16 +65,8 @@ extern "C" {
 extern FILE *_findiop();
 #include <stdarg.h>
 #include <inodeops.h>
-#ifdef __MACH__
-extern int execvp(const char *, const char **);
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-
-
 
 #include <cfs/coda.h>
 

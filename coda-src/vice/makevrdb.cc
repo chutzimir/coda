@@ -50,7 +50,7 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/file.h>
-#include <libc.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 }

@@ -69,16 +69,11 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/inode.h>
 #include <sys/time.h>
-#ifndef	__linux__
+#ifdef __BSD44__
 #include <fstab.h>
 #endif
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include "coda_assert.h"
 #include <lwp.h>
 #include <lock.h>

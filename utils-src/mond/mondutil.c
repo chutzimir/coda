@@ -41,7 +41,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <stdio.h>
 #include <mach.h>

@@ -43,12 +43,7 @@ extern "C" {
 #include "y.tab.h"
 #include "asr.h"
 #include <stdio.h>
-#ifdef __MACH__
-#include <libc.h>
-#endif
-#if defined(__linux__) || defined(__BSD44__)
 #include <stdlib.h>
-#endif /* __linux__ || __BSD44__ */
 extern int yylook();
 
 #define YYERRCODE	256		/* gross hack to simulate error */

@@ -53,16 +53,8 @@ extern "C" {
 #include <stdio.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#ifdef __MACH__
-#include <sys/inode.h>
-#endif /* __MACH__ */
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <struct.h>
 
 #include <lwp.h>

@@ -32,22 +32,8 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-
-
-
-
-
-
-
-
 #include <stdio.h>
-#ifdef __MACH__
-#include <libc.h>
-#include <sysent.h>
-#endif /* __MACH__ */
-#ifdef __BSD44__
 #include <stdlib.h>
-#endif /* __BSD44__ */
 
 #include <math.h>
 #include "coda_assert.h"

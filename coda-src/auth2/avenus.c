@@ -76,26 +76,13 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#ifdef __MACH__
-#include <sys/viceioctl.h>
-#else
-#ifdef __linux__
-#include <sys/time.h> /* for timespec */
-#endif 
 #include <cfs/coda.h>
 #include <pioctl.h>
-#endif 
 #include <sys/file.h>
 #include <errno.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-
 
 #ifdef __cplusplus
 }

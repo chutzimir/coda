@@ -40,7 +40,7 @@ extern "C" {
 
 #include <sys/file.h>
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <errno.h>
 
 #ifdef __cplusplus

@@ -260,7 +260,7 @@ void CheckVSGDB() {
 
 #include "vsg.h"
 #include "errno.h"
-#include <libc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <sysent.h>
 #include "file.h"

@@ -48,7 +48,7 @@ extern "C" {
 
 #include <struct.h>
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 }

@@ -49,7 +49,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/time.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <netdb.h>
 #include <stdio.h>
 #include "coda_assert.h"

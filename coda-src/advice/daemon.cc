@@ -45,15 +45,13 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include "coda_assert.h" 
 
 #include <lwp.h>
 #include <timer.h>
-#if defined(__FreeBSD__) && !defined(__GLIBC__)
-#include <libc.h>
-#endif
 
 #ifdef __cplusplus
 }

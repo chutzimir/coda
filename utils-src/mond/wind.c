@@ -41,7 +41,7 @@ extern "C" {
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/file.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <sysent.h>
 #include <stdio.h>
 #include "coda_assert.h"
