@@ -260,7 +260,7 @@ PRIVATE void ExaminePacket(whichPacket, whichHost, whichPortal)
     if (pb->Header.Opcode == SFTP_NAK)
 	{
 	sftp_Recvd.Naks++;
-	say(0, SFTP_DebugLevel, ("SFTP_NAK received\n"));
+	say(0, SFTP_DebugLevel, "SFTP_NAK received\n");
 	sftp_SetError(sfp, ERROR);
 	SFTP_FreeBuffer(&pb);
 	return;	
@@ -274,7 +274,7 @@ PRIVATE void ExaminePacket(whichPacket, whichHost, whichPortal)
     /* SANITY CHECK: make sure this pertains to the current RPC call. */
     if (pb->Header.ThisRPCCall != sfp->ThisRPCCall)
 	{
-	say(0, SFTP_DebugLevel, ("Old SFTP packet RPC %ld, expecting RPC %ld\n", pb->Header.ThisRPCCall, sfp->ThisRPCCall));
+	say(0, SFTP_DebugLevel, "Old SFTP packet RPC %ld, expecting RPC %ld\n", pb->Header.ThisRPCCall, sfp->ThisRPCCall);
 	SFTP_FreeBuffer(&pb);
 	return;
 	}
@@ -290,7 +290,7 @@ PRIVATE void ExaminePacket(whichPacket, whichHost, whichPortal)
 	    long r_portal = ntohs(sfp->PInfo.RemotePortal.Value.InetPortNumber);
 	    if (s_portal != r_portal + 1)
 		{
-		say(9, SFTP_DebugLevel, ("Bad Peer Portal: 0x%lx\tExpecting: 0x%lx\n", s_portal, r_portal + 1));
+		say(9, SFTP_DebugLevel, "Bad Peer Portal: 0x%lx\tExpecting: 0x%lx\n", s_portal, r_portal + 1);
 		SFSendNAK(pb->Header.LocalHandle, whichHost, whichPortal);
 		BOGUS(pb);
 		return;
@@ -422,7 +422,7 @@ PRIVATE void SFSendNAK(remoteHandle, whichHost, whichPortal)
     RPC2_PacketBuffer *nakpb;
 
     sftp_Sent.Naks++;
-    say(0, SFTP_DebugLevel, ("SFSendNAK\n"));
+    say(0, SFTP_DebugLevel, "SFSendNAK\n");
     SFTP_AllocBuffer(0, &nakpb);
     nakpb->Prefix.LengthOfPacket = sizeof(struct RPC2_PacketHeader);
     nakpb->Header.ProtoVersion = SFTPVERSION;

@@ -58,7 +58,9 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 #ifdef RPC2DEBUG
 #include <stdio.h>
-#include <strings.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 #include "cbuf.h"
 
 #ifdef CMUCS

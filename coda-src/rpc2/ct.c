@@ -82,7 +82,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 #define TICKINTERVAL 60		/* in seconds */
 
-rpc2_ClockTick()
+void rpc2_ClockTick()
     {/* Non terminating LWP */
     struct SL_Entry *sl;
     struct timeval tval;
@@ -99,7 +99,7 @@ rpc2_ClockTick()
 
 	LWP_WaitProcess((char *)&sl);
 	timenow = rpc2_time();
-	say(0, RPC2_DebugLevel, ("Clock Tick at %ld\n",  timenow));
+	say(0, RPC2_DebugLevel, "Clock Tick at %ld\n",  timenow);
 
 	if (RPC2_Trace && rpc2_TraceBuffHeader)
 	    {

@@ -70,7 +70,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "se.h"
 
 
-/* Contains the storage for all globals used in rpc2; see rpc2.private.h for descriptions */
+/* Contains the storage for all globals used in rpc2; see
+   rpc2.private.h for descriptions */
 
 long RPC2_Perror=1, RPC2_DebugLevel=0, RPC2_Trace = 0; /* see rpc2.h */
 
@@ -139,7 +140,4 @@ long rpc2_errno;
 
 /* Obsolete: purely for compatibility with /vice/file */
 long rpc2_TimeCount, rpc2_CallCount, rpc2_ReqCount, rpc2_AckCount, rpc2_MaxConn;
-
-/* 1 if system is 4.3, 0 if not (4.2) */
-int rpc2_43bsd;
 

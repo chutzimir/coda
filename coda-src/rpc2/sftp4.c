@@ -198,10 +198,9 @@ sftp_TraceStatus(sEntry, filenum, linenum)
 #endif RPC2DEBUG
     }
 
-sftp_TraceBogus(filenum, linenum)
-    long filenum; /* 1 ==> sftp1.c, 2 ==> sftp2.c, .... */
-    long linenum;
-    {
+/* 1 ==> sftp1.c, 2 ==> sftp2.c, .... */
+void sftp_TraceBogus(long filenum, long linenum)
+{
 #ifdef RPC2DEBUG
     struct TraceEntry *te;
 
@@ -283,7 +282,7 @@ sftp_DumpTrace(fName)
     }
 
 
-sftp_InitTrace()
+void sftp_InitTrace()
     {
 #ifdef RPC2DEBUG
     TraceBuf = (struct CBUF_Header *)CBUF_Init(sizeof(struct  TraceEntry), TRACELEN, "SFTP Trace");

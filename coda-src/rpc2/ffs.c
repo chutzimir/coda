@@ -55,7 +55,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-
+/* return the position of the first big in x which is set */
 long ffs(x)
     register long x;
     {
