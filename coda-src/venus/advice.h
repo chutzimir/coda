@@ -34,7 +34,6 @@ static char *rcsid = "$Header$";
 
 
 
-
 /*
  *
  * Specification of the Venus Advice Monitor enumerated types.
@@ -46,12 +45,12 @@ static char *rcsid = "$Header$";
 
 enum AdviceState {AdviceInvalid, AdviceDying, AdviceWaiting, AdviceValid};
 
-enum PseudoAdvice {PseudoUnknown=-1, 
-		   PseudoFetch, 
-		   PseudoHOARDimmedFETCH, 
-		   PseudoHOARDdelayFETCH, 
-		   PseudoTimeout};
-const int MaxPseudoAdvice = 3;
+enum ReadDiscAdvice {ReadDiscUnknown=-1, 
+		     ReadDiscFetch, 
+		     ReadDiscHOARDimmedFETCH, 
+		     ReadDiscHOARDdelayFETCH, 
+		     ReadDiscTimeout};
+const int MaxReadDiscAdvice = 3;
 
 enum WeaklyAdvice {WeaklyUnknown=-1,
 		   WeaklyFetch,
