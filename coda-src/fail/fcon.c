@@ -48,7 +48,7 @@ static char *rcsid = "$Header$";
   RPC2 interface
 
  */
-
+#include <sys/types.h>
 #include <stdio.h>
 #include <assert.h>
 #include <lwp.h>
