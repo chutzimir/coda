@@ -317,7 +317,7 @@ CheckResult:
 	    if (locked) CML.UnLockObjs(tid);
 
 	    switch(code) {
-	    case ESUCCESS:
+	    case 0 : 
 	    case EALREADY:
 		/* Commit logged mutations upon successful replay at server. */
 		CML.IncCommit(&UpdateSet, tid);
@@ -516,7 +516,7 @@ CheckResult:
      * out from under us.
      */
     switch (code) {
-    case ESUCCESS:
+    case 0:
     case EALREADY:
 	if (m->DoneSending()) {
 	    /* Commit logged mutations upon successful replay at server. */

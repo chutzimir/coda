@@ -347,10 +347,6 @@ extern int vnode_allocs;
 extern int vnode_deallocs;
 
 
-/* probably not used */
-#define   VTEXT           0x0002
-
-
 /* Venus cnodes are a small placeholder structure to pass arguments
    into the output buffer back to the kernel without clobbering the
    inputbuffer, which is the same pointer as the output buffer.

@@ -76,11 +76,6 @@ extern "C" {
 #define O_BINARY 0
 #endif
 
-/*  *****  New error codes.  *****  */
-#if defined(__linux__) || defined(__BSD44__)
-#define ESUCCESS	0	/* MACH'ism, it appears */
-#endif /* __linux__ ||__BSD44__ */
-
 #define	EMULTRSLTS	ETOOMANYREFS	    /* external */
 #define	ESYNRESOLVE	155		    /* internal */
 #define	EASYRESOLVE	156		    /* internal */
