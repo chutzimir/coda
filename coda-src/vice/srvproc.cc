@@ -2530,8 +2530,10 @@ void ChangeDiskUsage(Volume *volptr, int length)
   ValidateParms: Validate the parameters of the RPC
 */
 int ValidateParms(RPC2_Handle RPCid, ClientEntry **client,
-		   int ReplicatedOp, VolumeId *Vidp, RPC2_CountedBS *PiggyBS) {
+		   int ReplicatedOp, VolumeId *Vidp, RPC2_CountedBS *PiggyBS) 
+{
     int errorCode = 0;
+    VolumeId GroupVid;
 
     /* 1. Apply PiggyBacked COP2 operations. */
     if (ReplicatedOp)
@@ -2549,14 +2551,12 @@ int ValidateParms(RPC2_Handle RPCid, ClientEntry **client,
     }
 
     /* 3. Translate group to read/write volume id. */
-    if (ReplicatedOp) {
-	VolumeId GroupVid = *Vidp;
-	if (!XlateVid(Vidp)) {
-	    SLog(1, "ValidateParms: failed to translate VSG %x", GroupVid);
-	    return(EINVAL);
-	}
-	SLog(10, "ValidateParms: %x --> %x", GroupVid, *Vidp);
-    }
+    GroupVid = *Vidp;
+	    
+    if ( XlateVid(Vidp) )
+	    SLog(10, "ValidateParms: %x --> %x", GroupVid, *Vidp);
+    else 
+	    SLog(10, "ValidateParms: using replica %s", *Vidp);
 
     return(0);
 }
