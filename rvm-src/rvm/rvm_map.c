@@ -48,6 +48,10 @@ static char *rcsid = "$Header$";
 #include <libc.h>
 #endif
 #include <sys/file.h>
+#if defined(__linux__) && defined(sparc)
+#include <asm/page.h>
+#define getpagesize() PAGE_SIZE
+#endif
 #if defined(hpux) || defined(__hpux)
 #include <hp_bsd.h>
 #endif /* hpux */
