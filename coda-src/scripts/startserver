@@ -49,6 +49,6 @@ rm -f /vice/srv/CRASH
 # length of the file or device holding the RVM data segment.
 # These parameters are taken from /vice/srv.conf
 
-srv $* -nodumpvm `grep '^\-rvm ' /vice/srv.conf`
+srv $* -trunc 5 -nosalvageonshutdown -nodumpvm `grep '^\-rvm ' /vice/srv.conf`
 
 rm -f /vice/srv/pid

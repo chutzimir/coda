@@ -341,8 +341,14 @@ extern long FidToNodeid(ViceFid *);
 
 /* vnodes in BSD44 don't seem to store effective user & group ids.  So just
    coerce everything to uid */
+
+#ifdef __linux__
+#define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
+#define	CRTORUID(cred)	((vuid_t)((cred).cr_fsuid))
+#else
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
 #define	CRTORUID(cred)	((vuid_t)((cred).cr_uid))
+#endif
 
 #define	FTTOVT(ft)	((ft) == (int)File ? C_VREG :\
 			 (ft) == (int)Directory ? C_VDIR :\

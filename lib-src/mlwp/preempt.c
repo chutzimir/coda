@@ -64,13 +64,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 char PRE_Block = 0;		/* used in lwp.c and process.s */
 
-#ifdef __CYGWIN32__
-#define ITIMER_REAL 0
-struct itimerval {
-    struct timeval it_interval;
-    struct timeval it_value;
-};
-#endif
 
 /* run the scheduler unless we are in a critical region */
 PRIVATE void AlarmHandler(int sig)

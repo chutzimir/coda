@@ -40,7 +40,6 @@ include $(MAKDIR)/Makeconf
 
 EXECUTABLES = blurb
 SCRIPTS     = blurb-ansify
-HEADERS     = blurb.doc 
 
 LIBS = $(LIBUTIL)
 
