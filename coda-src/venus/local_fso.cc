@@ -41,6 +41,7 @@ extern "C" {
 #endif __cplusplus
 #include <stdio.h>
 #include <struct.h>
+#include <sys/types.h>
 #include <netinet/in.h>
 #include <codadir.h>
 
