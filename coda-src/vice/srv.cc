@@ -1780,8 +1780,18 @@ static void InitializeServerRVM(void *initProc,char *name)
 	    LogMsg(0, 0, stdout, 
 		   "Setting Rvm Truncate threshhold to %d.\n", _Rvm_Truncate); 
 	    options->truncate = _Rvm_Truncate;				    
-	} 								    
-	sbrk((void *)(0x20000000 - (int)sbrk(0))); /* for garbage reasons. */		    
+	}
+#ifdef	__linux__
+	sbrk((void *)(0x20000000 - (int)sbrk(0))); /* for garbage reasons. */
+#elif	defined(__FreeBSD__)
+	sbrk((void *)(0x50000000 - (int)sbrk(0))); /* for garbage reasons. */
+#elif	defined(__NetBSD__) && NetBSD1_3
+	sbrk((void *)(0x50000000 - (int)sbrk(0))); /* for garbage reasons. */
+#elif	defined(__NetBSD__) && NetBSD1_2
+	sbrk((void *)(0x20000000 - (int)sbrk(0))); /* for garbage reasons. */
+#else
+	some mistake or other
+#endif
         err = RVM_INIT(options);                   /* Start rvm */           
         if ( err == RVM_ELOG_VERSION_SKEW ) {                                
             LogMsg(0, 0, stdout, 
