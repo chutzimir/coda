@@ -55,7 +55,7 @@ fi
 
 # Initialize local variables
 VOLNAME=$1
-SERVERS=()
+SERVERS=
 NSERVERS=0
 MAXSERVERS=8
 PARTITION=$3
