@@ -105,6 +105,9 @@ int main(int argc, char *argv[]) {
 	exit(-1);
     }
 
+    sprintf(cp, "VID=%lu ", clear.ViceId);
+    cp+=strlen(cp);
+
     /* Check for expiration. */
     if (clear.EndTimestamp <= time(0))
 	sprintf(cp, "[>> Expired <<]\n");
