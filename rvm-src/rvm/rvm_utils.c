@@ -678,6 +678,7 @@ log_t *make_log(log_dev_name,retval)
         log->trans_hdr.struct_id = trans_hdr_id;
         log->rec_end.struct_id = rec_end_id;
         log->log_wrap.struct_id = log_wrap_id;
+        log->log_wrap.struct_id2 = log_wrap_id;  /* for scan_wrap_reverse() */
         log->log_wrap.rec_length = sizeof(log_wrap_t);
 
         /* init recovery buffer and dictionary */

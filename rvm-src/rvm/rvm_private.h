@@ -60,7 +60,7 @@ static char *rcsid = "$Header$";
 #include "rvm_statistics.h"
 
 /* note: Log Version must change if Statistics Version changed */
-#define RVM_LOG_VERSION     "RVM Log Version  1.3 7 Mar 1994"
+#define RVM_LOG_VERSION     "RVM Log Version  1.4 Oct 17, 1997 "
 
 /* general purpose macros */
 
@@ -738,6 +738,7 @@ typedef struct
     rvm_length_t    rec_length;         /* own size, so same as log_rec_head_t */
     struct timeval  timestamp;          /* timestamp of wrap around */
     rvm_length_t    rec_num;            /* record number of entry */
+    struct_id_t     struct_id2;         /* for scan_wrap_reverse()! */
     }
 log_wrap_t;
 
