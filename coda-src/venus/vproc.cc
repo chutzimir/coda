@@ -805,20 +805,20 @@ vproc *vproc_iterator::operator()() {
 
 
 void va_init(struct vattr *vap) {
-    vap->va_mode = (u_short)-1;
-    vap->va_uid = (short)-1;
-    vap->va_gid = (short)-1;
-    vap->va_fsid = (long)-1;
-    VA_ID(vap) = (long)-1;
-    VA_ATIME_1(vap) = (long)-1;
-    VA_ATIME_2(vap) = (long)-1;
-    VA_STORAGE(vap) = (long)-1;
-    vap->va_nlink = (short)-1;
-    vap->va_size = (u_long)-1;
-    vap->va_blocksize = (long)-1;
+    vap->va_mode = VA_IGNORE_MODE;
+    vap->va_uid = VA_IGNORE_UID;
+    vap->va_gid = VA_IGNORE_GID;
+    vap->va_fsid = VA_IGNORE_FSID;
+    VA_ID(vap) = VA_IGNORE_ID;
+    VA_ATIME_1(vap) = VA_IGNORE_TIME1;
+    VA_ATIME_2(vap) = VA_IGNORE_TIME2;
+    VA_STORAGE(vap) = VA_IGNORE_STORAGE;
+    vap->va_nlink = VA_IGNORE_NLINK;
+    vap->va_size = VA_IGNORE_SIZE;
+    vap->va_blocksize = VA_IGNORE_BLOCKSIZE;
     vap->va_mtime = vap->va_atime;
     vap->va_ctime = vap->va_atime;
-    vap->va_rdev = (dev_t)-1;
+    vap->va_rdev = VA_IGNORE_RDEV;
 }
 
 

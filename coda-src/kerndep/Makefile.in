@@ -48,12 +48,14 @@ CXXFLAGS := $(CFLAGS)
 libuifs.a: ifsulib.o
 libcodasys.a:  setpag.o pioctl.o
 
-ifeq ($(SYS), i386_linux2)
+ifneq ($(SHORTSYS), mach)
+# On Linux and NetBSD, convert pioctl() to ioctl()
 setpag.o: setpag.c
 	$(CC) $(CFLAGS) -c $<
 pioctl.o: pioctl.c
 	$(CC) $(CFLAGS) -c $<
 else
+# Actually, I'm not sure even Mach uses pioctl.s ... (Satya 1/9/97)
 setpag.o: setpag.s
 pioctl.o: pioctl.s
 endif

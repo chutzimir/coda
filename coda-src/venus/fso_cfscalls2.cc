@@ -495,6 +495,8 @@ int fsobj::Access(long rights, int modes, vuid_t vuid) {
 
 
 /* Embed the processor/system name in the code for @cputype/@sys expansion. */
+
+#ifdef __MACH__
 #if defined(romp) || defined(ibm032) || defined(ibmrt)
 static char cputype[] = "ibm032";
 static char systype[] = "rt_mach";
@@ -515,6 +517,21 @@ static char systype [] = "pmax_mach";
 static char cputype [] = "i386";
 static char systype [] = "i386_mach";
 #endif
+#endif /* __MACH__ */
+
+#ifdef __NetBSD__
+#ifdef i386
+static char cputype [] = "i386";
+static char systype [] = "i386_nbsd1";
+#endif /* i386 */
+#endif /* __NetBSD__ */
+
+#ifdef __linux__
+#ifdef i386
+static char cputype [] = "i386";
+static char systype [] = "i386_linux";
+#endif /* i386 */
+#endif /* __linux__ */
 
 /* local-repair modification */
 /* inc_fid is an OUT parameter which allows caller to form "fake symlink" if it desires. */

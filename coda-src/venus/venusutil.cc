@@ -862,29 +862,26 @@ void StatsInit() {
 }
 
 
-/* The logic below seems warped, do I understand that we need 
-   a three processor machine with a mips, sparc and a sun??
-   pjb
-   */
 void ProfInit() {
-#ifndef	__linux__
-#if !defined(mips) && !defined(sparc) && !defined(sun4)
-    moncontrol(0);   /* not available on mips, sun/sparc */
-#endif
-#endif
+    LOG(0, ("ProfInit(): profiling is broken; fix it!"));
+    return;
+#if undef 
+    /* This code used to work once upon a time */
+    moncontrol(0);
     if (ProfBoot) ToggleProfiling();
+#endif /* undef */
 }
 
 
 void ToggleProfiling() {
+    LOG(0, ("ToggleProfiling(): profiling is broken; fix it!"));
+    return;
+#ifdef undef
+    /* This is the code that used to work */
     Profiling = 1 - Profiling;
-#ifndef	__linux__
-#if !defined(mips) && !defined(sparc) && !defined(sun4)
     moncontrol(Profiling);
-#endif
-#endif
-
     LOG(0, ("Profiling is now %s\n", Profiling ? "on" : "off"));
+#endif /* undef */
 }
 
 void ToggleMallocTrace() {
