@@ -51,8 +51,8 @@ if [ -f /vice/bin/srv.new ]; then
 fi
 
 # Remove outdated logfiles
-rm /vice/srv/SrvErr
-rm /vice/srv/SrvLog-7
+rm -f /vice/srv/SrvErr
+rm -f /vice/srv/SrvLog-7
 rm -f /vice/src/CRASH
 
 # pass on arguments to srv
