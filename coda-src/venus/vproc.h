@@ -248,7 +248,7 @@ class vproc : public olink {
     struct uarea u;
     unsigned idle : 1;
     unsigned interrupted : 1;
-    unsigned prefetch : 1;	/* For SETS-style prefetching */
+    unsigned removed_obsolete_prefetch : 1;
     struct vcbevent *ve;
 
     vproc(char *, PROCBODY, vproctype, int =VPROC_DEFAULT_STACK_SIZE, int =LWP_NORMAL_PRIORITY);
