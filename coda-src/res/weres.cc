@@ -49,7 +49,11 @@ extern "C" {
 #include <camlib/camlib_prefixed.h>
 #include <cam/_setjmp.h>
 #endif CAMELOT
+#ifdef __MACH__
 #include <cthreads.h>
+#else
+#include <dummy_cthreads.h>
+#endif
 #include <rpc2.h>
 
 #ifdef __cplusplus
