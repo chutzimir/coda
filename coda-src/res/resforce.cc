@@ -503,7 +503,7 @@ int ObtainDirOps(struct getdiropParm *gdop, char *name,
     VPutVnode((Error *)&error, vptr);
     assert(error == 0);
 
-    assert(strlen(name) < (DIROPNAMESIZE - 1));
+    assert(strlen(name) < (DIROPNAMESIZE));
     diroplink	*direntry = new diroplink(op, vnode, unique, name);
 
     /* now insert the entry into the list */
