@@ -56,9 +56,6 @@ extern "C" {
 #include <string.h>
 #include <sys/param.h>
 #include <sys/types.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <sys/file.h>
 #include <sys/stat.h>
 

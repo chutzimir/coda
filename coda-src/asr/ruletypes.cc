@@ -43,13 +43,11 @@ extern "C" {
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <dirent.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <sys/wait.h>
 #include <strings.h>
 #include <assert.h>
@@ -57,9 +55,7 @@ extern "C" {
 #include <venusioctl.h>
 #include <vcrcommon.h>
 #include "asr.h" 
-#ifndef __BSD44__
-#include <dirent.h>
-#endif
+
 extern "C" void path(char *, char *, char *);
 extern int wildmat(char *text, char *pattern);
 

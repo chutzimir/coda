@@ -46,9 +46,6 @@ extern "C" {
 #include <stdlib.h>        
 #include <sys/param.h>
 #include <unistd.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <strings.h>
 #include <vcrcommon.h>
 

@@ -56,36 +56,18 @@ else
   INITDIR	  = ${prefix}/etc
 endif
 
-LOGSCRIPTS := logbandwidth logcmls logreintegration
-
 # all scripts
 SCRIPTS := $(VENUS-SCRIPTS) $(BACKUP-SCRIPTS) $(INIT-SCRIPTS)\
-	   $(VOL-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCRIPTS) $(LOGSCRIPTS)
+	   $(VOL-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCRIPTS)
 
 # init scripts are installed here
 BINDIR := $(INITDIR)
 
-CBINS = $(CINIT-SCRIPTS) $(LOGSCRIPTS)
+CBINS = $(CINIT-SCRIPTS)
 CSBINS = $(VENUS-SCRIPTS)
 
 SBINS = $(SINIT-SCRIPTS)
 SSBINS = $(BACKUP-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCRIPTS) $(VOL-SCRIPTS) $(VICE-SETUP)
-
-# This is mainly to get these cleaned up during `make clean'
-EXECUTABLES = logbandwidth logcmls logreintegration
-TESTS = translate.sed
-
-logbandwidth: logbandwidth.in translate.sed
-	sed -f translate.sed  $< > $@
-
-logcmls: logcmls.in translate.sed
-	sed -f translate.sed  $< > $@
-
-logreintegration: logreintegration.in translate.sed
-	sed -f translate.sed  $< > $@
-
-translate.sed: Makefile
-	echo "s%+TIXWISH+%@TIXWISH@%g" >> $@
 
 include $(TOPDIR)/configs/Makerules
 

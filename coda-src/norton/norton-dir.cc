@@ -38,14 +38,15 @@ static char *rcsid = "$Header$";
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
-#include <netinet/in.h>
-
 #include <stdio.h>
 #include <strings.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>    
 #include <codadir.h>
+
+#include <netinet/in.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

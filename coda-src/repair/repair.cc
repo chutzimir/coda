@@ -42,9 +42,6 @@ extern "C" {
 #include <assert.h>
 #include <parser.h>
 #include <sys/types.h>
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
 #include <sys/file.h>
 #include <sys/param.h>
 #include <netinet/in.h>

@@ -60,9 +60,6 @@ extern "C" {
 #include <sys/wait.h> 
 #include <sys/stat.h>
 #include <sys/file.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <pwd.h>
 #include <errno.h>
 #include <strings.h>

@@ -89,14 +89,10 @@ extern "C" {
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
 
 #include <unistd.h>
 #include <stdlib.h>
 
-#include <dirent.h>
 #include <stdio.h>
 
 #include <lwp.h>

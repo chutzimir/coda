@@ -73,7 +73,6 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/stat.h>
-#include <sys/dir.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
 #include <sys/viceioctl.h>

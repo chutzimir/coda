@@ -49,7 +49,6 @@ extern "C" {
 #endif __cplusplus
 
 #include <sys/types.h>
-#include <sys/dir.h>
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/time.h>

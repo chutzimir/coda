@@ -52,7 +52,7 @@ extern "C" {
 
 #include <struct.h>
 #ifndef __CYGWIN32__
-#include <sys/dir.h>
+#include <dirent.h>
 #endif
 
 #include <lwp.h>

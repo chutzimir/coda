@@ -51,9 +51,6 @@ extern "C" {
 
 #include <sys/types.h>
 #include <stdio.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <sys/file.h>
 
 #include <string.h>

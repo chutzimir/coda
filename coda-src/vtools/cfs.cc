@@ -67,9 +67,6 @@ extern "C" {
 #include <sys/dirent.h>
 #endif
 #endif
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 
 #include <inodeops.h>
 

@@ -36,6 +36,7 @@
 MACHINE_FLAGS = -D__BSD44__
 SHORTSYS      = bsd44
 INCLFLAGS     = -I/usr/include
+OPTFLAG	      =
 GFLAG         = -g
 CPP 	      = gcc -E -x c-header
 LIBCURSES     = -lcurses

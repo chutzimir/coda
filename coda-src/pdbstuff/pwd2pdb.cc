@@ -515,7 +515,7 @@ void PrintGroupEntry(register struct group *ge, register struct group *prevge)
     printf("%s:%s\t%d %d\n", ge->g_oname, ge->g_name, ge->g_id, ge->g_owner);
 
     str1[0] = str2[0] = str3[0] = 0;
-    printf("\t\t( )\n");	/* add str1 outpout later */
+    printf("\t\t( )\n");	/* add str1 output later */
     printf("\t\t( )\n");	/* add str2 output later */
     printf("\t\t( ");
     for (i = 0; i < ge->g_memcount; i++)
