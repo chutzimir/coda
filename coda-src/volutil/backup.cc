@@ -84,6 +84,9 @@ extern "C" {
 #include <histo.h>
 #include <util.h>
 #include <partition.h>
+#include <vice.h>
+#include "volutil.h"
+#include <voldump.h>
 
 #ifdef __cplusplus
 }
@@ -91,15 +94,12 @@ extern "C" {
 
 #include <util.h>
 #include <inconsist.h>
-#include <vice.h>
 #include <cvnode.h>
 #include <volume.h>
 #include <vrdb.h>
 #include <vldb.h>
 #include <vsg.h>
 #include <vutil.h>
-#include <voldump.h>
-#include "volutil.h"
 
 
 PRIVATE char vkey[RPC2_KEYSIZE+1];    /* Encryption key for bind authentication */
@@ -1130,7 +1130,7 @@ PRIVATE void V_InitRPC()
     SFTP_Activate(&sftpi);
     tout.tv_sec = Timeout;
     tout.tv_usec = 0;
-    rc = RPC2_Init(RPC2_VERSION, 0, NULL, 1, 3, &tout);
+    rc = RPC2_Init(RPC2_VERSION, 0, NULL, 3, &tout);
     if (rc != RPC2_SUCCESS) {
 	LogMsg(0, 0, stdout, "RPC2_Init failed with %s\n",RPC2_ErrorMsg((int)rc));
 	exit(-1);

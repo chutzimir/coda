@@ -101,11 +101,11 @@ extern "C" {
 #include <util.h>
 #include <partition.h>
 #include <inodeops.h>
-
+#include <vice.h>
+#include <volutil.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
-#include <vice.h>
 #include <voltypes.h>
 #include <errors.h>
 #include <cvnode.h>

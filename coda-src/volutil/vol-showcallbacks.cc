@@ -53,6 +53,8 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
+#include <volutil.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -69,19 +69,17 @@ extern "C" {
 #include <ctype.h>
 #include <varargs.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <struct.h>
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
 #include <inodeops.h>
+
+#include <volutil.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

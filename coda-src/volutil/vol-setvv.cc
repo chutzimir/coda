@@ -59,14 +59,14 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <inodeops.h>
-
+#include <util.h>
+#include <vice.h>
+#include <volutil.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <rvmlib.h>
-#include <vice.h>
 #include <cvnode.h>
 #include <volume.h>
 #include <vrdb.h>

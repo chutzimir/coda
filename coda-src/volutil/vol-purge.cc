@@ -76,7 +76,7 @@ extern "C" {
 
 #include <lwp.h>
 #include <lock.h>
-
+#include <volutil.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -98,7 +98,7 @@ extern "C" {
   <a name="S_VolPurge"><strong>Purge the requested volume</strong></a> 
   END_HTML
 */
-S_VolPurge(RPC2_Handle rpcid, RPC2_Unsigned formal_purgeId, RPC2_String formal_purgeName) {
+long int S_VolPurge(RPC2_Handle rpcid, RPC2_Unsigned formal_purgeId, RPC2_String formal_purgeName) {
     Error error = 0;
     Error error2 = 0;
     Volume *vp = NULL;

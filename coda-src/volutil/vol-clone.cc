@@ -85,13 +85,13 @@ extern "C" {
 #include <lock.h>
 #include <rpc2.h>
 #include <inodeops.h>
-
+#include <volutil.h>
+#include <vice.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <coda_dir.h>
-#include <vice.h>
 #include <voltypes.h>
 #include <cvnode.h>
 #include <volume.h>

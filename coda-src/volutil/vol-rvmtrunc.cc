@@ -42,18 +42,15 @@ extern "C" {
 
 #include <stdio.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
 #include <rvm.h>
+#include <volutil.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

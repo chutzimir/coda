@@ -55,33 +55,28 @@ extern "C" {
 #include <ctype.h>
 #include <errno.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
 #include <se.h>
+#include <vice.h> 
+#include <util.h>
+#include <volutil.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <rvmlib.h>
-#include <util.h>
-#include <vice.h> 
 #include <cvnode.h>
 #include <volume.h>
 #include <vldb.h>
 #include <vutil.h>
 
 
-#include "volutil.h"
 
 extern void ViceTerminate();
 extern void ViceUpdateDB();

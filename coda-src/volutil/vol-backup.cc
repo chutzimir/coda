@@ -70,19 +70,15 @@ extern "C" {
 #include <sys/errno.h>
 #include <sys/time.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#include <mach.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <struct.h>
 #include <lock.h>
 #include <inodeops.h>
+#include <volutil.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
