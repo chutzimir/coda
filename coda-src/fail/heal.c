@@ -115,6 +115,7 @@ char **argv;
 	int j;
 
 	filtersBS.MaxSeqLen = sizeof(filters);
+	filtersBS.SeqLen = sizeof(filters);
 	filtersBS.SeqBody = (RPC2_ByteSeq) filters;
 	
 	for (i = 0; i < 2; i++) {
