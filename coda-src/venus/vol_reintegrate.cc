@@ -161,8 +161,13 @@ void volent::Reintegrate()
                     name, VenusRetStr(code));
         }
 
-/* keep going as long as we managed to reintegrate records without errors */
-    } while(nrecs && !code);
+    /*
+     * Keep going as long as we managed to reintegrate records without errors,
+     * but we don't want to intefere with trickle reintegration so we test
+     * whether a full `block' has been sent (see also
+     * cmlent::GetReintegrateable)
+     */
+    } while(nrecs == 100 && !code);
 
     flags.reintegrating = 0;
 
