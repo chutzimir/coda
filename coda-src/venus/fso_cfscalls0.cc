@@ -471,9 +471,11 @@ NonRepExit:
 	ATOMIC(
 	    RVMLIB_REC_OBJECT(flags);
 	    flags.fetching = 0;
-	    if (IsFile()) 
-	       data.file->SetLength((unsigned) stat.Length);
-	    DiscardData();
+	    if (HAVEDATA(this)) {
+		if (IsFile()) 
+		    data.file->SetLength((unsigned) stat.Length);
+		DiscardData();
+	    }
 
 	    /* Demote existing status. */
 	    Demote();
