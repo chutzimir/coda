@@ -41,6 +41,7 @@ CPP 	      = gcc -E -x c-header
 LIBCURSES     = -lcurses
 LIBCOMPAT     = /usr/lib/libcompat.a
 LIBREADLINE   = /usr/lib/libreadline.a
+INCREADLINE   = -I/usr/include/readline
 INODEFSNAME   = libinodefs.a
 INODEFSDIR    = kernel-src/inodefs/bsd44
 machine_inodefs   = bsd44
