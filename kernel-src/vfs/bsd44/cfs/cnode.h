@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.4.2.3  1997/12/19 14:26:09  rvb
- * session id
+ * Revision 1.4.2.4  1998/01/22 13:03:38  rvb
+ * Had Breaken ls .
  *
+ * Revision 1.4.2.3  97/12/19  14:26:09  rvb
+ * session id
+ * 
  * Revision 1.4.2.2  97/12/16  12:40:24  rvb
  * Sync with 1.3
  * 
@@ -204,7 +207,8 @@ extern struct cfs_mntinfo cfs_mnttbl[]; /* indexed by minor device number */
  */
 extern struct vnode *cfs_ctlvp;
 #define	IS_CTL_VP(vp)		((vp) == cfs_ctlvp)
-#define	IS_CTL_NAME(vp, name, l)(((vp) == vtomi((vp))->mi_rootvp)    \
+#define	IS_CTL_NAME(vp, name, l)((l == CFS_CONTROLLEN) \
+ 				 && ((vp) == vtomi((vp))->mi_rootvp)    \
 				 && strncmp(name, CFS_CONTROL, l) == 0)
 
 /* 
