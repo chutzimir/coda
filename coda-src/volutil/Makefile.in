@@ -77,7 +77,8 @@ LIBS =	${LIBVOL} \
 	${LIBMACH}  \
 	${LIBIFS}\
 	$(LIBCS)\
-	$(LIBCOMPAT)
+	$(LIBCOMPAT)\
+	$(LIBINODEFS)
         
 
 HFILES= $(INCLDIR)/voldump.rpc2 $(INCLDIR)/volutil.rpc2 \

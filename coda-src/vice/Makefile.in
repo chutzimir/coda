@@ -83,7 +83,8 @@ LIBS = 	$(LIBVOLSERV)  \
 	$(LIBFAIL)	\
 	$(LIBOLDLWP)	\
 	$(LIBMACH)	\
-	$(LIBCOMPAT)
+	$(LIBCOMPAT)	\
+	$(LIBINODEFS)
 
 headers=$(INCLSPECIAL)/lwp.h	\
 	$(INCLDIR)/al.h		\
