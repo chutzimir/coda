@@ -53,9 +53,15 @@ extern "C" {
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef LINUX
+#ifdef __MACH__
 #include <libc.h>
+#include <sysent.h>
 #endif
+
+#if __NetBSD__ || LINUX
+#include <unistd.h>
+#include <stdlib.h>
+#endif __NetBSD__
 #include <stdio.h>
 
 #ifdef __cplusplus
