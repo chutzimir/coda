@@ -24,6 +24,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4.18.2  1997/10/29 16:06:09  rvb
+ * Kill DYING
+ *
  * Revision 1.4.18.1  1997/10/28 23:10:15  rvb
  * >64Meg; venus can be killed!
  *
@@ -162,7 +165,6 @@ vc_nb_close (dev, flag, mode, p)
     for (op = &cfs_mnttbl[minor(dev)].mi_vfschain; op ; op = op->next) {
 	if (op->rootvp) {
 	    /* Let unmount know this is for real */
-	    VTOC(op->rootvp)->c_flags |= C_DYING;
 	    VTOC(op->rootvp)->c_flags |= CN_UNMOUNTING;
 	    cfs_unmounting(op->vfsp);
 	    err = DOUNMOUNT(op->vfsp);

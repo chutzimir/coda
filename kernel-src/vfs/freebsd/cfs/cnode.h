@@ -14,6 +14,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.3.18.1  1997/10/29 16:06:31  rvb
+ * Kill DYING
+ *
  * Revision 1.3  1996/12/12 22:11:03  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  *
@@ -114,9 +117,6 @@ struct cnode {
 #define VALID_SYMLINK(cp)        ((cp->c_flags) & C_SYMLINK)
 
 #ifdef KERNEL
-#define C_DYING	      0x4	  /* Set for outstanding cnodes from last venus (which died) */
-#define IS_DYING(cp)		 ((cp->c_flags) & C_DYING)
-
 #define CN_WANTED     0x8        /* Set if lock wanted */
 #define CN_LOCKED     0x10       /* Set if lock held */
 #define CN_UNMOUNTING 0X20       /* Set if unmounting */

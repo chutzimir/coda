@@ -47,6 +47,9 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
+ * Revision 1.5.4.2  1997/10/29 16:06:27  rvb
+ * Kill DYING
+ *
  * Revision 1.5.4.1  1997/10/28 23:10:16  rvb
  * >64Meg; venus can be killed!
  *
@@ -649,9 +652,6 @@ cfs_kill(whoIam, dcstat)
 				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
 #endif
 				count++;
-				/* Clear unmountng bit, set dying bit */
-/* rvb why			cp->c_flags &= ~CN_UNMOUNTING; */
-				cp->c_flags |= C_DYING;
 				CFSDEBUG(CFS_FLUSH, 
 					 myprintf(("Live cnode fid %x-%x-%x flags %d count %d\n",
 						   (cp->c_fid).Volume,
@@ -799,7 +799,7 @@ cfs_find(fid)
 	if ((cp->c_fid.Vnode == fid->Vnode) &&
 	    (cp->c_fid.Volume == fid->Volume) &&
 	    (cp->c_fid.Unique == fid->Unique) &&
-	    (!IS_DYING(cp)))
+	    (!IS_UNMOUNTING(cp)))
 	    {
 		cfs_active++;
 		return(cp); 

@@ -15,6 +15,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4.14.2  1997/10/29 16:06:30  rvb
+ * Kill DYING
+ *
  * Revision 1.4.14.1  1997/10/28 23:10:18  rvb
  * >64Meg; venus can be killed!
  *
@@ -176,13 +179,6 @@ cfs_open(vpp, flag, cred, p)
     
     MARK_ENTRY(CFS_OPEN_STATS);
     
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_OPEN_STATS);
-	COMPLAIN_BITTERLY(open, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for open of control file. */
     if (IS_CTL_VP(*vpp)) {
 	/* XXX */
@@ -275,18 +271,7 @@ cfs_close(vp, flag, cred, p)
     int error;
     
     MARK_ENTRY(CFS_CLOSE_STATS);
-    
-    if (IS_UNMOUNTING(cp) )
-    	/* its ok */;
-    else
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_CLOSE_STATS);
-	COMPLAIN_BITTERLY(close, cp->c_fid);
-	printf("cfs_close: vp %x, cp %x\n", CTOV(cp), cp);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
+
     /* Check for close of control file. */
     if (IS_CTL_VP(vp)) {
 	MARK_INT_SAT(CFS_CLOSE_STATS);
@@ -352,13 +337,6 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 			      uiop->uio_iov->iov_base, uiop->uio_resid, 
 			      uiop->uio_offset, uiop->uio_segflg)); )
 	
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_RDWR_STATS);
-	COMPLAIN_BITTERLY(rdwr, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for rdwr of control object. */
     if (IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_RDWR_STATS);
@@ -669,6 +647,7 @@ cfs_getattr(vp, vap, cred, p)
     
     MARK_ENTRY(CFS_GETATTR_STATS);
     
+#if	0
     /* Check for operation on a dying object */
     if (IS_DYING(cp)) {
 	COMPLAIN_BITTERLY(getattr, cp->c_fid);
@@ -681,6 +660,7 @@ cfs_getattr(vp, vap, cred, p)
 	}
 	cp = VTOC(vp);
     }
+#endif
     
     /* Check for getattr of control object. */
     if (IS_CTL_VP(vp)) {
@@ -752,14 +732,7 @@ cfs_setattr(vp, vap, cred, p)
     int error;
     
     MARK_ENTRY(CFS_SETATTR_STATS);
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_SETATTR_STATS);
-	COMPLAIN_BITTERLY(setattr, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
+
     /* Check for setattr of control object. */
     if (IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_SETATTR_STATS);
@@ -805,13 +778,6 @@ cfs_access(vp, mode, cred, p)
     int error;
     
     MARK_ENTRY(CFS_ACCESS_STATS);
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_ACCESS_STATS);
-	COMPLAIN_BITTERLY(access, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
     
     /* Check for access of control object.  Only read access is
        allowed on it. */
@@ -869,13 +835,6 @@ cfs_readlink(vp, uiop, cred, p)
     char *buf=NULL; /*[CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in)];*/
     
     MARK_ENTRY(CFS_READLINK_STATS);
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_READLINK_STATS);
-	COMPLAIN_BITTERLY(readlink, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
     
     /* Check for readlink of control object. */
     if (IS_CTL_VP(vp)) {
@@ -948,19 +907,6 @@ cfs_fsync(vp, cred, p)
 	return(ENODEV);
     }
        
-    /* Check for operation on a dying object */
-    /* 
-     * We can expect fsync on the root vnode if we are in the midst of
-     * unmounting (in NetBSD), so silently ignore it.  
-     */
-    if (IS_DYING(cp)) {
-	if (!IS_ROOT_VP(vp)) {
-	    COMPLAIN_BITTERLY(fsync, cp->c_fid);
-	    MARK_INT_FAIL(CFS_FSYNC_STATS);
-	}
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-
     /*
      * We can expect fsync on any vnode at all if venus is pruging it.
      * Venus can't very well answer the fsync request, now can it?
@@ -1029,10 +975,8 @@ cfs_inactive(vp, cred, p)
     /* Remove it from the table so it can't be found. */
     cfs_unsave(cp);
     if ((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA) == NULL) {
-	if (!IS_DYING(cp)) {
-	    myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
-	    panic("badness in cfs_inactive\n");
-	}
+	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
+	panic("badness in cfs_inactive\n");
     } else {
 	((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA))->mi_refct--;
     }
@@ -1090,6 +1034,7 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 				   nm, dcp->c_fid.Volume,
 				   dcp->c_fid.Vnode, dcp->c_fid.Unique)););
     
+#if	0
     /* Check for operation on a dying object */
     if (IS_DYING(dcp)) {
 	COMPLAIN_BITTERLY(lookup, dcp->c_fid);
@@ -1102,7 +1047,8 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 	}
 	dcp = VTOC(dvp);
     }
-    
+#endif
+
     /* Check for lookup of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
 	*vpp = CFS_CTL_VP;
@@ -1205,13 +1151,6 @@ cfs_create(dvp, nm, va, exclusive, mode, vpp, cred, p)
     
     MARK_ENTRY(CFS_CREATE_STATS);
     
-    /* Check for operation on a dying object */
-    if (IS_DYING(dcp)) {
-	MARK_INT_FAIL(CFS_CREATE_STATS);
-	COMPLAIN_BITTERLY(create, dcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for create of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
 	*vpp = (struct vnode *)0;
@@ -1304,13 +1243,6 @@ cfs_remove(dvp, nm, cred, p)
 				   nm, cp->c_fid.Volume, cp->c_fid.Vnode,
 				   cp->c_fid.Unique)););
 
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_REMOVE_STATS);
-	COMPLAIN_BITTERLY(remove, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Remove the file's entry from the CFS Name Cache */
     /* We're being conservative here, it might be that this person
      * doesn't really have sufficient access to delete the file
@@ -1387,14 +1319,6 @@ cfs_link(vp, tdvp, tnm, cred, p)
 
     }
 
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp) || IS_DYING(tdcp)) {
-	MARK_INT_FAIL(CFS_LINK_STATS);
-	COMPLAIN_BITTERLY(link, cp->c_fid);
-	COMPLAIN_BITTERLY(link, tdcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for link to/from control object. */
     if (IS_CTL_NAME(tdvp, tnm) || IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_LINK_STATS);
@@ -1445,14 +1369,6 @@ cfs_rename(odvp, onm, ndvp, nnm, cred, p)
     
     MARK_ENTRY(CFS_RENAME_STATS);
     
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(ndcp) || IS_DYING(odcp)) {
-	MARK_INT_FAIL(CFS_RENAME_STATS);
-	COMPLAIN_BITTERLY(rename, ndcp->c_fid);
-	COMPLAIN_BITTERLY(rename, odcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
     
     /* Check for rename involving control object. */ 
     if (IS_CTL_NAME(odvp, onm) || IS_CTL_NAME(ndvp, nnm)) {
@@ -1537,13 +1453,6 @@ cfs_mkdir(dvp, nm, va, vpp, cred, p)
     int error, size;
     
     MARK_ENTRY(CFS_MKDIR_STATS);
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(dcp)) {
-	MARK_INT_FAIL(CFS_MKDIR_STATS);
-	COMPLAIN_BITTERLY(mkdir, dcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
     
     /* Check for mkdir of target object. */
     if (IS_CTL_NAME(dvp, nm)) {
@@ -1632,14 +1541,6 @@ cfs_rmdir(dvp, nm, cred, p)
     
     MARK_ENTRY(CFS_RMDIR_STATS);
     
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(dcp)) {
-	MARK_INT_FAIL(CFS_RMDIR_STATS);
-	COMPLAIN_BITTERLY(rmdir, dcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for rmdir of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
 	MARK_INT_FAIL(CFS_RMDIR_STATS);
@@ -1703,13 +1604,6 @@ cfs_symlink(tdvp, tnm, tva, lnm, cred, p)
     int error, size, s;
     
     MARK_ENTRY(CFS_SYMLINK_STATS);
-    
-    /* Check for operation on a dying object */
-    if (IS_DYING(tdcp)) {
-	MARK_INT_FAIL(CFS_SYMLINK_STATS);
-	COMPLAIN_BITTERLY(symlink, tdcp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
     
     /* Check for symlink of control object. */
     if (IS_CTL_NAME(tdvp, tnm)) {
@@ -1783,13 +1677,6 @@ cfs_readdir(vp, uiop, cred, eofflag, cookies, ncookies, p)
     
     CFSDEBUG(CFS_READDIR, myprintf(("cfs_readdir(%x, %d, %d, %d)\n", uiop->uio_iov->iov_base, uiop->uio_resid, uiop->uio_offset, uiop->uio_segflg)); )
 	
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	MARK_INT_FAIL(CFS_READDIR_STATS);
-	COMPLAIN_BITTERLY(readdir, cp->c_fid);
-	return(ENODEV);	/* Can't contact dead venus */
-    }
-    
     /* Check for readdir of control object. */
     if (IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_READDIR_STATS);

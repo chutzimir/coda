@@ -14,6 +14,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.5.14.2  1997/10/29 16:06:28  rvb
+ * Kill DYING
+ *
  * Revision 1.5.14.1  1997/10/28 23:10:17  rvb
  * >64Meg; venus can be killed!
  *
@@ -277,7 +280,7 @@ cfs_unmount(vfsp, mntflags, p)
     
     for (pre = NULL, op = &mi->mi_vfschain; op; pre = op, op = op->next) {
 	if (op->vfsp == vfsp) {	/* We found the victim */
-	    if (!IS_DYING(VTOC(op->rootvp)))
+	    if (!IS_UNMOUNTING(VTOC(op->rootvp)))
 		return (EBUSY); 	/* Venus is still running */
 	    
 #ifdef	DEBUG
