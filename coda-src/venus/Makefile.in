@@ -93,7 +93,7 @@ RP2FLAGS := -n $(RP2FLAGS)
 # Conditional definition of MACHLIBS for NetBSD port (Satya, 8/16/96)
 MACHLIBS_pmax_mach = -lmach -lsys
 MACHLIBS_i386_mach = -lmach
-MACHLIBS_i386_nbsd1 = 
+MACHLIBS_i386_nbsd1 = -lcompat
 
 LIBS=	$(LIBUTIL)\
 	$(LIBCODARDS)\
