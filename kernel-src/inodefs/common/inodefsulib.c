@@ -51,7 +51,7 @@ static char *rcsid = "$Header$";
  * resource forks:
  * .1 .2 .3 .4 etc.
  */
-
+#if defined(__linux__) || defined(__BSD44__)
 #include <sys/types.h>
 #include <sys/param.h>
 #include <sys/stat.h>
@@ -437,6 +437,4 @@ static int inosort(const struct dirent **a, const struct dirent **b)
 
 }
 
-
-
-
+#endif
