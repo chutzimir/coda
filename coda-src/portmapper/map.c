@@ -3,6 +3,7 @@
 
 /* structure management for an RPC2 portmapper */
 
+#include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
 #include "coda_assert.h"

@@ -7,7 +7,7 @@
 #include "coda_assert.h"
 
 #ifdef __BSD44__
-#include <machine/types.h>
+#include <sys/types.h>
 #endif
 #if !defined(CYGWIN32) & !defined(DJGPP)
 #include <arpa/nameser.h>
