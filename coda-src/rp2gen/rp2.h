@@ -138,7 +138,7 @@ typedef enum{ NONE=0, C=1, PASCAL=2, F77=3 } LANGUAGE;
 #undef CLIENT
 #undef SERVER
 #endif
-typedef enum{ CLIENT=0, SERVER=1, MULTI=2 } WHO;
+typedef enum{ CLIENT=0, SERVER=1, MULTI=2, DUMP=3} WHO;
 
 typedef struct stubelem {
     char        *type;
@@ -157,3 +157,5 @@ extern rp2_bool ansi;
    set on semantic errors for yyerror() and yywarn() */
 
 extern int line;
+
+

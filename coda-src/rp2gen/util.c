@@ -75,7 +75,7 @@ char *copy(s)
     char *s;
 {
     register char *new;
-    register int len;
+    register int32_t len;
 
     len = strlen(s) + 1;
     new = (char *) malloc(len);
@@ -246,7 +246,7 @@ char *concat(s1, s2)
     char *s1, *s2;
 {
     register char *new;
-    register int len1, len2;
+    register int32_t len1, len2;
 
     len1 = strlen(s1);
     len2 = strlen(s2);
@@ -273,7 +273,7 @@ char *basename(name)
     char *name;
 {
     register char *p, *l, *r;
-    register int len;
+    register int32_t len;
     register char *base;
 
     /* Save pointer to left end  -- i.e., last '/' */
