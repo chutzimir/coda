@@ -40,6 +40,7 @@
 TOPDIR = @top_srcdir@
 srcdir = @srcdir@
 VPATH = @srcdir@
+TOPOBJ= @TOPOBJ@
 
 # Need to conditionalize this
 include $(TOPDIR)/Makeconf
@@ -117,5 +118,10 @@ Depend: ${DEPDEP}
 #	-chmod 0644 $(BINDIR)/*
 #	${INSTALL} $> $(BINDIR)
 #	-chmod 0444 $(BINDIR)/*
+
+
+# to install in lib-special and lib-include
+LIBDIR := $(LIBSPECIAL)
+INCLDIR := $(INCLSPECIAL)
 
 include $(TOPDIR)/Makerules

@@ -43,6 +43,7 @@
 TOPDIR = @top_srcdir@
 srcdir = @srcdir@
 VPATH = @srcdir@
+TOPOBJ= @TOPOBJ@
 
 # Need to conditionalize this
 include $(TOPDIR)/Makeconf

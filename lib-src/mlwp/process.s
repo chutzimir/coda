@@ -429,8 +429,13 @@ returnto:
 #define SYMB(name)  ENTRY(name)
 #define EXT(x) SYMBOL_NAME(x)
 #else
+#ifdef __STDC__	
 #define SYMB(x)  _##x:
 #define EXT(x)	_##x
+#else
+#define SYMB(x)  _/**/x:
+#define EXT(x)	_/**/x
+#endif
 #endif	
 
 

@@ -66,14 +66,14 @@ extern "C" {
 
 #include <rpc2.h>
 
-#ifdef LINUX
+#if (LINUX || __NetBSD__)
 
 #ifdef DIRSIZ
 #undef DIRSIZ
 #endif DIRSIZ
 #define DIRSIZ(dp)      ((sizeof (struct direct) - (MAXNAMLEN+1)) + \
                          (((dp)->d_namlen+1 + 3) &~ 3))
-#endif LINUX
+#endif /* LINUX || __NetBSD__ */
 
 #ifdef __cplusplus
 }
@@ -695,7 +695,7 @@ int fsobj::Readdir(char *buf, int offset, int len, int *cc, vuid_t vuid) {
 	    if (*cc - pos < DIRSIZ(dp))
 		{ print(logFile); Choke("fsobj::Readdir: dir entry too small"); }
 
-#ifdef LINUX
+#if (LINUX || __NetBSD__)
 	    if (dp->d_fileno == 0) break;
 	    LOG(1000, ("\t<%d, %d, %d, %s>\n",
                        dp->d_fileno, dp->d_reclen, dp->d_namlen, dp->d_name));
