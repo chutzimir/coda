@@ -302,14 +302,23 @@ PRIVATE void USR1(int sig, int code, struct sigcontext *contextPtr) {
     signal(SIGUSR1, (void (*)(int))USR1);
 }
 
-
 PRIVATE void FatalSignal(int sig, int code, struct sigcontext *contextPtr) {
     LOG(0, ("*****  FATAL SIGNAL (%d) *****\n", sig));
 
-#ifdef	__MACH__
     eprint("Fatal Signal (%d); pid %d becoming a zombie...", sig, getpid());
+    eprint("You may use gdb to attach to %d", getpid());
+#ifdef	__MACH__
     task_suspend(task_self());
-#endif	/* __MACH__ */
+#else
+    {
+	int       living_dead = 1;
+	sigset_t  mask;
+	sigemptyset(&mask);
+	while (living_dead) {
+	    sigsuspend(&mask);
+	}
+    }
+#endif
 
     /* Dump the process context. */
     {
