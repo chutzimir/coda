@@ -53,6 +53,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <string.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/dir.h>
@@ -454,8 +455,10 @@ next_cmd:
 		    if (svollist[i] != 0) {
 			DEBUG(printf("adding symlink entry <%x, %s>\n",	
 				     svollist[i], snamelist[i]));
+			/*			Add.append(new add_entry(svollist[i], snamelist[i], 
+						 priority, attributes)); */
 			Add.append(new add_entry(svollist[i], snamelist[i], 
-						 priority, attributes));
+						 priority, H_DFLT_ATTRS)); 
 		    }
 		break;
 	    }
@@ -770,7 +773,36 @@ PRIVATE int canonicalize(char *path, VolumeId *vp, char *vname, char *fullname,
 		    strcat(sname[ix], "/");
 		    strcat(sname[ix], next_comp);
 		    ix++;
+		} else {
+		  printf("vol_getwd failed: probably link points out of coda\n");
+		  fflush(stdout);
 		}
+
+
+		/* translate symlink contents */
+		if (contents[0] != '\0') {
+		  /* Tack on trailing component(s). */
+		  if (*p != '\0') {
+		    strcat(contents, "/");
+		    strcat(contents, p);
+		  }
+
+		  /* Reset buffer and pointer. */
+		  strcpy(tpath, contents);
+		  p = tpath;
+
+		  /* In case of absolute pathname chdir to "/" and strip leading slashes. */
+		  if (*p == '/') {
+		    if (chdir("/") < 0) {
+		      error(!FATAL, "canonicalize: can't chdir(/) (%s)", sys_errlist[errno]);
+		      goto done;
+		    }
+		    while (*p == '/') p++;
+		  }
+
+		  continue;
+		}
+
 	    }
 
 	    if (chdir(next_comp) == 0) continue;
@@ -781,29 +813,6 @@ PRIVATE int canonicalize(char *path, VolumeId *vp, char *vname, char *fullname,
 		goto done;
 	    }
 
-	    /* translate symlink contents */
-	    if (contents[0] != '\0') {
-		/* Tack on trailing component(s). */
-		if (*p != '\0') {
-		    strcat(contents, "/");
-		    strcat(contents, p);
-		}
-
-		/* Reset buffer and pointer. */
-		strcpy(tpath, contents);
-		p = tpath;
-
-		/* In case of absolute pathname chdir to "/" and strip leading slashes. */
-		if (*p == '/') {
-		    if (chdir("/") < 0) {
-			error(!FATAL, "canonicalize: can't chdir(/) (%s)", sys_errlist[errno]);
-			goto done;
-		    }
-		    while (*p == '/') p++;
-		}
-
-		continue;
-	    }
 	}
 
 	/* We're at lowest existing component.  Get its canonical name. */
