@@ -136,7 +136,7 @@ main(int argc, char **argv)
 		return Parser_execarg(argc-1, &argv[1], argcmdlist);
 	} else {
 		InitRPC();
-		Parser_init("ttyfcon> ", list);
+		Parser_init("filcon> ", list);
 		Parser_commands();
 	}
 }
