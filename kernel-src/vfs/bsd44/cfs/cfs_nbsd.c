@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.9  1997/01/30 16:42:02  bnoble
+ * Trace version as of SIGCOMM submission.  Minor fix in cfs_nb_open
+ *
  * Revision 1.8  1997/01/13 17:11:05  bnoble
  * Coda statfs needs to return something other than -1 for blocks avail. and
  * files available for wabi (and other windowsish) programs to install
@@ -51,6 +54,8 @@
 #include <cfs/cfs.h>
 #include <cfs/cfs_vnodeops.h>
 #include <cfs/cnode.h>
+
+#include <sys/fcntl.h>
 
 /* What we are delaying for in printf */
 int cfs_printf_delay = 0;  /* in microseconds */
@@ -240,7 +245,14 @@ cfs_nb_open(v)
     struct vop_open_args *ap = v;
 
     ENTRY;
-    return (cfs_open(&(ap->a_vp), ap->a_mode, ap->a_cred, ap->a_p));
+
+     /* 
+      * NetBSD can pass the O_EXCL flag in mode, even though the check
+      * has already happened.  Venus defensively assumes that if open
+      * is passed the EXCL, it must be a bug.  We strip the flag here.
+      */
+     return (cfs_open(&(ap->a_vp), ap->a_mode & (~O_EXCL), ap->a_cred, 
+                    ap->a_p));
 }
 
 int
