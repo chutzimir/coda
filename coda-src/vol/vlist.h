@@ -54,9 +54,10 @@ extern "C" {
 
 #ifdef MACH
 #include <libc.h>
+#include <sysent.h>
 #endif
 
-#ifdef LINUX
+#if LINUX || NetBSD
 #include <unistd.h>
 #include <stdlib.h>
 #endif
