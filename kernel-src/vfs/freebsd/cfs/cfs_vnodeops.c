@@ -15,6 +15,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4  1997/02/20 13:54:50  lily
+ * check for NULL return from cfsnc_lookup before CTOV
+ *
  * Revision 1.3  1996/12/12 22:11:02  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  *
@@ -1430,10 +1433,13 @@ cfs_rename(odvp, onm, ndvp, nnm, cred, p)
     
     /* Problem with moving directories -- need to flush entry for .. */
     if (odvp != ndvp) {
-	struct vnode *ovp = CTOV( cfsnc_lookup(VTOC(odvp), onm, cred) );
-	if ((ovp) &&
-	    (VN_TYPE(ovp) == VDIR)) /* If it's a directory */
-	    cfsnc_zapfile(VTOC(ovp),"..");
+	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), onm, cred);
+	if (ovcp) {
+	    struct vnode *ovp = CTOV(ovcp);
+	    if ((ovp) &&
+		(VN_TYPE(ovp) == VDIR)) /* If it's a directory */
+		cfsnc_zapfile(VTOC(ovp),"..");
+	}
     }
     
     /* Remove the entries for both source and target files */
