@@ -277,7 +277,11 @@ PRIVATE void mrpc_ProcessRC(long *in, long *out, int howmany)
 #ifdef ERRORTR
     int host;
     for ( host = 0 ; host < howmany ; host++ )
-	out[host] = RPC2_R2SError(in[host]);
+	if ( in[host] > 0 ) {
+	    out[host] = RPC2_R2SError(in[host]);
+	} else {
+	    out[host] = in[host];
+	}
 #else
     bcopy(in, out, sizeof(long) * howmany);
 #endif 
