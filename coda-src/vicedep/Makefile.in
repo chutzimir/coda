@@ -59,7 +59,7 @@ include $(TOPDIR)/Makeconf
 
 INCLPATH= .:$(srcdir)
 INCLFLAGS = -I. -I$(srcdir)
-CFLAGS := -g -MD -I. -I$(srcdir)
+CFLAGS := -g -MD -I. -I$(srcdir) -I$(srcdir)/../rpc2 -I$(srcdir)/../../lib-src/mlwp
 
 
 HEADERS = venusioctl.h srv.h operations.h recov_vollog.h
