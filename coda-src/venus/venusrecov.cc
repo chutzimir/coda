@@ -533,6 +533,7 @@ PRIVATE void Recov_CreateSeg() {
     LOG(10, ("Recov_CreateSeg: RVG = (%x, %x), RDS = (%x, %x)\n",
 	      Recov_RvgAddr, Recov_RvgLength, Recov_RdsAddr, Recov_RdsLength));
     rvm_offset_t dummy;
+    RVM_ZERO_OFFSET(dummy);	/* VenusDataDevice is file, must zero dummy */
     rvm_return_t ret = rvm_create_segment(VenusDataDevice, dummy,
 					   &Recov_Options, nregions, regions);
     if (ret != RVM_SUCCESS)
