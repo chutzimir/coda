@@ -60,7 +60,7 @@ extern "C" {
 #include <stdarg.h>
 #include <sysent.h>
 #include <netinet/in.h>
-#include <ifs.h>
+#include <cfs/ifs.h>
 
 #include <rpc2.h>
 #include <se.h>
@@ -73,7 +73,7 @@ extern "C" {
 
 #include <util.h>
 #include <rvmlib.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <srv.h>
 #include <coppend.h>
 #include <lockqueue.h>

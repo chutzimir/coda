@@ -60,7 +60,7 @@ extern "C" {
 #include <netinet/in.h>
 #include <sysent.h>
 #include <struct.h>
-#include <ifs.h>
+#include <cfs/ifs.h>
 
 #if LINUX || __NetBSD__
 #include <stdlib.h>
@@ -78,7 +78,7 @@ extern "C" {
 #include <util.h>
 #include <rvmlib.h>
 #include <vmindex.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <srv.h>
 #include <recov_vollog.h>
 #include "coppend.h"

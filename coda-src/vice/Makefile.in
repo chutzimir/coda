@@ -82,8 +82,8 @@ LIBS = 	$(LIBAUTH2)	\
 	$(LIBVOL)	\
 	$(LIBVV)	\
 	$(LIBSYSENT)	\
-	$(DIR_O)	\
-	$(BUFFER_O)	\
+	$(LIBDIRLIB)	\
+	$(LIBIFS)	\
 	$(LIBUTIL) 	\
 	$(LIBCODARDS)       \
 	$(LIBSEG)  	\
@@ -94,11 +94,11 @@ LIBS = 	$(LIBAUTH2)	\
 	$(LIBOLDLWP)	
 
 
-headers=$(INCLDIR)/lwp.h	\
+headers=$(INCLSPECIAL)/lwp.h	\
 	$(INCLDIR)/al.h		\
 	$(INCLDIR)/errors.h	\
 	$(INCLDIR)/prs.h	\
-	$(INCLDIR)/lock.h	\
+	$(INCLSPECIAL)/lock.h	\
 	$(INCLDIR)/volume.h	\
 	$(INCLDIR)/cvnode.h	\
 	$(INCLDIR)/rpc2.h	\

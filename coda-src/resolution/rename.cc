@@ -58,11 +58,11 @@ extern "C" {
 #include <coda_dir.h>
 
 #include <resutil.h>
-#ifndef LINUX
+#include <ops.h>
 #include <operations.h>
-#endif
+
 #include "ruconflict.h"
-#include "ops.h"
+
 #include "rsle.h"
 #include "resstats.h"
 
@@ -125,9 +125,10 @@ int CheckAndPerformRename(rsle *r, Volume *volptr, VolumeId VSGVolnum,
 	    }
 	}
 	/* XXX - MIGHT HAVE TO UPDATE THE VERSION VECTOR FOR THE CHILD ! */
-	SpoolRenameLogRecord(ResolveViceRename_OP, vlist, sv->vptr, 
-			     tv ? tv->vptr : NULL, sdv->vptr, tdv->vptr, volptr, 
-			     r->name1, r->name2, &r->storeid);
+	errorCode = SpoolRenameLogRecord((int) ResolveViceRename_OP, (dlist *) vlist, 
+			     sv->vptr, (Vnode *) (tv ? tv->vptr : NULL), 
+			     sdv->vptr, tdv->vptr, volptr, 
+			     (char *)r->name1, (char *)r->name2, &r->storeid);
     }
     // merge the inconsistencies 
     if (errorCode && errorCode == EINCONS) {

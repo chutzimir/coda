@@ -76,7 +76,7 @@ extern "C" {
 #include <strings.h>
 
 #ifdef LINUX
-#include <ifs.h>
+#include <cfs/ifs.h>
 #include <stdlib.h>
 #include <unistd.h>
 #endif

@@ -129,7 +129,7 @@ extern "C" {
 #include <al.h>
 #include <auth2.h>
 #include <srv.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <recov.h>
 #include <camprivate.h>
 #include <coda_globals.h>
