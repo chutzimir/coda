@@ -50,6 +50,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
+#include <assert.h>
 #include <stdio.h>
 #ifdef __MACH__
 #include <sysent.h>
@@ -167,7 +168,7 @@ void dlist::prepend(dlink *p)
 void dlist::append(dlink *p) 
 {
     dlink   *dl;
-    if ((p->next != 0) || (p->prev != 0)) abort();
+    if ((p->next != 0) || (p->prev != 0)) assert(1==0);
 /*	{ print(logFile); p->print(logFile); Die("dlist::append: link != 0"); }*/
 
     if (head == 0){
