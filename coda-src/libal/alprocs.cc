@@ -78,6 +78,10 @@ extern "C" {
 #include <stdlib.h>
 #endif __NetBSD__
 
+#ifdef __NetBSD__
+#define _POSIX_SOURCE
+#endif
+
 #include <errno.h>
 
 #ifdef __cplusplus
