@@ -253,7 +253,11 @@ PRIVATE void TERM(int sig, int code, struct sigcontext *contextPtr) {
     VDB->FlushVolume();
     RecovFlush(1);
     RecovTerminate();
+#ifdef	__NetBSD__
+    WorkerCloseMuxfd();
+#else
     VFSUnmount();
+#endif
     (void)CheckAllocs("TERM");
     fflush(logFile);
     fflush(stderr);

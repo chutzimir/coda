@@ -186,6 +186,13 @@ int main(int argc, char **argv) {
     }
 
     UnsetInitFile();
+    { FILE *fd = fopen("/dev/console", "w");
+	if (fd != NULL) {
+	    fprintf(fd, "Coda Venus has started!!\n\r");
+	    fflush(fd);
+	    fclose(fd);
+	}
+    }
     eprint("Venus starting...");
 
     /* Act as message-multiplexor/daemon-dispatcher. */
