@@ -76,10 +76,14 @@ extern "C" {
 #include <libc.h>
 #include <sysent.h>
 #endif __MACH__
-#ifdef __NetBSD__
+#if __NetBSD__ || LINUX
 #include <unistd.h>
 #include <stdlib.h>
 #endif __NetBSD__
+
+#ifdef LINUX
+#include <sys/vfs.h>
+#endif
 
 #include <lwp.h>
 #include <lock.h>
@@ -141,6 +145,10 @@ struct DiskPartition *VGetPartition(char *name)
 
 PRIVATE void VSetPartitionDiskUsage(register struct DiskPartition *dp)
 {
+#ifdef LINUX
+  struct statfs fsbuf;
+  int rc;
+#endif
 #ifdef __MACH__
     /* Note:  we don't bother syncing because it's only an estimate, update
        is syncing every 30 seconds anyway, we only have to keep the disk
@@ -165,7 +173,17 @@ PRIVATE void VSetPartitionDiskUsage(register struct DiskPartition *dp)
     dp->minFree = (int)sblock.fs_minfree;
     dp->totalUsable = availblks;
     dp->free = availblks - used; /* May be negative, which is OK */
-#else __MACH__
+#endif
+
+#ifdef LINUX
+ rc = statfs(dp->devName, &fsbuf);
+ assert( rc == 0 );
+ 
+ dp->free = fsbuf.f_bavail;  /* available free blocsk */
+ dp->totalUsable = fsbuf.f_blocks * 9 /10; 
+ dp->minFree = 10;
+
+#else
     /* Satya (8/5/96): skipped porting this routine since it is not
     		used by Venus; needs to be ported for server; depends on sys/fs.h in Mach */
     LogMsg(0, VolDebugLevel, stdout,  "PORTING ERROR: VSetPartitionDiskUsage() not yet ported");
