@@ -7,6 +7,8 @@
 #include <cfs/cfsk.h>
 #include <cfs/pioctl.h>
 
+enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
+
 /* NOTES:
 	cfsk.h should not be here!!!
 	(then proc.h is not necessary ?? maybe)
@@ -322,5 +324,311 @@ venus_lookup(void *mdp, ViceFid *fid,
     }
 
     CFS_FREE(inp, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
+    return error;
+}
+
+venus_create(void *mdp, ViceFid *fid,
+    	char *nm, enum vcexcl exclusive, int mode, struct vattr *va,
+	struct ucred *cred, struct proc *p,
+/*out*/	ViceFid *VFid, struct vattr *attr)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf = NULL; /*[VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, (VC_INSIZE(cfs_create_in) + CFS_MAXNAMLEN));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_CREATE, cred);
+
+    inp->d.cfs_create.VFid = *fid;
+    inp->d.cfs_create.excl = exclusive;
+    inp->d.cfs_create.mode = mode;
+    inp->d.cfs_create.attr = *va;
+
+    size = VC_INSIZE(cfs_create_in);
+    inp->d.cfs_create.name = (char *)size;
+
+    len = strlen(nm) + 1;
+    strncpy((char*)inp + (int)inp->d.cfs_create.name, nm, len);
+    size += len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	*VFid = outp->d.cfs_create.VFid;
+	*attr = outp->d.cfs_create.attr;
+    }
+
+    CFS_FREE(buf, (VC_INSIZE(cfs_create_in) + CFS_MAXNAMLEN));
+    return error;
+}
+
+venus_remove(void *mdp, ViceFid *fid,
+        char *nm,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL; /*[CFS_MAXNAMLEN + sizeof(struct inputArgs)];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_REMOVE, cred);
+
+    inp->d.cfs_remove.VFid = *fid;
+    inp->d.cfs_remove.name = (char *)(VC_INSIZE(cfs_remove_in));
+
+    len = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_remove.name, nm, len);
+    len += VC_INSIZE(cfs_remove_in);
+    size = len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+
+    CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
+    return error;
+}
+
+venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
+        char *nm,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_link_in)];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_LINK, cred);
+
+    inp->d.cfs_link.sourceFid = *fid;
+    inp->d.cfs_link.destFid = *tfid;
+
+    inp->d.cfs_link.tname = (char *)(VC_INSIZE(cfs_link_in));
+
+    len = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_link.tname, nm, len);
+    size = VC_INSIZE(cfs_link_in) + len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+
+    CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
+    return error;
+}
+
+venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
+        char *nm, char *tnm,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL; /*[VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_RENAME, cred);
+
+    inp->d.cfs_rename.sourceFid = *fid;
+    inp->d.cfs_rename.destFid = *tfid;
+
+    size = VC_INSIZE(cfs_rename_in);	
+    inp->d.cfs_rename.srcname = (char*)size;
+    len = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_rename.srcname, nm, len);
+    size += len;
+
+    inp->d.cfs_rename.destname = (char *)size;
+    len = strlen(tnm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_rename.destname, tnm, len);
+    size += len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+
+    CFS_FREE(buf, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
+    return error;
+}
+
+venus_mkdir(void *mdp, ViceFid *fid,
+    	char *nm, struct vattr *va,
+	struct ucred *cred, struct proc *p,
+/*out*/	ViceFid *VFid, struct vattr *ova)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in)];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_MKDIR, cred);
+
+    inp->d.cfs_mkdir.VFid = *fid;
+    inp->d.cfs_mkdir.attr = *va;
+
+    inp->d.cfs_mkdir.name = (char *)(VC_INSIZE(cfs_mkdir_in));
+    len = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_mkdir.name, nm, len);
+    size = VC_INSIZE(cfs_mkdir_in) + len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	*VFid = outp->d.cfs_mkdir.VFid;
+	*ova = outp->d.cfs_mkdir.attr;
+    }
+
+    CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
+    return error;
+}
+
+venus_rmdir(void *mdp, ViceFid *fid,
+    	char *nm,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL;		/*[CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in)];*/
+    int error = 0;
+    int size;
+
+    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_RMDIR, cred);
+
+    inp->d.cfs_rmdir.VFid = *fid;
+    inp->d.cfs_rmdir.name = (char *)(VC_INSIZE(cfs_rmdir_in));
+
+    size = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_rmdir.name, nm, size);
+    size = VC_INSIZE(cfs_rmdir_in) + size;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+
+    CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
+    return error;
+}
+
+venus_symlink(void *mdp, ViceFid *fid,
+        char *lnm, char *nm, struct vattr *va,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf = NULL; /*[sizeof(struct inputArgs) + CFS_MAXPATHLEN + CFS_MAXNAMLEN + 8];*/
+    int error = 0;
+    int len;
+    int size;
+
+    CFS_ALLOC(buf, char *, sizeof(struct inputArgs) + CFS_MAXPATHLEN + CFS_MAXNAMLEN + 8);
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_SYMLINK, cred);
+
+    inp->d.cfs_symlink.VFid = *fid;
+    inp->d.cfs_symlink.attr = *va;
+
+    size = VC_INSIZE(cfs_symlink_in);
+    inp->d.cfs_symlink.srcname =(char*)size;
+
+    len = strlen(lnm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_symlink.srcname, lnm, len);
+    size += len;
+
+    inp->d.cfs_symlink.tname = (char *)size;
+    len = strlen(nm) + 1;
+    strncpy((char *)inp + (int)inp->d.cfs_symlink.tname, nm, len);
+    size += len;
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+
+    CFS_FREE(buf, sizeof(struct inputArgs) + CFS_MAXPATHLEN + CFS_MAXNAMLEN + 8);
+    return error;
+}
+
+venus_readdir(void *mdp, ViceFid *fid,
+    	int count, int offset,
+	struct ucred *cred, struct proc *p,
+/*out*/	char *buffer, int *len)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf=NULL;
+    int size;
+    int error;
+
+    CFS_ALLOC(buf, char *, VC_MAXMSGSIZE);
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* send the open to venus. */
+    INIT_IN(inp, CFS_READDIR, cred);
+    
+    inp->d.cfs_readdir.VFid = *fid;
+    inp->d.cfs_readdir.count = count;
+    inp->d.cfs_readdir.offset = offset;
+    size = VC_MAXMSGSIZE;
+
+    error = cfscall(mdp, VC_INSIZE(cfs_readdir_in), &size, (char *)inp);
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	bcopy((char *)outp + (int)outp->d.cfs_readdir.data, buffer, outp->d.cfs_readdir.size);
+	*len = outp->d.cfs_readdir.size;
+    }
+
+    CFS_FREE(buf, VC_MAXMSGSIZE);
     return error;
 }

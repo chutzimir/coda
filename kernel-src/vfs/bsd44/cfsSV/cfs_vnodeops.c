@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.7  1997/11/20 11:46:51  rvb
- * Capture current cfs_venus
+ * Revision 1.4.14.8  1997/11/21 11:28:04  rvb
+ * cfs_venus.c is done: first pass
  *
+ * Revision 1.4.14.7  97/11/20  11:46:51  rvb
+ * Capture current cfs_venus
+ * 
  * Revision 1.4.14.6  97/11/18  10:27:19  rvb
  * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  * 
@@ -1196,23 +1199,19 @@ cfs_create(v)
     struct componentname  *cnp = ap->a_cnp;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)];*/
 /* locals */
+    int error;
     struct cnode *cp;
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
-    int s;
+    char nm[MAXPATHLEN];   /* overkill, but... */
+    ViceFid VFid;
+    struct vattr attr;
 
     MARK_ENTRY(CFS_CREATE_STATS);
 
     /* All creates are exclusive XXX */
     /* I'm assuming the 'mode' argument is the file mode bits XXX */
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     /* Check for create of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
@@ -1221,26 +1220,7 @@ cfs_create(v)
 	return(EACCES);
     }
 
-    CFS_ALLOC(buf, char *, (CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_CREATE, cred);
-    in->d.cfs_create.VFid = dcp->c_fid;
-    in->d.cfs_create.excl = exclusive;
-    in->d.cfs_create.mode = mode;
-    in->d.cfs_create.attr = *va;
-
-    size = VC_INSIZE(cfs_create_in);
-    in->d.cfs_create.name = (char *)size;
-
-    s = strlen(nm) + 1;
-    strncpy((char*)in + (int)in->d.cfs_create.name, nm, s);
-    size += s;
-
-    error = cfscall(vtomi(dvp), size, &size, buf);
-
-    if (!error) 
-	error = out->result;
+    error = venus_create(vtomi(dvp), &dcp->c_fid, nm, exclusive, mode, va, cred, p, &VFid, &attr);
 
     if (!error) {
 	
@@ -1248,22 +1228,21 @@ cfs_create(v)
 	/* Venus should have detected the file and reported EEXIST. */
 
 	if ((exclusive == EXCL) &&
-	    (cfs_find(&out->d.cfs_create.VFid, dvp->v_mount) != NULL))
+	    (cfs_find(&VFid, dvp->v_mount) != NULL))
 	    panic("cnode existed for newly created file!");
 	
-	cp = makecfsnode(&out->d.cfs_create.VFid, dvp->v_mount,
-			((struct vattr *) &(out->d.cfs_create.attr))->va_type);
+	cp = makecfsnode(&VFid, dvp->v_mount, attr.va_type);
 	*vpp = CTOV(cp);
 	
 	/* Update va to reflect the new attributes. */
-	(*va) = out->d.cfs_create.attr;
+	(*va) = attr;
 	
 	/* Update the attribute cache and mark it as valid */
 	if (cfs_attr_cache) {
-	    VTOC(*vpp)->c_vattr = out->d.cfs_create.attr;  
+	    VTOC(*vpp)->c_vattr = attr;
 	    VTOC(*vpp)->c_flags |= C_VATTR;       
 	}
-	
+
 	/* Invalidate the parent's attr cache, the modification time has changed */
 	VTOC(dvp)->c_flags &= ~C_VATTR;
 	
@@ -1272,17 +1251,12 @@ cfs_create(v)
 	
 	CFSDEBUG(CFS_CREATE, 
 		 myprintf(("create: (%x.%x.%x), result %d\n",
-			out->d.cfs_create.VFid.Volume,
-			out->d.cfs_create.VFid.Vnode,
-			out->d.cfs_create.VFid.Unique,
-			out->result)); )
-    }
-    else {
+			VFid.Volume, VFid.Vnode, VFid.Unique, error)); )
+    } else {
 	*vpp = (struct vnode *)0;
-	CFSDEBUG(CFS_CREATE, myprintf(("create error %d\n",error));)
+	CFSDEBUG(CFS_CREATE, myprintf(("create error %d\n", error));)
     }
 
-    if (buf) CFS_FREE(buf, (CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)));
     /* Locking strategy. */
     /*
      * In NetBSD, all creates must explicitly vput their dvp's.  We'll
@@ -1327,20 +1301,16 @@ cfs_remove(v)
     struct componentname  *cnp = ap->a_cnp;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, s;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* locals */
-    char *buf=NULL; /*[CFS_MAXNAMLEN + sizeof(struct inputArgs)];*/
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
+    int error;
+
+    char nm[MAXPATHLEN];   /* overkill, but... */
     struct cnode *tp;
 
     MARK_ENTRY(CFS_REMOVE_STATS);
 
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     CFSDEBUG(CFS_REMOVE, myprintf(("remove: %s in %d.%d.%d\n",
 				   nm, cp->c_fid.Volume, cp->c_fid.Vnode,
@@ -1376,23 +1346,8 @@ cfs_remove(v)
 	return(ENOENT);
     }
 
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-    in = (struct inputArgs *) buf;
-    out = (struct outputArgs *) buf;
+    error = venus_remove(vtomi(dvp), &cp->c_fid, nm, cred, p);
 
-    INIT_IN(in, CFS_REMOVE, cred);
-    in->d.cfs_remove.VFid = cp->c_fid;
-    in->d.cfs_remove.name = (char *)(VC_INSIZE(cfs_remove_in));
-    s = strlen(nm) + 1;
-    strncpy((char *)in + (int)in->d.cfs_remove.name, nm, s);
-    s += VC_INSIZE(cfs_remove_in);
-
-    error = cfscall(vtomi(dvp), s, &s, (char *)in);
-
-    if (!error) 
-	error = out->result;
-
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
     CFSDEBUG(CFS_REMOVE, myprintf(("in remove result %d\n",error)); )
     /* 
      * Regardless of what happens, we have to unconditionally drop
@@ -1425,14 +1380,9 @@ cfs_link(v)
     struct componentname *cnp = ap->a_cnp;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, s;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* locals */
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_link_in)];*/
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *tnm = tname;
+    int error;
+    char nm[MAXPATHLEN];   /* overkill, but... */
 
     MARK_ENTRY(CFS_LINK_STATS);
 
@@ -1457,11 +1407,11 @@ cfs_link(v)
     }
 
 
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     /* Check for link to/from control object. */
-    if (IS_CTL_NAME(tdvp, tnm) || IS_CTL_VP(vp)) {
+    if (IS_CTL_NAME(tdvp, nm) || IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_LINK_STATS);
 	return(EACCES);
     }
@@ -1481,28 +1431,13 @@ cfs_link(v)
 	goto exit;
     }
 	
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-    in = (struct inputArgs *) buf;
-    out = (struct outputArgs *) buf;
-
-    INIT_IN(in, CFS_LINK, cred);
-    in->d.cfs_link.sourceFid = cp->c_fid;
-    in->d.cfs_link.destFid = tdcp->c_fid;
-    in->d.cfs_link.tname = (char *)(VC_INSIZE(cfs_link_in));
-    s = strlen(tnm) + 1;
-    strncpy((char *)in + (int)in->d.cfs_link.tname, tnm, s);
-    s += VC_INSIZE(cfs_link_in);
-
-    error = cfscall(vtomi(vp), s, &s, (char *)in);
-    if (!error) 
-	error = out->result;
+    error = venus_link(vtomi(vp), &cp->c_fid, &tdcp->c_fid, nm, cred, p);
 
     /* Invalidate the parent's attr cache, the modification time has changed */
     VTOC(tdvp)->c_flags &= ~C_VATTR;
     VTOC(vp)->c_flags &= ~C_VATTR;
 
     CFSDEBUG(CFS_LINK,	myprintf(("in link result %d\n",error)); )
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
 
 exit:
 
@@ -1532,25 +1467,18 @@ cfs_rename(v)
     struct componentname  *tcnp = ap->a_tcnp;
     struct ucred *cred = fcnp->cn_cred;
     struct proc *p = fcnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* true args */
-    char fname[MAXPATHLEN];   /* overkill, but... */
-    char *onm = fname;
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nnm = tname;
-    /* Buffer to hold the basic message, 2 names, and padding to word align them */
-    char *buf=NULL; /*[VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8];*/
+    int error, size;
+    char fnm[MAXPATHLEN];   /* overkill, but... */
+    char tnm[MAXPATHLEN];   /* overkill, but... */
     int s;
 
     MARK_ENTRY(CFS_RENAME_STATS);
 
-    bcopy(fcnp->cn_nameptr, fname,  fcnp->cn_namelen);
-    bcopy(tcnp->cn_nameptr, tname,  tcnp->cn_namelen);
-    fname[fcnp->cn_namelen] = '\0';
-    tname[tcnp->cn_namelen] = '\0';
+    bcopy(fcnp->cn_nameptr, fnm,  fcnp->cn_namelen);
+    bcopy(tcnp->cn_nameptr, tnm,  tcnp->cn_namelen);
+    fnm[fcnp->cn_namelen] = '\0';
+    tnm[tcnp->cn_namelen] = '\0';
 
     /* Hmmm.  The vnodes are already looked up.  Perhaps they are locked?
        This could be Bad. XXX */
@@ -1563,14 +1491,14 @@ cfs_rename(v)
 #endif DIAGNOSTIC
 
     /* Check for rename involving control object. */ 
-    if (IS_CTL_NAME(odvp, onm) || IS_CTL_NAME(ndvp, nnm)) {
+    if (IS_CTL_NAME(odvp, fnm) || IS_CTL_NAME(ndvp, tnm)) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	return(EACCES);
     }
 
     /* Problem with moving directories -- need to flush entry for .. */
     if (odvp != ndvp) {
-	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), onm, cred);
+	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), fnm, cred);
 	if (ovcp) {
 	    struct vnode *ovp = CTOV(ovcp);
 	    if ((ovp) &&
@@ -1580,50 +1508,31 @@ cfs_rename(v)
     }
 
     /* Remove the entries for both source and target files */
-    cfsnc_zapfile(VTOC(odvp), onm);
-    cfsnc_zapfile(VTOC(ndvp), nnm);
+    cfsnc_zapfile(VTOC(odvp), fnm);
+    cfsnc_zapfile(VTOC(ndvp), tnm);
 
     /* Invalidate the parent's attr cache, the modification time has changed */
     VTOC(odvp)->c_flags &= ~C_VATTR;
     VTOC(ndvp)->c_flags &= ~C_VATTR;
 
-    CFS_ALLOC(buf, char *, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
 
-    INIT_IN(in, CFS_RENAME, cred);
-
-    in->d.cfs_rename.sourceFid = odcp->c_fid;
-    in->d.cfs_rename.destFid = ndcp->c_fid;
-
-    size = VC_INSIZE(cfs_rename_in);	
-    in->d.cfs_rename.srcname = (char*)size;
-    s = (strlen(onm) & ~0x3) + 4;	/* Round up to word boundary. */
+    s = (strlen(fnm) & ~0x3) + 4;	/* Round up to word boundary. */
     if (s > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	error = EINVAL;
 	goto exit;
     }
-    strncpy((char *)in + (int)in->d.cfs_rename.srcname, onm, s);
 
-    size += s;
-    in->d.cfs_rename.destname = (char *)size;
-
-    s = (strlen(nnm) & ~0x3) + 4;	/* Round up to word boundary. */
+    s = (strlen(tnm) & ~0x3) + 4;	/* Round up to word boundary. */
     if (s > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	error = EINVAL;
 	goto exit;
     }
-    strncpy((char *)in + (int)in->d.cfs_rename.destname, nnm, s);
 
-    size += s;
-    error = cfscall(vtomi(odvp), size, &size, (char *)in);
-    if (!error) 
-	error = out->result;
+    error = venus_rename(vtomi(odvp), &odcp->c_fid, &ndcp->c_fid, fnm, tnm, cred, p);
 
  exit:
-    if (buf) CFS_FREE(buf, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
     CFSDEBUG(CFS_RENAME, myprintf(("in rename result %d\n",error));)
     /* XXX - do we need to call cache pureg on the moved vnode? */
     cache_purge(ap->a_fvp);
@@ -1659,20 +1568,18 @@ cfs_mkdir(v)
     struct vnode **vpp = ap->a_vpp;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* locals */
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
+    int error;
+    char nm[MAXPATHLEN];   /* overkill, but... */
     struct cnode *cp;
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in)];*/
+    ViceFid VFid;
+    struct vattr ova;
+    int size;
 
     MARK_ENTRY(CFS_MKDIR_STATS);
 
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     /* Check for mkdir of target object. */
     if (IS_CTL_NAME(dvp, nm)) {
@@ -1689,59 +1596,38 @@ cfs_mkdir(v)
 	return(EACCES);
     }
 
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_MKDIR, cred);
-
-    in->d.cfs_mkdir.VFid = dcp->c_fid;
-    in->d.cfs_mkdir.attr = *va;
-    in->d.cfs_mkdir.name = (char *)(VC_INSIZE(cfs_mkdir_in));
-    strncpy((char *)in + (int)in->d.cfs_mkdir.name, nm, size);
-
-    size += VC_INSIZE(cfs_mkdir_in);
-
-    error = cfscall(vtomi(dvp), size, &size, (char *)in);
-
-    if (!error) 
-	error = out->result;
+    error = venus_mkdir(vtomi(dvp), &dcp->c_fid, nm, va, cred, p, &VFid, &ova);
 
     if (!error) {
-	if (cfs_find(&out->d.cfs_mkdir.VFid, dvp->v_mount) != NULL)
+	if (cfs_find(&VFid, dvp->v_mount) != NULL)
 	    panic("cnode existed for newly created directory!");
 	
 	
-	cp =  makecfsnode(&out->d.cfs_mkdir.VFid, 
-			  dvp->v_mount, va->va_type);
+	cp =  makecfsnode(&VFid, dvp->v_mount, va->va_type);
 	*vpp = CTOV(cp);
 	
 	/* enter the new vnode in the Name Cache */
 	cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
-	
+
 	/* as a side effect, enter "." and ".." for the directory */
 	cfsnc_enter(VTOC(*vpp), ".", cred, VTOC(*vpp));
 	cfsnc_enter(VTOC(*vpp), "..", cred, VTOC(dvp));
-	
+
 	if (cfs_attr_cache) {
-	    VTOC(*vpp)->c_vattr = out->d.cfs_mkdir.attr;/* update the attr cache */
-	    VTOC(*vpp)->c_flags |= C_VATTR;   /* Valid attributes in cnode */
+	    VTOC(*vpp)->c_vattr = ova;		/* update the attr cache */
+	    VTOC(*vpp)->c_flags |= C_VATTR;	/* Valid attributes in cnode */
 	}
-	
+
 	/* Invalidate the parent's attr cache, the modification time has changed */
 	VTOC(dvp)->c_flags &= ~C_VATTR;
 	
 	CFSDEBUG( CFS_MKDIR, myprintf(("mkdir: (%x.%x.%x) result %d\n",
-				    out->d.cfs_mkdir.VFid.Volume,
-				    out->d.cfs_mkdir.VFid.Vnode,
-				    out->d.cfs_mkdir.VFid.Unique,
-				    out->result)); )
-    }
-    else {
+				    VFid.Volume, VFid.Vnode, VFid.Unique, error)); )
+    } else {
 	*vpp = (struct vnode *)0;
 	CFSDEBUG(CFS_MKDIR, myprintf(("mkdir error %d\n",error));)
     }
 
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
     /*
      * Currently, all mkdirs explicitly vput their dvp's.
      * It also appears that we *must* lock the vpp, since
@@ -1776,20 +1662,15 @@ cfs_rmdir(v)
     struct componentname  *cnp = ap->a_cnp;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* true args */
-    char tname[MAXPATHLEN];	/* overkill, but... */
-    char *nm = tname;
-    char *buf=NULL;		/*[CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in)];*/
+    int error;
+    char nm[MAXPATHLEN];	/* overkill, but... */
     struct cnode *cp;
    
     MARK_ENTRY(CFS_RMDIR_STATS);
 
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     /* Check for rmdir of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
@@ -1814,26 +1695,10 @@ cfs_rmdir(v)
     /* Invalidate the parent's attr cache, the modification time has changed */
     dcp->c_flags &= ~C_VATTR;
 
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_RMDIR, cred);
+    error = venus_rmdir(vtomi(dvp), &dcp->c_fid, nm, cred, p);
 
-    in->d.cfs_rmdir.VFid = dcp->c_fid;
-    in->d.cfs_rmdir.name = (char *)(VC_INSIZE(cfs_rmdir_in));
+    CFSDEBUG(CFS_RMDIR, myprintf(("in rmdir result %d\n", error)); )
 
-    size = strlen(nm) + 1;
-	
-    strncpy((char *)in + (int)in->d.cfs_rmdir.name, nm, size);
-    size = VC_INSIZE(cfs_rmdir_in) + size;
-
-    error = cfscall(vtomi(dvp), size, &size, (char *)in);
-    if (!error) 
-	error = out->result;
-
-    CFSDEBUG(CFS_RMDIR, myprintf(("in rmdir result %d\n",error)); )
-
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
     /*
      * regardless of what happens, we need to drop locks/refs on the 
      * parent and child.  I think. 
@@ -1864,21 +1729,15 @@ cfs_symlink(v)
     char *lnm = ap->a_target;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
 /* locals */
+    int error;
     /* 
      * XXX I'm assuming the following things about cfs_symlink's
      * arguments: 
      *       t(foo) is the new name/parent/etc being created.
      *       lname is the contents of the new symlink. 
      */
-    char	tname[MAXPATHLEN];   /* overkill, but... */
-    char	*tnm = tname;
-    /* allocate space for regular input, plus 1 path and 1 name, plus padding */
-    char	*buf = NULL; /*[sizeof(struct inputArgs) + CFS_MAXPATHLEN + CFS_MAXNAMLEN + 8];*/
+    char nm[MAXPATHLEN];   /* overkill, but... */
     int		 s;
 
     /* XXX What about the vpp argument?  Do we need it? */
@@ -1894,48 +1753,30 @@ cfs_symlink(v)
 
     MARK_ENTRY(CFS_SYMLINK_STATS);
 
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
+    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
+    nm[cnp->cn_namelen] = '\0';
 
     /* Check for symlink of control object. */
-    if (IS_CTL_NAME(tdvp, tnm)) {
+    if (IS_CTL_NAME(tdvp, nm)) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	return(EACCES);
     }
-
-    CFS_ALLOC(buf, char *, sizeof(struct inputArgs) + CFS_MAXPATHLEN 
-	                   + CFS_MAXNAMLEN + 8);
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_SYMLINK, cred);
-
-    in->d.cfs_symlink.VFid = tdcp->c_fid;
-    in->d.cfs_symlink.attr = *tva;
-
-    size = VC_INSIZE(cfs_symlink_in);
-    in->d.cfs_symlink.srcname =(char*)size;
 
     s = (strlen(lnm) & ~0x3) + 4;	/* Round up to word boundary. */
     if (s > CFS_MAXPATHLEN) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	return(EINVAL);
     }
-    strncpy((char *)in + (int)in->d.cfs_symlink.srcname, lnm, s);
 
-    size += s;
-    in->d.cfs_symlink.tname = (char *)size;
-    s = (strlen(tnm) & ~0x3) + 4;	/* Round up to word boundary. */
+    s = (strlen(nm) & ~0x3) + 4;	/* Round up to word boundary. */
     if (s > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	error = EINVAL;
 	goto exit;
     }
-    strncpy((char *)in + (int)in->d.cfs_symlink.tname, tnm, s);
 
-    size += s;
-    error = cfscall(vtomi(tdvp), size, &size, (char *)in);
-    if (!error)
-	error = out->result; 
+    error = venus_symlink(vtomi(tdvp), &tdcp->c_fid, lnm, nm, tva, cred, p);
+
     if (!error)
 /*
 	error = cfs_lookup(tdvp, tname, ap->a_vpp, cred, p);
@@ -1946,7 +1787,7 @@ cfs_symlink(v)
 	cn.cn_flags = 0;
 	cn.cn_proc = p;
 	cn.cn_cred = cred;
-	cn.cn_nameptr = tname;
+	cn.cn_nameptr = nm;
 	error = VOP_LOOKUP(tdvp, ap->a_vpp, &cn);
     }
 
@@ -1970,10 +1811,6 @@ cfs_symlink(v)
     }
 
  exit:    
-    if (buf) {
-	CFS_FREE(buf, sizeof(struct inputArgs) + CFS_MAXPATHLEN 
-		 + CFS_MAXNAMLEN + 8);
-    }
     CFSDEBUG(CFS_SYMLINK, myprintf(("in symlink result %d\n",error)); )
     return(error);
 }
@@ -2039,11 +1876,8 @@ cfs_readdir(v)
     }
     else {
 	/* Read the block from Venus. */
-	struct inputArgs *in;
-	struct outputArgs *out;
 	struct iovec *iovp = uiop->uio_iov;
 	unsigned count = iovp->iov_len;
-	char *buf=NULL;
 	int size;
 	
 	
@@ -2058,36 +1892,20 @@ cfs_readdir(v)
 	if (count > VC_DATASIZE)
 	    return(EINVAL);
 	
-	CFS_ALLOC(buf, char *, VC_MAXMSGSIZE);
-	in = (struct inputArgs *)buf;
-	out = (struct outputArgs *)buf;
-	INIT_IN(in, CFS_READDIR, cred);
 	
-	in->d.cfs_readdir.VFid = cp->c_fid;
-	in->d.cfs_readdir.count = count;
-	in->d.cfs_readdir.offset = uiop->uio_offset;
-	
-	size = VC_MAXMSGSIZE;
-	error = cfscall(vtomi(CTOV(cp)), VC_INSIZE(cfs_readdir_in),
-			&size, (char *)in);
-	
-	if (!error) error = out->result;
+	error = venus_readdir(vtomi(CTOV(cp)), &cp->c_fid, count, uiop->uio_offset, cred, p, iovp->iov_base, &size);
 	
 	CFSDEBUG(CFS_READDIR,
 		 myprintf(("cfs_readdir(%x, %d, %d, %d) returns (%d, %d)\n",
-			(char *)out + (int)out->d.cfs_readdir.data, in->d.cfs_readdir.count,
-			in->d.cfs_readdir.offset, uiop->uio_segflg, error,
-			out->d.cfs_readdir.size)); )
-	    
+			iovp->iov_base, count,
+			uiop->uio_offset, uiop->uio_segflg, error,
+			size)); )	
 	if (!error) {
-	    bcopy((char *)out + (int)out->d.cfs_readdir.data, iovp->iov_base, out->d.cfs_readdir.size);
-	    iovp->iov_base += out->d.cfs_readdir.size;
-	    iovp->iov_len -= out->d.cfs_readdir.size;
-	    uiop->uio_resid -= out->d.cfs_readdir.size;
-	    uiop->uio_offset += out->d.cfs_readdir.size;
+	    iovp->iov_base += size;
+	    iovp->iov_len -= size;
+	    uiop->uio_resid -= size;
+	    uiop->uio_offset += size;
 	}
-	if (buf) CFS_FREE(buf, VC_MAXMSGSIZE);
-	
     }
 
     return(error);
