@@ -467,7 +467,6 @@ int binaryfloor(int n) {
 void LogInit() {
     rename(LOGFILE, LOGFILE_OLD);
 
-    fclose(stderr);
     logFile = fopen(LOGFILE, "w+");
     if (logFile == NULL)
 	{ eprint("LogInit failed"); exit(-1); }
