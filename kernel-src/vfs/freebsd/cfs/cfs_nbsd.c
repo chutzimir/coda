@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.10  1997/02/12 15:32:05  rvb
+ * Make statfs return values like for AFS
+ *
  * Revision 1.9  1997/01/30 16:42:02  bnoble
  * Trace version as of SIGCOMM submission.  Minor fix in cfs_nb_open
  *
@@ -196,13 +199,17 @@ cfs_nb_statfs(vfsp, sbp, p)
 {
     bzero(sbp, sizeof(struct statfs));
     /* XXX - what to do about f_flags, others? --bnoble */
+    /* Below This is what AFS does */
+    /* Note: Normal fs's have a bsize of 0x400 == 1024 */
+    sbp->f_type = 0;
     sbp->f_bsize = 8192; /* XXX */
     sbp->f_iosize = 8192; /* XXX */
-    sbp->f_blocks = -1;
-    sbp->f_bfree = INT_MAX;
-    sbp->f_bavail = INT_MAX;
-    sbp->f_files = -1;
-    sbp->f_ffree = INT_MAX;
+#define NB_SFS_SIZ 0x895440
+    sbp->f_blocks = NB_SFS_SIZ;
+    sbp->f_bfree = NB_SFS_SIZ;
+    sbp->f_bavail = NB_SFS_SIZ;
+    sbp->f_files = NB_SFS_SIZ;
+    sbp->f_ffree = NB_SFS_SIZ;
     bcopy((caddr_t)&(VFS_FSID(vfsp)), (caddr_t)&(sbp->f_fsid),
 	  sizeof (fsid_t));
     strncpy(sbp->f_fstypename, MOUNT_CFS, MFSNAMELEN-1);
