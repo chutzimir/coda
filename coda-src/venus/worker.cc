@@ -277,7 +277,7 @@ void VFSMount() {
 #ifdef __BSD44__
     if (mount("coda", venusRoot, 0, kernDevice) < 0) {
 	if (mount("cfs", venusRoot, 0, kernDevice) < 0)
-#if	defined(__FreeBSD__) && !defined(__FreeBSD__version)
+#if	defined(__FreeBSD__) && !defined(__FreeBSD_version)
 #define MOUNT_CFS 19
 	    if (mount(MOUNT_CFS, venusRoot, 0, kernDevice) < 0)
 #endif

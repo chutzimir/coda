@@ -452,7 +452,7 @@ returnto:
 
 #ifdef __STDC__
 
-#ifdef	__FreeBSD__version
+#ifdef	__FreeBSD_version
 #include <machine/asm.h>
 #define SYMB(x)	ENTRY(x)
 #define EXT(x)	CNAME(x)
@@ -465,7 +465,7 @@ returnto:
 #include <machine/asm.h>
 #define SYMB(x)  ENTRY(x)
 #define EXT(x)	_C_LABEL(x)
-#endif	/*__FreeBSD__version*/
+#endif	/*__FreeBSD_version*/
 
 #else	/*!__STDC__*/
 #define SYMB(x)  _/**/x:
