@@ -162,7 +162,7 @@ long RPC2_SendResponse(IN ConnHandle, IN Reply)
     assert(Reply->Prefix.MagicNumber == OBJ_PACKETBUFFER);
 
 #ifdef RPC2DEBUG
-    TR_SENDRESPONSE()
+    TR_SENDRESPONSE();
 #endif RPC2DEBUG
 
 	    
