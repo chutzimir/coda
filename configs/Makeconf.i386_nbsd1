@@ -34,8 +34,6 @@
 # 
 
 # the following may need editing depending on your preferences
-exec_prefix = /usr/local
-SBINDIR = $(prefix)/sbin
 
 MACHINE_FLAGS = -D__BSD44__
 SHORTSYS      = bsd44
