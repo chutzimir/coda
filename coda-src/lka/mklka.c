@@ -111,7 +111,7 @@ int SetDescriptor(db_type *dbhandle, int entrycount)
   dbdata.db_datasize = strlen(LKA_VERSION_STRING) + 1;
   dbdata.db_dataptr  = malloc(dbdata.db_datasize);
   if (!dbdata.db_dataptr) {
-    printf("Arrgh ... malloc(%d) failed\n", dbdata.size);
+    printf("Arrgh ... malloc(%d) failed\n", dbdata.db_datasize);
     return(-1);
   }
   sprintf((char *)dbdata.db_dataptr, "%s", LKA_VERSION_STRING);
