@@ -121,7 +121,7 @@ long SFTP_Init()
 
     /* Create SFTP listener process */
     sname = "sftp_Listener";
-    LWP_CreateProcess((PFIC)sftp_Listener, 8192, LWP_NORMAL_PRIORITY, sname, sname, &sftp_ListenerPID);
+    LWP_CreateProcess((PFIC)sftp_Listener, 12288, LWP_NORMAL_PRIORITY, sname, sname, &sftp_ListenerPID);
     sftp_InitTrace();
     return (RPC2_SUCCESS);
     }

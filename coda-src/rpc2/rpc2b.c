@@ -161,7 +161,7 @@ long RPC2_Init(IN VId, IN Options, IN PList, IN PCount, IN RetryCount, IN KAInte
 		rpc2_Quit(RPC2_SEFAIL2);
 
     c = "SocketListener";
-    LWP_CreateProcess((PFIC)rpc2_SocketListener, 8192, LWP_NORMAL_PRIORITY, NULL,
+    LWP_CreateProcess((PFIC)rpc2_SocketListener, 12288, LWP_NORMAL_PRIORITY, NULL,
 		c, &rpc2_SocketListenerPID);
 
 #ifdef RPC2DEBUG
