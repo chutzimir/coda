@@ -37,6 +37,7 @@ srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
+
 include $(MAKDIR)/Makeconf
 
 CFLAGS := -Wall ${CFLAGS}
@@ -44,6 +45,8 @@ HEADERS   = partition.h  vicetab.h viceinode.h ftreeifs.h simpleifs.h
 OBJS = vicetab.o partition.o inodeops.o simpleifs.o  ftreeifs.o makeftree.o inoder.o backupifs.o
 LIBOBS = vicetab.o partition.o inodeops.o simpleifs.o ftreeifs.o backupifs.o
 EXECUTABLES = makeftree inoder
+SSBINS=makeftree inoder
+
 LIBRARIES = libpartition.a
 LIBS = $(LIBPARTITION) $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
 
