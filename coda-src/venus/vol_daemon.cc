@@ -75,7 +75,9 @@ extern "C" {
 #include "vproc.h"
 
 
-PRIVATE const int VolDaemonStackSize =  0xc000;
+PRIVATE const int VolDaemonStackSize =  0xffff; /* 64k stack, because of all
+						   the MAXPATHLEN stuff in
+						   vdb::CheckPoint. JH */
 PRIVATE const int VolDaemonInterval = 5;
 PRIVATE const int VolumeCheckInterval = 120 * 60;
 PRIVATE const int VolGetDownInterval = 5 * 60;
