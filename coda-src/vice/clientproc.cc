@@ -236,6 +236,10 @@ PRIVATE HostTable *client_GetVenusId(RPC2_Handle RPCid)
 	/* Lock the host entry. */
 	ObtainWriteLock(&hostTable[i].lock);
 
+#if 0  /* XXX This causes a consistent problem that the first RPC made on this connection
+	  which is opcode 40 (NewConnectFS) has its packet buffer dropped, because the 
+	  connection is not enabled in time */ 
+
 	/* If the host entry is not new, validate it by making a
            gratuitous callback. */
 	/* Note that failure will cause the callback connection to be
@@ -243,7 +247,7 @@ PRIVATE HostTable *client_GetVenusId(RPC2_Handle RPCid)
 	if ((hostTable[i].id != 0) && 
 	    (CallBack(hostTable[i].id, &NullFid) != 0))
 		CLIENT_CleanUpHost(&hostTable[i]);
-
+#endif
 	/* Unlock the host entry. */
 	ReleaseWriteLock(&hostTable[i].lock);
 
