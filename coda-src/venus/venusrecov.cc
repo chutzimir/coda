@@ -123,7 +123,7 @@ int MAXTS = UNSET_MAXTS;
 #ifdef MACH
 PRIVATE const char *VM_RVGADDR = (char *)0x00c00000;
 PRIVATE const char *VM_RDSADDR = (char *)0x01c00000;
-#elif defined(NetBSD1_3)
+#elif defined(NetBSD1_3) || defined(__FreeBSD_version)
 PRIVATE const char *VM_RVGADDR = (char *)0x50000000;
 PRIVATE const char *VM_RDSADDR = (char *)0x51000000;
 #elif defined(__BSD44__)
