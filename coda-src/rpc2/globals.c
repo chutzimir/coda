@@ -65,8 +65,6 @@ struct TM_Elem *rpc2_TimerQueue;
 struct CBUF_Header *rpc2_TraceBuffHeader = NULL;
 PROCESS rpc2_SocketListenerPID=NULL;
 
-struct timeval rpc2_InitTime;
-
 long Retry_N;			/* total number of retries -- see packet.c */
 struct timeval *Retry_Beta;	/* array of timeout intervals */
 struct timeval SaveResponse;    /* 2*Beta0: lifetime of saved response packet */
