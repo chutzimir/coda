@@ -121,6 +121,8 @@ void rpc2_XmitPacket(IN whichSocket, IN whichPB, IN whichHost, IN whichPortal)
     register RPC2_HostIdent *whichHost;
     register RPC2_PortalIdent *whichPortal;
 {
+    int n;
+
     say(0, RPC2_DebugLevel, "rpc2_XmitPacket()\n");
 
 #ifdef RPC2DEBUG
@@ -169,9 +171,28 @@ void rpc2_XmitPacket(IN whichSocket, IN whichPB, IN whichHost, IN whichPortal)
 
 	    if (DontFailPacket(Fail_SendPredicate, whichPB, &sa, whichSocket))
 		{
-		if (sendto(whichSocket, &whichPB->Header, whichPB->Prefix.LengthOfPacket, 0,
-		        (struct sockaddr *)&sa, sizeof(struct sockaddr_in)) 	
-			!= whichPB->Prefix.LengthOfPacket)
+                n = sendto(whichSocket, &whichPB->Header,
+                           whichPB->Prefix.LengthOfPacket, 0,
+                           (struct sockaddr *)&sa, sizeof(struct sockaddr_in));
+
+#ifdef __linux__
+                if ((n == -1) && (errno == ECONNREFUSED))
+                {
+                    /* On linux ECONNREFUSED is a result of a previous
+                     * sendto triggering ain ICMP bad host/port response.
+                     * This behaviour is required by RFC1122, but in
+                     * practice not implemented by other UDP network layers.
+                     * We retry the send, because the failing host was possibly
+                     * not the one we tried to send to this time. --JH
+                     */
+                    n = sendto(whichSocket, &whichPB->Header,
+                               whichPB->Prefix.LengthOfPacket, 0,
+                               (struct sockaddr *)&sa,
+                               sizeof(struct sockaddr_in));
+                }
+#endif
+
+		if (n != whichPB->Prefix.LengthOfPacket)
 		    {
 		    char msg[100];
 		    (void) sprintf(msg, "socket %ld", whichSocket);

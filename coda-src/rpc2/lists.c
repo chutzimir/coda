@@ -205,6 +205,7 @@ void rpc2_FreeSle(INOUT sl)
     if (tsl->Conn != 0)
 	{
 	ce = rpc2_FindCEAddr(tsl->Conn);
+        assert(ce != NULL);
 	ce->MySl = NULL;
 	}
 
