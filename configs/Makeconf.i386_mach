@@ -42,7 +42,6 @@ LIBCURSES     = -lcurses
 LIBCOMPAT     =
 INODEFSNAME   = libinodefs.a
 INODEFSDIR    = kernel-src/inodefs/mach
-LIBTRACE      = ../venus/libfaketrace.a
 LIBREADLINE   = /usr/new/lib/libreadline.a
 INCREADLINE   = -I/usr/new/include/readline
 machine_inodefs   = mach
