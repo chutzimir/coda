@@ -4592,7 +4592,7 @@ static rvm_bool_t do_monitor()
 
         /* scan monitoring vmaddr */
         if (isdigit(*cmd_cur) || (*cmd_cur == 'x') || (*cmd_cur == 'X'))
-            rvm_chk_vec[rvm_chk_len].vmaddr = (char *)str2ul(cmd_cur,
+            rvm_chk_vec[rvm_chk_len].vmaddr = (void *)str2ul(cmd_cur,
                             &cmd_cur,&rvm_chk_vec[rvm_chk_len].radix);
         else
             {
@@ -4863,7 +4863,7 @@ static rvm_bool_t do_recover()
             cmd_cur = cmd_save;
             goto file_name;
             }
-        switch ((long)recover_key_vec[key].target)
+        switch ((int)recover_key_vec[key].target)
             {
           case CLEAR_KEY:
             clear_monitor(); break;
