@@ -54,11 +54,14 @@
 #
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH = @srcdir@
 TOPOBJ= @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 HEADERS= 
 LIBRARIES = libinodefs.a
@@ -69,4 +72,4 @@ OFILES= ilib.o
 
 libinodefs.a: ilib.o
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
