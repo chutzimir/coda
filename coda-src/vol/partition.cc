@@ -181,8 +181,9 @@ PRIVATE void VSetPartitionDiskUsage(register struct DiskPartition *dp)
  dp->free = fsbuf.f_bavail;  /* available free blocsk */
  dp->totalUsable = fsbuf.f_blocks * 9 /10; 
  dp->minFree = 10;
+#endif
 
-#else
+#ifdef __BSD44__
     /* Satya (8/5/96): skipped porting this routine since it is not
     		used by Venus; needs to be ported for server; depends on sys/fs.h in Mach */
     LogMsg(0, VolDebugLevel, stdout,  "PORTING ERROR: VSetPartitionDiskUsage() not yet ported");
