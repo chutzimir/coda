@@ -43,7 +43,7 @@ LIBCOMPAT     = /usr/lib/libcompat.a
 INODEFSNAME   = libinodefs.a
 INODEFSDIR    = kernel-src/inodefs/netbsd
 LIBTRACE      = ../venus/libfaketrace.a
-machine_inodefs   = inodefs
+machine_inodefs   = netbsd
 #for rvm
 LIBTHREADS    =
 LIBMACH       = 
