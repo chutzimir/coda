@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.5  1998/01/23 11:53:51  rvb
- * Bring RVB_CFS1_1 to HEAD
+ * Revision 1.6  1998/01/31 20:53:19  rvb
+ * First version that works on FreeBSD 2.2.5
  *
+ * Revision 1.5  98/01/23  11:53:51  rvb
+ * Bring RVB_CFS1_1 to HEAD
+ * 
  * Revision 1.4.2.5  98/01/23  11:21:14  rvb
  * Sync with 2.2.5
  * 
@@ -97,7 +100,10 @@
 
 #ifdef	__FreeBSD__
 
-#define	__DEBUG_FreeBSD__ 1
+/* yuck yuck yuck */
+#define vref(x) cvref(x)
+extern void cvref(struct vnode *vp);
+/* yuck yuck yuck */
 
 /* for the prototype of DELAY() */
 #include <machine/clock.h>

@@ -47,9 +47,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
- * Revision 1.7  1998/01/23 11:53:39  rvb
- * Bring RVB_CFS1_1 to HEAD
+ * Revision 1.8  1998/01/31 20:53:10  rvb
+ * First version that works on FreeBSD 2.2.5
  *
+ * Revision 1.7  98/01/23  11:53:39  rvb
+ * Bring RVB_CFS1_1 to HEAD
+ * 
  * Revision 1.6.2.4  98/01/23  11:21:02  rvb
  * Sync with 2.2.5
  * 
@@ -491,11 +494,6 @@ cfsnc_remove(cncp, dcstat)
 	}
 	vrele(CTOV(cncp->cp)); 
 
-#ifdef	__MAYBE_FreeBSD__
-	if ((CTOV(cncp->cp)->v_object) && 
-	    (OBJ_DEAD == (CTOV(cncp->cp))->v_object->flags))
-	   CTOV(cncp->cp)->v_object = NULL;
-#endif
 	crfree(cncp->cred); 
 	bzero(DATA_PART(cncp),DATA_SIZE);
 
