@@ -52,10 +52,10 @@ LIBTERMCAP    = /usr/lib/libtermcap.a
 LIBKVM        = /usr/lib/libkvm.a
 ifeq ($(host),i386-unknown-netbsd1.2)
 INCGDBM       = -I/usr/local/include
-LIBGDBM       = /usr/local/lib/libgdbm.a
+LGDBM         = -L/usr/local/lib
 else
-INCGDBM       = -I/usr/pkg/include
-LIBGDBM       = /usr/pkg/lib/libgdbm.a
+INCGDBM       = -I/usr/pkg/include -I/usr/local/include
+LGDBM         = -L/usr/pkg/lib -L/usr/local/lib
 endif
 
 LIBMATH       = -lm

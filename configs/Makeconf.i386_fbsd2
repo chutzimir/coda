@@ -50,6 +50,6 @@ LIBMACH       =
 #for advice_srv
 LIBKVM        = /usr/lib/libkvm.a
 INCGDBM       = -I/usr/local/include
-LIBGDBM       = /usr/local/lib/libgdbm.a
+LGDBM         = -L/usr/local/lib
 LIBMATH       = -lm
 GUIDIR        = /usr/lib/coda
