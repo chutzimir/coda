@@ -1,9 +1,11 @@
+#ifndef _BLURB_
+#define _BLURB_
 /*
 
             Coda: an Experimental Distributed File System
                              Release 3.1
 
-          Copyright (c) 1987-1998 Carnegie Mellon University
+          Copyright (c) 1987-1996 Carnegie Mellon University
                          All Rights Reserved
 
 Permission  to  use, copy, modify and distribute this software and its
@@ -27,7 +29,8 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-/* $Header$ */
+__RCSID("$Header$");
+#endif /*_BLURB_*/
 
 
 /*
