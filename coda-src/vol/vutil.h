@@ -66,6 +66,7 @@ extern void CopyVolumeHeader(VolumeDiskData *from, VolumeDiskData *to);
 extern void ClearVolumeStats(VolumeDiskData *vol);
 
 extern int ListViceInodes(char *devname, char *mountedOn, char *resultFile, int (*judgeInode)(struct ViceInodeInfo*, VolumeId), int judgeParam);
+extern int ListCodaInodes(char *devname, char *mountedOn, char *resultFile, int (*judgeInode)(struct ViceInodeInfo*, VolumeId), int judgeParam);
 extern int HashString(register char *s, unsigned int size);
 extern void CloneVolume(Error *error, Volume *original, Volume *newv, Volume *old);
 
