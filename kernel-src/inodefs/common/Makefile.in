@@ -39,7 +39,7 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-HEADERS   = inodefs.h
+HEADERS   = inodefs.h uifs.h
 OBJS = inodefsulib.o
 LIBRARIES = libuinodefs.a
 
