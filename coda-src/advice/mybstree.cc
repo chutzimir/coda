@@ -52,14 +52,13 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef	__MACH__
-#include <libc.h>
+#ifdef __MACH__
 #include <sysent.h>
-#endif
-#if defined(__linux__) || defined(__NetBSD__)
-#include <stdlib.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
-#endif /* LINUX || __NetBSD__ */
+#include <stdlib.h>
+#endif
 #include <assert.h>
 
 #ifdef __cplusplus

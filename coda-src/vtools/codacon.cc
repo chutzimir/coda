@@ -48,15 +48,16 @@ extern "C" {
 #include <netdb.h>
 #include <ctype.h>
 #include <errno.h>
-#if defined(__linux__) || defined(__NetBSD__)
-#include <unistd.h>
-#include <stdlib.h>
-#else
-#include <libc.h>
-#include <sysent.h>
-#endif /* __linux__ || __NetBSD__ */
 #include <stdio.h>
 #include <string.h>
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

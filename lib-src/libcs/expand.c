@@ -66,7 +66,7 @@ static char *rcsid = "$Header$";
  */
 #include <sys/param.h>
 #include <sys/stat.h>
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 #include <dirent.h>
 #else
 #include <sys/dir.h>
@@ -167,7 +167,7 @@ endit:
 static void matchdir(pattern)
 	char *pattern;
 {
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 	register struct dirent *dp;
 #else
 	register struct direct *dp;

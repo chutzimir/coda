@@ -52,14 +52,12 @@ extern "C" {
 #include <sys/file.h>
 
 #ifdef __MACH__
-#include <mach.h>
+#include <sysent.h>
 #include <libc.h>
-#endif /* MACH */
-  
-#if defined(__linux__) || defined(__NetBSD__)
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* LINUX || __NetBSD__ */
+#endif
 
 #include <sys/ioctl.h>
 #include <libc.h>

@@ -63,17 +63,16 @@ extern "C" {
 #ifdef	__linux__
 #include <venus-dirent.h>  /* the new fashion: platform independent VFS for Venus */
 #endif
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <sys/dirent.h>
-#endif __NetBSD__
+#endif
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #include <rpc2.h>
 
 #include <math.h>
@@ -2173,36 +2172,36 @@ void fsobj::UnLock(LockLevel level) {
 
 void fsobj::GetVattr(struct vattr *vap) {
     /* Most attributes are derived from the VenusStat structure. */
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
     vap->va_type = FTTOVT(stat.VnodeType);
     vap->va_mode = stat.Mode ;
 #else 
     vap->va_mode = stat.Mode | FTTOVT(stat.VnodeType);
-#endif /* __linux__ || __NetBSD__ */
+#endif /* __linux__ || __BSD44__ */
 
-#ifdef __NetBSD__
+#ifdef __BSD44__
     vap->va_uid = (uid_t) stat.Owner;
     vap->va_gid = (gid_t)V_GID;
 #else
     vap->va_uid = (short)stat.Owner;
     vap->va_gid = (short)V_GID;
-#endif /* __NetBSD__ */
+#endif /* __BSD44__ */
     vap->va_fsid = 1;
     VA_ID(vap) = (IsRoot() && u.mtpoint && !IsVenusRoot())
 		       ? FidToNodeid(&u.mtpoint->fid)
 		       : FidToNodeid(&fid);
     vap->va_nlink = stat.LinkCount;
-#ifdef __NetBSD__
+#ifdef __BSD44__
     vap->va_size = (u_quad_t) stat.Length;
 #else 
     vap->va_size = stat.Length;
-#endif /* __NetBSD__ */
+#endif /* __BSD44__ */
     vap->va_blocksize = V_BLKSIZE;
-#ifdef __NetBSD__
+#ifdef __BSD44__
     VA_MTIME_1(vap) = (time_t)stat.Date;
 #else
     VA_MTIME_1(vap) = stat.Date;
-#endif /* __NetBSD__ */
+#endif /* __BSD44__ */
     VA_MTIME_2(vap) = 0;
     vap->va_atime = vap->va_mtime;
     vap->va_ctime = vap->va_mtime;
@@ -2210,9 +2209,9 @@ void fsobj::GetVattr(struct vattr *vap) {
 #ifdef __MACH__
     vap->va_blocks = NBLOCKS(vap->va_size) << 1;    /* 512 byte units! */
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
     vap->va_bytes = vap->va_size;
-#endif __NetBSD__
+#endif /* __BSD44 */
 
     /* If the object is currently open for writing we must physically stat it to get its size and time info. */
     if (!Simulating && WRITING(this)) {

@@ -208,7 +208,7 @@ cfs_strategy __P((struct buf *,
 
 
 /*
- * The following don't exist in NetBSD, but are needed in Mach
+ * The following don't exist in BSD44, but are needed in Mach
  */
 
 #ifdef	__MACH__

@@ -59,12 +59,15 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#ifdef	__linux__
-#include <unistd.h>
-#else
-#endif
 #include <sys/file.h>
 #include <sys/mman.h>
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 
 extern char *valloc ();
 int ft_debug;

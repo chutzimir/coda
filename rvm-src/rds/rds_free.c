@@ -38,7 +38,12 @@ static char *rcsid = "$Header$";
 
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __MACH__
+#include <sysent.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <rvm.h>
 #include <rds.h>
 #include <rds_private.h>

@@ -129,7 +129,7 @@ SYSCALL(idec)
 #ifdef	i386
 #include <syscall.h>
 #include <machine/asm.h>
-#ifndef __NetBSD__
+#ifndef __BSD44__
 #undef EXT
 #define ALIGN 2
 #define	LCL(x)	x
@@ -142,9 +142,9 @@ SYSCALL(idec)
 #define	ENTRY(x)	.globl EXT(x); .align ALIGN; EXT(x):
 #define SYSCALL(x)	ENTRY(x); movl	$(SYS_/**/x), %eax; SVC; jb LCL(cerror)
 #endif
-#else	__NetBSD__
+#else	/* __BSD44__ */
 #include "netbsdasm.h"	
-#endif	__NetBSD__
+#endif	/* __BSD44__ */
 
 	.globl	LCL(cerror)
 

@@ -70,9 +70,9 @@ extern "C" {
 #ifdef __MACH__
 #include <libc.h>
 #endif /* __MACH__ */
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #include <stdlib.h>
-#endif __NetBSD__
+#endif /* __BSD44__ */
 
 #ifdef __cplusplus
 }

@@ -62,15 +62,14 @@ extern "C" {
 #include <struct.h>
 #include <inodefs.h>
 
-#if defined(__linux__) || defined(__NetBSD__)
-#include <stdlib.h>
-#include <unistd.h>
-#endif
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
+
 #include <lwp.h>
 #include <rpc2.h>
 #include <se.h>

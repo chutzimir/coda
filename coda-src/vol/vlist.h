@@ -52,15 +52,14 @@ struct vle;
 extern "C" {
 #endif __cplusplus
 
-#ifdef	__MACH__
-#include <libc.h>
+#ifdef __MACH__
 #include <sysent.h>
-#endif
-
-#if defined(__linux__) || defined(__NetBSD__)
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* LINUX || __NetBSD__ */
+#endif
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

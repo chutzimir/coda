@@ -41,10 +41,13 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
-#ifdef	__linux__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
-#endif 
+#include <stdlib.h>
+#endif
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -264,7 +267,7 @@ int command_t::execute() {
 	// parent process 
 	union wait cstatus;
 	int cpid = rc;
-#ifdef	__NetBSD__
+#ifdef __BSD44__
 	for (rc = wait(&cstatus.w_status); (rc != -1) && (rc != cpid); rc = wait(&cstatus.w_status))
 #else
 	for (rc = wait(&cstatus); (rc != -1) && (rc != cpid); rc = wait(&cstatus))

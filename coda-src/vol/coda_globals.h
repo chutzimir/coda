@@ -66,9 +66,7 @@ static char *rcsid = "$Header$";
 /*
  * Recoverable Object Declarations
  */
-#ifndef __MACH__
 typedef int boolean_t; /* defined in /usr/include/mach/machine/boolean.h on Mach machines */
-#endif /* __MACH__ */
 
 CAMLIB_BEGIN_RECOVERABLE_DECLARATIONS
 

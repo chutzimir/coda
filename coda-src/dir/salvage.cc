@@ -71,9 +71,9 @@ extern "C" {
 #ifdef __MACH__
 #include <libc.h>
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <stdlib.h>
-#endif __NetBSD__
+#endif /* __BSD44__ */
 
 #ifdef __cplusplus
 }

@@ -60,15 +60,16 @@ extern "C" {
 extern int nlist(const char*, struct nlist[]);
 
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#if defined(__NetBSD__) || defined(__linux__)
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || __linux__ */
+#endif
+
 #include <lwp.h>
 #include <rpc2.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

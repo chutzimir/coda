@@ -37,7 +37,12 @@
  *	$Id$
  */
 
+#ifdef	__NetBSD__
 #include <machine/asm.h>
+#endif
+#ifdef	__FreeBSD__
+#include <machine/asmacro.h>
+#endif
 #include <sys/syscall.h>
 
 #ifdef __STDC__

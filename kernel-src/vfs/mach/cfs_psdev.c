@@ -94,7 +94,7 @@ int cfs_psdev_print_entry = 0;
 #endif 
 
 /* 
- * These functions are written for NetBSD.  The Mach versions are just
+ * These functions are written for BSD44.  The Mach versions are just
  * wrappers that call these with the right number of arguments 
  */
 
@@ -103,7 +103,7 @@ vc_nb_open(dev, flag, mode, p)
     dev_t        dev;      
     int          flag;     
     int          mode;     
-    struct proc *p;             /* NetBSD only */
+    struct proc *p;             /* BSD44 only */
 {
     register struct vcomm *vcp;
     struct ody_mntinfo *op;

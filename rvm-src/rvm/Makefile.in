@@ -63,7 +63,7 @@ HEADERS     = ${EXPHEADERS} ${PRIVHEADERS}
 
 # For mach platforms, we need to add libthread.a and libmach.a
 # LIBTHREADS and LIBMACH are defined in configs/Makeconf.Mach
-# NetBSD platforms need libcompat.a for insque and deque
+# BSD platforms need libcompat.a for insque and deque
 RVMUTL_LIBS = ${LIBCOMPAT} ${LIBTHREADS} ${LIBMACH}
 
 EXPHEADERS  = rvm.h rvm_statistics.h rvm_lwp.h rvm_private.h \

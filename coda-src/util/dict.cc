@@ -39,12 +39,12 @@ extern "C" {
 #endif __cplusplus
 
 #ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#if  __NetBSD__ || LINUX
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #include <string.h>
 
 #ifdef __cplusplus

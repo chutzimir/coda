@@ -73,22 +73,21 @@ extern "C" {
 #ifdef __MACH__
 #include <sys/viceioctl.h>
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <cfs/mach_vioctl.h> /* new location/name of sys/viceioctl.h */
-#endif __NetBSD__
+#endif /* __BSD44__ */
 #include <sys/file.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #include <errno.h>
 #include <lwp.h>
 #include <rpc2.h>

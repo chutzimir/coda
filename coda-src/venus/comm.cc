@@ -62,15 +62,14 @@ extern "C" {
 #include <string.h>
 #include <struct.h>
 #ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
   /* sigh if gcc 2.3.3 */
   /* #define binding Xbinding*/
-#endif /* __MACH__ */
-#if defined(__linux__) || defined(__NetBSD__)
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #ifndef	__linux__
 #include <machine/endian.h>
 #else

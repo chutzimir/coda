@@ -58,7 +58,7 @@ static char *rcsid = "$Header$";
  *
  * 
  * Revision 3.1  1995/03/04  19:08:16  bnoble
- * Bump to major revision 3 to prepare for NetBSD port
+ * Bump to major revision 3 to prepare for BSD port
  *
  * Revision 2.8  1995/02/17  18:21:41  dcs
  * Small change. Assume venus is only interested in specifying the size
@@ -179,7 +179,7 @@ typedef struct ViceFid {
 #ifdef KERNEL
 /*************** VFS operation prototypes */
 
-/* These are used directly by NetBSD, and wrapped for Mach. */
+/* These are used directly by BSD44, and wrapped for Mach. */
 
 int cfs_mount     __P((VFS_T *, char *, caddr_t, struct nameidata *, 
 		       struct proc *));

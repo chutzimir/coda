@@ -37,7 +37,7 @@ static char *rcsid = "$Header$";
 
 /*************** Include files */
 
-/* NetBSD includes */
+/* BSD44 includes */
 /* Overkill...     */
 #ifdef KERNEL
 #include <types.h>              /* Needed by malloc.h */
@@ -48,12 +48,12 @@ static char *rcsid = "$Header$";
 #include <mount.h>              /* no struct vfs, struct mount instead */
 #include <uio.h>
 #include <vnode.h>              /* vnode.h lives in sys, get via makefile */
-#include <cfs/mach_vioctl.h>    /* No viceioctl.h on NetBSD */
+#include <cfs/mach_vioctl.h>    /* No viceioctl.h on BSD44 */
 #include <vcfs.h>               /* Number of minor devices */
 #include <signal.h>
 #include <proc.h>               /* Definition for struct proc */
 #include <namei.h>              /* For lookup operations */
-#include <miscfs/specfs/specdev.h>  /* wow.  netbsd is screwed. */
+#include <miscfs/specfs/specdev.h>  /* wow.  BSD44 is screwed. */
 #include <dir.h>
 #include <ufs/ifs/ifs.h>
 #else KERNEL
@@ -218,7 +218,7 @@ struct cfid {
  * How cnode's track vnodes
  */
 
-/* On netbsd, just a pointer to a vnode */
+/* On BSD44, just a pointer to a vnode */
 typedef struct vnode *C_VNODE_T;           /* needed in cnode.h */
 
 /* 
@@ -250,7 +250,7 @@ typedef struct vnode *C_VNODE_T;           /* needed in cnode.h */
 /* XXX - is this right? */
 #define CNODE_COUNT(cp)    CTOV(cp)->v_usecount
 
-/* NetBSD vnodes don't have any Pager info in them ('cause there are
+/* BSD44 vnodes don't have any Pager info in them ('cause there are
    no external pagers, duh!) */
 #define VNODE_VM_INFO_INIT(vp)         /* MT */
 
@@ -275,7 +275,7 @@ extern int print_hold_release;
 #define VN_LOCK(vp)          VOP_LOCK(vp)
 #define VN_UNLOCK(vp)        VOP_UNLOCK(vp)
 
-/* NetBSD wants roots returned locked/ref'd.  Mach wants them vref'd */
+/* BSD44 wants roots returned locked/ref'd.  Mach wants them vref'd */
 
 #define CFS_ROOT_REF(vp) \
 do {                     \
@@ -283,7 +283,7 @@ do {                     \
     VN_LOCK(vp);         \
 } while (0)
 
-/* NetBSD wants lookups returned locked.  Mach doesn't */
+/* BSD44 wants lookups returned locked.  Mach doesn't */
 
 #define LOOKUP_LOCK(vp)     VOP_LOCK(vp);
 
@@ -345,7 +345,7 @@ do {                                                           \
 } while (0)
 #endif __STDC__
 
-/****************** Prototypes missing from NetBSD includes */
+/****************** Prototypes missing from BSD44 includes */
 
 extern int _remque __P((caddr_t));
 extern int _insque __P((caddr_t, caddr_t));

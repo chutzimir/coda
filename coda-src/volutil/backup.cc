@@ -64,20 +64,16 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/stat.h>
 #ifdef __MACH__
-#include <sys/fs.h>
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-
-#if defined(__linux__) || defined(__NetBSD__)
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || LINUX */
+#endif
 
 #include <netinet/in.h>
 #include <netdb.h>
-#include <libc.h>
 #ifdef __MACH__
+#include <sys/fs.h>
 #include <fstab.h>
 #endif
 #include <errno.h>
@@ -356,12 +352,12 @@ void SetPartitionDiskUsage(register partitionInfo_t *dp)
 
 #ifdef	__linux__
     dp->free =0;
-#endif /* LINUX */
+#endif /* __linux*/
 
-#ifdef __NetBSD__
+#ifdef	__BSD44__
     LogMsg(0, 0, stdout, "Arrgghh... SetPartitionDiskUsage() not ported yet");
     assert(0);
-#endif __NetBSD__
+#endif /* __BSD44__ */
 }
 
 InitPartitionEntry(partitionInfo_t **table, char *name, char *todayName)

@@ -655,9 +655,9 @@ void Reintegrate(volent *v) {
 #ifdef __MACH__
     r->u.u_cred.cr_ruid = v->CML.Owner();
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
     r->u.u_cred.cr_uid = v->CML.Owner();
-#endif __NetBSD__
+#endif /* __BSD44__ */
     r->u.u_vol = v;
     v->hold();			    /* vproc::End_VFS() will do release */
 

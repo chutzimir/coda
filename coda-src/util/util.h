@@ -61,8 +61,12 @@ supported by Transarc Corporation, Pittsburgh, PA.
     
 */
 
-#include <stdlib.h>
+#ifdef __MACH__
+#include <sysent.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
+#include <stdlib.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,6 +74,7 @@ extern "C" {
 
 #include <signal.h>
 #include <assert.h> /* in lieu of explicit definition below */
+#include <stdio.h>
 
 #ifdef __cplusplus
 }

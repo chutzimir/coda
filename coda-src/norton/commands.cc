@@ -174,7 +174,7 @@ long address_ok(vm_address_t addr, vm_size_t sz, vm_prot_t perm)
 }
 #endif
 
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <sys/mman.h>
 #define vm_address_t caddr_t
 #define vm_size_t    size_t

@@ -66,7 +66,14 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
+#ifdef __FreeBSD__
+#define KERNEL
 #include <sys/uio.h>
+#undef KERNEL
+#else 
+#include <sys/uio.h>
+#endif /* __FreeBSD__ */
 
 #include <rpc2.h>
 

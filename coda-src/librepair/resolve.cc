@@ -60,11 +60,10 @@ extern "C" {
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#if defined(__NetBSD__) || defined(__linux__)
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || __linux__ */
+#endif
 #include <errno.h>
 #include <assert.h> 
 extern int getbool(char *, int);

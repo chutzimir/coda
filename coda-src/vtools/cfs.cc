@@ -45,13 +45,12 @@ extern "C" {
 #include <errno.h>
 #include <sys/ioctl.h>
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#if defined(__NetBSD__) || defined(__linux__)
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || __linux__ */
+#endif
 #include <strings.h>
 #include <assert.h>
 #include <sys/socket.h>

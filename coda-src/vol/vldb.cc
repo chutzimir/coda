@@ -69,19 +69,18 @@ extern "C" {
 #include <stdio.h>
 #include <sys/file.h>
 #include <sys/dir.h>
-#ifndef  LINUX
+#ifndef  __linux__
 #include <fstab.h>
 #endif
 #include <netdb.h>
 #include <netinet/in.h>
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 
 #include <lock.h>
 #include <lwp.h>

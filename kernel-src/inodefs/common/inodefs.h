@@ -56,6 +56,9 @@ static char *rcsid = "$Header$";
 #ifdef __MACH__
 #include <sysent.h>	/* Mach defines these in sysent.h */
 #else /* __MACH__ */
+#ifdef __FreeBSD__
+#include <cfs/mach_vioctl.h>	/* for struct ViceIoctl */
+#endif /* __FreeBSD__ */
 extern int icreate __P((int, int, int, int, int, int));
 extern int iopen   __P((int, int, int));
 extern int iread   __P((int, int, long, unsigned int, char *, unsigned int));

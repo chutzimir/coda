@@ -78,8 +78,8 @@ include $(TOPDIR)/Makerules
 # Identify files of interest
 
 # (Satya, 8/9/96): should other modules obtain the .h files in HFILES from the Coda compilation tree?
-#		Or from /usr/include/cfs?  The latter doesn't exist on Mach, but does on NetBSD.
-#		As an expedient during the port	to NetBSD, I am installing all the .h files
+#		Or from /usr/include/cfs?  The latter doesn't exist on Mach, but does on BSD44.
+#		As an expedient during the port	to BSD44, I am installing all the .h files
 #		Straighten this out soon....
 
 

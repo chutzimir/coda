@@ -54,11 +54,10 @@ extern "C" {
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 
 #ifdef __cplusplus
 }
@@ -321,9 +320,9 @@ void Resolve(volent *v) {
 #ifdef __MACH__
     r->u.u_cred.cr_ruid = V_UID;
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
     r->u.u_cred.cr_uid = V_UID;
-#endif __NetBSD__
+#endif /* __BSD44__ */
     r->u.u_vol = v;
     v->hold();			    /* vproc::End_VFS() will do release */
 

@@ -72,7 +72,7 @@ static char *rcsid = "$Header$";
  * (Modifications made here may easily be lost!)
  *
  * Created by the script:
- *	$NetBSD: vnode_if.sh,v 1.8 1995/03/10 04:13:52 chopps Exp $
+ *	$BSD: vnode_if.sh,v 1.8 1995/03/10 04:13:52 chopps Exp $
  */
 
 

@@ -48,8 +48,12 @@ static char *rcsid = "$Header$";
 #include <ctype.h>
 #include <stdio.h>                      /* not used for log, segment i/o */
 #include <signal.h>
-#ifdef __NetBSD__
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
+#include <stdlib.h>
 #endif
 #include "rvm_private.h"
 

@@ -36,7 +36,13 @@ should be returned to Software.Distribution@cs.cmu.edu.
 static char *rcsid = "$Header$";
 #endif _BLURB_
 
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <rvm.h>
 #include "rvm_segment.h"
 
@@ -109,10 +115,10 @@ deallocate_vm(addr, length)
 }
 #endif
 
-/* NetBSD memory allocation; uses mmap as an allocator.  Any mmap-aware
+/* BSD44 memory allocation; uses mmap as an allocator.  Any mmap-aware
    system should be able to use this code */
 
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -181,7 +187,7 @@ deallocate_vm(addr, length)
 }
 
 
-#endif /* __NetBSD__ */
+#endif /* __linux__ || __BSD44__ */
 
 /* Generic Unix memory allocation functions */
 #ifndef ALLOCATE_VM_DEFINED

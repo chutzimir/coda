@@ -51,8 +51,9 @@ extern "C" {
 
 #include <lwp.h>
 #include <timer.h>
+#ifndef __FreeBSD__
 #include <libc.h>
-
+#endif
 
 #ifdef __cplusplus
 }
@@ -111,7 +112,7 @@ void InitOneADay() {
     struct tm *lt = localtime((long *) &curr_time);
     assert(lt != NULL);
     lt->tm_sec = lt->tm_min = lt->tm_hour = 0;       /* midnight today */
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
     unsigned long midnight = mktime(lt) + SECSPERDAY; /* midnight tomorrow */
 #else
     unsigned long midnight = gtime(lt) + SECSPERDAY; /* midnight tomorrow */

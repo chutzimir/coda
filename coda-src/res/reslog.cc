@@ -59,14 +59,15 @@ extern "C" {
 #include <stdarg.h>
 #include <strings.h>
 #ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
 #include <mach.h>
-#endif /* MACH */
-#if defined(__linux__) || defined(__NetBSD__)
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ */
+#endif
 #include <rpc2.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

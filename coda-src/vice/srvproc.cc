@@ -76,14 +76,13 @@ extern "C" {
 #include <strings.h>
 #include <inodefs.h>
 
-#ifdef	__linux__
-#include <stdlib.h>
-#include <unistd.h>
-#endif
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 
 #ifdef _TIMECALLS_
 #include "histo.h"

@@ -85,7 +85,7 @@ static char *rcsid = "$Header$";
 
 #define RUN_MAXARGS 1024
 
-#if	defined(__NetBSD__) || defined(__WIN32__) || defined(LINUX)
+#if defined(__linux__) || defined(__BSD44__) || defined(__WIN32__)
 #define	sigif	sigaction
 #define	sif_handler	sa_handler
 #define	sif_mask	sa_mask
@@ -111,7 +111,7 @@ int usepath;
 #else
 	struct sigif ignoresig,intsig,quitsig;
 #endif
-#if	defined(__NetBSD__) || defined(__WIN32__) || defined(__LINUX__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 	int status;
 #else
 	union wait status;
@@ -138,10 +138,10 @@ int usepath;
 #else
 	ignoresig.sif_handler = SIG_IGN;	/* ignore INT and QUIT signals */
 #endif
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 	sigemptyset(&ignoresig.sif_mask);
 	ignoresig.sif_flags = 0;
-#elif LINUX
+#elif	defined(__linux__)
 	ignoresig.sa_mask = 0;
 	ignoresig.sa_flags = 0;
 #else
@@ -152,7 +152,7 @@ int usepath;
 	(void) sigif (SIGQUIT,&ignoresig,&quitsig);
 
 	do {
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 		wpid = waitpid (-1, &status, WUNTRACED);
 #else
 		wpid = wait3 (&status, WUNTRACED, (struct rusage *)0);
@@ -166,7 +166,7 @@ int usepath;
 	/* restore signals */
 	(void) sigif (SIGINT,&intsig,(struct sigif *)0);
 	(void) sigif (SIGQUIT,&quitsig,(struct sigif *)0);
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 	if (WIFSIGNALED (status) ||
 	    (WIFEXITED(status) && WEXITSTATUS(status) == 0xff))
 		return (-1);

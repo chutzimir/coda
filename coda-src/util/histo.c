@@ -45,9 +45,9 @@ static char *rcsid = "$Header$";
 #include <libc.h>
 #include <sysent.h>
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <stdlib.h>
-#endif __NetBSD__
+#endif /* __BSD44__ */
 
 #include <math.h>
 #include <assert.h>

@@ -46,9 +46,9 @@ extern "C" {
 #ifdef __MACH__
 #include <libc.h>
 #endif
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #include <stdlib.h>
-#endif /* __NetBSD__ || LINUX */
+#endif /* __linux__ || __BSD44__ */
 extern int yylook();
 
 #define YYERRCODE	256		/* gross hack to simulate error */

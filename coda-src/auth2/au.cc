@@ -74,12 +74,12 @@ extern "C" {
 #include <sys/types.h>
 #include <netinet/in.h>
 #ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #include <lwp.h>
 #include <rpc2.h>
 #include <se.h>

@@ -57,7 +57,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 
 #include <stdio.h>
-#ifdef	__NetBSD__
+#ifdef	__BSD44__
 #include <sys/time.h>
 #endif
 #include "lwp.h"

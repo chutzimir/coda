@@ -290,7 +290,7 @@ public:
 
 /* class for a dir entry used for process uncached children
    (Satya, 8/12/96): had to change the name from dirent to
-   vdirent to prevent name clash with sys/dirent.h in NetBSD
+   vdirent to prevent name clash with sys/dirent.h in BSD44
 */
 class vdirent : public dlink {
     ViceFid fid;

@@ -44,15 +44,13 @@ extern "C" {
 #include <assert.h> 
 #include <struct.h>
 #include <strings.h>
-#ifdef	__MACH__
-#include <libc.h> 
-#endif
-
-#if LINUX | __NetBSD__
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
-#endif /* LINUX | __NetBSD__ */
+#endif
 
 #include <sys/types.h>
 #include <sys/stat.h>

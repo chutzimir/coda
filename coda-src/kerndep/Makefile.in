@@ -48,7 +48,7 @@ CXXFLAGS := $(CFLAGS)
 libkerndep.a:  setpag.o pioctl.o
 
 ifneq ($(SHORTSYS), mach)
-# On Linux and NetBSD, convert pioctl() to ioctl()
+# On Linux and BSD44, convert pioctl() to ioctl()
 setpag.o: setpag.c
 	$(CC) $(CFLAGS) -c $<
 pioctl.o: pioctl.c

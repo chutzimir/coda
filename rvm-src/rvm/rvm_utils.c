@@ -57,7 +57,12 @@ static char *rcsid = "$Header$";
 #if defined(hpux) || defined(__hpux)
 #include <hp_bsd.h>
 #endif /* hpux */
+#ifdef __MACH__
+#include <sysent.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <stdio.h>
 #include <sys/time.h>
 #include "rvm_private.h"

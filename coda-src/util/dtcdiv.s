@@ -51,6 +51,9 @@ static char *rcsid = "$Header$";
  *	Created for the Coda File System.
  *
  * $Log$
+ * Revision 4.2  1997/02/26 16:03:02  rvb
+ * NetBSD -> BSD44 (where appropriate) + integrate Hiroshi Inamura's FreeBSD support
+ *
  * Revision 4.1  1997/01/08 21:51:04  rvb
  * r = 4.1; fix $ HEADERS
  *
@@ -64,7 +67,7 @@ Revision 3.3.1.1  96/08/26  12:30:33  raiff
 Branch for release beta-26Aug1996_41240
 
 Revision 3.3  96/08/01  09:54:01  satya
-Syntactic changes for NetBSD port
+Syntactic changes for BSD port
 
 Revision 3.2.4.1  96/07/24  11:08:33  raiff
 Branch for release beta-24Jul1996_36690

@@ -51,18 +51,17 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #include <dirent.h> /* to pick up defn of MAXNAMLEN */
-#endif __NetBSD__
+#endif
 
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#if defined(__linux__) || defined(__NetBSD__)
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #ifdef	__linux__
 #include <sys/uio.h>
 #endif

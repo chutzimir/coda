@@ -49,14 +49,13 @@ extern "C" {
 #include <strings.h>
 #include <sys/stat.h>
 #include <setjmp.h>
-#if defined(__NetBSD__) || defined(__linux__)
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || __linux__ */
-#ifdef	__MACH__
-#include <libc.h>
-#include <sysent.h>
-#endif	/* __MACH__ */
+#endif
 #include <inodefs.h>
 #include <rpc2.h>
 #include <signal.h>

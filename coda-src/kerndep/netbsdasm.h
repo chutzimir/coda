@@ -32,11 +32,11 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #define LCL(x)	x	
 #define	CALL(x,y)	call PIC_PLT(_##y); addl $4*x,%esp
 /* gas fucks up offset -- although we don't currently need it, do for BCS */
 #define	LCALL(x,y)	.byte 0x9a; .long y; .word x
 
 #define	SYSCALL(x)	.text; .align 2; 2: jmp PIC_PLT(cerror); ENTRY(x); movl $SYS_/**/x,%eax; LCALL(7,0); jc 2b	
-#endif __NetBSD__
+#endif /* __BSD44__ */

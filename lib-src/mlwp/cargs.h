@@ -56,11 +56,11 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 
-/* On NetBSD, always require prototypes */
-#ifdef	__NetBSD__
+/* On BSD44, always require prototypes */
+#ifdef	__BSD44__
 #undef	C_ARGS
 #define	C_ARGS(arglist)	arglist
-#endif  /* __NetBSD__ */
+#endif	/* __BSD44__ */
 
 /* On other systems, base use of prototypes on compiler */
 #ifndef	C_ARGS

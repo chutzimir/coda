@@ -71,18 +71,19 @@ extern "C" {
 #include <sys/fs.h>
 #include <sys/inode.h>
 #include <sys/file.h>
-#include <libc.h>
-#include <sysent.h>
 #endif /* __MACH__ */
 
 #ifdef	__linux__
 #include <linux/fs.h>
-#endif /* LINUX */
+#endif /* __linux*/
 
-#if defined(__linux__) || defined(__NetBSD__)
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* __NetBSD__ || LINUX */
+#endif
 
 #include <libc.h>
 #include <sysent.h>

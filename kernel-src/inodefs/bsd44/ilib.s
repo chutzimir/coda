@@ -57,11 +57,17 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 
-#include <sys/syscall.h>
+#ifdef	__NetBSD__
 #include <machine/asm.h>
+#endif
+#ifdef	__FreeBSD__
+#include <machine/asmacro.h>
+#endif
+#include <sys/syscall.h>
 
 #include "SYS.h"	
 
+#ifdef	__NetBSD__
 SYSCALL(icreate)
 	ret
 
@@ -79,3 +85,19 @@ SYSCALL(iinc)
 
 SYSCALL(idec)
 	ret
+#endif
+
+#ifdef	__FreeBSD__
+ENTRY(icreate)
+	ret
+ENTRY(iopen)
+	ret
+ENTRY(iread)
+	ret
+ENTRY(iwrite)
+	ret
+ENTRY(iinc)
+	ret
+ENTRY(idec)
+	ret
+#endif

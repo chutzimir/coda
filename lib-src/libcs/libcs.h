@@ -66,7 +66,7 @@ static char *rcsid = "$Header$";
 extern FILE *fopenp __P((const char *, const char *, char *, const char *));
 extern FILE *fwantread __P((const char *, const char *, char *, const char *));
 extern FILE *fwantwrite __P((const char *, const char *, char *, const char *, int));
-#if   !(__NetBSD__ || LINUX)
+#if !(defined(__linux__) || defined(__BSD44__))
 extern int snprintf __P((char *, int, const char *, ...));
 extern int vsnprintf __P((char *, int, const char *, va_list));
 #endif

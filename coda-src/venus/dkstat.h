@@ -32,7 +32,7 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-/*	$NetBSD: dkstat.h,v 1.7 1995/03/26 20:24:01 jtc Exp $	*/
+/*	$BSD: dkstat.h,v 1.7 1995/03/26 20:24:01 jtc Exp $	*/
 
 /*-
  * Copyright (c) 1990, 1993

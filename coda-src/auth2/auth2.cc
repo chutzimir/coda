@@ -79,13 +79,12 @@ extern "C" {
 #include <errno.h>
 #include <string.h>
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 #include <ctype.h>
 #include <lwp.h>
 #include <rpc2.h>

@@ -36,9 +36,9 @@ static char *rcsid = "$Header$";
 
 /* IMPORTANT: README (Satya, 8/22/96)
 
-   This code has not been tested on NetBSD.  
+   This code has not been tested on BSD44.  
    Main change has been to eliminate use of VFMT, which does
-   not exist on NetBSD.
+   not exist on BSD44.
 */
 
 
@@ -81,17 +81,17 @@ extern "C" {
 #include <sys/stat.h>
 #ifdef __MACH__
 #include <sysent.h>
-#endif /* __MACH__ */
-#if __NetBSD__ | LINUX
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 
-#ifdef __NetBSD__
+#ifdef __BSD44__
 #include <dirent.h> /* to get defn of MAXNAMLEN */
-#endif __NetBSD__
+#endif /* __BSD44 */
 
 #include <libcs.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -122,14 +122,14 @@ extern "C" {
 }
 
 
-/* Define wrapper macro to cope with absence of VFMT on NetBSD */
+/* Define wrapper macro to cope with absence of VFMT on BSD44 */
 #ifdef __MACH__
 #define SIM_VTTOFT(v) VTTOFT((v) & VFMT)
 #endif /* __MACH__ */
 
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #define SIM_VTTOFT(v)  VTTOFT((v))
-#endif __NetBSD__
+#endif /* __linux__ ||__BSD44__ */
 
 
 const int SimulatorStackSize = 131072;

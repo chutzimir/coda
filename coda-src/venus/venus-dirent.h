@@ -32,7 +32,7 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-/*	$NetBSD: dirent.h,v 1.9 1994/12/13 15:58:20 mycroft Exp $	*/
+/*	$BSD: dirent.h,v 1.9 1994/12/13 15:58:20 mycroft Exp $	*/
 
 /*-
  * Copyright (c) 1989, 1993
@@ -80,7 +80,7 @@ static char *rcsid = "$Header$";
  * The maximum length of a name in a directory is MAXNAMLEN.
  */
 
-#if LINUX || MACH
+#if	defined(__linux__) || defined(__MACH__)
 #define u_int32_t   unsigned int
 #define u_int16_t   unsigned short
 #define u_int8_t    char

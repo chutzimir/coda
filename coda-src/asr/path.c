@@ -42,11 +42,13 @@ extern "C" {
 
 #include "asr.h"
 
-#if defined(__linux__) || defined(__NetBSD__)
-#include <unistd.h>
-#else
+#ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
-#endif 
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <sys/param.h>
 #include <sys/dir.h>
 #include <strings.h>
@@ -61,7 +63,7 @@ extern "C" {
 #endif __cplusplus
 
 
-#if LINUX || NetBSD
+#if defined(__linux__) || defined(__BSD44__)
 
 /* An implementation of path(3) which is a standard function in Mach OS
  * the behaviour is according to man page in Mach OS, which says,

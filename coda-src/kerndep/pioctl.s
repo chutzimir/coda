@@ -95,7 +95,7 @@ SYSCALL(pioctl)
 #ifdef	i386
 #include <sys/syscall.h>
 #include <machine/asm.h>
-#ifndef __NetBSD__
+#ifndef __BSD44__
 #ifdef __STDC__
 #define SYSCALL(x)	ENTRY(x); movl	$SYS_ ## x, %eax; SVC; jb LCL(cerror)
 #else
@@ -104,9 +104,9 @@ SYSCALL(pioctl)
 
 
 	.globl	LCL(cerror)
-#else	__NetBSD__
+#else	/* __BSD44__ */
 #include "SYS.h"	
-#endif	__NetBSD__
+#endif	/* __BSD44__ */
 
 SYSCALL(pioctl)
 	ret

@@ -60,18 +60,17 @@ extern "C" {
 #ifdef __MACH__
 #include <sys/viceioctl.h>
 #endif /* __MACH__ */
-#if defined(__linux__) || defined(__NetBSD__)
+#if defined(__linux__) || defined(__BSD44__)
 #include "mach_vioctl.h"
-#endif __NetBSD__
+#endif /* __linux__ || __BSD44__ */
 
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
-#endif /* __MACH__ */
-#ifdef __NetBSD__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 
         /* this needs to be sorted out XXXX */ 
 #ifdef	__linux__

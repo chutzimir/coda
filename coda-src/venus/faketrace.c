@@ -34,7 +34,7 @@ static char *rcsid = "$Header$";
 
 #include <stdio.h>
 
-/* Dummy routines to build a fake tracelib for NetBSD port */
+/* Dummy routines to build a fake tracelib for BSD44 port */
 Trace_Open () {
     fprintf(stderr, "Trace_Open() in fake trace library should never be called\n");
     exit(-1);

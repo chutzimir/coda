@@ -69,13 +69,12 @@ extern "C" {
 #include <stdio.h>
 #include <pwd.h>
 #ifdef __MACH__
-#include <libc.h>
 #include <sysent.h>
-#endif /* __MACH__ */
-#if  __NetBSD__ || LINUX
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif
 
 #include <string.h>
 #include <lwp.h>

@@ -1336,7 +1336,7 @@ PRIVATE void Initialize_PCB(temp, priority, stack, stacksize, ep, parm, name)
     temp -> misc = NULL;	/* currently unused */
     temp -> next = NULL;
     temp -> prev = NULL;
-#ifdef LINUX    
+#ifdef __linux__
     temp -> rused = 0;
 #else
     temp -> rused = NULL;

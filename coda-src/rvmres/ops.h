@@ -44,13 +44,13 @@ extern "C" {
 #endif __cplusplus
 #include <stdio.h>
 
-#ifdef	__MACH__
-#include <libc.h>    
-#endif
-#if defined(__linux__) || defined(__NetBSD__)
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif /* LINUX || __NetBSD__ */
+#endif
 
 #include <stdarg.h>
 #ifdef __cplusplus

@@ -42,10 +42,13 @@ extern "C" {
 
 #include "asr.h"
 #include <stdio.h>
+#ifdef __MACH__
+#include <sysent.h>
 #include <libc.h>
-#ifdef	__linux__
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
-#endif 
+#include <stdlib.h>
+#endif
 #include <sys/param.h>
 #include <sys/dir.h>
 #include <strings.h>

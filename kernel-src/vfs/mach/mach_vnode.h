@@ -43,6 +43,9 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
+ * Revision 4.2  1997/02/26 16:04:41  rvb
+ * NetBSD -> BSD44 (where appropriate) + integrate Hiroshi Inamura's FreeBSD support
+ *
  * Revision 4.1  1997/01/08 21:53:33  rvb
  * r = 4.1; fix $ HEADERS
  *
@@ -56,10 +59,10 @@ static char *rcsid = "$Header$";
  * Branch for release beta-26Aug1996_41240
  * 
  * Revision 3.3  96/08/23  19:23:57  satya
- * vfs.h and vnode.h should come from /usr/include/sys on NetBSD.
+ * vfs.h and vnode.h should come from /usr/include/sys on BSD.
  * Added #ifdef __MACH__ around code.  Also added bogus code surrounded
- * by #ifdef __NetBSD__ to trap if these versions of vfs.h and vnode.h 
- * are included on NetBSD.
+ * by #ifdef __BSD44__ to trap if these versions of vfs.h and vnode.h 
+ * are included on BSD.
  * 
  * Revision 3.2.4.1  96/07/24  11:17:34  raiff
  * Branch for release beta-24Jul1996_36690
@@ -129,15 +132,15 @@ static char *rcsid = "$Header$";
 #define _VNODE_	1
 
 /* The files vfs/vfs.h and vfs/vnode.h should only get included in Mach; on 
-   NetBSD these definitions should be found in sys/mount.h and sys/vnode.h
-   provided by the system.  The use of "#ifdef __MACH__" and "#ifdef __NetBSD__"
+   BSD44 these definitions should be found in sys/mount.h and sys/vnode.h
+   provided by the system.  The use of "#ifdef __MACH__" and "#ifdef __BSD44__"
    is only due to paranoia... (Satya, 8/9/96)
 */
-#ifdef __NetBSD__
+#ifdef __BSD44__
 
 xxxxx    /* generate a compiler error, so we know we are including this file
 	when shouldn't */
-#endif __NetBSD__
+#endif /* __BSD44__ */
 
 #ifdef __MACH__
 #include <sys/types.h>

@@ -48,8 +48,12 @@ extern "C" {
 
 #include <string.h>
 #include <rvm.h>
+#ifdef __MACH__
+#include <sysent.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
+#endif
 
 #ifdef	__MACH__
   /* yuck yuck yuck */

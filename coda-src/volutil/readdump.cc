@@ -51,11 +51,12 @@ extern "C" {
 #include <stdio.h>
 #include <ci.h>
 #include <libcs.h>
-#include <unistd.h>
-#include <stdlib.h>
 #ifdef __MACH__
 #include <sysent.h>
-#endif /* __MACH__ */
+#else	/* __linux__ || __BSD44__ */
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 
 #include <lwp.h>
 #include <lock.h>

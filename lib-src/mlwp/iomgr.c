@@ -69,7 +69,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "lwp.private.h"
 #include "timer.h"
 
-#if	defined(__NetBSD__) || defined(__WIN32__)
+#if	defined(__BSD44__) || defined(__WIN32__)
 #define	sigif	sigaction
 #define	sif_handler	sa_handler
 #define	sif_mask	sa_mask
