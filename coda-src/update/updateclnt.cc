@@ -139,7 +139,7 @@ PRIVATE RPC2_Integer operatorUsecs = 0;
 
 PRIVATE RPC2_Handle con;
 PRIVATE char host[256];
-PRIVATE int waitinterval = 5*60;	/* 5 min */
+PRIVATE int waitinterval = 30;	/* 5 min */
 PRIVATE int reps = 6;
 PRIVATE char pname[20];
 
