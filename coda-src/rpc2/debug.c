@@ -91,9 +91,9 @@ char *rpc2_timestring()
 		
 	
 
-PRIVATE char *WhichMagic(x)
+static char *WhichMagic(x)
     {
-    PRIVATE char buf[20];
+    static char buf[20];
     switch(x)
 	{
 	case OBJ_PACKETBUFFER:	return("OBJ_PACKETBUFFER");
@@ -524,7 +524,7 @@ void rpc2_PrintPacketHeader(pb, tFile)
 
 
 
-PRIVATE char *CallName(x)
+static char *CallName(x)
     {
     switch(x)
 	{

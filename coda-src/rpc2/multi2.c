@@ -87,6 +87,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define _PADWORD(n)(((n)+1) & ~1)
 #define _PADLONG(n)_PAD(n)
 
+
+
 extern long HandleResult();
 long MRPC_UnpackMulti();
 
@@ -571,72 +573,72 @@ pack(a_types, args, _ptr)
 	}
 }
 
-/* Returns the buffer length needed for the given structure (called recursively) */
-int struct_len(a_types, args)
-register ARG **a_types;
-register PARM **args;
+/* Returns the buffer length needed for the given structure (called
+   recursively) */
+int struct_len(register ARG **a_types, register PARM **args)
 {
-  ARG *field;
-  PARM **strp, *str;
-  int len = 0;
-  int i, maxiterate;
+	ARG *field;
+	PARM **strp, *str;
+	int len = 0;
+	int i, maxiterate;
 
-  if ((*a_types)->mode == IN_OUT_MODE) {
-    str = *((*args)->structpp);
-    strp = &str;
-  }
-  else if ((*a_types)->mode == IN_MODE) {
-	str = (*args)->structp;
-	strp = &str;
-        }
-  else strp = args;
-
-  if ((*a_types)->bound != 0) {
-    /* Array size should be stored before array structures */
-    maxiterate = get_arraylen_pack(*a_types-1, *args-1);
-    for(i = 0; i < maxiterate; i++) {
-      for(field = (*a_types)->field; field->mode != C_END; field++) {
-	if (field->type == RPC2_STRUCT_TAG)
-	  len += struct_len(&field, strp);
-	else len += get_len(&field, strp, NO_MODE);
-	switch (field->type) {
-	  case RPC2_BOUNDEDBS_TAG:
-	    (*strp)++;
-	  case RPC2_COUNTEDBS_TAG:
-	    (*strp)++;
-	  default:
-	    (*strp)++;
-	    break;
+	if ((*a_types)->mode == IN_OUT_MODE) {
+		str = *((*args)->structpp);
+		strp = &str;
 	}
-      }
-    }
-  } else {
-    for(field = (*a_types)->field; field->mode != C_END; field++) {
-      if (field->type == RPC2_STRUCT_TAG)
-	len += struct_len(&field, strp);
-      else len += get_len(&field, strp, NO_MODE);
-      switch (field->type) {
-        case RPC2_BOUNDEDBS_TAG:
-	  (*strp)++;
-	case RPC2_COUNTEDBS_TAG:
-	  (*strp)++;
-	default:
-	  (*strp)++;
-	  break;
-      }
-    }
-  }
-  
-  return(len);
+	else if ((*a_types)->mode == IN_MODE) {
+		str = (*args)->structp;
+		strp = &str;
+        }
+	else 
+		strp = args;
+	
+	if ((*a_types)->bound != 0) {
+		/* Array size should be stored before array structures */
+		maxiterate = get_arraylen_pack(*a_types-1, *args-1);
+		for(i = 0; i < maxiterate; i++) {
+			for(field = (*a_types)->field; field->mode != C_END; field++) {
+				if (field->type == RPC2_STRUCT_TAG)
+					len += struct_len(&field, strp);
+				else len += get_len(&field, strp, NO_MODE);
+				switch (field->type) {
+				case RPC2_BOUNDEDBS_TAG:
+					(*strp)++;
+				case RPC2_COUNTEDBS_TAG:
+					(*strp)++;
+				default:
+					(*strp)++;
+					break;
+				}
+			}
+		}
+	} else {
+		for(field = (*a_types)->field; field->mode != C_END; field++) {
+			if (field->type == RPC2_STRUCT_TAG)
+				len += struct_len(&field, strp);
+			else len += get_len(&field, strp, NO_MODE);
+			switch (field->type) {
+			case RPC2_BOUNDEDBS_TAG:
+				(*strp)++;
+			case RPC2_COUNTEDBS_TAG:
+				(*strp)++;
+			default:
+				(*strp)++;
+				break;
+			}
+		}
+	}
+	
+	return(len);
 }
 
 
 
-/* This is the counterpart to MRPC_MakeMulti. It is a separate procedure because
- * it is necessary to unpack arguments multiple times for each call, once for each
- * server response received. MPRC_UnpackMulti and its associated procedures unpack
- * the RPC2 response buffer and call the client handler.
- */
+/* This is the counterpart to MRPC_MakeMulti. It is a separate
+ * procedure because it is necessary to unpack arguments multiple
+ * times for each call, once for each server response
+ * received. MPRC_UnpackMulti and its associated procedures unpack the
+ * RPC2 response buffer and call the client handler.  */
 
 long MRPC_UnpackMulti(HowMany, ConnHandleList, ArgInfo, rspbuffer, rpcval, offset)
 register int HowMany;		/* How many servers */

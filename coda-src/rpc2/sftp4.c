@@ -223,7 +223,7 @@ void sftp_TraceBogus(long filenum, long linenum)
 
 
 
-PRIVATE PrintSFEntry(tEntry, tId, outFile)
+static PrintSFEntry(tEntry, tId, outFile)
     struct TraceEntry *tEntry;
     long tId;
     FILE *outFile;    

@@ -82,9 +82,9 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 extern int errno;
 
-PRIVATE void SFSendBusy();
-PRIVATE void MC_AppendParmsToPacket();
-PRIVATE MC_SendStrategy(), SDescCmp(), MC_ExtractParmsFromPacket();
+static void SFSendBusy();
+static void MC_AppendParmsToPacket();
+static MC_SendStrategy(), SDescCmp(), MC_ExtractParmsFromPacket();
 
 /*----------------------- The procs below interface directly with RPC2 ------------------------ */
 
@@ -564,7 +564,7 @@ MC_CheckStart(whichEntry)
     }
 
 
-PRIVATE MC_SendStrategy(me, mse)
+static MC_SendStrategy(me, mse)
     struct MEntry	*me;
     struct SFTP_Entry	*mse;
     {
@@ -686,7 +686,7 @@ PRIVATE MC_SendStrategy(me, mse)
     }
 
 
-PRIVATE SDescCmp(desc1, desc2)
+static SDescCmp(desc1, desc2)
     SE_Descriptor *desc1, *desc2;
     {
     struct SFTP_Descriptor *ftpd1 = &desc1->Value.SmartFTPD;
@@ -717,7 +717,7 @@ PRIVATE SDescCmp(desc1, desc2)
     }
 
 
-PRIVATE void SFSendBusy(whichEntry)
+static void SFSendBusy(whichEntry)
     struct SFTP_Entry	*whichEntry;
     {
     RPC2_PacketBuffer *busypb;
@@ -735,7 +735,7 @@ PRIVATE void SFSendBusy(whichEntry)
     }
 
 
-PRIVATE void MC_AppendParmsToPacket(mse, sse, req)
+static void MC_AppendParmsToPacket(mse, sse, req)
     register struct SFTP_Entry *mse;
     register struct SFTP_Entry *sse;
     register RPC2_PacketBuffer **req;
@@ -759,7 +759,7 @@ PRIVATE void MC_AppendParmsToPacket(mse, sse, req)
     }
 
 
-PRIVATE MC_ExtractParmsFromPacket(mse, sse, req)
+static MC_ExtractParmsFromPacket(mse, sse, req)
     register struct SFTP_Entry *mse;
     register struct SFTP_Entry *sse;
     register RPC2_PacketBuffer *req;

@@ -71,7 +71,7 @@ char *SE_ErrorMsg(rc)
     long rc;
     /* Returns a pointer to a static string describing error rc. */
     {
-    PRIVATE char msgbuf[100];
+    static char msgbuf[100];
 
     switch((enum SE_Status)rc)
 	{
