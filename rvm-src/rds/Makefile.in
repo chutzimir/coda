@@ -75,6 +75,7 @@ LIBRARIES = librdslwp.a
 
 %.o : $(srcdir)/../rds/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+	@mkdir -p .depfiles ; mv $*.d .depfiles
 
 librdslwp.a: $(LIBOBJ)
 endif
