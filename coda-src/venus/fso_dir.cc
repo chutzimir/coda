@@ -84,7 +84,11 @@ void fsobj::dir_Rebuild()
 		Choke("fsobj::dir_Rebuild: no data"); 
 	}
 
-	assert(DH_DirOK(&data.dir->dh));
+	if ( ! DH_DirOK(&data.dir->dh)) {
+		LOG(0, ("WARNING: Corrupt directory for %s\n", FID_(&fid)));
+		DH_Print(&data.dir->dh);
+	}
+
 	DH_Convert(&data.dir->dh, data.dir->udcf->Name(), fid.Volume);
 
 	data.dir->udcfvalid = 1;
