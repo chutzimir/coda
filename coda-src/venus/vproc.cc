@@ -868,7 +868,9 @@ long FidToNodeid(ViceFid *fid) {
     /* Other volume root.  We need the relevant mount point's fid, but we don't know what that is! */
     if (fid->Vnode == ROOT_VNODE && fid->Unique == ROOT_UNIQUE) {
 	LOG(0, ("FidToNodeid: volume root (%x); returning bogus nodeid\n", fid->Volume));
-	return(0);
+
+	/* This cannot possibly be right! Now we get inode number 0 in the kernel! */
+	/*	return(0); */
     }
 
     /* Non volume root. */
