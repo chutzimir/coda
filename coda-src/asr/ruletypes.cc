@@ -41,16 +41,12 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
 #ifdef __BSD44__
 #include <sys/dir.h>
 #endif
