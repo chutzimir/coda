@@ -33,7 +33,7 @@
 #static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
-
+set path = ( $path /vice/bin )
 cd /vice/vol/remote
 
 # Get the volume lists from the servers
