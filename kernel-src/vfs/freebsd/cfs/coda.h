@@ -204,7 +204,7 @@ struct cfs_in_hdr {
     unsigned long unique;	    /* Keep multiple outstanding msgs distinct */
     u_short pid;		    /* Common to all */
     u_short pgid;		    /* Common to all */
-    void *sid;                      /* Common to all */
+    u_short sid;                    /* Common to all */
     struct coda_cred cred;	    /* Common to all */
 };
 
