@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.2  1997/10/29 16:06:30  rvb
- * Kill DYING
+ * Revision 1.4.14.3  1997/11/06 21:03:28  rvb
+ * don't include headers in headers
  *
+ * Revision 1.4.14.2  97/10/29  16:06:30  rvb
+ * Kill DYING
+ * 
  * Revision 1.4.14.1  1997/10/28 23:10:18  rvb
  * >64Meg; venus can be killed!
  *
@@ -116,6 +119,7 @@
 #include <cfs/cfs.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_opstats.h>
+#include <cfs/mach_vioctl.h>    /* No viceioctl.h on NetBSD */
 #include <vm/vm_kern.h>
 
 

@@ -14,11 +14,14 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.3  1997/08/05 11:08:19  lily
+ * Revision 1.3.4.1  1997/11/06 21:06:05  rvb
+ * don't include headers in headers
+ *
+ * Revision 1.3  97/08/05  11:08:19  lily
  * Removed cfsnc_replace, replaced it with a cfs_find, unhash, and
  * rehash.  This fixes a cnode leak and a bug in which the fid is
  * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
- *
+ * 
  * Revision 1.2  96/01/02  16:57:19  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  * 
@@ -69,8 +72,6 @@
 #include <sys/user.h>
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include <cfs/cfs.h>
-#include <cfs/cnode.h>
 
 #ifdef	KERNEL
 
