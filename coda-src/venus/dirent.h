@@ -68,7 +68,8 @@ static char *rcsid = "$Header$";
  *
  *	@(#)dirent.h	8.3 (Berkeley) 8/10/94
  */
-
+#ifndef _VENUS_DIRENT_H_
+#define _VENUS_DIRENT_H_
 /*
  * The dirent structure defines the format of directory entries returned by 
  * the getdirentries(2) system call.
@@ -117,3 +118,5 @@ struct dirent {
  */
 #define	IFTODT(mode)	(((mode) & 0170000) >> 12)
 #define	DTTOIF(dirtype)	((dirtype) << 12)
+
+#endif  _VENUS_DIRENT_H_

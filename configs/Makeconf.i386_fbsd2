@@ -42,11 +42,21 @@ LIBCURSES     = -lcurses
 LIBCOMPAT     = /usr/lib/libcompat.a
 LIBREADLINE   = /usr/lib/libreadline.a
 INCREADLINE   = -I/usr/include/readline
-INODEFSNAME   = libinodefs.a
-INODEFSDIR    = kernel-src/inodefs/bsd44
-machine_inodefs   = bsd44
+INODEFSNAME   = libuinodefs.a
+INODEFSDIR    = kernel-src/inodefs/common
+# INCREADLINE   = -I/usr/include/readline
+# INODEFSNAME   = libinodefs.a
+# INODEFSDIR    = kernel-src/inodefs/bsd44
+# machine_inodefs   = bsd44
 #for rvm
 LIBTHREADS    =
 LIBMACH       = 
 
-#ALPHACI = $(SCRIPTDIR)/alphaci
+BINDIR := $(exec_prefix)/bin
+SBINDIR := $(exec_prefix)/bin
+MANDIR := $(exec_prefix)/man
+
+# XXX 
+LIBSPECIAL := .
+INCLSPECIAL := .
+LIBDIR := .

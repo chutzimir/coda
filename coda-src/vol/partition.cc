@@ -89,6 +89,9 @@ extern "C" {
 
 #include <lwp.h>
 #include <lock.h>
+#ifdef __FreeBSD__
+#include <sys/mount.h>
+#endif
 
 #ifdef __cplusplus
 }

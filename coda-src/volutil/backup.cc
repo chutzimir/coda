@@ -350,11 +350,11 @@ void SetPartitionDiskUsage(register partitionInfo_t *dp)
     dp->free = availblks - used; /* May be negative, which is OK */
 #endif /* __MACH__ */
 
-#ifdef	__linux__
+#if	defined(__linux__) || defined(__FreeBSD__)
     dp->free =0;
-#endif /* __linux*/
+#endif /* __linux__ */
 
-#ifdef	__BSD44__
+#if	defined(__BSD44__) && ! defined(__FreeBSD__)
     LogMsg(0, 0, stdout, "Arrgghh... SetPartitionDiskUsage() not ported yet");
     assert(0);
 #endif /* __BSD44__ */
