@@ -33,11 +33,6 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
-
-
-
-
-
 /*
  *
  *    Implementation of the Venus File-System Object (fso) abstraction.
