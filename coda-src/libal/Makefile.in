@@ -61,6 +61,8 @@ LIBRARIES   = libal.a
 HEADERS	    = al.h prs.h prs_fs.h 
 TESTS	    = altest
 
+SSBINS      = pcfgen
+
 NO_LEX = yes
 
 HFILES = al.h parsepdb.h pcf.h prs.h prs_fs.h
