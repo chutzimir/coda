@@ -52,7 +52,7 @@ void clear_targets(target_t *targets, int num_targets)
 }
 
 
-void main(int argc, char **argv)
+int clear(int argc, char **argv)
 {
   int num_targets;
   target_t *targets;

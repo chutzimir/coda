@@ -60,11 +60,11 @@ void partition_targets(target_t target1, target_t target2)
     close_connection();
   }
 
-  destroy_filter(&partition);
+  destroy_filter(partition);
 }
 
 
-void main(int argc, char **argv)
+int partition(int argc, char **argv)
 {
   int num_targets;
   target_t target1, target2;

@@ -63,12 +63,12 @@ void isolate_targets(target_t *targets, int num_targets)
       close_connection();
     }
 
-  destroy_filter(&isolate);
-  destroy_filter(&server);
+  destroy_filter(isolate);
+  destroy_filter(server);
 }
 
 
-void main(int argc, char **argv)
+int isolate(int argc, char **argv)
 {
   int num_targets;
   target_t *targets;

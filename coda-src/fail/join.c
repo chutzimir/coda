@@ -60,11 +60,11 @@ void join_targets(target_t *targets, int num_targets)
       close_connection();
     }
 
-  destroy_filter(&join);
+  destroy_filter(join);
 }
 
 
-void main(int argc, char **argv)
+int join(int argc, char **argv)
 {
   int num_targets;
   target_t *targets;

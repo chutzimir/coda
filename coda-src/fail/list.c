@@ -60,7 +60,7 @@ void list_targets(target_t *targets, int num_targets)
 }
 
 
-void main(int argc, char **argv)
+int flist(int argc, char **argv)
 {
   int num_targets;
   target_t *targets;
