@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.3  1997/12/16 12:40:11  rvb
- * Sync with 1.3
+ * Revision 1.6.2.4  1997/12/19 14:26:05  rvb
+ * session id
  *
+ * Revision 1.6.2.3  97/12/16  12:40:11  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.6.2.2  97/12/10  11:40:25  rvb
  * No more ody
  * 
@@ -127,7 +130,7 @@
 #include <cfs/cfs_vfsops.h>
 #include <cfs/cfs_venus.h>
 #include <cfs/cfs_subr.h>
-#include <cfs/cfs_opstats.h>
+#include <cfs/coda_opstats.h>
 
 int cfsdebug = 0;
 

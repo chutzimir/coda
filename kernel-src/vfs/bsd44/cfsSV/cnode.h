@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.4.2.2  1997/12/16 12:40:24  rvb
- * Sync with 1.3
+ * Revision 1.4.2.3  1997/12/19 14:26:09  rvb
+ * session id
  *
+ * Revision 1.4.2.2  97/12/16  12:40:24  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.4.2.1  97/12/06  17:41:28  rvb
  * Sync with peters coda.h
  * 
@@ -229,6 +232,9 @@ int cfs_vnodeopstats_init(void);
 #ifndef	NetBSD1_3
 #define __RCSID(x) static char *rcsid = x
 #endif
+
+/* sigh */
+#define CFS_RDWR ((u_long) 31)
 
 #endif	/* _CNODE_H_ */
 

@@ -64,6 +64,7 @@
 	  (in)->opcode = (op); \
 	  (in)->pid = p ? p->p_pid : -1; \
           (in)->pgid = p ? p->p_pgid : -1; \
+          (in)->sid = p ? (void *)(p->p_session) : (void *)-1; \
           if (ident != NOCRED) {                              \
 	      (in)->cred.cr_uid = ident->cr_uid;              \
 	      (in)->cred.cr_gid = ident->cr_gid;              \

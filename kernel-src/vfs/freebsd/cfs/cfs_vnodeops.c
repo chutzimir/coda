@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.6  1997/12/16 22:01:34  rvb
- * Oops add cfs_subr.h cfs_venus.h; sync with peter
+ * Revision 1.5.2.7  1997/12/19 14:26:08  rvb
+ * session id
  *
+ * Revision 1.5.2.6  97/12/16  22:01:34  rvb
+ * Oops add cfs_subr.h cfs_venus.h; sync with peter
+ * 
  * Revision 1.5.2.5  97/12/16  12:40:14  rvb
  * Sync with 1.3
  * 
@@ -172,7 +175,7 @@
 #include <cfs/cnode.h>
 #include <cfs/cfs_vnodeops.h>
 #include <cfs/cfs_venus.h>
-#include <cfs/cfs_opstats.h>
+#include <cfs/coda_opstats.h>
 #include <cfs/cfs_subr.h>
 #include <cfs/cfsnc.h>
 #include <cfs/pioctl.h>
@@ -1787,7 +1790,7 @@ cfs_symlink(v)
  */
     {
 	struct nameidata nd;
-	NDINIT(&nd, LOOKUP, FOLLOW, UIO_SYSSPACE, nm, p);
+	NDINIT(&nd, LOOKUP, FOLLOW|LOCKLEAF, UIO_SYSSPACE, nm, p);
 	nd.ni_cnd.cn_cred = cred;
 	nd.ni_loopcnt = 0;
 	nd.ni_startdir = tdvp;
