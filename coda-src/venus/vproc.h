@@ -460,6 +460,7 @@ extern int vnode_deallocs;
 #define VA_CTIME_2(va)	(va)->va_ctime.tv_sec
 #endif __MACH__
 
+#if 0
 #ifdef __NetBSD__ 
 #define VA_ID(va)	(va)->va_fileid
 #define VA_STORAGE(va)	(va)->va_bytes
@@ -470,6 +471,7 @@ extern int vnode_deallocs;
 #define VA_CTIME_1(va)	(va)->va_ctime.ts_sec
 #define VA_CTIME_2(va)	(va)->va_ctime.ts_nsec
 #endif __NetBSD__
+#endif
 
 
 #ifdef LINUX
