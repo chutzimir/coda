@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.16  1997/07/18 15:28:41  rvb
+ * Bigger/Better/Faster than AFS
+ *
  * Revision 1.15  1997/02/19 18:41:39  bnoble
  * Didn't sufficiently unswap the now-unswapped dvp and vp in cfs_nb_link
  *
@@ -212,12 +215,14 @@ cfs_nb_statfs(vfsp, sbp, p)
 {
     bzero(sbp, sizeof(struct statfs));
     /* XXX - what to do about f_flags, others? --bnoble */
-    /* Below This is what AFS does */
+    /* Below This is what AFS does
+    	#define NB_SFS_SIZ 0x895440
+     */
     /* Note: Normal fs's have a bsize of 0x400 == 1024 */
     sbp->f_type = 0;
     sbp->f_bsize = 8192; /* XXX */
     sbp->f_iosize = 8192; /* XXX */
-#define NB_SFS_SIZ 0x895440
+#define NB_SFS_SIZ 0x8AB75D
     sbp->f_blocks = NB_SFS_SIZ;
     sbp->f_bfree = NB_SFS_SIZ;
     sbp->f_bavail = NB_SFS_SIZ;
