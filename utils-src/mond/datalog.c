@@ -42,7 +42,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/time.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
