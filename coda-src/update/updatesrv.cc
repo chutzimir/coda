@@ -147,8 +147,9 @@ int main(int argc, char **argv)
 	    }
     }
     if (badParm) {
-	LogMsg(0, SrvDebugLevel, stdout, "usage: update [-d (debug level)]) [-l (number of lwps)] ");
-	LogMsg(0, SrvDebugLevel, stdout, "[-q (portal name)] [-p (prefix)]\n");
+	LogMsg(0, SrvDebugLevel, stderr, 
+	       "usage: update [-p prefix -d (debug level)]) [-l (number of lwps)] ");
+	LogMsg(0, SrvDebugLevel, stderr, "[-q (portal name)] \n");
 	exit(-1);
     }
     (void) signal(SIGHUP, (void (*)(int))ResetDebug);
@@ -188,8 +189,10 @@ int main(int argc, char **argv)
 
     for (i = 0; i < lwps; i++) {
 	sprintf(sname, "ServerLWP-%d", i);
-	assert(LWP_CreateProcess((PFIC)ServerLWP, 8 * 1024, LWP_MAX_PRIORITY - 1,
-		    (char *)&i, sname, &serverPid) == LWP_SUCCESS);
+	assert(LWP_CreateProcess((PFIC)ServerLWP, 
+				 8 * 1024, LWP_MAX_PRIORITY - 1,
+				 (char *)&i, sname, &serverPid) 
+	       == LWP_SUCCESS);
     }
     gettimeofday(&tp, &tsp);
     LogMsg(0, SrvDebugLevel, stdout, "Update Server started %s", ctime((long *)&tp.tv_sec));

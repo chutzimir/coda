@@ -59,7 +59,7 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = updatemon updatesrv updateclnt
+EXECUTABLES = updatemon updatesrv updateclnt updfetch
 SSBINS      = $(EXECUTABLES)
 HEADERS     = ${RP2FILES} ${RP2HEADERS}
 
@@ -68,12 +68,12 @@ RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
 
 LIBS=	${LIBVICEERROR}\
 	${LIBUTIL}\
-	${LIBRPC2}\
-	${LIBSE}\
-	$(LIBIFS)\
 	${LIBSYSENT}\
 	${LIBNEWLWP}\
 	$(LIBVICEDEP)\
+	${LIBRPC2}\
+	${LIBSE}\
+	$(LIBIFS)\
 	${LIBVV}\
 	$(LIBOLDLWP)\
 	${LIBKERNDEP}\
@@ -82,21 +82,17 @@ LIBS=	${LIBVICEERROR}\
 	$(LIBCOMPAT)\
 	$(LIBINODEFS)
 
-HFILES= ${INCLSPECIAL}/lwp.h	\
-	${INCLDIR}/rpc2.h	\
-	update.h
-
 updatesrv: updatesrv.o update.server.o ${LIBS}
 	$(CXX) $(LIBLAGS) updatesrv.o update.server.o ${LIBS} -o updatesrv
 
 updateclnt: updateclnt.o update.client.o  ${LIBS}
 	$(CXX) $(LIBLAGS) updateclnt.o update.client.o  ${LIBS} -o updateclnt
 
+updfetch: updfetch.o update.client.o  ${LIBS}
+	$(CXX) $(LIBLAGS) updfetch.o update.client.o  ${LIBS} -o updfetch
+
 updatemon: updatemon.o
 	$(CXX) $(LIBLAGS) updatemon.o -o updatemon
 
-updatesrv.o: ${HFILES}
-updateclnt.o: ${HFILES} $(INCLDIR)/volutil.rpc2
-updatemon.o: ${HFILES}
 
 include $(MAKDIR)/Makerules
