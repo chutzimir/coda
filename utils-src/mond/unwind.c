@@ -52,7 +52,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/time.h>
-#include <sys/errno.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <netdb.h>

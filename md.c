@@ -30,6 +30,9 @@
  *	/usr/cs/include).
  *
  * $Log$
+ * Revision 4.6  1999/01/22 00:10:20  jaharkes
+ * These changes went into stable, just keeping HEAD in sync.
+ *
  * Revision 4.5  1998/10/07 20:29:37  rvb
  * Flush sys/dir.h where possible; Fix process.s
  *
@@ -415,7 +418,7 @@ newtoken: ;
 
 	if (!expunge && argc < 1) 
 	    usage();
-	if ((int) outfile && (int) makefile)	/* not both */
+	if (outfile && makefile)	/* not both */
 	    usage();
 
 	/*
@@ -431,7 +434,7 @@ newtoken: ;
 	     (strcmp(argv[0], "*.D") == 0)))
 	    exit(0);
 
-	if ((int) outfile) {
+	if (outfile) {
 		if ((out = fopen(outfile, "w")) == NULL) {
 			fprintf(stderr, "%s: outfile = \"%s\" ", 
 				program_name, outfile);
@@ -1008,7 +1011,7 @@ char *file;
 {
 FILE *mak;
 
-	if ((int) file) {
+	if (file) {
 		if ((mak = fopen(file, "r")) != NULL) {
 			real_mak_name = file;
 		} else if (update) {
