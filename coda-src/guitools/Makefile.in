@@ -55,7 +55,6 @@ TCLSCRIPTS  = 	Advice.tcl              \
 		Initialization.tcl      \
 		Lock.tcl                \
 		Log.tcl                 \
-		ManualDemo.tcl          \
 		Network.tcl             \
 		OutsideWorld.tcl        \
 		ReadMiss.tcl            \
@@ -69,8 +68,9 @@ TCLSCRIPTS  = 	Advice.tcl              \
 		WeakMiss.tcl            \
 		tixCodaMeter.tcl        
 
-
-CLIBS	    = $(TCLSCRIPTS)
+EXECUTABLES = CodaConsole Globals.tcl
+CBINS = $(EXECUTABLES)  $(TCLSCRIPTS)
+BINDIR := $(LIBEXECDIR) 
 
 
 CodaConsole: CodaConsole.in translate.sed
