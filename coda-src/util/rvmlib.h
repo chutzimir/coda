@@ -310,9 +310,15 @@ switch (RvmType) {							    \
 	sbrk((void *)(0x20000000 - (int)sbrk(0))); /* for garbage reasons. */		    \
 	stackLimit.rlim_cur = CODA_STACK_LENGTH;			    \
 /*	setrlimit(RLIMIT_STACK, &stackLimit);*/	/* Set stack growth limit */ \
-        if ((err = RVM_INIT(options)) != RVM_SUCCESS)	/* Start rvm */	    \
-	    LogMsg(0, SrvDebugLevel, stdout, "rvm_init failed %s", rvm_return(err));	    \
-        assert(err == RVM_SUCCESS);			  		    \
+        err = RVM_INIT(options);                   /* Start rvm */           \
+        if ( err == RVM_ELOG_VERSION_SKEW ) {                                \
+            LogMsg(0, 0, stdout, "rvm_init failed because of skew RVM-log version."); \
+            LogMsg(0, 0, stdout, "Coda server not started.");                  \
+            exit(-1);                                                          \
+	} else if (err != RVM_SUCCESS) {                                     \
+	    LogMsg(0, 0, stdout, "rvm_init failed %s",rvm_return(err));	    \
+            assert(0);                                                       \
+	}                                                                    \
 	assert(_Rvm_Data_Device != NULL);	   /* Load in recoverable mem */ \
         rds_load_heap(_Rvm_Data_Device,_Rvm_DataLength,(char **)&camlibRecoverableSegment, (int *)&err);  \
 	if (err != RVM_SUCCESS)						    \
