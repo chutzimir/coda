@@ -311,4 +311,4 @@ endif
 
 ${INEWS} -h /tmp/$$
 
-#rm /tmp/$$
+rm /tmp/$$
