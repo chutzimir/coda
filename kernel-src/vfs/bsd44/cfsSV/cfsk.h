@@ -192,8 +192,8 @@ extern struct cfs_mntinfo cfs_mnttbl[]; /* indexed by minor device number */
  */
 extern struct vnode *cfs_ctlvp;
 #define	IS_CTL_VP(vp)		((vp) == cfs_ctlvp)
-#define	IS_CTL_NAME(vp, name)	(((vp) == vtomi((vp))->mi_vfschain.rootvp)    \
-				 && strcmp(name, CFS_CONTROL) == 0)
+#define	IS_CTL_NAME(vp, name, l)(((vp) == vtomi((vp))->mi_vfschain.rootvp)    \
+				 && strncmp(name, CFS_CONTROL, l) == 0)
 
 /* 
  * An enum to tell us whether something that will remove a reference

@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.5  1997/11/20 11:46:38  rvb
- * Capture current cfs_venus
+ * Revision 1.5.4.6  1997/11/24 15:44:43  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.5.4.5  97/11/20  11:46:38  rvb
+ * Capture current cfs_venus
+ * 
  * Revision 1.5.4.4  97/11/18  10:27:13  rvb
  * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  * 
@@ -218,7 +221,7 @@ int cfsnc_initialized = 0;      /* Initially the cache has not been initialized 
 void
 cfsnc_init()
 {
-    register int i;
+    int i;
 
     /* zero the statistics structure */
     
@@ -263,7 +266,7 @@ cfsnc_find(dcp, name, namelen, cred, hash)
 	 * hash to find the appropriate bucket, look through the chain
 	 * for the right entry (especially right cred, unless cred == 0) 
 	 */
-	register struct cfscache *cncp;
+	struct cfscache *cncp;
 	int count = 1;
 
 	CFSNC_DEBUG(CFSNC_FIND, 
@@ -303,15 +306,15 @@ cfsnc_find(dcp, name, namelen, cred, hash)
  * LRU and Hash as needed.
  */
 void
-cfsnc_enter(dcp, name, cred, cp)
+cfsnc_enter(dcp, name, namelen, cred, cp)
     struct cnode *dcp;
-    register char *name;
+    char *name;
+    int namelen;
     struct ucred *cred;
     struct cnode *cp;
 {
-    register int namelen;
-    register struct cfscache *cncp;
-    register int hash;
+    struct cfscache *cncp;
+    int hash;
     
     if (cfsnc_use == 0)			/* Cache is off */
 	return;
@@ -320,7 +323,6 @@ cfsnc_enter(dcp, name, cred, cp)
 		myprintf(("Enter: dcp 0x%x cp 0x%x name %s cred 0x%x \n",
 		       dcp, cp, name, cred)); )
 	
-    namelen = strlen(name);		/* Don't store long file names */
     if (namelen > CFSNC_NAMELEN) {
 	CFSNC_DEBUG(CFSNC_ENTER, 
 		    myprintf(("long name enter %s\n",name));)
@@ -382,18 +384,18 @@ cfsnc_enter(dcp, name, cred, cp)
  * matches the input, return it, otherwise return 0
  */
 struct cnode *
-cfsnc_lookup(dcp, name, cred)
+cfsnc_lookup(dcp, name, namelen, cred)
 	struct cnode *dcp;
-	register char *name;
+	char *name;
+	int namelen;
 	struct ucred *cred;
 {
-	register int namelen, hash;
-	register struct cfscache *cncp;
+	int hash;
+	struct cfscache *cncp;
 
 	if (cfsnc_use == 0)			/* Cache is off */
 		return((struct cnode *) 0);
 
-	namelen = strlen(name);
 	if (namelen > CFSNC_NAMELEN) {
 	        CFSNC_DEBUG(CFSNC_LOOKUP, 
 			    myprintf(("long name lookup %s\n",name));)
@@ -481,8 +483,8 @@ cfsnc_zapParentfid(fid, dcstat)
 	   appropriate entries. The later may be acceptable since I don't
 	   think callbacks or whatever Case 1 covers are frequent occurences.
 	 */
-	register struct cfscache *cncp, *ncncp;
-	register int i;
+	struct cfscache *cncp, *ncncp;
+	int i;
 
 	if (cfsnc_use == 0)			/* Cache is off */
 		return;
@@ -526,8 +528,8 @@ cfsnc_zapfid(fid, dcstat)
 	/* See comment for zapParentfid. This routine will be used
 	   if attributes are being cached. 
 	 */
-	register struct cfscache *cncp, *ncncp;
-	register int i;
+	struct cfscache *cncp, *ncncp;
+	int i;
 
 	if (cfsnc_use == 0)			/* Cache is off */
 		return;
@@ -579,15 +581,15 @@ cfsnc_zapvnode(fid, cred, dcstat)
  * Remove all entries which have the (dir vnode, name) pair
  */
 void
-cfsnc_zapfile(dcp, name)
+cfsnc_zapfile(dcp, name, namelen)
 	struct cnode *dcp;
-	register char *name;
+	char *name;
+	int namelen;
 {
 	/* use the hash function to locate the file, then zap all
  	   entries of it regardless of the cred.
 	 */
-	register int namelen;
-	register struct cfscache *cncp;
+	struct cfscache *cncp;
 	int hash;
 
 	if (cfsnc_use == 0)			/* Cache is off */
@@ -597,7 +599,6 @@ cfsnc_zapfile(dcp, name)
 		myprintf(("Zapfile: dcp 0x%x name %s \n",
 			  dcp, name)); )
 
-	namelen = strlen(name);
 	if (namelen > CFSNC_NAMELEN) {
 		cfsnc_stat.long_remove++;		/* record stats */
 		return;
@@ -632,7 +633,7 @@ cfsnc_purge_user(cred, dcstat)
 	 * always be full and LRU is more straightforward.  
 	 */
 
-	register struct cfscache *cncp, *ncncp;
+	struct cfscache *cncp, *ncncp;
 	int hash;
 
 	if (cfsnc_use == 0)			/* Cache is off */
@@ -678,7 +679,7 @@ cfsnc_flush(dcstat)
 	 * I don't use remove since that would rebuild the lru chain
 	 * as it went and that seemed unneccesary.
 	 */
-	register struct cfscache *cncp;
+	struct cfscache *cncp;
 	int i;
 
 	if (cfsnc_use == 0)			/* Cache is off */
@@ -731,7 +732,7 @@ void
 print_cfsnc()
 {
 	int hash;
-	register struct cfscache *cncp;
+	struct cfscache *cncp;
 
 	for (hash = 0; hash < cfsnc_hashsize; hash++) {
 		myprintf(("\nhash %d\n",hash));
@@ -821,8 +822,8 @@ cfsnc_resize(hashsize, heapsize, dcstat)
 void
 cfsnc_name(struct cnode *cp)
 {
-	register struct cfscache *cncp, *ncncp;
-	register int i;
+	struct cfscache *cncp, *ncncp;
+	int i;
 
 	if (cfsnc_use == 0)			/* Cache is off */
 		return;

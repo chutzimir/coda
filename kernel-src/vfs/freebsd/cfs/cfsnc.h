@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.3.4.2  1997/11/12 12:09:44  rvb
- * reorg pass1
+ * Revision 1.3.4.3  1997/11/24 15:44:51  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.3.4.2  97/11/12  12:09:44  rvb
+ * reorg pass1
+ * 
  * Revision 1.3.4.1  97/11/06  21:06:05  rvb
  * don't include headers in headers
  * 
@@ -156,13 +159,13 @@ struct cfshash {		/* Start of Hash chain */
 
 /* Prototypes of functions exported within cfs */
 extern void cfsnc_init();
-extern void cfsnc_enter(struct cnode *, char *, struct ucred *, struct cnode *);
-extern struct cnode *cfsnc_lookup(struct cnode *, char *, struct ucred *);
+extern void cfsnc_enter(struct cnode *, char *, int, struct ucred *, struct cnode *);
+extern struct cnode *cfsnc_lookup(struct cnode *, char *, int, struct ucred *);
 
 extern void cfsnc_zapParentfid(ViceFid *, enum dc_status);
 extern void cfsnc_zapfid(ViceFid *, enum dc_status);
 extern void cfsnc_zapvnode(ViceFid *, struct ucred *, enum dc_status);
-extern void cfsnc_zapfile(struct cnode *, char *);
+extern void cfsnc_zapfile(struct cnode *, char *, int);
 extern void cfsnc_purge_user(struct ucred *, enum dc_status);
 
 extern void cfsnc_flush(enum dc_status);

@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.7  1997/11/21 13:22:03  rvb
- * Catch a few cfscalls in cfs_vfsops.c
+ * Revision 1.5.14.8  1997/11/24 15:44:46  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.5.14.7  97/11/21  13:22:03  rvb
+ * Catch a few cfscalls in cfs_vfsops.c
+ * 
  * Revision 1.5.14.6  97/11/20  11:46:48  rvb
  * Capture current cfs_venus
  * 
@@ -199,9 +202,9 @@ cfs_mount(vfsp, path, data, ndp, p)
 
     ENTRY;
 
+    cfs_vfsopstats_init();
+    cfs_vnodeopstats_init();
     if (!cfsnc_initialized) {
-	cfs_vfsopstats_init();
-	cfs_vnodeopstats_init();
 	cfsnc_init();
     }
     

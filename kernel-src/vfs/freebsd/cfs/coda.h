@@ -15,9 +15,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.5.18.2  1997/11/13 22:02:55  rvb
- * pass2 cfs_NetBSD.h mt
+ * Revision 1.5.18.3  1997/11/24 15:44:42  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.5.18.2  97/11/13  22:02:55  rvb
+ * pass2 cfs_NetBSD.h mt
+ * 
  * Revision 1.5.18.1  97/11/12  12:09:32  rvb
  * reorg pass1
  * 
@@ -199,25 +202,31 @@ struct cfid {
 /* #define	CFS_INVALIDATE	((u_long) 35) Is this used anywhere? */
 #define CFS_NCALLS 35
 
-struct inputArgs {
+struct cfs_in_hdr {
     unsigned long opcode;
     unsigned long unique;	    /* Keep multiple outstanding msgs distinct */
     u_short pid;		    /* Common to all */
     u_short pgid;		    /* Common to all */
     struct CodaCred cred;	    /* Common to all */
+};
+
+struct inputArgs {
     
     union {
 	/* Nothing needed for cfs_root */
 	/* Nothing needed for cfs_sync */
 	struct cfs_open_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    int	flags;
 	} cfs_open;
 	struct cfs_close_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    int	flags;
 	} cfs_close;
 	struct cfs_ioctl_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	    int	cmd;
 	    int	len;
@@ -225,21 +234,26 @@ struct inputArgs {
 	    char *data;			/* Place holder for data. */
 	} cfs_ioctl;
 	struct cfs_getattr_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	} cfs_getattr;
 	struct cfs_setattr_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	    struct vattr attr;
 	} cfs_setattr;
 	struct cfs_access_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    int	flags;
 	} cfs_access;
 	struct  cfs_lookup_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    char        *name;		/* Place holder for data. */
 	} cfs_lookup;
 	struct cfs_create_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	    struct vattr attr;
 	    int excl;
@@ -247,50 +261,61 @@ struct inputArgs {
 	    char	*name;		/* Place holder for data. */
 	} cfs_create;
 	struct cfs_remove_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    char	*name;		/* Place holder for data. */
 	} cfs_remove;
 	struct cfs_link_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid sourceFid;          /* cnode to link *to* */
 	    ViceFid destFid;            /* Directory in which to place link */
 	    char	*tname;		/* Place holder for data. */
 	} cfs_link;
 	struct cfs_rename_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	sourceFid;
 	    char	*srcname;
 	    ViceFid destFid;
 	    char	*destname;
 	} cfs_rename;
 	struct cfs_mkdir_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    struct vattr attr;
 	    char	*name;		/* Place holder for data. */
 	} cfs_mkdir;
 	struct cfs_rmdir_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    char	*name;		/* Place holder for data. */
 	} cfs_rmdir;
 	struct cfs_readdir_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    int	count;
 	    int	offset;
 	} cfs_readdir;
 	struct cfs_symlink_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;          /* Directory to put symlink in */
 	    char	*srcname;
 	    struct vattr attr;
 	    char	*tname;
 	} cfs_symlink;
 	struct cfs_readlink_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	} cfs_readlink;
 	struct cfs_fsync_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	} cfs_fsync;
 	struct cfs_inactive_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	} cfs_inactive;
 	struct cfs_vget_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid VFid;
 	} cfs_vget;
 	/* CFS_SIGNAL is out-of-band, doesn't need data. */
@@ -302,6 +327,7 @@ struct inputArgs {
 	/* CFS_ZAPVNODE is a venus->kernel call */	
 	/* CFS_PURGEFID is a venus->kernel call */	
 	struct cfs_rdwr_in {
+	    struct cfs_in_hdr ih;
 	    ViceFid	VFid;
 	    int	rwflag;
 	    int	count;
@@ -309,17 +335,6 @@ struct inputArgs {
 	    int	ioflag;
 	    caddr_t	data;		/* Place holder for data. */	
 	} cfs_rdwr;
-	struct ody_mount_in {
-	    char	*name;		/* Place holder for data. */
-	} ody_mount;
-	struct ody_lookup_in {
-	    ViceFid	VFid;
-	    char	*name;		/* Place holder for data. */
-	} ody_lookup;
-	struct ody_expand_in {
-	    ViceFid VFid;
-	    int size;			/* Size of buffer to return. */
-	} ody_expand;
 	/* CFS_REPLACE is a venus->kernel call */	
     } d;
 };
@@ -342,34 +357,43 @@ typedef struct linktype {
 } linkT;
 
 /* Really important that opcode and unique are 1st two fields! */
-struct outputArgs {
+struct cfs_out_hdr {
     unsigned long opcode;
     unsigned long unique;	    /* Keep multiple outstanding msgs distinct */
     unsigned long result;
+};
+
+struct outputArgs {
     union {
 	struct cfs_root_out {
+	    struct cfs_out_hdr oh;
 	    ViceFid VFid;
 	} cfs_root;
 	/* Nothing needed for cfs_sync */
 	struct cfs_open_out {
+	    struct cfs_out_hdr oh;
 	    dev_t	dev;
 	    ino_t	inode;
 	} cfs_open;
 	/* Nothing needed for cfs_close */
 	struct cfs_ioctl_out {
+	    struct cfs_out_hdr oh;
 	    int	len;
 	    caddr_t	data;		/* Place holder for data. */
 	} cfs_ioctl;
 	struct cfs_getattr_out {
+	    struct cfs_out_hdr oh;
 	    struct vattr attr;
 	} cfs_getattr;
 	/* Nothing needed for cfs_setattr */
 	/* Nothing needed for cfs_access */
 	struct cfs_lookup_out {
+	    struct cfs_out_hdr oh;
 	    ViceFid VFid;
 	    int	vtype;
 	} cfs_lookup;
 	struct cfs_create_out {
+	    struct cfs_out_hdr oh;
 	    ViceFid VFid;
 	    struct vattr attr;
 	} cfs_create;
@@ -377,22 +401,26 @@ struct outputArgs {
 	/* Nothing needed for cfs_link */
 	/* Nothing needed for cfs_rename */
 	struct cfs_mkdir_out {
+	    struct cfs_out_hdr oh;
 	    ViceFid VFid;
 	    struct vattr attr;
 	} cfs_mkdir;
 	/* Nothing needed for cfs_rmdir */
 	struct cfs_readdir_out {
+	    struct cfs_out_hdr oh;
 	    int	size;
 	    caddr_t	data;		/* Place holder for data. */
 	} cfs_readdir;
 	/* Nothing needed for cfs_symlink */
 	struct cfs_readlink_out {
+	    struct cfs_out_hdr oh;
 	    int	count;
 	    caddr_t	data;		/* Place holder for data. */
 	} cfs_readlink;
 	/* Nothing needed for cfs_fsync */
 	/* Nothing needed for cfs_inactive */
 	struct cfs_vget_out {
+	    struct cfs_out_hdr oh;
 	    ViceFid VFid;
 	    int	vtype;
 	} cfs_vget;
@@ -400,41 +428,156 @@ struct outputArgs {
 	/* CFS_INVALIDATE is a venus->kernel call */
 	/* CFS_FLUSH is a venus->kernel call */
 	struct cfs_purgeuser_out {/* CFS_PURGEUSER is a venus->kernel call */
+	    struct cfs_out_hdr oh;
 	    struct CodaCred cred;
 	} cfs_purgeuser;
 	struct cfs_zapfile_out {  /* CFS_ZAPFILE is a venus->kernel call */
+	    struct cfs_out_hdr oh;
 	    ViceFid CodaFid;
 	} cfs_zapfile;
 	struct cfs_zapdir_out {	  /* CFS_ZAPDIR is a venus->kernel call */
+	    struct cfs_out_hdr oh;
 	    ViceFid CodaFid;
 	} cfs_zapdir;
 	struct cfs_zapvnode_out { /* CFS_ZAPVNODE is a venus->kernel call */
+	    struct cfs_out_hdr oh;
 	    struct CodaCred cred;
 	    ViceFid VFid;
 	} cfs_zapvnode;
 	struct cfs_purgefid_out { /* CFS_PURGEFID is a venus->kernel call */	
+	    struct cfs_out_hdr oh;
 	    ViceFid CodaFid;
 	} cfs_purgefid;
 	struct cfs_rdwr_out {
+	    struct cfs_out_hdr oh;
 	    int	rwflag;
 	    int	count;
 	    caddr_t	data;	/* Place holder for data. */
 	} cfs_rdwr;
-	struct ody_mount_out {
-	    ViceFid VFid;
-	} ody_mount;
-	struct ody_lookup_out {
-	    ViceFid VFid;
-	} ody_lookup;
-	struct ody_expand_out {	/* Eventually it would be nice to get some */
-	    char links[sizeof(int)];	/* Place holder for data. */
-	} ody_expand;
 	struct cfs_replace_out { /* cfs_replace is a venus->kernel call */
+	    struct cfs_out_hdr oh;
 	    ViceFid NewFid;
 	    ViceFid OldFid;
 	} cfs_replace;
     } d;
 };    
+
+union cfs_root {
+    struct cfs_in_hdr in;
+    struct cfs_root_out out;
+};
+
+union cfs_open {
+    struct cfs_open_in in;
+    struct cfs_open_out out;
+};
+
+union cfs_close {
+    struct cfs_close_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_ioctl {
+    struct cfs_ioctl_in in;
+    struct cfs_ioctl_out out;
+};
+
+union cfs_getattr {
+    struct cfs_getattr_in in;
+    struct cfs_getattr_out out;
+};
+
+union cfs_setattr {
+    struct cfs_setattr_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_access {
+    struct cfs_access_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_lookup {
+    struct cfs_lookup_in in;
+    struct cfs_lookup_out out;
+};
+
+union cfs_create {
+    struct cfs_create_in in;
+    struct cfs_create_out out;
+};
+
+union cfs_remove {
+    struct cfs_remove_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_link {
+    struct cfs_link_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_rename {
+    struct cfs_rename_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_mkdir {
+    struct cfs_mkdir_in in;
+    struct cfs_mkdir_out out;
+};
+
+union cfs_rmdir {
+    struct cfs_rmdir_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_readdir {
+    struct cfs_readdir_in in;
+    struct cfs_readdir_out out;
+};
+
+union cfs_symlink {
+    struct cfs_symlink_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_readlink {
+    struct cfs_readlink_in in;
+    struct cfs_readlink_out out;
+};
+
+union cfs_fsync {
+    struct cfs_fsync_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_inactive {
+    struct cfs_inactive_in in;
+    struct cfs_out_hdr out;
+};
+
+union cfs_vget {
+    struct cfs_vget_in in;
+    struct cfs_vget_out out;
+};
+
+	/* CFS_SIGNAL is out-of-band, doesn't need data. */
+	/* CFS_INVALIDATE is a venus->kernel call */
+	/* CFS_FLUSH is a venus->kernel call */
+	/* CFS_PURGEUSER is a venus->kernel call */
+	/* CFS_ZAPFILE is a venus->kernel call */
+	/* CFS_ZAPDIR is a venus->kernel call */	
+	/* CFS_ZAPVNODE is a venus->kernel call */	
+	/* CFS_PURGEFID is a venus->kernel call */	
+
+union cfs_rdwr {
+    struct cfs_rdwr_in in;
+    struct cfs_rdwr_out out;
+};
+
+	/* CFS_REPLACE is a venus->kernel call */	
+
     
 /*
  * Kernel <--> Venus communications.
@@ -444,18 +587,15 @@ struct outputArgs {
  * amounts of data.  These macros cap that amount, and define the size
  * of the headers for the upcalls and returns.  
  */
-#define	VC_IN_NO_DATA	    (2 * (int)sizeof(u_long)    \
-                             + 2 * (int)sizeof(u_short) \
-			     + (int)sizeof(struct CodaCred))
-#define	VC_OUT_NO_DATA	    (3 * (int)sizeof(u_long))
+#define	VC_IN_NO_DATA	    sizeof (struct cfs_in_hdr)
+#define	VC_OUT_NO_DATA	    sizeof (struct cfs_out_hdr)
 
-#define VC_INSIZE(member)   (VC_IN_NO_DATA + (int)sizeof(struct member))
-#define VC_OUTSIZE(member)  (VC_OUT_NO_DATA + (int)sizeof(struct member))
+#define VC_INSIZE(member)   ((int) sizeof (struct member))
+#define VC_OUTSIZE(member)  ((int) sizeof (struct member))
 
 /* This one's for venus, since C++ doesn't know what struct foo means. */
 #define VC_SIZE(Thing, Member)   (VC_OUT_NO_DATA                    \
                                   + (int)sizeof((Thing)->d.Member))
-
 
 #define VC_BIGGER_OF_IN_OR_OUT  (sizeof(struct outputArgs)   \
                                   > sizeof(struct inputArgs) \

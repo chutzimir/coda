@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.8  1997/11/21 11:28:04  rvb
- * cfs_venus.c is done: first pass
+ * Revision 1.4.14.9  1997/11/24 15:44:48  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.4.14.8  97/11/21  11:28:04  rvb
+ * cfs_venus.c is done: first pass
+ * 
  * Revision 1.4.14.7  97/11/20  11:46:51  rvb
  * Capture current cfs_venus
  * 
@@ -789,7 +792,7 @@ cfs_access(v)
      */
     if (cfs_access_cache) {
 	if ((vp->v_type == VDIR) && (mode & VEXEC)) {
-	    if (cfsnc_lookup(cp, ".", cred)) {
+	    if (cfsnc_lookup(cp, ".", 1, cred)) {
 		MARK_INT_SAT(CFS_ACCESS_STATS);
 		return(0);                     /* it was in the cache */
 	    }
@@ -1020,16 +1023,13 @@ cfs_lookup(v)
 /* locals */
     struct cnode *cp;
     struct cnode *scp = NULL;
-    char nm[MAXPATHLEN];   /* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
     ViceFid VFid;
     int	vtype;
     int error = 0;
-    int s;
 
     MARK_ENTRY(CFS_LOOKUP_STATS);
-
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
 
     CFSDEBUG(CFS_LOOKUP, myprintf(("lookup: %s in %d.%d.%d\n",
 				   nm, dcp->c_fid.Volume,
@@ -1051,7 +1051,7 @@ cfs_lookup(v)
 #endif
 
     /* Check for lookup of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
+    if (IS_CTL_NAME(dvp, nm, len)) {
 	*vpp = cfs_ctlvp;
 	vref(*vpp);
 	MARK_INT_SAT(CFS_LOOKUP_STATS);
@@ -1059,8 +1059,7 @@ cfs_lookup(v)
 	goto exit;
     }
 
-    s = strlen(nm) + 1;
-    if (s > CFS_MAXNAMLEN) {
+    if (len+1 > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_LOOKUP_STATS);
 	CFSDEBUG(CFS_LOOKUP, myprintf(("name too long: lookup, %x.%x.%x(%s)\n",
 				    dcp->c_fid.Volume, dcp->c_fid.Vnode,
@@ -1071,7 +1070,7 @@ cfs_lookup(v)
     }
     /* First try to look the file up in the cfs name cache */
     /* lock the parent vnode? */
-    cp = cfsnc_lookup(dcp, nm, cred);
+    cp = cfsnc_lookup(dcp, nm, len, cred);
     if (cp) {
 	*vpp = CTOV(cp);
 	vref(*vpp);
@@ -1080,7 +1079,7 @@ cfs_lookup(v)
     } else {
 	
 	/* The name wasn't cached, so we need to contact Venus */
-	error = venus_lookup(vtomi(dvp), &dcp->c_fid, nm, s, cred, p, &VFid, &vtype);
+	error = venus_lookup(vtomi(dvp), &dcp->c_fid, nm, len, cred, p, &VFid, &vtype);
 	
 	if (error) {
 	    MARK_INT_FAIL(CFS_LOOKUP_STATS);
@@ -1100,7 +1099,7 @@ cfs_lookup(v)
 	    /* enter the new vnode in the Name Cache only if the top bit isn't set */
 	    /* And don't enter a new vnode for an invalid one! */
 	    if (!(vtype & CFS_NOCACHE) && scp == 0)
-		cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
+		cfsnc_enter(VTOC(dvp), nm, len, cred, VTOC(*vpp));
 	}
     }
 
@@ -1202,7 +1201,8 @@ cfs_create(v)
 /* locals */
     int error;
     struct cnode *cp;
-    char nm[MAXPATHLEN];   /* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
     ViceFid VFid;
     struct vattr attr;
 
@@ -1210,17 +1210,15 @@ cfs_create(v)
 
     /* All creates are exclusive XXX */
     /* I'm assuming the 'mode' argument is the file mode bits XXX */
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
 
     /* Check for create of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
+    if (IS_CTL_NAME(dvp, nm, len)) {
 	*vpp = (struct vnode *)0;
 	MARK_INT_FAIL(CFS_CREATE_STATS);
 	return(EACCES);
     }
 
-    error = venus_create(vtomi(dvp), &dcp->c_fid, nm, exclusive, mode, va, cred, p, &VFid, &attr);
+    error = venus_create(vtomi(dvp), &dcp->c_fid, nm, len, exclusive, mode, va, cred, p, &VFid, &attr);
 
     if (!error) {
 	
@@ -1247,7 +1245,7 @@ cfs_create(v)
 	VTOC(dvp)->c_flags &= ~C_VATTR;
 	
 	/* enter the new vnode in the Name Cache */
-	cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
+	cfsnc_enter(VTOC(dvp), nm, len, cred, VTOC(*vpp));
 	
 	CFSDEBUG(CFS_CREATE, 
 		 myprintf(("create: (%x.%x.%x), result %d\n",
@@ -1303,14 +1301,11 @@ cfs_remove(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-
-    char nm[MAXPATHLEN];   /* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
     struct cnode *tp;
 
     MARK_ENTRY(CFS_REMOVE_STATS);
-
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
 
     CFSDEBUG(CFS_REMOVE, myprintf(("remove: %s in %d.%d.%d\n",
 				   nm, cp->c_fid.Volume, cp->c_fid.Vnode,
@@ -1326,7 +1321,7 @@ cfs_remove(v)
      * off by 1. We could either invalidate the attrs if cached, or
      * fix them. I'll try to fix them. DCS 11/8/94
      */
-    tp = cfsnc_lookup(VTOC(dvp), nm, cred);
+    tp = cfsnc_lookup(VTOC(dvp), nm, len, cred);
     if (tp) {
 	if (VALID_VATTR(tp)) {	/* If attrs are cached */
 	    if (tp->c_vattr.va_nlink > 1) {	/* If it's a hard link */
@@ -1334,19 +1329,19 @@ cfs_remove(v)
 	    }
 	}
 	
-	cfsnc_zapfile(VTOC(dvp), nm); 
+	cfsnc_zapfile(VTOC(dvp), nm, len); 
 	/* No need to flush it if it doesn't exist! */
     }
     /* Invalidate the parent's attr cache, the modification time has changed */
     VTOC(dvp)->c_flags &= ~C_VATTR;
 
     /* Check for remove of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
+    if (IS_CTL_NAME(dvp, nm, len)) {
 	MARK_INT_FAIL(CFS_REMOVE_STATS);
 	return(ENOENT);
     }
 
-    error = venus_remove(vtomi(dvp), &cp->c_fid, nm, cred, p);
+    error = venus_remove(vtomi(dvp), &cp->c_fid, nm, len, cred, p);
 
     CFSDEBUG(CFS_REMOVE, myprintf(("in remove result %d\n",error)); )
     /* 
@@ -1382,7 +1377,8 @@ cfs_link(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-    char nm[MAXPATHLEN];   /* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
 
     MARK_ENTRY(CFS_LINK_STATS);
 
@@ -1406,12 +1402,8 @@ cfs_link(v)
 
     }
 
-
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
-
     /* Check for link to/from control object. */
-    if (IS_CTL_NAME(tdvp, nm) || IS_CTL_VP(vp)) {
+    if (IS_CTL_NAME(tdvp, nm, len) || IS_CTL_VP(vp)) {
 	MARK_INT_FAIL(CFS_LINK_STATS);
 	return(EACCES);
     }
@@ -1431,7 +1423,7 @@ cfs_link(v)
 	goto exit;
     }
 	
-    error = venus_link(vtomi(vp), &cp->c_fid, &tdcp->c_fid, nm, cred, p);
+    error = venus_link(vtomi(vp), &cp->c_fid, &tdcp->c_fid, nm, len, cred, p);
 
     /* Invalidate the parent's attr cache, the modification time has changed */
     VTOC(tdvp)->c_flags &= ~C_VATTR;
@@ -1469,16 +1461,12 @@ cfs_rename(v)
     struct proc *p = fcnp->cn_proc;
 /* true args */
     int error, size;
-    char fnm[MAXPATHLEN];   /* overkill, but... */
-    char tnm[MAXPATHLEN];   /* overkill, but... */
-    int s;
+    char *fnm = fcnp->cn_nameptr;
+    int flen = fcnp->cn_namelen;
+    char *tnm = tcnp->cn_nameptr;
+    int tlen = tcnp->cn_namelen;
 
     MARK_ENTRY(CFS_RENAME_STATS);
-
-    bcopy(fcnp->cn_nameptr, fnm,  fcnp->cn_namelen);
-    bcopy(tcnp->cn_nameptr, tnm,  tcnp->cn_namelen);
-    fnm[fcnp->cn_namelen] = '\0';
-    tnm[tcnp->cn_namelen] = '\0';
 
     /* Hmmm.  The vnodes are already looked up.  Perhaps they are locked?
        This could be Bad. XXX */
@@ -1491,46 +1479,43 @@ cfs_rename(v)
 #endif DIAGNOSTIC
 
     /* Check for rename involving control object. */ 
-    if (IS_CTL_NAME(odvp, fnm) || IS_CTL_NAME(ndvp, tnm)) {
+    if (IS_CTL_NAME(odvp, fnm, flen) || IS_CTL_NAME(ndvp, tnm, tlen)) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	return(EACCES);
     }
 
     /* Problem with moving directories -- need to flush entry for .. */
     if (odvp != ndvp) {
-	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), fnm, cred);
+	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), fnm, flen, cred);
 	if (ovcp) {
 	    struct vnode *ovp = CTOV(ovcp);
 	    if ((ovp) &&
 		(ovp->v_type == VDIR)) /* If it's a directory */
-		cfsnc_zapfile(VTOC(ovp),"..");
+		cfsnc_zapfile(VTOC(ovp),"..", 2);
 	}
     }
 
     /* Remove the entries for both source and target files */
-    cfsnc_zapfile(VTOC(odvp), fnm);
-    cfsnc_zapfile(VTOC(ndvp), tnm);
+    cfsnc_zapfile(VTOC(odvp), fnm, flen);
+    cfsnc_zapfile(VTOC(ndvp), tnm, tlen);
 
     /* Invalidate the parent's attr cache, the modification time has changed */
     VTOC(odvp)->c_flags &= ~C_VATTR;
     VTOC(ndvp)->c_flags &= ~C_VATTR;
 
-
-    s = (strlen(fnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
+    if (flen+1 > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	error = EINVAL;
 	goto exit;
     }
 
-    s = (strlen(tnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
+    if (tlen+1 > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_RENAME_STATS);
 	error = EINVAL;
 	goto exit;
     }
 
-    error = venus_rename(vtomi(odvp), &odcp->c_fid, &ndcp->c_fid, fnm, tnm, cred, p);
+    error = venus_rename(vtomi(odvp), &odcp->c_fid, &ndcp->c_fid, fnm, flen, tnm, tlen, cred, p);
 
  exit:
     CFSDEBUG(CFS_RENAME, myprintf(("in rename result %d\n",error));)
@@ -1570,33 +1555,28 @@ cfs_mkdir(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-    char nm[MAXPATHLEN];   /* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
     struct cnode *cp;
     ViceFid VFid;
     struct vattr ova;
-    int size;
 
     MARK_ENTRY(CFS_MKDIR_STATS);
 
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
-
     /* Check for mkdir of target object. */
-    if (IS_CTL_NAME(dvp, nm)) {
+    if (IS_CTL_NAME(dvp, nm, len)) {
 	*vpp = (struct vnode *)0;
 	MARK_INT_FAIL(CFS_MKDIR_STATS);
 	return(EACCES);
     }
 
-    size = strlen(nm) + 1;
-
-    if (size > CFS_MAXNAMLEN) {
+    if (len+1 > CFS_MAXNAMLEN) {
 	*vpp = (struct vnode *)0;
 	MARK_INT_FAIL(CFS_MKDIR_STATS);
 	return(EACCES);
     }
 
-    error = venus_mkdir(vtomi(dvp), &dcp->c_fid, nm, va, cred, p, &VFid, &ova);
+    error = venus_mkdir(vtomi(dvp), &dcp->c_fid, nm, len, va, cred, p, &VFid, &ova);
 
     if (!error) {
 	if (cfs_find(&VFid, dvp->v_mount) != NULL)
@@ -1607,11 +1587,11 @@ cfs_mkdir(v)
 	*vpp = CTOV(cp);
 	
 	/* enter the new vnode in the Name Cache */
-	cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
+	cfsnc_enter(VTOC(dvp), nm, len, cred, VTOC(*vpp));
 
 	/* as a side effect, enter "." and ".." for the directory */
-	cfsnc_enter(VTOC(*vpp), ".", cred, VTOC(*vpp));
-	cfsnc_enter(VTOC(*vpp), "..", cred, VTOC(dvp));
+	cfsnc_enter(VTOC(*vpp), ".", 1, cred, VTOC(*vpp));
+	cfsnc_enter(VTOC(*vpp), "..", 2, cred, VTOC(dvp));
 
 	if (cfs_attr_cache) {
 	    VTOC(*vpp)->c_vattr = ova;		/* update the attr cache */
@@ -1664,16 +1644,14 @@ cfs_rmdir(v)
     struct proc *p = cnp->cn_proc;
 /* true args */
     int error;
-    char nm[MAXPATHLEN];	/* overkill, but... */
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
     struct cnode *cp;
    
     MARK_ENTRY(CFS_RMDIR_STATS);
 
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
-
     /* Check for rmdir of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
+    if (IS_CTL_NAME(dvp, nm, len)) {
 	MARK_INT_FAIL(CFS_RMDIR_STATS);
 	return(ENOENT);
     }
@@ -1686,16 +1664,16 @@ cfs_rmdir(v)
      * As a side effect of the rmdir, remove any entries for children of
      * the directory, especially "." and "..".
      */
-    cp = cfsnc_lookup(dcp, nm, cred);
+    cp = cfsnc_lookup(dcp, nm, len, cred);
     if (cp) cfsnc_zapParentfid(&(cp->c_fid), NOT_DOWNCALL);
 
     /* Remove the file's entry from the CFS Name Cache */
-    cfsnc_zapfile(dcp, nm);
+    cfsnc_zapfile(dcp, nm, len);
 
     /* Invalidate the parent's attr cache, the modification time has changed */
     dcp->c_flags &= ~C_VATTR;
 
-    error = venus_rmdir(vtomi(dvp), &dcp->c_fid, nm, cred, p);
+    error = venus_rmdir(vtomi(dvp), &dcp->c_fid, nm, len, cred, p);
 
     CFSDEBUG(CFS_RMDIR, myprintf(("in rmdir result %d\n", error)); )
 
@@ -1726,7 +1704,7 @@ cfs_symlink(v)
     struct cnode *tdcp = VTOC(tdvp);	
     struct componentname *cnp = ap->a_cnp;
     struct vattr *tva = ap->a_vap;
-    char *lnm = ap->a_target;
+    char *path = ap->a_target;
     struct ucred *cred = cnp->cn_cred;
     struct proc *p = cnp->cn_proc;
 /* locals */
@@ -1737,8 +1715,9 @@ cfs_symlink(v)
      *       t(foo) is the new name/parent/etc being created.
      *       lname is the contents of the new symlink. 
      */
-    char nm[MAXPATHLEN];   /* overkill, but... */
-    int		 s;
+    char *nm = cnp->cn_nameptr;
+    int len = cnp->cn_namelen;
+    int plen = strlen(path);
 
     /* XXX What about the vpp argument?  Do we need it? */
     /* 
@@ -1753,42 +1732,42 @@ cfs_symlink(v)
 
     MARK_ENTRY(CFS_SYMLINK_STATS);
 
-    bcopy(cnp->cn_nameptr, nm,  cnp->cn_namelen);
-    nm[cnp->cn_namelen] = '\0';
-
     /* Check for symlink of control object. */
-    if (IS_CTL_NAME(tdvp, nm)) {
+    if (IS_CTL_NAME(tdvp, nm, len)) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	return(EACCES);
     }
 
-    s = (strlen(lnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXPATHLEN) {
+    if (plen+1 > CFS_MAXPATHLEN) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	return(EINVAL);
     }
 
-    s = (strlen(nm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
+    if (len+1 > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_SYMLINK_STATS);
 	error = EINVAL;
 	goto exit;
     }
 
-    error = venus_symlink(vtomi(tdvp), &tdcp->c_fid, lnm, nm, tva, cred, p);
+    error = venus_symlink(vtomi(tdvp), &tdcp->c_fid, path, plen, nm, len, tva, cred, p);
 
     if (!error)
 /*
 	error = cfs_lookup(tdvp, tname, ap->a_vpp, cred, p);
  */
     {
-    	struct componentname cn;
-	cn.cn_nameiop = LOOKUP;
-	cn.cn_flags = 0;
-	cn.cn_proc = p;
-	cn.cn_cred = cred;
-	cn.cn_nameptr = nm;
-	error = VOP_LOOKUP(tdvp, ap->a_vpp, &cn);
+	struct nameidata nd;
+	NDINIT(&nd, LOOKUP, FOLLOW, UIO_SYSSPACE, nm, p);
+	nd.ni_cnd.cn_cred = cred;
+	nd.ni_loopcnt = 0;
+	nd.ni_startdir = tdvp;
+	nd.ni_cnd.cn_pnbuf = nm;
+	nd.ni_cnd.cn_nameptr = nd.ni_cnd.cn_pnbuf;
+	nd.ni_pathlen = len;
+	vput(tdvp);
+	error = lookup(&nd);
+	*ap->a_vpp = nd.ni_vp;
+printf("%d = namei(... %s )\n", error, nm);
     }
 
     /* Invalidate the parent's attr cache, the modification time has changed */
@@ -1800,7 +1779,7 @@ cfs_symlink(v)
      * lookup.  Furthermore, there isn't any way for (dvp == *vpp), so
      * we don't bother checking.  
      */
-    vput(ap->a_dvp);
+/*    vput(ap->a_dvp);		released earlier */
     if (*ap->a_vpp) vrele(*ap->a_vpp);
 
     /* 
