@@ -29,7 +29,6 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
@@ -152,7 +151,7 @@ PRIVATE void ProcessArgs(int argc, char **argv)
 
 PRIVATE void PrintHelp(){
 	    LogMsg(0, SrvDebugLevel, stdout, 
-		   "usage: updfetch -h serverhostname");
+		   "usage: updatefetch -h serverhostname");
 	    LogMsg(0, SrvDebugLevel, stdout, 
 		   "-r remotefile -l localfile");
 	    LogMsg(0, SrvDebugLevel, stdout, 

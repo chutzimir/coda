@@ -59,7 +59,7 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = updatemon updatesrv updateclnt updfetch
+EXECUTABLES = updatemon updatesrv updateclnt updatefetch
 SSBINS      = $(EXECUTABLES)
 HEADERS     = ${RP2FILES} ${RP2HEADERS}
 
@@ -89,8 +89,8 @@ updatesrv: updatesrv.o update.server.o ${LIBS}
 updateclnt: updateclnt.o update.client.o  ${LIBS}
 	$(CXX) $(LIBFLAGS) updateclnt.o update.client.o  ${LIBS} -o updateclnt
 
-updfetch: updfetch.o update.client.o  ${LIBS}
-	$(CXX) $(LIBFLAGS) updfetch.o update.client.o  ${LIBS} -o updfetch
+updatefetch: updatefetch.o update.client.o  ${LIBS}
+	$(CXX) $(LIBFLAGS) updatefetch.o update.client.o  ${LIBS} -o updatefetch
 
 updatemon: updatemon.o
 	$(CXX) $(LIBFLAGS) updatemon.o -o updatemon

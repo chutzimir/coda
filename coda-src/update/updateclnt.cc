@@ -304,7 +304,6 @@ PRIVATE void CheckLibStructure()
 	printf("Creating /vice structure\n");
 	mkdir("/vice",0755);
 	mkdir("/vice/db",0755);
-	mkdir("/vice/bin",0755);
 	mkdir("/vice/srv",0755);
 	mkdir("/vice/vol",0755);
 	mkdir("/vice/spool",0755);
@@ -313,10 +312,6 @@ PRIVATE void CheckLibStructure()
 	if((stat("/vice/db",&lbuf)) && (errno == ENOENT)) {
 	    printf("Creating /vice/db\n");
 	    mkdir("/vice/db",0755);
-	}
-	if((stat("/vice/bin",&lbuf)) && (errno == ENOENT)) {
-	    printf("Creating /vice/bin\n");
-	    mkdir("/vice/bin",0755);
 	}
 	if((stat("/vice/srv",&lbuf)) && (errno == ENOENT)) {
 	    printf("Creating /vice/srv\n");
