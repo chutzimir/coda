@@ -120,13 +120,7 @@ extern struct VnodeClassInfo VnodeClassInfo_Array[nVNODECLASSES];
 #define bitNumberToVnodeNumber(b,vclass) (((b)<<VNODECLASSWIDTH)+(vclass)+1)
 #define vnodeIsDirectory(vnodeNumber) (vnodeIdToClass(vnodeNumber) == vLarge)
 
-/*
-  BEGIN_HTML
-   <a name="VnodeDiskObject">
-   <strong>Structure of vnode stored in RVM</strong>
-   </a> 
-  END_HTML
-*/
+/* VnodeDiskObject: Structure of vnode stored in RVM */
 typedef struct VnodeDiskObjectStruct {
     VnodeType	  type:3;	/* Vnode is file, directory, symbolic link
     				   or not allocated */
@@ -162,8 +156,8 @@ typedef struct VnodeDiskObjectStruct {
        than 0 (in an old file system).  Or go through and zero the fields,
        when we notice a version change (the index version number) */
     ViceLock	  lock;		/* Advisory lock */
-    Date_t	  serverModifyTime;	/* Used only by the server; for incremental
-    				   backup purposes */
+    Date_t	  serverModifyTime;	/* Used only by the server;
+					   for incremental backup purposes */
     rec_smolink	  nextvn;	/* link to next vnode with same vnodeindex */
     rec_dlist	  *log;		/* resolution log in RVM */
     /* Missing:

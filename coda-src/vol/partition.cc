@@ -218,7 +218,7 @@ void VAdjustDiskUsage(Error *ec, Volume *vp, int blocks)
 	 * else if (V_maxquota(vp) && V_diskused(vp) + blocks > V_maxquota(vp))
 	 */
 	else if (V_maxquota(vp) && (V_diskused(vp) >= V_maxquota(vp)))
-	    *ec = VOVERQUOTA;
+	    *ec = EDQUOT;
     }    
     vp->partition->free -= blocks;
     V_diskused(vp) += blocks;
@@ -235,7 +235,7 @@ void VCheckDiskUsage(Error *ec, Volume *vp, int blocks)
 	 * else if (V_maxquota(vp) && (V_diskused(vp) + blocks > V_maxquota(vp)))
 	 */
 	else if (V_maxquota(vp) && (V_diskused(vp) >= V_maxquota(vp)))	
-	    *ec = VOVERQUOTA;
+	    *ec = EDQUOT;
     }
 }
 

@@ -133,9 +133,10 @@ PRIVATE int AddUtility (int myid);
 PRIVATE int FindUtility (int myid);
 PRIVATE int RemoveUtility (int myid);
 
-/* File server synchronization initialization. Starts up an lwp to watch over the */
-/* synchronization. This is bogus, since now that it doesn't have to listen on a */
-/* socket this is only performing a timer function */
+/* File server synchronization initialization. Starts up an lwp to
+   watch over the synchronization. This is bogus, since now that it
+   doesn't have to listen on a socket this is only performing a timer
+   function */
 void FSYNC_fsInit() {
     PROCESS pid;
     long rc;

@@ -457,15 +457,14 @@ PRIVATE Vnode *VAllocVnodeCommon(Error *ec, Volume *vp, VnodeType type,
 
 Vnode *VGetVnode(Error *ec,Volume *vp,VnodeId vnodeNumber,
 		  Unique_t unq, int locktype, int ignoreIncon, int ignoreBarren)
-/*    int locktype;	READ_LOCK or WRITE_LOCK, as defined in lock.h
-                        TRY_READ_LOCK or TRY_WRITE_LOCK, as defined in cvnode.h.
-			The latter are non-blocking calls.  They return the vnode
-			locked as appropriate if the vnode is available, otherwise
-			they return a NULL vnode and error EWOULDBLOCK.
-      int ignoreIncon	TRUE (non-zero) iff it is ok for inconsistency flag to be 
-                        set in vnode.
-      int ignoreBarren	TRUE (non-zero) iff it is ok for barren flag to be set in vnode
-*/
+  /*    int locktype; READ_LOCK or WRITE_LOCK, as defined in lock.h
+	TRY_READ_LOCK or TRY_WRITE_LOCK, as defined in cvnode.h.  The
+	latter are non-blocking calls.  They return the vnode locked
+	as appropriate if the vnode is available, otherwise they
+	return a NULL vnode and error EWOULDBLOCK.  int ignoreIncon
+	TRUE (non-zero) iff it is ok for inconsistency flag to be set
+	in vnode.  int ignoreBarren TRUE (non-zero) iff it is ok for
+	barren flag to be set in vnode */
 
 {
     register Vnode *vnp;

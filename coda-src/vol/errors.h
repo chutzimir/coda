@@ -84,7 +84,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define VONLINE		107	/* Volume is already on line */
 #define VDISKFULL	ENOSPC	/* Partition is "full", i.e. rougly within
 				   n% of full */
-#define VOVERQUOTA	EDQUOT	/* Volume max quota exceeded */
 #define VBUSY		110	/* Volume temporarily unavailable; try again.
 				   The volume should be available again shortly; if
 				   it isn't something is wrong.  Not normally to be
