@@ -38,7 +38,7 @@ LIBS = 	$(LIBREADLINE) \
 	$(LIBSYSENT)	\
 	$(LIBUTIL) 	\
 	$(LIBDIRLIB)	\
-	$(LIBIFS)	\
+	$(LIBINODEFS)	\
 	$(LIBCS)	\
 	$(LIBCODARDS) 	\
 	$(LIBSEG) 	\
