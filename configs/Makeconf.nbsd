@@ -59,3 +59,4 @@ LIBGDBM       = /usr/pkg/lib/libgdbm.a
 endif
 
 LIBMATH       = -lm
+GUIDIR        = /usr/lib/coda
