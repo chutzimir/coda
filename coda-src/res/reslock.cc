@@ -55,7 +55,7 @@ extern "C" {
 #include <cam/_setjmp.h>
 #endif CAMELOT
 
-#ifndef LINUX
+#if 0
 #include <cthreads.h>
 #endif
 #include <stdio.h>
