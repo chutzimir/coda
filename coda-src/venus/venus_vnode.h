@@ -69,6 +69,8 @@ static char *rcsid = "$Header$";
  *	@(#)vnode.h	8.11 (Berkeley) 11/21/94
  */
 
+#ifndef _VENUS_VNODE
+#define _VENUS_VNODE
 #include <sys/queue.h>
 
 /*
@@ -441,3 +443,6 @@ void 	vrele __P((struct vnode *vp));
 int	vaccess __P((mode_t file_mode, uid_t uid, gid_t gid,
 	    mode_t acc_mode, struct ucred *cred));
 #endif /* _KERNEL */
+
+
+#endif /* _VENUS_VNODE */

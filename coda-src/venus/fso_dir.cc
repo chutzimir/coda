@@ -70,9 +70,9 @@ extern "C" {
 #include <machine/endian.h>
 #endif
 
-#if LINUX || __NetBSD__
+
 #define DIRBLKSIZ       1024
-#endif
+
 #include "bsd_dir.h"
 
 #ifdef __cplusplus
@@ -144,11 +144,9 @@ PRIVATE void CVWriteEntry(char *name, ino_t inode, CVDescriptor *cvd) {
 
     struct direct dir;
     dir.d_namlen = strlen(name);
-#ifdef LINUX
+
     dir.d_fileno = inode;
-#else
-    dir.d_ino = inode;
-#endif
+
     dir.d_reclen = DIRSIZ(&dir);
     strcpy(dir.d_name, name);
 

@@ -80,7 +80,7 @@ static char *rcsid = "$Header$";
  * The maximum length of a name in a directory is MAXNAMLEN.
  */
 
-#ifdef LINUX
+#if LINUX || MACH
 #define u_int32_t   unsigned int
 #define u_int16_t   unsigned short
 #define u_int8_t    char

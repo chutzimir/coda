@@ -89,7 +89,7 @@ extern "C" {
 #include <vice.h>
 
 /* from dir */
-#include <dir.h>
+#include <coda_dir.h>
 
 /* from venus */
 #include "advice_daemon.h"

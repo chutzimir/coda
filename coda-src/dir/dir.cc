@@ -70,7 +70,7 @@ extern "C" {
 #ifdef __MACH__
 #include <libc.h>
 #endif __MACH__
-#ifdef __NetBSD__
+#if __NetBSD__ || LINUX
 #include <stdlib.h>
 #endif __NetBSD__
 

@@ -96,12 +96,17 @@ SYSCALL(pioctl)
 #include <sys/syscall.h>
 #include <machine/asm.h>
 #ifndef __NetBSD__
-#define SYSCALL(x)	ENTRY(x); movl	$SYS_/**/x, %eax; SVC; jb LCL(cerror)
-#else	__NetBSD__
-#include "netbsdasm.h"	
-#endif	__NetBSD__
+#ifdef __STDC__
+#define SYSCALL(x)	ENTRY(x); movl	$SYS_ ## x, %eax; SVC; jb LCL(cerror)
+#else
+#define SYSCALL(x)	ENTRY(x); movl	$(SYS_/**/x), %eax; SVC; jb LCL(cerror)
+#endif
+
 
 	.globl	LCL(cerror)
+#else	__NetBSD__
+#include "SYS.h"	
+#endif	__NetBSD__
 
 SYSCALL(pioctl)
 	ret

@@ -48,7 +48,12 @@ extern "C" {
 #include <netdb.h>
 #include <ctype.h>
 #include <errno.h>
+#if LINUX || __NetBSD__
+#include <unistd.h>
+#include <stdlib.h>
+#else
 #include <libc.h>
+#endif
 #include <stdio.h>
 
 

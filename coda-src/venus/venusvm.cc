@@ -98,6 +98,16 @@ extern int nlist(const char*, struct nlist[]);
 
 /* *****  Private constants  ***** */
 
+#ifdef MACH 
+#define VMUNIX  "/vmunix"
+#endif
+#ifdef __NetBSD__
+#define VMUNIX "/netbsd"
+#endif
+#ifdef LINUX
+#define VMUNIX "/vmlinuz"
+#endif
+
 #define	DFLT_VMONHOST	"barber.coda.cs.cmu.edu"
 #define	DFLT_VMONPORTAL	1356
 
@@ -321,7 +331,7 @@ void VmonInit() {
 	ktest[0].n_name = "_pass_process_info";
 	ktest[1].n_name = 0;
 #ifndef LINUX
-	if (nlist("/vmunix", ktest) != 0) {
+	if (nlist(VMUNIX, ktest) != 0) {
 	    fprintf(stderr, "ERROR: running a kernel that does not pass process info\n");
 	    fflush(stderr);
 	    LOG(0, ("ERROR: running running a kernel that does not pass process info\n"));
@@ -350,7 +360,7 @@ void VmonInit() {
     RawStats[1].n_name = "_cfs_vnodeopstats";
     RawStats[2].n_name = 0;
 #ifndef LINUX
-    if (nlist("/vmunix",RawStats) != 0) {
+    if (nlist(VMUNIX,RawStats) != 0) {
 	fprintf(stderr, "ERROR: running a pre-vfs-statistics kernel\n");
 	fflush(stderr);
 	LOG(0, ("ERROR: running a pre-vfs-statistics kernel\n"));
