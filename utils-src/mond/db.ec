@@ -711,7 +711,8 @@ VCBStatistics *Stats;
 		return code;
 	    }
 	    $ delete from vcb_stats
-		where venus_index = $venusindex;
+		where venus_index = $venusindex
+		and volume = $volume;
 	    code += CheckSQL("Delete from vcb_stats",1);
 	    if (code !=0) {
 		$ rollback work;
