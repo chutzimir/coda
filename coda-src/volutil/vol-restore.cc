@@ -122,9 +122,7 @@ extern void PollAndYield();
 
 
 /*
-  BEGIN_HTML
-  <a name="S_VolRestore"><strong>Restore a volume from a dump file</strong></a>
-  END_HTML
+  S_VolRestore: Restore a volume from a dump file
 */ 
 long S_VolRestore(RPC2_Handle rpcid, RPC2_String formal_partition, RPC2_String formal_volname,
 	RPC2_Unsigned *formal_volid)

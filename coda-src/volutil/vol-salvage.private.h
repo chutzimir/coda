@@ -46,8 +46,8 @@ static char *rcsid = "$Header$";
 #include <recov_vollog.h>
 
 struct InodeSummary {		/* Inode summary file: an entry for each volume in a partition */
-    VolId	volumeId;	/* Volume id */
-    VolId	RWvolumeId;	/* RW volume associated */
+    VolumeId	volumeId;	/* Volume id */
+    VolumeId	RWvolumeId;	/* RW volume associated */
     int		index;		/* index into inode file (0, 1, 2 ...) */
     int		nInodes;	/* Number of inodes for this volume */
     Unique_t	maxUniquifier;	/* The max. uniquifier in all the inodes for this volume */

@@ -164,7 +164,7 @@ int main(int argc, char **argv) {
     }
 
     if (argc < 2) {
-        printf("Usage: volutil [-h hostname] [-t timeout] <option>, where <option> is one of the following:\n");
+        printf("Usage: volutil [-h hostname] [-t timeout] [-d debuglevel]  <option>, where <option> is one of the following:\n");
 	printf("ancient, backup, create, create_rep, clone, dump, info, lock, ");
 	printf("lookup, makevldb, makevrdb, purge, restore, salvage, ");
 	printf("setvv, showvnode, shutdown, swaplog, setdebug, updatedb, ");
@@ -192,8 +192,17 @@ int main(int argc, char **argv) {
 	    }
 	}
 	
-	if ((argc > 2) && strcmp(argv[1], "-t") == 0) { // User gave timeout
+	if ((argc > 2) && strcmp(argv[1], "-t") == 0) { 
+	    /* User gave timeout */
 	    timeout = atoi(argv[2]);
+	    argv++; argc--;
+	    argv++; argc--;
+	}
+
+	if ((argc > 2) && strcmp(argv[1], "-d") == 0) { 
+	    /* User gave timeout */
+	    RPC2_DebugLevel = atoi(argv[2]);
+	    VolDebugLevel = atoi(argv[2]);
 	    argv++; argc--;
 	    argv++; argc--;
 	}
