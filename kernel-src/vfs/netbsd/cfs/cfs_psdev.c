@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.5  1997/12/16 22:01:27  rvb
- * Oops add cfs_subr.h cfs_venus.h; sync with peter
+ * Revision 1.5.2.6  1998/01/22 13:11:24  rvb
+ * Move makecfsnode ctlfid later so vfsp is known; work on ^c and ^z
  *
+ * Revision 1.5.2.5  97/12/16  22:01:27  rvb
+ * Oops add cfs_subr.h cfs_venus.h; sync with peter
+ * 
  * Revision 1.5.2.4  97/12/16  12:40:05  rvb
  * Sync with 1.3
  * 
@@ -111,7 +114,6 @@ extern int cfsnc_initialized;    /* Set if cache has been initialized */
 #include <cfs/cfsnc.h>
 #include <cfs/cfsio.h>
 
-struct vnode *cfs_ctlvp = 0;
 int cfs_psdev_print_entry = 0;
 
 #ifdef __GNUC__
@@ -167,7 +169,6 @@ vc_nb_open(dev, flag, mode, p)
     struct proc *p;             /* NetBSD only */
 {
     register struct vcomm *vcp;
-    struct cnode       *cp;
     
     ENTRY;
 
@@ -176,18 +177,6 @@ vc_nb_open(dev, flag, mode, p)
     
     if (!cfsnc_initialized)
 	cfsnc_init();
-    
-    if (cfs_ctlvp == 0) {
-	ViceFid ctlfid;
-	
-	ctlfid.Volume = CTL_VOL;
-	ctlfid.Vnode = CTL_VNO;
-	ctlfid.Unique = CTL_UNI;
-	
-	
-	cp = makecfsnode(&ctlfid, 0, VCHR);
-	cfs_ctlvp = CTOV(cp);
-    }
     
     vcp = &cfs_mnttbl[minor(dev)].mi_vcomm;
     if (VC_OPEN(vcp))
@@ -543,7 +532,8 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	struct vcomm *vcp;
 	struct vmsg *vmp;
 	int error;
-
+struct proc *p = curproc;
+int i;
 	if (mntinfo == NULL) {
 	    /* Unlikely, but could be a race condition with a dying warden */
 	    return ENODEV;
@@ -587,8 +577,28 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	 * ENODEV.  */
 
 	/* Ignore return, We have to check anyway */
-	tsleep(&vmp->vm_sleep, (cfscall_sleep|cfs_pcatch), "cfscall", 0);
-
+#if	1
+	(void) tsleep(&vmp->vm_sleep, cfscall_sleep, "cfscall", 0);
+#else
+	/* This is work in progress.  Setting cfs_pcatch lets tsleep reawaken
+	   on a ^c or ^z.  The problem is that emacs sets certain interrupts
+	   as SA_RESTART.  This means that we should exit sleep handle the
+	   "signal" and then go to sleep again.  Mostly this is done by letting
+	   the syscall complete and be restarted.  We are not idempotent and 
+	   can not do this.  A better solution is necessary.
+	 */
+	i = 0;
+	do {
+	    error = tsleep(&vmp->vm_sleep, (cfscall_sleep|cfs_pcatch), "cfscall", 0);
+	    if (error != 0)
+		    printf("tsleep returns %d, cnt %d\n", error, i);
+	    else if (p->p_siglist) {
+		    printf("tsleep 0, siglist = %x, sigmask = %x, mask %x\n",
+			    p->p_siglist, p->p_sigmask,
+			    p->p_siglist & ~p->p_sigmask);
+	    }
+	} while (error && i++ < 10);
+#endif
 	if (VC_OPEN(vcp)) {	/* Venus is still alive */
  	/* Op went through, interrupt or not... */
 	    if (vmp->vm_flags & VM_WRITE) {
