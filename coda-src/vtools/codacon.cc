@@ -62,7 +62,7 @@ extern "C" {
 }
 #endif __cplusplus
 
-const char MarinerService[] = "codacon";
+const char MarinerService[] = "venus";
 #define MARINERBUFSIZE 1000
 
 

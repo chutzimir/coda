@@ -1,12 +1,8 @@
 #
-# sets:
-#	variables, libraries for BSD build
-
-#
 #            Coda: an Experimental Distributed File System
-#                             Release 3.1
+#                             Release 4.0
 #
-#          Copyright (c) 1987-1995 Carnegie Mellon University
+#          Copyright (c) 1987-1996 Carnegie Mellon University
 #                         All Rights Reserved
 #
 # Permission  to  use, copy, modify and distribute this software and its
@@ -17,49 +13,40 @@
 # that credit is given to Carnegie Mellon University  in  all  documents
 # and publicity pertaining to direct or indirect use of this code or its
 # derivatives.
-# 
+#
 # CODA IS AN EXPERIMENTAL SOFTWARE SYSTEM AND IS  KNOWN  TO  HAVE  BUGS,
 # SOME  OF  WHICH MAY HAVE SERIOUS CONSEQUENCES.  CARNEGIE MELLON ALLOWS
 # FREE USE OF THIS SOFTWARE IN ITS "AS IS" CONDITION.   CARNEGIE  MELLON
 # DISCLAIMS  ANY  LIABILITY  OF  ANY  KIND  FOR  ANY  DAMAGES WHATSOEVER
 # RESULTING DIRECTLY OR INDIRECTLY FROM THE USE OF THIS SOFTWARE  OR  OF
 # ANY DERIVATIVE WORK.
-# 
+#
 # Carnegie  Mellon  encourages  users  of  this  software  to return any
 # improvements or extensions that  they  make,  and  to  grant  Carnegie
 # Mellon the rights to redistribute these changes without encumbrance.
-# */
-# 
-# static char *rcsid = "$Header$";
-# 
+#
 
-# the following may need editing depending on your preferences
-
-MACHINE_FLAGS = -D__BSD44__
-SHORTSYS      = bsd44
-INCLFLAGS     = -I/usr/include
-GFLAG         = -g
-CPP 	      = gcc -E -x c-header
-LIBCURSES     = -lcurses
-LIBCOMPAT     = /usr/lib/libcompat.a
-LIBREADLINE   = /usr/local/lib/libreadline.a
-INCREADLINE   = -I/usr/local/include/readline
-#for rvm
-LIBTHREADS    =
-LIBMACH       = 
-LIBTERMCAP    = /usr/lib/libtermcap.a
-#for advice_srv
-LIBKVM        = /usr/lib/libkvm.a
-ifeq ($(host),i386-unknown-netbsd1.2)
-INCGDBM       = -I/usr/local/include
-LGDBM         = -L/usr/local/lib
-else
-INCGDBM       = -I/usr/pkg/include -I/usr/local/include
-LGDBM         = -L/usr/pkg/lib -L/usr/local/lib
+TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@
 endif
+srcdir = @srcdir@
+VPATH  = @srcdir@
+TOPOBJ = @TOPOBJ@
 
-KRBINCLFLAGS  = -I/usr/athena/include -I/usr/include/kerberosIV
-LIBKRBS       =    /usr/athena/lib/libkrb4.a /usr/athena/lib/libkrb5.a /usr/athena/lib/libcrypto.a /usr/athena/lib/libcom_err.a  /usr/athena/lib/libdes425.a /usr/athena/lib/libkrb524.a
+include $(MAKDIR)/Makeconf
 
-LIBMATH       = -lm
-GUIDIR        = /usr/lib/coda
+CFLAGS += -Wall 
+
+LIBRARIES = libbase.a 
+HEADERS   = parser.h assert.h configfiles.h
+
+OBJS = parser.o configfiles.o
+
+libbase.a: $(OBJS)
+
+
+parser.o: parser.c parser.h
+	$(CC) $(CFLAGS) $(INCREADLINE) -c $< -o parser.o
+
+include $(MAKDIR)/configs/Makerules

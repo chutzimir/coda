@@ -65,7 +65,7 @@ extern "C" {
 #endif __cplusplus
 
 
-const char MarinerService[] = "codacon";
+const char MarinerService[] = "venus";
 
 
 int Bind(const char *, const char *);
