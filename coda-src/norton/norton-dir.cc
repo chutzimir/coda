@@ -276,7 +276,7 @@ create_name(int volid, int vnum, int unique, char *name, int cvnum,
     int     vclass = vnodeIdToClass(vnum);
     int     cvclass = vnodeIdToClass(cvnum);
     int	    volindex;
-    long    vfid[2];
+    long    vfid[3];
     
     volindex = GetVolIndex(volid);
     if (volindex < 0) {
