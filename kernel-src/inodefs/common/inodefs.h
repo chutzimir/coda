@@ -52,6 +52,10 @@ static char *rcsid = "$Header$";
 /* Code to be added here for kernel compiles */
 
 #else /* KERNEL */
+
+#ifdef __MACH__
+#include <sysent.h>	/* Mach defines these in sysent.h */
+#else /* __MACH__ */
 extern int icreate __P((int, int, int, int, int, int));
 extern int iopen   __P((int, int, int));
 extern int iread   __P((int, int, long, unsigned int, char *, unsigned int));
@@ -59,6 +63,8 @@ extern int iwrite  __P((int, int, long, unsigned int, char *, unsigned int));
 extern int iinc    __P((int, int, long));
 extern int idec    __P((int, int, long));
 extern int pioctl  __P((char *, int, struct ViceIoctl *, int));
+#endif /* __MACH__ */
+
 #endif /* _KERNEL */
 
 #endif /* _INODEFS_H_ */
