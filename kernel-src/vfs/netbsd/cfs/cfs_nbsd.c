@@ -27,7 +27,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-__RCSID("$Header$");
+/* $Header$ */
 
 /* 
  * Mach Operating System
@@ -46,6 +46,9 @@ __RCSID("$Header$");
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.20  1998/08/18 17:05:15  rvb
+ * Don't use __RCSID now
+ *
  * Revision 1.19  1998/08/18 16:31:40  rvb
  * Sync the code for NetBSD -current; test on 1.3 later
  *

@@ -27,7 +27,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-__RCSID("$Header$");
+/* $Header$ */
 
 struct cnode *cfs_alloc(void);
 void  cfs_free(struct cnode *cp);
