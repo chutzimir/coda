@@ -1,4 +1,6 @@
-#!/usr/coda/etc/wish -f
+#!/bin/sh
+# The next line restarts using wish\
+exec /coda/misc/tcl/@sys/beta/bin/wish  "$0" "$@"
 #ifndef _BLURB_
 #define _BLURB_
 #/*
@@ -92,8 +94,8 @@ if {$bitmap != ""} {
 	
 set i 0
 foreach b $args {
-	button .bottom.button$i -text $b -command "set button $i"
 	if {$i == $default} {
+		button .bottom.button$i -text $b -command "set button $i" -bd 6
 		frame .bottom.default -relief sunken -bd 1
 		raise .bottom.button$i
 		pack append .bottom .bottom.default \
@@ -101,6 +103,7 @@ foreach b $args {
 		pack append .bottom .bottom.button$i \
 			{left padx 2m pady 2m}
 	} else {
+		button .bottom.button$i -text $b -command "set button $i" -bd 2
 		pack append .bottom .bottom.button$i \
 			{left expand padx 3m pady 3m}
 	}
