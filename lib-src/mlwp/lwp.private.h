@@ -146,7 +146,7 @@ extern returnto (struct lwp_context *context);
 #ifdef LWPDEBUG
 extern FILE *lwp_logfile;
 #define lwpdebug(level, msg...)\
-	 if (lwp_debug > level) {\
+	 if (lwp_debug > level && lwp_logfile) {\
 	     fprintf(lwp_logfile, "***LWP (%p): ", lwp_cpptr);\
 	     fprintf(lwp_logfile, ## msg);\
 	     fprintf(lwp_logfile, "\n");\
