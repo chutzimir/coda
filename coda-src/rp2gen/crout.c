@@ -1088,8 +1088,8 @@ static pack(who, parm, prefix, ptr, where)
     }
     break;
     case RPC2_ENCRYPTIONKEY_TAG:	{
-	    fprintf(where, "    if ( (char *)%s + RPC2_KEYSIZE)\n"
-		           "        return 0;",ptr);
+	    fprintf(where, "    if ( (char *)%s + RPC2_KEYSIZE > _EOB)\n"
+		           "        return 0;\n",ptr);
 	    fprintf(where, "    bcopy((char *)%s, (char *)%s, (long)%s);\n", name, ptr, "RPC2_KEYSIZE");
 	    inc(ptr, "RPC2_KEYSIZE", where);
     }
