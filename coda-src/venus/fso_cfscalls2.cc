@@ -49,11 +49,11 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
+#include <sys/types.h>
 #include <stdio.h>
 #ifdef __BSD44__
 #include <sys/dir.h>
 #endif
-#include <sys/types.h>
 #include <sys/file.h>
 #ifndef __FreeBSD__
 // Since vproc.h knows struct uio.

@@ -89,6 +89,7 @@ extern void RegisterDaemon(unsigned long, char *);
 
 /* from util */
 #include <util.h>
+
 #include <proc.h>
 #include <bstree.h>
 
@@ -157,7 +158,6 @@ int datapid, mainpid, workerpid, programlogpid, replacementlogpid;
 /* Interest and Monitor Variables */
 int StoplightInterest = FALSE;
 StoplightStates CurrentStoplightState = SLquit;
-
 
 
 /******************************************************************
@@ -229,6 +229,7 @@ main(int argc, char *argv[])
   }
 }
 
+
 void Yield() {
     IOMGR_Poll();
     LWP_DispatchProcess();
@@ -286,7 +287,7 @@ void CreateLWPs() {
    ****************************************************/
 
   assert((LWP_CreateProcess((PFIC)CodaConsoleHandler,
-			    DFTSTACKSIZE*1024, LWP_NORMAL_PRIORITY,
+			    DFTSTACKSIZE* 2 *1024, LWP_NORMAL_PRIORITY,
 			   (char *)&c, "CodaConsole Interface Handler",
 			   (PROCESS *)&consolepid)) == (LWP_SUCCESS));
 
@@ -374,6 +375,10 @@ void Child(int code) {
 #ifdef __CYGWIN32__
     pid = wait(&status.w_status);
 #endif
+    if ( pid == interfacePID ) {
+	    fprintf(stderr, "Tixwish died; exiting\n");
+	    exit(1);
+    }
     if (pid>0) {                        /* was a child to reap  */
       LogMsg(100,LogLevel,LogFile,"Child: Child %d died, rc=%d, coredump=%d, termsig=%d",
 	     pid, status.w_retcode, status.w_coredump, status.w_termsig);

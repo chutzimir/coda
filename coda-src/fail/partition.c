@@ -39,6 +39,7 @@ static char *rcsid = "$Header$";
 
 #include <assert.h>
 #include <stdio.h>
+#include <sys/types.h>
 #include <strings.h>
 #include <ctype.h>
 #include <netdb.h>

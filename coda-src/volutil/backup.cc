@@ -828,7 +828,7 @@ int main(int argc, char **argv) {
 
     /* Start up thread to periodically poll down servers */
     PROCESS pollPid;
-    LWP_CreateProcess((PFIC)PollLWP, 5 * 1024, LWP_NORMAL_PRIORITY - 1,
+    LWP_CreateProcess((PFIC)PollLWP, 8 * 1024, LWP_NORMAL_PRIORITY - 1,
 		      (char *)Naptime, "PollLWP", &pollPid);
 
     /* First try to backup (clone, dump, and mark) all volumes. Do all

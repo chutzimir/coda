@@ -46,6 +46,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
+#include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
 #if !defined(__GLIBC__)
@@ -56,7 +57,6 @@ extern "C" {
 #include <struct.h>
 #include <netdb.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <netinet/in.h>
 
 #include <lwp.h>

@@ -344,7 +344,7 @@ extern long FidToNodeid(ViceFid *);
 
 #ifdef __linux__
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_euid))
-#define	CRTORUID(cred)	((vuid_t)((cred).cr_fsuid))
+#define	CRTORUID(cred)	((vuid_t)((cred).cr_uid))
 #else
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
 #define	CRTORUID(cred)	((vuid_t)((cred).cr_uid))

@@ -126,6 +126,9 @@ PRIVATE const char *VM_RDSADDR = (char *)0x51000000;
 #elif defined(__BSD44__)
 PRIVATE const char *VM_RVGADDR = (char *)0x40000000;
 PRIVATE const char *VM_RDSADDR = (char *)0x41000000;
+#elif  defined(__linux__) && defined(sparc)
+PRIVATE const char *VM_RVGADDR = (char *)0xbebd000;
+PRIVATE const char *VM_RDSADDR = (char *)0xbfbd000;
 #elif	defined(__linux__) || defined(__CYGWIN32__)
 PRIVATE const char *VM_RVGADDR = (char *)0x20000000;
 PRIVATE const char *VM_RDSADDR = (char *)0x21000000;

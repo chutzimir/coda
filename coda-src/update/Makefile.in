@@ -59,7 +59,7 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = updatemon updatesrv updateclnt updatefetch
+EXECUTABLES = updatesrv updateclnt updatefetch
 SSBINS      = $(EXECUTABLES)
 HEADERS     = ${RP2FILES} ${RP2HEADERS}
 

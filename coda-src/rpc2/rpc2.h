@@ -640,8 +640,10 @@ extern long RPC2_DeExport (RPC2_SubsysIdent *Subsys);
 extern long rpc2_AllocBuffer (long MinBodySize, RPC2_PacketBuffer **BufferPtr, char *SrcFile, long SrcLine);
 extern long RPC2_FreeBuffer (RPC2_PacketBuffer **Buffer);
 extern long RPC2_SendResponse (RPC2_Handle ConnHandle, RPC2_PacketBuffer *Reply);
-extern long RPC2_GetRequest (RPC2_RequestFilter *Filter, RPC2_Handle *ConnHandle,
-	RPC2_PacketBuffer **Request, struct timeval *Patience, long (*GetKeys)(),
+extern long RPC2_GetRequest (RPC2_RequestFilter *Filter, 
+			     RPC2_Handle *ConnHandle,
+			     RPC2_PacketBuffer **Request, 
+			     struct timeval *Patience, long (*GetKeys)(),
 	long EncryptionTypeMask, long (*AuthFail)());
 extern long RPC2_MakeRPC (RPC2_Handle ConnHandle, RPC2_PacketBuffer *Request,
 	 SE_Descriptor *SDesc, RPC2_PacketBuffer **Reply, struct timeval *Patience, long EnqueueRequest);

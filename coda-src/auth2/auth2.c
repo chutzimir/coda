@@ -165,6 +165,7 @@ int main(int argc, char **argv)
     RPC2_Handle cid;
     register int rc;
     struct stat buff;
+    FILE *file; 
 
     InitGlobals(argc, argv);
     InitLog();
@@ -175,6 +176,14 @@ int main(int argc, char **argv)
     PWArray = (RPC2_EncryptionKey *)malloc(PWLen*RPC2_KEYSIZE);
     assert(PWArray != NULL);
     InitPW();
+
+    file = fopen("/vice/srv/auth2.pid", "w");
+    if ( !file ) {
+	    perror("Error writing auth2.pid");
+	    exit(1);
+    }
+    fprintf(file, "%d", getpid());
+    fclose(file);
     
     LogMsg(-1, 0, stdout, "Server successfully started\n");
 

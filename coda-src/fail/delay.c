@@ -41,9 +41,9 @@ static char *rcsid = "$Header$";
  *           L. Mummert
  */
 #include <stdio.h>
-#include <sys/socket.h>
-#include <sys/time.h>
 #include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
 
 #include <assert.h>

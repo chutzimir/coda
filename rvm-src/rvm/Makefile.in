@@ -55,8 +55,6 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-# presto changeo!
-INCLDIR := $(INCLSPECIAL)
 SHOB_LIB_DIR := $(SHOB_LIB_SPECIAL)
 
 EXECUTABLES = rvmutl

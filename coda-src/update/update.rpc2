@@ -56,11 +56,12 @@ supported by Transarc Corporation, Pittsburgh, PA.
 %}
 
 
+
 Subsystem "update" 1 1;
 #define SUBSYS_UPDATE 132137
 
 
-UpdateFetch	(IN RPC2_String FileName,
+1: UpdateFetch	(IN RPC2_String FileName,
 		 IN RPC2_Unsigned Time,
 		 OUT RPC2_Unsigned NewTime,
 		 OUT RPC2_Unsigned CurrentSecs,

@@ -81,10 +81,5 @@ testvsg: testvsg.o vsg.o $(LIBUTIL)
 testvrdb: testvrdb.o vrdb.o $(LIBUTIL)
 	${CXX} ${LIBFLAGS} testvrdb.o vrdb.o $(LIBUTIL) -o testvrdb
 
-${LIBVOLOBJS}: ${HEADERS} ${INCLSPECIAL}/lwp.h ${INCLSPECIAL}/lock.h srvsignal.h vldb.h
-testvrdb.o: testvrdb.cc 
-volhash.o: volhash.cc volhash.h ${INCLDIR}/inconsist.h
-vrdb.o: vrdb.cc vrdb.h
-vsg.o: vsg.cc vsg.h 
 
 include $(MAKDIR)/configs/Makerules

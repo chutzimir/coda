@@ -172,10 +172,10 @@ int main(int argc, char **argv)
 	strcpy(argv[0], UPDATENAME);
     }
 
-    freopen("/vice/srv/UpdateLog", "a+", stdout);
-    freopen("/vice/srv/UpdateLog", "a+", stderr);
+    freopen("/vice/srv/UpdateClntLog", "a+", stdout);
+    freopen("/vice/srv/UpdateClntLog", "a+", stderr);
 
-    assert(file = fopen("/vice/srv/UpdatePid", "w"));
+    assert(file = fopen("/vice/srv/updateclnt.pid", "w"));
     fprintf(file, "%d", getpid());
     fclose(file);
     RPC2_DebugLevel = SrvDebugLevel / 10;
