@@ -917,12 +917,22 @@ void MultiProbe(int HowMany, RPC2_Handle *Handles) {
     }
 
     /* Make multiple copies of the IN/OUT and OUT parameters. */
-    long **secs_ptrs = (long **)malloc(HowMany * sizeof(long *));
-    long *secs_bufs = (long *)malloc(HowMany * sizeof(long));
-    { for (int i = 0; i < HowMany; i++) secs_ptrs[i] = &secs_bufs[i]; }
-    long **usecs_ptrs = (long **)malloc(HowMany * sizeof(long *));
-    long *usecs_bufs = (long *)malloc(HowMany * sizeof(long));
-    { for (int i = 0; i < HowMany; i++) usecs_ptrs[i] = &usecs_bufs[i]; }
+    RPC2_Unsigned  **secs_ptrs =
+	(RPC2_Unsigned **)malloc(HowMany * sizeof(RPC2_Unsigned *));
+    ASSERT(secs_ptrs);
+    RPC2_Unsigned   *secs_bufs =
+	(RPC2_Unsigned *)malloc(HowMany * sizeof(RPC2_Unsigned));
+    ASSERT(secs_bufs);
+    for (int i = 0; i < HowMany; i++)
+	secs_ptrs[i] = &secs_bufs[i]; 
+    RPC2_Integer  **usecs_ptrs =
+	(RPC2_Integer **)malloc(HowMany * sizeof(RPC2_Integer *));
+    ASSERT(usecs_ptrs);
+    RPC2_Integer   *usecs_bufs =
+	(RPC2_Integer *)malloc(HowMany * sizeof(RPC2_Integer));
+    ASSERT(usecs_bufs);
+    for (int i = 0; i < HowMany; i++)
+	usecs_ptrs[i] = &usecs_bufs[i]; 
 
     /* Make the RPC call. */
     MarinerLog("fetch::Probe\n");

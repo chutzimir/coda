@@ -540,6 +540,14 @@ static char systype [] = "i386_fbsd2";
 static char cputype [] = "i386";
 static char systype [] = "i386_linux";
 #endif /* i386 */
+#ifdef sparc
+static char cputype [] = "sparc";
+static char systype [] = "sparc_linux";
+#endif
+#ifdef __alpha__
+static char cputype [] = "alpha";
+static char systype [] = "alpha_linux";
+#endif
 #endif /* __linux__ */
 
 /* local-repair modification */

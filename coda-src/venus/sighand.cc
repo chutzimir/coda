@@ -73,7 +73,10 @@ extern "C" {
 #include "venus.private.h"
 #include "venusrecov.h"
 #include "worker.h"
-
+#if defined(__linux__) && defined(sparc)
+#include <asm/sigcontext.h>
+#define sigcontext sigcontext_struct
+#endif
 
 PRIVATE void HUP(int, int, struct sigcontext *);
 PRIVATE void ILL(int, int, struct sigcontext *);
@@ -314,7 +317,11 @@ PRIVATE void FatalSignal(int sig, int code, struct sigcontext *contextPtr) {
 	fprintf(logFile, "code=%d\n", code);
 #ifdef	i386
 #else	i386
+#if defined(sparc) && defined(__linux__)
+	fprintf(logFile, "sc_pc=0x%x\n", contextPtr->sigc_pc);
+#else
 	fprintf(logFile, "sc_pc=0x%x\n", contextPtr->sc_pc);
+#endif
 #endif	i386
 #ifdef	__linux__
 	for (int i = 0; i < sizeof(struct sigaction) / sizeof(int); i++)

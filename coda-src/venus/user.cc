@@ -186,8 +186,9 @@ int AuthorizedUser(vuid_t thisUser) {
   LOG(100, ("AuthorizedUser: User (%d) --> NOT authorized.\n", thisUser));
   return(0);
 }
-
+#ifndef UTMP_FILE
 #define	UTMP_FILE   "/etc/utmp"
+#endif
 #define	CONSOLE	    "console"
 vuid_t ConsoleUser() {
     vuid_t vuid = ALL_UIDS;
