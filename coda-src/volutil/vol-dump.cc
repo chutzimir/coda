@@ -541,6 +541,7 @@ static int DumpVnodeIndex_estimate(Volume *vp, VnodeClass vclass,
 		}
 	    }
 	}
+	PollAndYield();
     }
 
     SLog(9, "Leaving DumpVnodeIndex_estimate()");
