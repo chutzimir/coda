@@ -200,7 +200,7 @@ long RPC2_SendResponse(IN ConnHandle, IN Reply)
     if (ceaddr->TimeStampEcho) {     /* service time is now-requesttime */
 	CODA_ASSERT(ceaddr->RequestTime);
 	preply->Header.TimeStamp = ceaddr->TimeStampEcho +
-	    rpc2_MakeTimeStamp() - ceaddr->RequestTime;
+	    (rpc2_MakeTimeStamp() - ceaddr->RequestTime);
     }
 
     /* Sanitize packet */
@@ -1214,8 +1214,8 @@ static void SendOKInit2(IN struct CEntry *ce)
     else pb->Header.ReturnCode = RPC2_SUCCESS;
     if (ce->TimeStampEcho) {
 	CODA_ASSERT(ce->RequestTime);
-	pb->Header.TimeStamp = ce->TimeStampEcho + rpc2_MakeTimeStamp() -
-	                       ce->RequestTime;
+	pb->Header.TimeStamp = ce->TimeStampEcho +
+	    (rpc2_MakeTimeStamp() - ce->RequestTime);
     }
     rpc2_htonp(pb);	/* convert to network order */
     rpc2_XmitPacket(rpc2_RequestSocket, pb, &ce->PeerHost, &ce->PeerPort);
@@ -1309,8 +1309,8 @@ static RPC2_PacketBuffer *Send2Get3(IN ce, IN key, IN xrand, OUT yrand)
     rpc2_Encrypt((char *)ib2, (char *)ib2, sizeof(struct Init2Body), key, ce->EncryptionType);
     if (ce->TimeStampEcho) {     /* service time is now-requesttime */
 	CODA_ASSERT(ce->RequestTime);
-        pb2->Header.TimeStamp = ce->TimeStampEcho + rpc2_MakeTimeStamp() -
-	                        ce->RequestTime;
+        pb2->Header.TimeStamp = ce->TimeStampEcho +
+	    (rpc2_MakeTimeStamp() - ce->RequestTime);
     }
     rpc2_htonp(pb2);
 
@@ -1380,8 +1380,8 @@ static void Send4AndSave(ce, xrand, ekey)
     rpc2_Encrypt((char *)ib4, (char *)ib4, sizeof(struct Init4Body), ekey, ce->EncryptionType);
     if (ce->TimeStampEcho) {     /* service time is now-requesttime */
 	CODA_ASSERT(ce->RequestTime);
-        pb->Header.TimeStamp = ce->TimeStampEcho + rpc2_MakeTimeStamp() -
-	                       ce->RequestTime;
+        pb->Header.TimeStamp = ce->TimeStampEcho +
+	    (rpc2_MakeTimeStamp() - ce->RequestTime);
     }
     rpc2_htonp(pb);
 
