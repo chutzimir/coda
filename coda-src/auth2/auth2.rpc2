@@ -155,9 +155,9 @@ AuthNewConn (IN RPC2_Integer seType, IN RPC2_Integer secLevel, IN RPC2_Integer e
 
 AuthChangePasswd (IN RPC2_Integer viceId, IN RPC2_String newPasswd);
 
-		/* Change a user's password. You can change your own password always.
-		   Caller must be a system administrator to change someone else's password.
-		*/
+/* Change a user's password. You can change your own password always.
+Caller must be a system administrator to change someone else's
+password. */
 
 AuthGetTokens (OUT EncryptedSecretToken sToken, OUT ClearToken cToken);
 
