@@ -14,9 +14,14 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.2  1996/01/02 16:57:19  bnoble
- * Added support for Coda MiniCache and raw inode calls (final commit)
+ * Revision 1.3  1997/08/05 11:08:19  lily
+ * Removed cfsnc_replace, replaced it with a cfs_find, unhash, and
+ * rehash.  This fixes a cnode leak and a bug in which the fid is
+ * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
  *
+ * Revision 1.2  96/01/02  16:57:19  bnoble
+ * Added support for Coda MiniCache and raw inode calls (final commit)
+ * 
  * Revision 1.1.2.1  1995/12/20 01:57:45  bnoble
  * Added CFS-specific files
  *
@@ -207,6 +212,5 @@ extern int cfsnc_debug;
 #define CFSNC_FLUSH		((u_long) 11)
 #define CFSNC_PRINTCFSNC	((u_long) 12)
 #define CFSNC_PRINTSTATS	((u_long) 13)
-#define CFSNC_REPLACE		((u_long) 14)
 
 #endif _CFSNC_HEADER_
