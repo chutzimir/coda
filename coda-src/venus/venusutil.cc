@@ -738,10 +738,15 @@ LOG(0, ("E StatsInit()\n"));
 		VFSSTATNAMELEN);
 
     bzero((void *)&RPCOpStats, (int)sizeof(RPCOpStatistics));
-    for (i = 0; i < srvOPARRAYSIZE; i++)
-	strncpy(RPCOpStats.RPCOps[i].name, (char *) srv_CallCount[i].name+4, 
-		RPCOPSTATNAMELEN);
-LOG(0, ("L StatsInit()\n"));
+    for (i = 0; i < srvOPARRAYSIZE; i++) {
+	    if (srv_CallCount[i].name)
+		    strncpy(RPCOpStats.RPCOps[i].name, 
+			    (char *) srv_CallCount[i].name+4, 
+			    RPCOPSTATNAMELEN);
+	    else
+		    strcpy(RPCOpStats.RPCOps[i].name, "undef");
+    }
+    LOG(0, ("L StatsInit()\n"));
 }
 
 
