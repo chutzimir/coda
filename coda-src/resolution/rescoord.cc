@@ -50,9 +50,6 @@ extern "C" {
 #include <sys/types.h>
 #include <assert.h>
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <struct.h>
 #include <lwp.h>
 #include <rpc2.h>
@@ -670,10 +667,11 @@ PRIVATE int CompareDirContents(SE_Descriptor *sidvar_bufs) {
 		replicafound = 1;
 		firstreplica  = buf;
 		firstreplicasize = len;
-	    }
-	    else {
-		if (bcmp(firstreplica, buf, len)) {
-		    LogMsg(0, SrvDebugLevel, stdout,  "DirContents ARE DIFFERENT");
+	    } else {
+		int cmplen = (len < firstreplicasize) ? len : firstreplicasize;
+		if (bcmp(firstreplica, buf, cmplen)) {
+		    LogMsg(0, SrvDebugLevel, stdout,  
+			   "DirContents ARE DIFFERENT");
 		    return(-1);
 		}
 	    }
