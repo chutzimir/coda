@@ -60,7 +60,7 @@ include $(MAKDIR)/Makeconf
 EXECUTABLES = auth2 authmon initpw au oldtokens
 SSBINS      = auth2 authmon initpw au
 LIBRARIES   = libauth2.a
-HEADERS     = auth2.h auth2.rpc2
+HEADERS     = ${RP2FILES} ${RP2HEADERS}
 
 RP2FILES    = auth2.rpc2
 RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})

@@ -41,7 +41,7 @@ EXECUTABLES = ttyfcon partition heal slow
 CBINS       = $(EXECUTABLES)
 SBINS       = $(EXECUTABLES)
 LIBRARIES   = libfail.a
-HEADERS     = fail.h fcon.h fcon.rpc2
+HEADERS     = ${RP2FILES} fail.h ${RP2HEADERS}
 
 RP2FILES    = fcon.rpc2
 RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
