@@ -167,6 +167,11 @@ int main(int argc, char **argv)
     struct stat buff;
     FILE *file; 
 
+    rc = chdir("/vice/auth2");
+    if ( rc ) {
+	    perror("Error: cannot chdir to /vice/auth2");
+	    exit(1);
+    }
     UtilDetach();
     InitGlobals(argc, argv);
     InitLog();
