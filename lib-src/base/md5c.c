@@ -28,6 +28,12 @@
  * edited for clarity and style only.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#ifndef HAVE_MD5_INIT
+
 #include <string.h>
 #include <coda_hash.h>
 
@@ -316,3 +322,4 @@ MD5Transform (state, block)
 	/* Zeroize sensitive information. */
 	memset ((void *)x, 0, sizeof (x));
 }
+#endif
