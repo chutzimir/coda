@@ -1,11 +1,9 @@
-#ifndef _BLURB_
-#define _BLURB_
 /*
 
             Coda: an Experimental Distributed File System
                              Release 3.1
 
-          Copyright (c) 1987-1995 Carnegie Mellon University
+          Copyright (c) 1987-1998 Carnegie Mellon University
                          All Rights Reserved
 
 Permission  to  use, copy, modify and distribute this software and its
@@ -29,7 +27,8 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-#endif /*_BLURB_*/
+__RCSID("$Header$");
+
 
 /* 
  * Mach Operating System
@@ -46,9 +45,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
- * Revision 1.8  1998/01/31 20:53:12  rvb
- * First version that works on FreeBSD 2.2.5
+ * Revision 1.9  1998/08/18 16:31:41  rvb
+ * Sync the code for NetBSD -current; test on 1.3 later
  *
+ * Revision 1.8  98/01/31  20:53:12  rvb
+ * First version that works on FreeBSD 2.2.5
+ * 
  * Revision 1.7  98/01/23  11:53:42  rvb
  * Bring RVB_CFS1_1 to HEAD
  * 
