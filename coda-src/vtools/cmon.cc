@@ -418,6 +418,7 @@ PRIVATE void PrintServer(struct server *s)
     shortname[SRVCOLWIDTH] = 0;
 
     wclear(w);
+    wmove(w, 0, 0);
     wprintw(w, "%*s\n", SRVCOLWIDTH, shortname);
     wprintw(w, "\n");
     wprintw(w, "%*s\n", SRVCOLWIDTH, when(s->probe, MonBirthTime));
