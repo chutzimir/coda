@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.5  1996/11/25 18:25:11  bnoble
+ * Added a diagnostic check for cfs_nb_lock
+ *
  * Revision 1.4  1996/11/13 04:14:19  bnoble
  * Merging BNOBLE_WORK_6_20_96 into main line
  *
@@ -857,6 +860,9 @@ cfs_nb_lock(v)
 	myprintf(("cfs_nb_lock: lock contention\n"));
 #endif
 	(void) sleep((caddr_t)cp, PINOD);
+#ifdef DIAGNOSTIC
+	myprintf(("cfs_nb_lock: contention resolved\n"));
+#endif
 	goto start;
     }
     cp->c_flags |= CN_LOCKED;
