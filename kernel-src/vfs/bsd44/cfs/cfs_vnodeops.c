@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.9  1997/11/24 15:44:48  rvb
- * Final cfs_venus.c w/o macros, but one locking bug
+ * Revision 1.4.14.10  1997/11/25 08:08:48  rvb
+ * cfs_venus ... done; until cred/vattr change
  *
+ * Revision 1.4.14.9  97/11/24  15:44:48  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
+ * 
  * Revision 1.4.14.8  97/11/21  11:28:04  rvb
  * cfs_venus.c is done: first pass
  * 
@@ -1780,7 +1783,13 @@ printf("%d = namei(... %s )\n", error, nm);
      * we don't bother checking.  
      */
 /*    vput(ap->a_dvp);		released earlier */
-    if (*ap->a_vpp) vrele(*ap->a_vpp);
+    if (*ap->a_vpp) {
+    	VOP_UNLOCK(*ap->a_vpp);	/* this line is new!! It is necessary because lookup() calls
+				   VOP_LOOKUP (cfs_lookup) which returns vpp locked.  cfs_nb_lookup
+				   merged with cfs_lookup() to become cfs_lookup so UNLOCK is
+				   necessary */
+    	vrele(*ap->a_vpp);
+    }
 
     /* 
      * Free the name buffer 
@@ -2003,7 +2012,9 @@ start:
     if (cp->c_flags & C_LOCKED) {
 	cp->c_flags |= C_WANTED;
 #ifdef DIAGNOSTIC
-	myprintf(("cfs_lock: lock contention\n"));
+	myprintf(("cfs_lock: lock contention"));
+	cfsnc_name(cp);
+	myprintf(("\n"));
 #endif
 	(void) sleep((caddr_t)cp, PINOD);
 #ifdef DIAGNOSTIC

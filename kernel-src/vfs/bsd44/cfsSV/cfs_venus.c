@@ -17,32 +17,58 @@ enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
 	want to break venus yet.
  */
 
+#define DECL_NO_IN(name) \
+    struct cfs_in_hdr *inp; \
+    struct name ## _out *outp; \
+    union name * name ## _buf; \
+    int name ## _size = sizeof (union name); \
+    int Isize = sizeof (struct cfs_in_hdr); \
+    int Osize = sizeof (struct name ## _out); \
+    int error
+
+#define DECL(name) \
+    struct name ## _in *inp; \
+    struct name ## _out *outp; \
+    union name * name ## _buf; \
+    int name ## _size = sizeof (union name); \
+    int Isize = sizeof (struct name ## _in); \
+    int Osize = sizeof (struct name ## _out); \
+    int error
+
+#define DECL_NO_OUT(name) \
+    struct name ## _in *inp; \
+    struct cfs_out_hdr *outp; \
+    union name * name ## _buf; \
+    int name ## _size = sizeof (union name); \
+    int Isize = sizeof (struct name ## _in); \
+    int Osize = sizeof (struct cfs_out_hdr); \
+    int error
+
+#define ALLOC(name) \
+    CFS_ALLOC(name ## _buf, union name *, name ## _size); \
+    inp = &name ## _buf->in; \
+    outp = &name ## _buf->out
+
+#define STRCPY(struc, name, len) \
+    strncpy((char *)inp + (int)inp->struc, name, len); \
+    ((char*)inp + (int)inp->struc)[len++] = 0; \
+    Isize += len
+
 venus_root(void *mdp,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid)
 {
-    struct cfs_in_hdr *inp;
-    struct cfs_root_out *outp;
-    union cfs_root *cfs_root_buf;
-    int cfs_root_size = sizeof (union cfs_root);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_root_buf, union cfs_root *, cfs_root_size);
-    inp = &cfs_root_buf->in;
-    outp = &cfs_root_buf->out;
+    DECL_NO_IN(cfs_root);		/* sets Isize & Osize */
+    ALLOC(cfs_root);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(inp, CFS_ROOT, cred);  
 
-    Osize = sizeof (struct cfs_root_out);
-    error = cfscall(mdp, sizeof (struct cfs_in_hdr), &Osize, (char *)inp);
-
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error)
     	error = outp->oh.result;
-    if (!error) {
+    if (!error)
 	*VFid = outp->VFid;
-    }
 
     CFS_FREE(cfs_root_buf, cfs_root_size);
     return error;
@@ -52,24 +78,15 @@ venus_open(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p,
 /*out*/	dev_t *dev, ino_t *inode)
 {
-    struct cfs_open_in *inp;
-    struct cfs_open_out *outp;
-    union cfs_open *cfs_open_buf;
-    int cfs_open_size = sizeof (union cfs_open);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_open_buf, union cfs_open *, cfs_open_size);
-    inp = &cfs_open_buf->in;
-    outp = &cfs_open_buf->out;
+    DECL(cfs_open);			/* sets Isize & Osize */
+    ALLOC(cfs_open);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_OPEN, cred);
     inp->VFid = *fid;
     inp->flags = flag;
 
-    Osize = sizeof (struct cfs_open_out);
-    error = cfscall(mdp, sizeof (struct cfs_open_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
     	error = outp->oh.result;
@@ -85,23 +102,14 @@ venus_open(void *mdp, ViceFid *fid, int flag,
 venus_close(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_close_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_close *cfs_close_buf;
-    int cfs_close_size = sizeof (union cfs_close);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_close_buf, union cfs_close *, cfs_close_size);
-    inp = &cfs_close_buf->in;
-    outp = &cfs_close_buf->out;
+    DECL_NO_OUT(cfs_close);		/* sets Isize & Osize */
+    ALLOC(cfs_close);			/* sets inp & outp */
 
     INIT_IN(&inp->ih, CFS_CLOSE, cred);
     inp->VFid = *fid;
     inp->flags = flag;
 
-    Osize = sizeof (struct cfs_out_hdr);
-    error = cfscall(mdp, sizeof (struct cfs_close_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error) 
 	error = outp->result;
 
@@ -129,23 +137,16 @@ venus_ioctl(void *mdp, ViceFid *fid,
 	int com, int flag, caddr_t data,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_ioctl_in *inp;
-    struct cfs_ioctl_out *outp;
-    union cfs_ioctl *cfs_ioctl_buf;
-    int cfs_ioctl_size = sizeof (union cfs_ioctl);
+    DECL(cfs_ioctl);			/* sets Isize & Osize */
     register struct a {
 	char *path;
 	struct ViceIoctl vidata;
 	int follow;
     } *iap = (struct a *)data;
-    int error;
-    int Osize;
     int tmp;
 
     cfs_ioctl_size = VC_MAXMSGSIZE;
-    CFS_ALLOC(cfs_ioctl_buf, union cfs_ioctl *, cfs_ioctl_size);
-    inp = &cfs_ioctl_buf->in;
-    outp = &cfs_ioctl_buf->out;
+    ALLOC(cfs_ioctl);			/* sets inp & outp */
 
     INIT_IN(&inp->ih, CFS_IOCTL, cred);
     inp->VFid = *fid;
@@ -170,7 +171,7 @@ venus_ioctl(void *mdp, ViceFid *fid,
     }
 
     Osize = VC_MAXMSGSIZE;
-    error = cfscall(mdp, sizeof (struct cfs_ioctl_in) + iap->vidata.in_size, &Osize, (char *)inp);
+    error = cfscall(mdp, Isize + iap->vidata.in_size, &Osize, (char *)inp);
 
     if (!error)
     	error = outp->oh.result;
@@ -193,29 +194,19 @@ venus_getattr(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	struct vattr *vap)
 {
-    struct cfs_getattr_in *inp;
-    struct cfs_getattr_out *outp;
-    union cfs_getattr *cfs_getattr_buf;
-    int cfs_getattr_size = sizeof (union cfs_getattr);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_getattr_buf, union cfs_getattr *, cfs_getattr_size);
-    inp = &cfs_getattr_buf->in;
-    outp = &cfs_getattr_buf->out;
+    DECL(cfs_getattr);			/* sets Isize & Osize */
+    ALLOC(cfs_getattr);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_GETATTR, cred);
     inp->VFid = *fid;
 
-    Osize = sizeof (struct cfs_getattr_out);
-    error = cfscall(mdp, sizeof (struct cfs_getattr_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
     	error = outp->oh.result;
-    if (!error) {
+    if (!error)
 	*vap = outp->attr;
-    }
 
     CFS_FREE(cfs_getattr_buf, cfs_getattr_size);
     return error;
@@ -224,24 +215,15 @@ venus_getattr(void *mdp, ViceFid *fid,
 venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_setattr_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_setattr *cfs_setattr_buf;
-    int cfs_setattr_size = sizeof (union cfs_setattr);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_setattr_buf, union cfs_setattr *, cfs_setattr_size);
-    inp = &cfs_setattr_buf->in;
-    outp = &cfs_setattr_buf->out;
+    DECL_NO_OUT(cfs_setattr);		/* sets Isize & Osize */
+    ALLOC(cfs_setattr);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_SETATTR, cred);
     inp->VFid = *fid;
     inp->attr = *vap;
 
-    Osize = sizeof (struct cfs_out_hdr);
-    error = cfscall(mdp, sizeof (struct cfs_setattr_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error) 
 	error = outp->result;
 
@@ -252,25 +234,15 @@ venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
 venus_access(void *mdp, ViceFid *fid, int mode,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_access_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_access *cfs_access_buf;
-    int cfs_access_size = sizeof (union cfs_access);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_access_buf, union cfs_access *, cfs_access_size);
-    inp = &cfs_access_buf->in;
-    outp = &cfs_access_buf->out;
+    DECL_NO_OUT(cfs_access);		/* sets Isize & Osize */
+    ALLOC(cfs_access);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_ACCESS, cred);
     inp->VFid = *fid;
     inp->flags = mode;
 
-    Osize = sizeof (struct cfs_out_hdr);
-    error = cfscall(mdp, sizeof (struct cfs_access_in), &Osize, (char *)inp);
-
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error) 
 	error = outp->result;
 
@@ -282,24 +254,16 @@ venus_readlink(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	char **str, int *len)
 {
-    struct cfs_readlink_in *inp;
-    struct cfs_readlink_out *outp;
-    union cfs_readlink *cfs_readlink_buf;
-    int cfs_readlink_size = sizeof (union cfs_readlink);
-    int Osize;
-    int error;
-
+    DECL(cfs_readlink);			/* sets Isize & Osize */
     cfs_readlink_size += CFS_MAXPATHLEN;
-    CFS_ALLOC(cfs_readlink_buf, union cfs_readlink *, cfs_readlink_size);
-    inp = &cfs_readlink_buf->in;
-    outp = &cfs_readlink_buf->out;
+    ALLOC(cfs_readlink);		/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_READLINK, cred);
     inp->VFid = *fid;
 
-    Osize = CFS_MAXPATHLEN + sizeof (struct cfs_readlink_out);
-    error = cfscall(mdp, sizeof (struct cfs_readlink_in), &Osize, (char *)inp);
+    Osize += CFS_MAXPATHLEN;
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
     	error = outp->oh.result;
@@ -316,23 +280,14 @@ venus_readlink(void *mdp, ViceFid *fid,
 venus_fsync(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_fsync_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_fsync *cfs_fsync_buf;
-    int cfs_fsync_size = sizeof (union cfs_fsync);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_fsync_buf, union cfs_fsync *, cfs_fsync_size);
-    inp = &cfs_fsync_buf->in;
-    outp = &cfs_fsync_buf->out;
+    DECL_NO_OUT(cfs_fsync);		/* sets Isize & Osize */
+    ALLOC(cfs_fsync);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_FSYNC, cred);
     inp->VFid = *fid;
 
-    Osize = sizeof (struct cfs_out_hdr);
-    error = cfscall(mdp, sizeof (struct cfs_fsync_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error) 
 	error = outp->result;
 
@@ -345,32 +300,18 @@ venus_lookup(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, int *vtype)
 {
-    struct cfs_lookup_in *inp;
-    struct cfs_lookup_out *outp;
-    union cfs_lookup *cfs_lookup_buf;
-    int cfs_lookup_size = sizeof (union cfs_lookup);
-    int Isize, Osize;
-    int error;
-
+    DECL(cfs_lookup);			/* sets Isize & Osize */
     cfs_lookup_size += len + 1;
-    CFS_ALLOC(cfs_lookup_buf, union cfs_lookup *, cfs_lookup_size);
-    inp = &cfs_lookup_buf->in;
-    outp = &cfs_lookup_buf->out;
+    ALLOC(cfs_lookup);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_LOOKUP, cred);
     inp->VFid = *fid;
 
-    Isize = sizeof (struct cfs_lookup_in);
     inp->name = (char *)Isize;
+    STRCPY(name, nm, len);		/* increments Isize */
 
-    strncpy((char *)inp + (int)inp->name, nm, len);
-    ((char*)inp + (int)inp->name)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_lookup_out);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->oh.result;
     if (!error) {
@@ -381,76 +322,15 @@ venus_lookup(void *mdp, ViceFid *fid,
     CFS_FREE(cfs_lookup_buf, cfs_lookup_size);
     return error;
 }
-
-#if	0
-#define DECL(name) \
-    struct name ## _in *inp; \
-    struct name ## _out *outp; \
-    union name * name ## _buf; \
-    int name ## _size = sizeof (union name); \
-    int Isize, Osize; \
-    int error;
-
-#define ALLOC(name) \
-    CFS_ALLOC(name ## _buf, union name *, name ## _size); \
-    inp = &name ## _buf->in; \
-    outp = &name ## _buf->out;
-
-#define STRCPY(struc, name, len, inc) \
-    strncpy((char *)inp + (int)inp->struc, name, len); \
-    ((char*)inp + (int)inp->struc)[len++] = 0; \
-    inc += len;
-
-venus_lookup(void *mdp, ViceFid *fid,
-    	char *nm, int len,
-	struct ucred *cred, struct proc *p,
-/*out*/	ViceFid *VFid, int *vtype)
-{
-    DECL(cfs_lookup);
-
-    cfs_lookup_size += len + 1;
-    ALLOC(cfs_lookup);
-
-    /* send the open to venus. */
-    INIT_IN(&inp->ih, CFS_LOOKUP, cred);
-    inp->VFid = *fid;
-
-    Isize = sizeof (struct cfs_lookup_in);
-    inp->name = (char *)Isize;
-
-    STRCPY(name, nm, len, Isize);
-
-    Osize = sizeof (struct cfs_lookup_out);
-    error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
-    if (!error)
-    	error = outp->oh.result;
-    if (!error) {
-	*VFid = outp->VFid;
-	*vtype = outp->vtype;
-    }
-
-    CFS_FREE(cfs_lookup_buf, cfs_lookup_size);
-    return error;
-}
-#endif
 
 venus_create(void *mdp, ViceFid *fid,
     	char *nm, int len, enum vcexcl exclusive, int mode, struct vattr *va,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *attr)
 {
-    struct cfs_create_in *inp;
-    struct cfs_create_out *outp;
-    union cfs_create *cfs_create_buf;
-    int cfs_create_size = sizeof (union cfs_create);
-    int Isize, Osize;
-    int error;
-
+    DECL(cfs_create);			/* sets Isize & Osize */
     cfs_create_size += len + 1;
-    CFS_ALLOC(cfs_create_buf, union cfs_create *, cfs_create_size);
-    inp = &cfs_create_buf->in;
-    outp = &cfs_create_buf->out;
+    ALLOC(cfs_create);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_CREATE, cred);
@@ -459,16 +339,10 @@ venus_create(void *mdp, ViceFid *fid,
     inp->mode = mode;
     inp->attr = *va;
 
-    Isize = sizeof (struct cfs_create_in);
     inp->name = (char *)Isize;
+    STRCPY(name, nm, len);		/* increments Isize */
 
-    strncpy((char*)inp + (int)inp->name, nm, len);
-    ((char*)inp + (int)inp->name)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_create_out);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->oh.result;
     if (!error) {
@@ -484,32 +358,18 @@ venus_remove(void *mdp, ViceFid *fid,
         char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_remove_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_remove *cfs_remove_buf;
-    int cfs_remove_size = sizeof (union cfs_remove);
-    int Isize, Osize;
-    int error;
-
+    DECL_NO_OUT(cfs_remove);		/* sets Isize & Osize */
     cfs_remove_size += len + 1;
-    CFS_ALLOC(cfs_remove_buf, union cfs_remove *, cfs_remove_size);
-    inp = &cfs_remove_buf->in;
-    outp = &cfs_remove_buf->out;
+    ALLOC(cfs_remove);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_REMOVE, cred);
     inp->VFid = *fid;
 
-    Isize = sizeof (struct cfs_remove_in);
     inp->name = (char *)Isize;
+    STRCPY(name, nm, len);		/* increments Isize */
 
-    strncpy((char *)inp + (int)inp->name, nm, len);
-    ((char*)inp + (int)inp->name)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_out_hdr);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->result;
 
@@ -521,33 +381,19 @@ venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
         char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_link_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_link *cfs_link_buf;
-    int cfs_link_size = sizeof (union cfs_link);
-    int Isize, Osize;
-    int error;
-
+    DECL_NO_OUT(cfs_link);		/* sets Isize & Osize */
     cfs_link_size += len + 1;
-    CFS_ALLOC(cfs_link_buf, union cfs_link *, cfs_link_size);
-    inp = &cfs_link_buf->in;
-    outp = &cfs_link_buf->out;
+    ALLOC(cfs_link);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_LINK, cred);
     inp->sourceFid = *fid;
     inp->destFid = *tfid;
 
-    Isize = sizeof (struct cfs_link_in);
     inp->tname = (char *)Isize;
+    STRCPY(tname, nm, len);		/* increments Isize */
 
-    strncpy((char *)inp + (int)inp->tname, nm, len);
-    ((char*)inp + (int)inp->tname)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_out_hdr);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->result;
 
@@ -559,36 +405,21 @@ venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
         char *nm, int len, char *tnm, int tlen,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_rename_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_rename *cfs_rename_buf;
-    int cfs_rename_size = sizeof (union cfs_rename);
-    int Isize, Osize;
-    int error;
-
+    DECL_NO_OUT(cfs_rename);		/* sets Isize & Osize */
     cfs_rename_size += len + 1 + tlen + 1;
-    CFS_ALLOC(cfs_rename_buf, union cfs_rename *, cfs_rename_size);
-    inp = &cfs_rename_buf->in;
-    outp = &cfs_rename_buf->out;
+    ALLOC(cfs_rename);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_RENAME, cred);
     inp->sourceFid = *fid;
     inp->destFid = *tfid;
 
-    Isize = sizeof (struct cfs_rename_in);	
     inp->srcname = (char*)Isize;
-
-    strncpy((char *)inp + (int)inp->srcname, nm, len);
-    ((char*)inp + (int)inp->srcname)[len++] = 0;
-    Isize += len;
+    STRCPY(srcname, nm, len);		/* increments Isize */
 
     inp->destname = (char *)Isize;
-    strncpy((char *)inp + (int)inp->destname, tnm, tlen);
-    ((char*)inp + (int)inp->destname)[tlen++] = 0;
-    Isize += tlen;
+    STRCPY(destname, tnm, tlen);	/* increments Isize */
 
-    Osize = sizeof (struct cfs_out_hdr);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
@@ -603,33 +434,19 @@ venus_mkdir(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *ova)
 {
-    struct cfs_mkdir_in *inp;
-    struct cfs_mkdir_out *outp;
-    union cfs_mkdir *cfs_mkdir_buf;
-    int cfs_mkdir_size = sizeof (union cfs_mkdir);
-    int Isize, Osize;
-    int error;
-
+    DECL(cfs_mkdir);			/* sets Isize & Osize */
     cfs_mkdir_size += len + 1;
-    CFS_ALLOC(cfs_mkdir_buf, union cfs_mkdir *, cfs_mkdir_size);
-    inp = &cfs_mkdir_buf->in;
-    outp = &cfs_mkdir_buf->out;
+    ALLOC(cfs_mkdir);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_MKDIR, cred);
     inp->VFid = *fid;
     inp->attr = *va;
 
-    Isize = sizeof (struct cfs_mkdir_in);
     inp->name = (char *)Isize;
+    STRCPY(name, nm, len);		/* increments Isize */
 
-    strncpy((char *)inp + (int)inp->name, nm, len);
-    ((char*)inp + (int)inp->name)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_mkdir_out);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->oh.result;
     if (!error) {
@@ -645,32 +462,18 @@ venus_rmdir(void *mdp, ViceFid *fid,
     	char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_rmdir_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_rmdir *cfs_rmdir_buf;
-    int cfs_rmdir_size = sizeof (union cfs_rmdir);
-    int Isize, Osize;
-    int error;
-
+    DECL_NO_OUT(cfs_rmdir);		/* sets Isize & Osize */
     cfs_rmdir_size += len + 1;
-    CFS_ALLOC(cfs_rmdir_buf, union cfs_rmdir *, cfs_rmdir_size);
-    inp = &cfs_rmdir_buf->in;
-    outp = &cfs_rmdir_buf->out;
+    ALLOC(cfs_rmdir);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_RMDIR, cred);
     inp->VFid = *fid;
 
-    Isize = sizeof (struct cfs_rmdir_in);
     inp->name = (char *)Isize;
+    STRCPY(name, nm, len);		/* increments Isize */
 
-    strncpy((char *)inp + (int)inp->name, nm, len);
-    ((char*)inp + (int)inp->name)[len++] = 0;
-    Isize += len;
-
-    Osize = sizeof (struct cfs_out_hdr);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
     if (!error)
     	error = outp->result;
 
@@ -682,36 +485,21 @@ venus_symlink(void *mdp, ViceFid *fid,
         char *lnm, int llen, char *nm, int len, struct vattr *va,
 	struct ucred *cred, struct proc *p)
 {
-    struct cfs_symlink_in *inp;
-    struct cfs_out_hdr *outp;
-    union cfs_symlink *cfs_symlink_buf;
-    int cfs_symlink_size = sizeof (union cfs_symlink);
-    int Isize, Osize;
-    int error;
-
+    DECL_NO_OUT(cfs_symlink);		/* sets Isize & Osize */
     cfs_symlink_size += llen + 1 + len + 1;
-    CFS_ALLOC(cfs_symlink_buf, union cfs_symlink *, cfs_symlink_size);
-    inp = &cfs_symlink_buf->in;
-    outp = &cfs_symlink_buf->out;
+    ALLOC(cfs_symlink);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_SYMLINK, cred);
     inp->VFid = *fid;
     inp->attr = *va;
 
-    Isize = sizeof (struct cfs_symlink_in);
     inp->srcname =(char*)Isize;
-
-    strncpy((char *)inp + (int)inp->srcname, lnm, llen);
-    ((char*)inp + (int)inp->srcname)[llen++] = 0;
-    Isize += llen;
+    STRCPY(srcname, lnm, llen);		/* increments Isize */
 
     inp->tname = (char *)Isize;
-    strncpy((char *)inp + (int)inp->tname, nm, len);
-    ((char*)inp + (int)inp->tname)[len++] = 0;
-    Isize += len;
+    STRCPY(tname, nm, len);		/* increments Isize */
 
-    Osize = sizeof (struct cfs_out_hdr);
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
@@ -726,17 +514,9 @@ venus_readdir(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	char *buffer, int *len)
 {
-    struct cfs_readdir_in *inp;
-    struct cfs_readdir_out *outp;
-    union cfs_readdir *cfs_readdir_buf;
-    int cfs_readdir_size = sizeof (union cfs_readdir);
-    int Osize;
-    int error;
-
+    DECL(cfs_readdir);			/* sets Isize & Osize */
     cfs_readdir_size = VC_MAXMSGSIZE;
-    CFS_ALLOC(cfs_readdir_buf, union cfs_readdir *, cfs_readdir_size);
-    inp = &cfs_readdir_buf->in;
-    outp = &cfs_readdir_buf->out;
+    ALLOC(cfs_readdir);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_READDIR, cred);
@@ -745,8 +525,7 @@ venus_readdir(void *mdp, ViceFid *fid,
     inp->offset = offset;
 
     Osize = VC_MAXMSGSIZE;
-    error = cfscall(mdp, sizeof (struct cfs_readdir_in), &Osize, (char *)inp);
-
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error)
     	error = outp->oh.result;
     if (!error) {
@@ -762,23 +541,14 @@ venus_fhtovp(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, int *vtype)
 {
-    struct cfs_vget_in *inp;
-    struct cfs_vget_out *outp;
-    union cfs_vget *cfs_vget_buf;
-    int cfs_vget_size = sizeof (union cfs_vget);
-    int Osize;
-    int error;
-
-    CFS_ALLOC(cfs_vget_buf, union cfs_vget *, cfs_vget_size);
-    inp = &cfs_vget_buf->in;
-    outp = &cfs_vget_buf->out;
+    DECL(cfs_vget);			/* sets Isize & Osize */
+    ALLOC(cfs_vget);			/* sets inp & outp */
 
     /* Send the open to Venus. */
     INIT_IN(&inp->ih, CFS_VGET, cred);
     inp->VFid = *fid;
 
-    Osize = sizeof (struct cfs_vget_out);
-    error = cfscall(mdp, sizeof (struct cfs_vget_in), &Osize, (char *)inp);
+    error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
     if (!error)
     	error = outp->oh.result;

@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.6  1997/11/24 15:44:43  rvb
- * Final cfs_venus.c w/o macros, but one locking bug
+ * Revision 1.5.4.7  1997/11/25 08:08:43  rvb
+ * cfs_venus ... done; until cred/vattr change
  *
+ * Revision 1.5.4.6  97/11/24  15:44:43  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
+ * 
  * Revision 1.5.4.5  97/11/20  11:46:38  rvb
  * Capture current cfs_venus
  * 
@@ -818,6 +821,7 @@ cfsnc_resize(hashsize, heapsize, dcstat)
     return(0);
 }
 
+#define DEBUG
 #ifdef	DEBUG
 void
 cfsnc_name(struct cnode *cp)
