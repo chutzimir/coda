@@ -53,3 +53,7 @@ LIBTHREADS    =
 LIBMACH       = 
 
 #ALPHACI = $(SCRIPTDIR)/alphaci
+
+BINDIR := $(exec_prefix)/bin
+SBINDIR := $(exec_prefix)/bin
+MANDIR := $(exec_prefix)/man

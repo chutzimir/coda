@@ -46,7 +46,7 @@ include $(MAKDIR)/Makeconf
   I =  scripts
  II =  kerndep dir 
 III =  rpc2 util
- IV =  libal rp2gen pdbstuff blurb camstuff
+ IV =  libal rp2gen pdbstuff blurb # camstuff
   V =  fail vicedep 
 
 #  The mond data collection module is only intended for the PMax
