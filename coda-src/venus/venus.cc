@@ -120,7 +120,7 @@ PRIVATE void SetRlimits();
 /* **** defined in worker.c **** */
 extern testKernDevice();
 
-
+int venus_relay_addr = 0x7f000001;
 
 /* *****  venus.c  ***** */
 
@@ -224,10 +224,26 @@ int main(int argc, char **argv) {
 
 int IAmChild = 0;
 
+int getip(char *addr)
+{
+	int ip;
+	int a1,a2,a3,a4;
+
+	if (sscanf (addr, "%d.%d.%d.%d", &a1, &a2, &a3, &a4) != 4)
+		return -1;
+
+	ip = a4 + (a3 << 8) + (a2<<16) + (a1<<24);
+	printf("Connecting to: %d.%d.%d.%d (0x%x)\n", a1,a2,a3,a4,ip);
+	
+	return ip;
+}
+
 PRIVATE void ParseCmdline(int argc, char **argv) {
     for(int i = 1; i < argc; i++)
 	if (argv[i][0] == '-') {
-	    if (STREQ(argv[i], "-k"))         /* default is /dev/cfs0 */
+	    if (STREQ(argv[i], "-relay")) {         /* default is 127.0.0.1 */
+		i++, venus_relay_addr = getip(argv[i]);
+	    } else if (STREQ(argv[i], "-k"))         /* default is /dev/cfs0 */
 		i++, kernDevice = argv[i];
 	    else if (STREQ(argv[i], "-h"))    /* names of file servers */
 		i++, fsname = argv[i];        /* should be italians! */

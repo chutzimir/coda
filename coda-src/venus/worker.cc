@@ -98,7 +98,7 @@ extern "C" {
 #include "vproc.h"
 #include "worker.h"
 
-
+extern int venus_relay_addr;
 /* Temporary!  Move to cnode.h. -JJK */
 #define	C_INCON	0x2
 
@@ -173,7 +173,7 @@ int MsgWrite(char *buf, int size)
 
          addr.sin_family = AF_INET;
          addr.sin_port = htons(8001);
-         addr.sin_addr.s_addr = htonl(0x7f000001);
+         addr.sin_addr.s_addr = htonl(venus_relay_addr);
          return ::sendto(worker::muxfd, buf, size, 0, 
 			 (struct sockaddr *) &addr, sizeof(addr));
 #else 
