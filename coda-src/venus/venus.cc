@@ -262,6 +262,10 @@ PRIVATE void ParseCmdline(int argc, char **argv) {
 		extern long WCThresh;
 		WCThresh = atoi(argv[++i]);		/* in Bytes/sec */
 	    }
+	    else if (STREQ(argv[i], "-weakstale")) {   /* When estimates become too old */
+		extern int WCStale;
+		WCStale = atoi(argv[++i]);		/* in seconds */
+	    }
 	    else if (STREQ(argv[i], "-maxcbservers")) 
 		i++, MaxCBServers = atoi(argv[i]);
 	    else if (STREQ(argv[i], "-maxprefetchers")) /* max number of threads */

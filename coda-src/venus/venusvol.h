@@ -683,7 +683,7 @@ struct VolFlags {
     /*T*/unsigned reintegratepending : 1;	/* are we waiting for tokens? */
     /*T*/unsigned reintegrating : 1;		/* are we reintegrating now? */
     /*T*/unsigned repair_mode : 1;		/* 0 --> normal, 1 --> repair */
-    unsigned newreintsupported: 1;		/* new reintegration allowed? */
+    /*T*/unsigned resolve_me: 1;		/* resolve reintegrated objects */
     /*T*/unsigned weaklyconnected : 1;		/* are we weakly connected? */ 
     unsigned reserved : 19;
 };

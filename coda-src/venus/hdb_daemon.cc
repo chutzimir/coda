@@ -63,6 +63,7 @@ extern "C" {
 
 /* from venus */
 #include "hdb.h"
+#include "user.h"
 #include "venus.private.h"
 #include "vproc.h"
 
@@ -148,8 +149,11 @@ void HDBDaemon() {
 
 int HDBD_Request(hdbd_request type, void *request, vuid_t euid, vuid_t ruid) {
     /* Ensure request was issued by "locally authoritative" entity. */
-    if (euid != V_UID/* || ruid != msg->ruid*/)
+    if (euid != V_UID && !AuthorizedUser(ruid)) {
+	LOG(0, ("HDBD_Request (%s): <%d, %d> not authorized\n",
+		PRINT_HDBDREQTYPE(type), euid, ruid));
 	return(EACCES);
+    }
 
     /* Form message. */
     hdbd_msg m;

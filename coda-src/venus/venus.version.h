@@ -38,6 +38,6 @@ static char *rcsid = "$Header$";
 
 /*  *****  Venus Version Numbers *****  */
 const int VenusMajorVersion = 4;
-const int VenusMinorVersion = 0;
+const int VenusMinorVersion = 1;
 
 #endif

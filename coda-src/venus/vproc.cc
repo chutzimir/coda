@@ -394,6 +394,7 @@ vproc::vproc(char *n, PROCBODY f, vproctype t, int stksize, int priority) {
     bzero(&rvm_data, (int) sizeof(rvm_perthread_t));
     rvm_data.die = &Choke;
     type = t;
+    lwpri = priority;
     seq = 0;
     idle = 0;
     interrupted = 0;

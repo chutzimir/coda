@@ -230,6 +230,7 @@ class vproc : public olink {
   public:
     /* Public for the time being. -JJK */
     vproctype type;
+    int lwpri;
     int seq;
     struct uarea u;
     unsigned idle : 1;
