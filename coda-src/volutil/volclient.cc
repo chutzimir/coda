@@ -497,13 +497,11 @@ static void create() {
     exit(0);
 }
 /*
-  BEGIN_HTML
-  <a name="clone"><strong>Client end of the <tt>clone</tt> request</strong></a> 
-  END_HTML
+clone: Client end of the clone request
 */
 static void clone()
 {
-    if (these_args < 3) {
+    if (these_args != 3 && these_args != 5) {
 	printf("Usage: volutil clone <volume-id> [-n <new volume name>]\n");
 	exit(-1);
     }

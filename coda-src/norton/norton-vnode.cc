@@ -214,6 +214,81 @@ void show_free(int argc, char *argv[]) {
 }    
 
 
+// remove name from the given directory and mark its vnode in conflict
+// if flag not null, decrease linkCount of directory vnode
+static void 
+setcount(int volid, int vnum, int unique, int count) 
+{
+
+    char buf[SIZEOF_LARGEDISKVNODE];
+    struct VnodeDiskObject *vnode = (struct VnodeDiskObject *)buf;
+    struct ViceFid fid;
+    Error   error;
+    VnodeId vnodeindex = vnodeIdToBitNumber(vnum);
+    int     vclass = vnodeIdToClass(vnum);
+    int	    volindex;
+    
+    volindex = GetVolIndex(volid);
+    if (volindex < 0) {
+	    fprintf(stderr, "Unable to get volume 0x%x\n", volid);
+	    return;
+    }
+
+    RVMLIB_BEGIN_TRANSACTION(restore)
+	    
+    if (ExtractVnode(&error, volindex, vclass, (VnodeId)vnodeindex,
+		     (Unique_t)unique, vnode) < 0) {
+	fprintf(stderr, "Unable to get vnode 0x%x 0x%x 0x%x\n", volid, vnum,
+		unique);
+	rvmlib_abort(VFAIL);
+	return;
+    }
+
+    vnode->linkCount = count;
+
+    if (error = ReplaceVnode(volindex, vclass, (VnodeId)vnodeindex,
+			     (Unique_t)unique, vnode)) {
+	fprintf(stderr, "ERROR: ReplaceVnode returns %d, aborting\n", error);
+	rvmlib_abort(VFAIL);
+	return;
+    }
+	    
+    RVMLIB_END_TRANSACTION(flush, &error);
+
+    if (error) {
+	fprintf(stderr, "ERROR: Transaction aborted with status %d\n",
+		error);
+    }
+}
+
+
+void set_linkcount(int argc, char *argv[]) {
+
+    int volid,
+	vnode,
+	unique,
+	count;
+
+    if ((argc != 6) ||
+	(Parser_int(argv[2], &volid) != 1) ||
+	(Parser_int(argv[3], &vnode) != 1) ||
+	(Parser_int(argv[4], &unique) != 1) ||
+	(Parser_int(argv[5], &count) != 1)) {
+	fprintf(stderr, "Usage: set linkcount <parent_volid> ");
+	fprintf(stderr, "<parent_vnode> <parent_unique> <count>\n"); 
+	return;
+    }
+
+    if ( count < 0 ) {
+	    fprintf(stderr, "count must be positive!\n");
+	    return ;
+    }
+
+    setcount(volid, vnode, unique, count);
+}
+
+
+
 #if 0
 // delete the RVM held vnode
 static void 

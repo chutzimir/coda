@@ -77,6 +77,7 @@ extern void show_vnode(int, char **);
 extern void show_vnode(int, int, int);
 extern void show_vnode(int, int);
 extern void show_free(int, char **);
+extern void set_linkcount(int, char **);
 extern void PrintVnodeDiskObject(VnodeDiskObject *);
 
 /* norton-recov.c */
