@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.1  1997/12/06 17:41:25  rvb
- * Sync with peters coda.h
+ * Revision 1.5.2.2  1997/12/09 16:07:15  rvb
+ * Sync with vfs/include/coda.h
  *
+ * Revision 1.5.2.1  97/12/06  17:41:25  rvb
+ * Sync with peters coda.h
+ * 
  * Revision 1.5  97/12/05  10:39:23  rvb
  * Read CHANGES
  * 
@@ -1776,7 +1779,6 @@ cfs_symlink(v)
 	vput(tdvp);
 	error = lookup(&nd);
 	*ap->a_vpp = nd.ni_vp;
-printf("%d = namei(... %s )\n", error, nm);
     }
 
     /* Invalidate the parent's attr cache, the modification time has changed */

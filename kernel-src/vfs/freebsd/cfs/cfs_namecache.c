@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.1  1997/12/06 17:41:18  rvb
- * Sync with peters coda.h
+ * Revision 1.6.2.2  1997/12/09 16:07:10  rvb
+ * Sync with vfs/include/coda.h
  *
+ * Revision 1.6.2.1  97/12/06  17:41:18  rvb
+ * Sync with peters coda.h
+ * 
  * Revision 1.6  97/12/05  10:39:13  rvb
  * Read CHANGES
  * 
@@ -708,7 +711,7 @@ cfsnc_flush(dcstat)
 				cncp->dcp->c_flags |= C_PURGING;
 			}
 			vrele(CTOV(cncp->dcp)); 
-			if (!ISDIR(cncp->cp->c_fid) && (CTOV(cncp->cp)->v_flag & VTEXT)) {
+			if (CTOV(cncp->cp)->v_flag & VTEXT) {
 			    if (cfs_vmflush(cncp->cp))
 				CFSDEBUG(CFS_FLUSH, 
 					 myprintf(("cfsnc_flush: (%x.%x.%x) busy\n", cncp->cp->c_fid.Volume, cncp->cp->c_fid.Vnode, cncp->cp->c_fid.Unique)); )
@@ -829,6 +832,8 @@ cfsnc_resize(hashsize, heapsize, dcstat)
 
 #define DEBUG
 #ifdef	DEBUG
+char cfsnc_name_buf[CFS_MAXNAMLEN+1];
+
 void
 cfsnc_name(struct cnode *cp)
 {
@@ -844,8 +849,10 @@ cfsnc_name(struct cnode *cp)
 		     cncp = ncncp) {
 			ncncp = cncp->hash_next;
 			if (cncp->cp == cp) {
+				bcopy(cncp->name, cfsnc_name_buf, cncp->namelen);
+				cfsnc_name_buf[cncp->namelen] = 0;
 				printf(" is %s (%x,%x)@%x,",
-					cncp->name, cncp->cp, cncp->dcp, cncp);
+					cfsnc_name_buf, cncp->cp, cncp->dcp, cncp);
 			}
 
 		}
