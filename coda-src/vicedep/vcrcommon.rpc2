@@ -70,7 +70,8 @@ typedef RPC2_Unsigned	Unique_t;
 %{
 #ifndef _VUID_T_
 #define _VUID_T_
-typedef unsigned int	vuid_t; /* moved here from venus/venus.private.h  (Satya 3/23/92) */
+typedef unsigned int vuid_t;
+typedef unsigned int vgid_t;
 #endif _VUID_T_
 %}
 
