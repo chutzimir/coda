@@ -535,9 +535,9 @@ Vnode *VGetVnode(Error *ec, Volume *vp, VnodeId vnodeNumber,
 		vnp = vcp->lruHead->lruPrev;
 		if ( vnp->dh ) {
 			SLog(0, "VGetVnode: DROPPING dh of vn %x un %x"
-			     "count %d\n",
+			     "total count %d, dh_refc: %d\n",
 			     vnp->vnodeNumber, vnp->disk.uniquifier, 
-			     DC_Count(vnp->dh));
+			     DC_Count(vnp->dh), vnp->dh_refc);
 			VN_DropDirHandle(vnp);
 		}
 

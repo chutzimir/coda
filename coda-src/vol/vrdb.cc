@@ -217,7 +217,8 @@ int XlateVid(VolumeId *vidp) {
 }
 
 
-int XlateVid(VolumeId *vidp, int *count, int *pos) {
+int XlateVid(VolumeId *vidp, int *count, int *pos) 
+{
     vrent *vre = VRDB.find(*vidp);
     if (!vre) return(0);
 

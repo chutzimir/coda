@@ -180,6 +180,7 @@ typedef struct Vnode {
     struct Volume
 		*volumePtr;	/* Pointer to the volume containing this file*/
     PDCEntry    dh;             /* Directory cache handle (used for dirs) */
+    int         dh_refc;        /* Refcount of this vnode to dh */
     byte	nUsers;		/* Number of lwp's who have done a VGetVnode */
     bit16	cacheCheck;	/* Must equal the value in the volume Header
     				   for the cache entry to be valid */
