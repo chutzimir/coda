@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.6  1996/12/05 16:20:14  bnoble
+ * Minor debugging aids
+ *
  * Revision 1.5  1996/11/25 18:25:11  bnoble
  * Added a diagnostic check for cfs_nb_lock
  *
@@ -45,7 +48,7 @@
 #include <cfs/cnode.h>
 
 /* What we are delaying for in printf */
-int cfs_printf_delay = 1000000;  /* in microseconds */
+int cfs_printf_delay = 0;  /* in microseconds */
 static int lockdebug = 0;
 
 /* Definition of the vfs operation vector */
@@ -68,6 +71,7 @@ int cfs_vnop_print_entry = 0;
 #else
 #define ENTRY
 #endif 
+
 
  
 struct vfsops cfs_vfsops = {

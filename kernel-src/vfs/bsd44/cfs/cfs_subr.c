@@ -13,6 +13,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.3  1996/12/05 16:20:15  bnoble
+ * Minor debugging aids
+ *
  * Revision 1.2  1996/01/02 16:57:01  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -398,8 +401,7 @@ int handleDownCall(opcode, out)
 		  
 		  error = cfs_vmflush(cp);
 	      }
-	      CFSDEBUG(CFS_PURGEFID, myprintf(("purgefid: fid = (%x.%x.%x), 
-                                            refcnt = %d, error = %d\n",
+	      CFSDEBUG(CFS_PURGEFID, myprintf(("purgefid: fid = (%x.%x.%x), refcnt = %d, error = %d\n",
                                             cp->c_fid.Volume, cp->c_fid.Vnode,
                                             cp->c_fid.Unique, 
 					    CNODE_COUNT(cp) - 1, error));)
@@ -680,6 +682,29 @@ cfs_vmflush(cp)
 #else /* __NetBSD__ */
     return 0;
 #endif /* __NetBSD__ */
+}
+
+
+/* 
+ * kernel-internal debugging switches
+ */
+
+void cfs_debugon()
+{
+    cfsdebug = -1;
+    cfsnc_debug = -1;
+    cfs_vnop_print_entry = 1;
+    cfs_psdev_print_entry = 1;
+    cfs_vfsop_print_entry = 1;
+}
+
+void cfs_debugoff()
+{
+    cfsdebug = 0;
+    cfsnc_debug = 0;
+    cfs_vnop_print_entry = 0;
+    cfs_psdev_print_entry = 0;
+    cfs_vfsop_print_entry = 0;
 }
 
 /*
