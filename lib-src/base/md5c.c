@@ -32,7 +32,7 @@
 #include <string.h>
 #include <coda_md5.h>
 
-static void MD5Transform __P((u_int32_t [4], const unsigned char [64]));
+static void MD5Transform(u_int32_t [4], const unsigned char [64]);
 
 #ifdef i386
 #define Encode memcpy
