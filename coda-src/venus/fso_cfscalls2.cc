@@ -60,16 +60,10 @@ extern "C" {
 #include <sys/uio.h>
 #endif
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <rpc2.h>
-
 
 #ifdef __cplusplus
 }
