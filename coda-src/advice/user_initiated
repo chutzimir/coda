@@ -228,7 +228,7 @@ proc CreateMenuBar {} {
 		.mbar.weakmiss {left} 
 
 
-	tk_menuBar .mbar .mbar.monitors .mbar.variables .mbar.weakmiss
+	#tk_menuBar .mbar .mbar.monitors .mbar.variables .mbar.weakmiss
 	focus .mbar
 
 }
