@@ -48,11 +48,14 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5  1997/08/05 11:08:01  lily
+ * Revision 1.5.4.1  1997/10/28 23:10:12  rvb
+ * >64Meg; venus can be killed!
+ *
+ * Revision 1.5  97/08/05  11:08:01  lily
  * Removed cfsnc_replace, replaced it with a cfs_find, unhash, and
  * rehash.  This fixes a cnode leak and a bug in which the fid is
  * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
- *
+ * 
  * Revision 1.4  96/12/12  22:10:57  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  * 
@@ -138,6 +141,18 @@ static char *rcsid = "$Header$";
  * hash table.
  */
 
+/*
+ * NOTES: rvb@cs
+ * 1.	The name cache holds a reference to every vnode in it.  Hence files can not be
+ *	 closed or made inactive until they are released.
+ * 2.	cfsnc_name(cp) was added to get a name for a cnode pointer for debugging.
+ * 3.	cfsnc_find() has debug code to detect when entries are stored with different
+ *	 credentials.  We don't understand yet, if/how entries are NOT EQ but still
+ *	 EQUAL
+ * 4.	I wonder if this name cache could be replace by the vnode name cache.
+ *	The latter has no zapping functions, so probably not.
+ */
+
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/errno.h>
@@ -209,8 +224,19 @@ cfsnc_find(dcp, name, namelen, cred, hash)
 		cfsnc_stat.Search_len += count;
 		return(cncp);
 	    }
+#ifdef	DEBUG
+	    else if (CFS_NAMEMATCH(cncp, name, namelen, dcp)) {
+	    	printf("cfsnc_find: name %s, new cred = %x, cred = %x\n",
+			name, cred, cncp->cred);
+		printf("nref %d, nuid %d, ngid %d // oref %d, ocred %d, ogid %d\n",
+			cred->cr_ref, cred->cr_uid, cred->cr_gid,
+			cncp->cred->cr_ref, cncp->cred->cr_uid, cncp->cred->cr_gid);
+		print_cred(cred);
+		print_cred(cncp->cred);
+	    }
+#endif
 	}
-	
+
 	return((struct cfscache *)0);
 }
 
@@ -273,7 +299,8 @@ cfsnc_init()
     /* zero the statistics structure */
     
     bzero(&cfsnc_stat, (sizeof(struct cfsnc_statistics)));
-    
+
+    printf("CFS NAME CACHE: CACHE %d, HASH TBL %d\n", CFSNC_CACHESIZE, CFSNC_HASHSIZE);
     CFS_ALLOC(cfsncheap, struct cfscache *, TOTAL_CACHE_SIZE);
     CFS_ALLOC(cfsnchash, struct cfshash *, TOTAL_HASH_SIZE);
     
@@ -476,6 +503,10 @@ cfsnc_zapParentfid(fid, dcstat)
 	}
 }
 
+
+/*
+ * Remove all entries which have the same fid as the input
+ */
 void
 cfsnc_zapfid(fid, dcstat)
 	ViceFid *fid;
@@ -510,10 +541,6 @@ cfsnc_zapfid(fid, dcstat)
 		}
 	}
 }
-
-/*
- * Remove all entries which have the same fid as the input
- */
 
 /* 
  * Remove all entries which match the fid and the cred
@@ -784,5 +811,27 @@ cfsnc_resize(hashsize, heapsize, dcstat)
     return(0);
 }
 
+#ifdef	DEBUG
+void
+cfsnc_name(struct cnode *cp)
+{
+	register struct cfscache *cncp, *ncncp;
+	register int i;
 
+	if (cfsnc_use == 0)			/* Cache is off */
+		return;
 
+	for (i = 0; i < cfsnc_hashsize; i++) {
+		for (cncp = cfsnchash[i].hash_next; 
+		     cncp != (struct cfscache *)&cfsnchash[i];
+		     cncp = ncncp) {
+			ncncp = cncp->hash_next;
+			if (cncp->cp == cp) {
+				printf(" is %s (%x,%x)@%x,",
+					cncp->name, cncp->cp, cncp->dcp, cncp);
+			}
+
+		}
+	}
+}
+#endif

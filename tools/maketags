@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# make the TAGS file for the Coda source.
-rm TAGS
-find `pwd` -name '*.c' -or  -name '*.cc' -or -name '*.h'  | xargs etags -a

@@ -15,6 +15,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4.14.1  1997/10/28 23:10:18  rvb
+ * >64Meg; venus can be killed!
+ *
  * Revision 1.4  1997/02/20 13:54:50  lily
  * check for NULL return from cfsnc_lookup before CTOV
  *
@@ -273,10 +276,14 @@ cfs_close(vp, flag, cred, p)
     
     MARK_ENTRY(CFS_CLOSE_STATS);
     
+    if (IS_UNMOUNTING(cp) )
+    	/* its ok */;
+    else
     /* Check for operation on a dying object */
     if (IS_DYING(cp)) {
 	MARK_INT_FAIL(CFS_CLOSE_STATS);
 	COMPLAIN_BITTERLY(close, cp->c_fid);
+	printf("cfs_close: vp %x, cp %x\n", CTOV(cp), cp);
 	return(ENODEV);	/* Can't contact dead venus */
     }
     
@@ -286,8 +293,20 @@ cfs_close(vp, flag, cred, p)
 	return(0);
     }
     
-    VOP_DO_CLOSE(cp->c_ovp, flag, cred, p); /* Do errors matter here? */
-    VN_RELE(cp->c_ovp);
+    if (IS_UNMOUNTING(cp)) {
+	if (cp->c_ovp) {
+	    printf("cfs_close: destroying container ref %d, ufs vp %x of vp %x/cp %x\n",
+		    vp->v_usecount, cp->c_ovp, vp, cp);
+	    vgone(cp->c_ovp);
+	} else {
+	    printf("cfs_close: NO container vp %x/cp %x\n", vp, cp);
+	}
+	return ENODEV;
+    } else {
+	VOP_DO_CLOSE(cp->c_ovp, flag, cred, p); /* Do errors matter here? */
+	VN_RELE(cp->c_ovp);
+    }
+
     if (--cp->c_ocount == 0)
 	cp->c_ovp = NULL;
     
@@ -1009,8 +1028,6 @@ cfs_inactive(vp, cred, p)
     
     /* Remove it from the table so it can't be found. */
     cfs_unsave(cp);
-    if (cp->c_ovp != NULL)
-	panic("cfs_inactive:  cp->ovp != NULL");
     if ((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA) == NULL) {
 	if (!IS_DYING(cp)) {
 	    myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
@@ -1019,13 +1036,25 @@ cfs_inactive(vp, cred, p)
     } else {
 	((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA))->mi_refct--;
     }
-    
-#ifdef DIAGNOSTIC
-    if (CNODE_COUNT(cp)) {
-	panic("cfs_inactive: nonzero reference count");
-    }
+
+    if (IS_UNMOUNTING(cp)) {
+#ifdef	DEBUG
+	printf("cfs_inactive: IS_UNMOUNTING use %d: vp %x, cp %x\n", vp->v_usecount, vp, cp);
+	if (cp->c_ovp != NULL)
+	    printf("cfs_inactive: cp->ovp != NULL use %d: vp %x, cp %x\n",
+	    	   vp->v_usecount, vp, cp);
 #endif
-    CFS_CLEAN_VNODE(vp);
+    } else {
+#ifdef DIAGNOSTIC
+	if (CNODE_COUNT(cp)) {
+	    panic("cfs_inactive: nonzero reference count");
+	}
+	if (cp->c_ovp != NULL) {
+	    panic("cfs_inactive:  cp->ovp != NULL");
+	}
+#endif
+	CFS_CLEAN_VNODE(vp);
+    }
 
     MARK_INT_SAT(CFS_INACTIVE_STATS);
     return(0);

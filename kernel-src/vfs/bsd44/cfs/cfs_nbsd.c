@@ -15,9 +15,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.16  1997/07/18 15:28:41  rvb
- * Bigger/Better/Faster than AFS
+ * Revision 1.16.6.1  1997/10/28 23:10:14  rvb
+ * >64Meg; venus can be killed!
  *
+ * Revision 1.16  97/07/18  15:28:41  rvb
+ * Bigger/Better/Faster than AFS
+ * 
  * Revision 1.15  1997/02/19 18:41:39  bnoble
  * Didn't sufficiently unswap the now-unswapped dvp and vp in cfs_nb_link
  *
@@ -881,14 +884,29 @@ cfs_nb_reclaim(v)
 {
     struct vop_reclaim_args *ap = v;
     struct vnode *vp = ap->a_vp;
+    struct cnode *cp = VTOC(vp);
 
+/*
+ * Forced unmount/flush will let vnodes with non zero use be destroyed!
+ */
     ENTRY;
+
+    if (IS_UNMOUNTING(cp)) {
+#ifdef	DEBUG
+	if (VTOC(vp)->c_ovp) {
+	    if (IS_UNMOUNTING(cp))
+		printf("cfs_nb_reclaim: c_ovp not void: vp %x, cp %x\n", vp, cp);
+	}
+#endif
+    } else {
 #ifdef DIAGNOSTIC
-    if (vp->v_usecount != 0) 
-	vprint("cfs_nb_reclaim: pushing active", vp);
-    if (VTOC(vp)->c_ovp)
-	panic("cfs_nb_reclaim: c_ovp not void");
+	if (vp->v_usecount != 0) 
+	    vprint("cfs_nb_reclaim: pushing active", vp);
+	if (VTOC(vp)->c_ovp) {
+	    panic("cfs_nb_reclaim: c_ovp not void");
+    }
 #endif DIAGNOSTIC
+    }	
     cache_purge(vp);
     cfs_free(VTOC(vp));
     VTOC(vp) = NULL;
@@ -1078,4 +1096,4 @@ vcfsattach(n)
 {
 }
 
-#endif __NetBSD__
+#endif /* __NetBSD__ */

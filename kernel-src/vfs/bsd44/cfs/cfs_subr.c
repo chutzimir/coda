@@ -47,11 +47,14 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5  1997/08/05 11:08:17  lily
+ * Revision 1.5.4.1  1997/10/28 23:10:16  rvb
+ * >64Meg; venus can be killed!
+ *
+ * Revision 1.5  97/08/05  11:08:17  lily
  * Removed cfsnc_replace, replaced it with a cfs_find, unhash, and
  * rehash.  This fixes a cnode leak and a bug in which the fid is
  * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
- *
+ * 
  * Revision 1.4  96/12/12  22:10:59  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  * 
@@ -135,6 +138,17 @@ static char *rcsid = "$Header$";
  */ 
 
 /* @(#)cfs_subr.c	1.5 87/09/14 3.2/4.3CFSSRC */
+
+/* NOTES: rvb
+ * 1.	Added cfs_unmounting to mark all cnodes as being UNMOUNTING.  This has to
+ *	 be done before dounmount is called.  Because some of the routines that
+ *	 dounmount calls before cfs_unmounted might try to force flushes to venus.
+ *	 The vnode pager does this.
+ * 2.	cfs_unmounting marks all cnodes scanning cfs_cache.
+ * 3.	cfs_checkunmounting (under DEBUG) checks all cnodes by chasing the vnodes
+ *	 under the /coda mount point.
+ * 4.	cfs_cacheprint (under DEBUG) prints names with vnode/cnode address
+ */
 
 #include <cfs/cfs.h>
 #include <cfs/cnode.h>
@@ -529,6 +543,76 @@ makecfsnode(fid, vfsp, type)
 }
 
 /*
+ *     First, step through all cnodes and mark them unmounting.
+ *         NetBSD kernels may try to fsync them now that venus
+ *         is dead, which would be a bad thing.
+ *
+ */
+cfs_unmounting(whoIam)
+	VFS_T *whoIam;
+{	
+	int hash;
+	struct cnode *cp;
+	int count = 0;
+
+	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
+			if (VN_VFS(CTOV(cp)) == whoIam) {
+				cp->c_flags |= CN_UNMOUNTING;
+			}
+		}
+	}
+}
+
+#ifdef	DEBUG
+cfs_checkunmounting(mp)
+	struct mount *mp;
+{	
+	register struct vnode *vp, *nvp;
+	struct cnode *cp;
+	int count = 0, bad = 0;
+loop:
+	for (vp = mp->mnt_vnodelist.lh_first; vp; vp = nvp) {
+		if (vp->v_mount != mp)
+			goto loop;
+		nvp = vp->v_mntvnodes.le_next;
+		cp = VTOC(vp);
+		count++;
+		if (!(cp->c_flags & CN_UNMOUNTING)) {
+			bad++;
+			printf("vp %x, cp %x missed\n", vp, cp);
+			cp->c_flags |= CN_UNMOUNTING;
+		}
+	}
+}
+
+cfs_cacheprint(whoIam)
+	VFS_T *whoIam;
+{	
+	int hash;
+	struct cnode *cp;
+	int count = 0;
+
+	printf("cfs_cacheprint: cfs_ctlvp %x, cp %x", cfs_ctlvp, VTOC(cfs_ctlvp));
+	cfsnc_name(cfs_ctlvp);
+	printf("\n");
+
+	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
+			if (VN_VFS(CTOV(cp)) == whoIam) {
+				printf("cfs_cacheprint: vp %x, cp %x", CTOV(cp), cp);
+				cfsnc_name(cp);
+				printf("\n");
+				count++;
+			}
+		}
+	}
+	printf("cfs_cacheprint: count %d\n", count);
+}
+
+#endif
+
+/*
  * cfs_kill is called as a side effect to vcopen. To prevent any
  * cnodes left around from an earlier run of a venus or warden from
  * causing problems with the new instance, mark any outstanding cnodes
@@ -547,24 +631,11 @@ cfs_kill(whoIam, dcstat)
 	
 	/* 
 	 * Algorithm is as follows: 
-	 *     First, step through all cnodes and mark them unmounting.
-	 *         NetBSD kernels may try to fsync them now that venus
-	 *         is dead, which would be a bad thing.
-	 *
 	 *     Second, flush whatever vnodes we can from the name cache.
 	 * 
 	 *     Finally, step through whatever is left and mark them dying.
 	 *        This prevents any operation at all.
 	 */
-	
-	
-	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (VN_VFS(CTOV(cp)) == whoIam) {
-				cp->c_flags |= CN_UNMOUNTING;
-			}
-		}
-	}
 	
 	/* This is slightly overkill, but should work. Eventually it'd be
 	 * nice to only flush those entries from the namecache that
@@ -574,9 +645,12 @@ cfs_kill(whoIam, dcstat)
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
 			if (VN_VFS(CTOV(cp)) == whoIam) {
+#ifdef	DEBUG
+				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
+#endif
 				count++;
 				/* Clear unmountng bit, set dying bit */
-				cp->c_flags &= ~CN_UNMOUNTING;
+/* rvb why			cp->c_flags &= ~CN_UNMOUNTING; */
 				cp->c_flags |= C_DYING;
 				CFSDEBUG(CFS_FLUSH, 
 					 myprintf(("Live cnode fid %x-%x-%x flags %d count %d\n",

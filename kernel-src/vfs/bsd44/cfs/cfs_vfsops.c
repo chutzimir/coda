@@ -14,6 +14,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.5.14.1  1997/10/28 23:10:17  rvb
+ * >64Meg; venus can be killed!
+ *
  * Revision 1.5  1997/01/13 17:11:07  bnoble
  * Coda statfs needs to return something other than -1 for blocks avail. and
  * files available for wabi (and other windowsish) programs to install
@@ -277,34 +280,16 @@ cfs_unmount(vfsp, mntflags, p)
 	    if (!IS_DYING(VTOC(op->rootvp)))
 		return (EBUSY); 	/* Venus is still running */
 	    
-	    active = cfs_kill(vfsp, NOT_DOWNCALL);
-	    
-	    if (active > 1) {	/* 1 is for rootvp */
-		error = EBUSY;
-		
-		/* HACK! Just for fun, if venus is dying/dead,
-		 * let's fake the unmount to allow a new venus to
-		 * start. All operations on outstanding cnodes
-		 * will effectively fail, but shouldn't crash
-		 * either the kernel or venus. One to blaim: --
-		 * DCS 11/29/94 */
-#ifndef __NetBSD__             /* XXX - NetBSD venii cannot fake unmount */
-		FAKE_UNMOUNT(vfsp);
-#else __NetBSD__
-		return (error);
-#endif __NetBSD__
-
-		myprintf(("CFS_UNMOUNT: faking unmount, vfsp %x active == %d\n", vfsp, active));
-	    } else {
-		/* Do nothing, caller of cfs_unmount will do the unmounting */
-	    }
-	    
+#ifdef	DEBUG
+	    printf("cfs_unmount: ROOT: vp %x, cp %x\n", op->rootvp, VTOC(op->rootvp));
+#endif
 	    VN_RELE(op->rootvp);
-	    /* Kill them again...we have to get rid of the rootvp */
+
 	    active = cfs_kill(vfsp, NOT_DOWNCALL);
-	    if (active) {
-		panic("cfs_unmount: couldn't kill root vnode");
-	    }
+		
+	    error = vflush(op->vfsp, NULLVP, FORCECLOSE);
+	    printf("cfs_unmount: active = %d, vflush active %d\n", active, error);
+	    error = 0;
 	    
 	    /* I'm going to take this out to allow lookups to go through. I'm
 	     * not sure it's important anyway. -- DCS 2/2/94

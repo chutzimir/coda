@@ -24,6 +24,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4.18.1  1997/10/28 23:10:15  rvb
+ * >64Meg; venus can be killed!
+ *
  * Revision 1.4  1996/12/12 22:10:58  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  *
@@ -159,7 +162,9 @@ vc_nb_close (dev, flag, mode, p)
     for (op = &cfs_mnttbl[minor(dev)].mi_vfschain; op ; op = op->next) {
 	if (op->rootvp) {
 	    /* Let unmount know this is for real */
-	    VTOC(op->rootvp)->c_flags |= C_DYING;	
+	    VTOC(op->rootvp)->c_flags |= C_DYING;
+	    VTOC(op->rootvp)->c_flags |= CN_UNMOUNTING;
+	    cfs_unmounting(op->vfsp);
 	    err = DOUNMOUNT(op->vfsp);
 	    if (err)
 		myprintf(("Error %d unmounting vfs in vcclose(%d)\n", 
