@@ -56,8 +56,11 @@ extern "C" {
 #include <strings.h>
 #include <errno.h>
 #include <libc.h>
+#ifdef MACH
+#include <curses.h>
+#else
 #include <ncurses.h>
-
+#endif
 
 #include <lwp.h>
 #include <rpc2.h>

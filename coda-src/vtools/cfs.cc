@@ -53,7 +53,11 @@ extern "C" {
 #include <netdb.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#ifdef LINUX
 #include <sys/dirent.h>
+#else
+#include <sys/dir.h>
+#endif
 
 #ifdef __cplusplus
 }
