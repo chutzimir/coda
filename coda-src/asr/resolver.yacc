@@ -41,11 +41,7 @@ extern "C" {
 
 #include "asr.h"
 #include <stdio.h>
-#ifdef	__linux__
 #include <stdlib.h>	
-#else
-#include <libc.h>	
-#endif
 #ifdef __BSD44__
 #include <sys/dir.h>
 #endif

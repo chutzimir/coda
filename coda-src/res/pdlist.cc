@@ -49,9 +49,6 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdlib.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <sys/types.h>
 #include <netinet/in.h>
 

@@ -49,9 +49,6 @@ extern "C" {
 #include <sys/types.h>
 #include <errno.h>
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <ctype.h>
 #include <assert.h>
 #include <struct.h>

@@ -275,9 +275,11 @@ void VFSMount() {
 
 #ifdef __BSD44__
     if (mount("coda", venusRoot, 0, kernDevice) < 0) {
-	eprint("mount(%s, %s) failed (%d), exiting",
-	       kernDevice, venusRoot, errno);
-	exit(-1);
+	if (mount("cfs", venusRoot, 0, kernDevice) < 0) {
+	    eprint("mount(%s, %s) failed (%d), exiting",
+		   kernDevice, venusRoot, errno);
+	    exit(-1);
+	}
     }
 #endif /* __BSD44__ */
 
