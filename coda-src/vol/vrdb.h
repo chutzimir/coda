@@ -47,14 +47,14 @@ extern "C" {
 
 #include <stdio.h>
 
+#include <vcrcommon.h>
+#include <vice.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <ohash.h>
 #include <inconsist.h>
-#include <vcrcommon.h>
-#include <vice.h>
 
 
 #define VRTABHASHSIZE	128
@@ -120,7 +120,6 @@ extern void CheckVRDB();
 extern int XlateVid(VolumeId *);
 extern int XlateVid(VolumeId *, int *, int *);
 extern int ReverseXlateVid(VolumeId *);
-extern void SubHosts(unsigned long *, unsigned long *);
 extern unsigned long XlateVidToVSG(VolumeId);
 
 #endif	not _VICE_VRDB_H_

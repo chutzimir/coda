@@ -128,6 +128,14 @@ int getfid(char *path, ViceFid *outfid /* OUT */,
 
 void main(int argc, char **argv) 
 {
+	struct stat statbuf;
+	int rc;
+	ViceFid fixfid;
+	vv_t fixvv;
+	char fixpath[MAXPATHLEN];
+	struct ViceIoctl vioc;
+	char space[2048];
+
 	if (argc != 3) {
 		fprintf(stderr, 
 			"Usage: %s <inc-file-name> <merged-file-name>\n", 
@@ -137,8 +145,7 @@ void main(int argc, char **argv)
     
 
 	/*  make sure repair file exists  */
-	struct stat statbuf;
-	int rc = stat(argv[2], &statbuf);
+	rc = stat(argv[2], &statbuf);
 	if (rc != 0) {
 		fprintf(stderr, "Couldn't find %s(errno = %d)\n", 
 			argv[2], errno);
@@ -149,17 +156,12 @@ void main(int argc, char **argv)
 		exit(-1);
     }
 	
-	ViceFid fixfid;
-	vv_t fixvv;
-	char fixpath[MAXPATHLEN];
 	if (!getfid(argv[2], &fixfid, &fixvv))
 		sprintf(fixpath, "@%x.%x.%x", fixfid.Volume, fixfid.Vnode, fixfid.Unique);
 	else 
 		strcpy(fixpath, argv[2]);
 	
 	// do the repair 
-	struct ViceIoctl vioc;
-	char space[2048];
 	vioc.in_size = (short)(1+strlen(fixpath));
 	vioc.in = fixpath;
 	vioc.out_size = (short)sizeof(space);

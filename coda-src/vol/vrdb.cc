@@ -61,7 +61,6 @@ extern "C" {
 #include "vsg.h"
 #include "vrdb.h"
 
-
 const char *VRDB_PATH = "/vice/db/VRDB";
 const char *VRDB_TEMP = "/vice/db/VRDB.new";
 vrtab VRDB("VRDB");
@@ -247,16 +246,6 @@ unsigned long XlateVidToVSG(VolumeId vid) {
     if (!vre) return(0);
 
     return(vre->addr);
-}
-/* H1 -= H2 */
-void SubHosts(unsigned long *H1, unsigned long *H2) {
-    for (int i = 0; i < VSG_MEMBERS; i++)
-	if (H1[i])
-	    for (int j = 0; j < VSG_MEMBERS; j++)
-		if (H1[i] == H2[j]) {
-		    H1[i] = 0;
-		    break;
-		}
 }
 
 
