@@ -197,9 +197,12 @@ void eprint(char *fmt, ...)
     cp += strlen(cp);
     strcat(cp, "\n");
 
-    /* Write to stderr */
-    PrintTimeStamp(stderr);  /* first put out a timestamp */
-    fprintf(stderr, msg); /* then the message */
+    /* Write to stderr & stdout*/
+    PrintTimeStamp(stdout); 
+    fprintf(stdout, msg); 
+    fflush(stdout);
+    PrintTimeStamp(stderr);
+    fprintf(stderr, msg);
     fflush(stderr);
 }
 
