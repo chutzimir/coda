@@ -130,15 +130,17 @@ char *argv[MAXARGS];
 
 iopen(int dummy1, int dummy2, int dummy3) {/* fake ITC system call */} 
 
+void
 main(int argc, char **argv)
 {
 	if ( argc > 1 ) {
-		return Parser_execarg(argc-1, &argv[1], argcmdlist);
+		Parser_execarg(argc-1, &argv[1], argcmdlist);
 	} else {
 		InitRPC();
 		Parser_init("filcon> ", list);
 		Parser_commands();
 	}
+	exit(0);
 }
 
 int BreakupArgs(char *args, char **argv)

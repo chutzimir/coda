@@ -1187,7 +1187,7 @@ int srvent::Connect(RPC2_Handle *cidp, int *authp, vuid_t vuid, int Force) {
     if (code == ETIMEDOUT) {
 	/* Not already considered down. */
 	if (connid != 0) {
-	    eprint("%s down", name);
+	    eprint("%s unreachable", name);
 	    Reset();
 	    VSGDB->DownEvent(host);
   	    NotifyUsersOfServerDownEvent(name);
@@ -1292,7 +1292,7 @@ void srvent::ServerError(int *codep) {
 	/* Reset if TIMED'out or NAK'ed. */
 	switch (*codep) {
 	    case ETIMEDOUT:
-		eprint("%s down", name);
+		eprint("%s unreachable", name);
 		Reset();
 		VSGDB->DownEvent(host);
 		NotifyUsersOfServerDownEvent(name);
@@ -1300,7 +1300,7 @@ void srvent::ServerError(int *codep) {
 
 	    case ERETRY:
 		/* Must have missed a down event! */
-		eprint("%s naked", name);
+		eprint("%s nak'ed", name);
 		Reset();
 		VSGDB->DownEvent(host);
 		connid = -2;
