@@ -38,6 +38,10 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
@@ -45,7 +49,7 @@ extern "C" {
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <strings.h>
+#include "coda_string.h"
 #include <netinet/in.h>
 
 #ifdef __cplusplus

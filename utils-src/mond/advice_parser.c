@@ -32,10 +32,13 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 extern "C" {
 #include <stdio.h>
-#include <strings.h>
+#include "coda_string.h"
 #include <sys/param.h>
 #include <sysent.h>
 

@@ -41,6 +41,10 @@ static char *rcsid = "$Header$";
  */
 
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "mondgen.h"
 #include "mond.h"
 
@@ -58,9 +62,10 @@ extern "C" {
 #include <netdb.h>
 #include <signal.h>
 #include <stdio.h>
-#include <strings.h>
+#include "coda_string.h"
 #include <mach.h>
 #include "advice_parser.h"
+#include "scandir.h"
 #include "db.h"
 
 #ifdef __cplusplus
