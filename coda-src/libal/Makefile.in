@@ -50,11 +50,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = pcfgen
 LIBRARIES   = libal.a
@@ -91,4 +94,4 @@ pcfgen:	pcfgen.o libal.a $(LIBUTIL)
 altest: altest.o libal.a $(LIBUTIL)
 	$(CXX) ${LIBFLAGS} altest.o libal.a $(LIBUTIL) -o altest
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

@@ -21,7 +21,15 @@
 # of the Coda License.
 #
 
-include $(TOPDIR)/Makeconf
+TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
+srcdir = @srcdir@
+VPATH  = @srcdir@
+TOPOBJ = @TOPOBJ@
+
+include $(MAKDIR)/Makeconf
 
 LIBRARIES = libplumber.a
 
@@ -37,4 +45,4 @@ plumber.o: plumber.ci
 pmalloc.o: malloc.ci
 pplumber.o: plumber.ci
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf

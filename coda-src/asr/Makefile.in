@@ -29,11 +29,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = parser
 CBINS       = parser
@@ -62,4 +65,4 @@ y.tab.o: y.tab.c
 	$(CXX) -x c++ $(CFLAGS) -c $<
 
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

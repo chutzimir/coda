@@ -44,12 +44,15 @@
 #   	SEG Makefile : depends on csmake
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
 # Need to conditionalize this
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 # presto changeo!
 LIBDIR := $(LIBSPECIAL)
@@ -98,4 +101,4 @@ Depend: ${DEPDEP}
 #	export SRCDIR; export SYS;    \
 #        $(DOSRCINSTALL)	
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

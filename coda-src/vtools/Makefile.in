@@ -29,11 +29,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = cmon codacon cfs hoard spy replay
 CBINS       = $(EXECUTABLES)
@@ -73,4 +76,4 @@ up: up.o
 vice.h vice.client.c: $(VICE_RPC2) $(VCRCOMMON_RPC2)
 cmon.o: $(INCLDIR)/vice.rpc2
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

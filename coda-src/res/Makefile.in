@@ -29,11 +29,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 LIBRARIES  = libreslib.a
 HEADERS	   =  rescomm.h logalloc.h pdlist.h remotelog.h resforce.h \
@@ -72,4 +75,4 @@ resc.o: vice.h callback.h
 
 reslog.o: logalloc.h
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

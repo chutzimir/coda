@@ -39,11 +39,14 @@
 # static char *rcsid = "$Header$";
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 # presto changeo!
 LIBDIR := $(LIBSPECIAL)
@@ -111,4 +114,4 @@ newrw:	rw.o $(NEW_LIBS)
 	rm rw.o
 	$(CC) $(LIBFLAGS) rw.o $(NEW_LIBS) -o newrw
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

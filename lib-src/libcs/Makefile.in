@@ -41,11 +41,14 @@
 # static char *rcsid = "$Header$";
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 # presto changeo!
 LIBDIR := $(LIBSPECIAL)
@@ -67,4 +70,4 @@ libcs.a: $(OBJS)
 # Manually setenv SUPPRESS_ALPHACI if you want to suppress the RCS checkin by alphaci
 #	SRCDIR=$(SRCDIR); export SRCDIR; $(ALPHACI)
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

@@ -30,11 +30,14 @@
 # static char *rcsid = "$Header$";
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 HEADERS   = inodefs.h
 OBJS = inodefsulib.o
@@ -42,4 +45,4 @@ LIBRARIES = libuinodefs.a
 
 libuinodefs.a: inodefsulib.o
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

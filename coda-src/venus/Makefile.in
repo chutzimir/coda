@@ -49,11 +49,14 @@
 # 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = venus
 CSBINS      = venus
@@ -243,4 +246,4 @@ faketrace.o: faketrace.c
 testjmp: testjmp.cc
 	$(CXX) $(CXXFLAGS) -o testjmp testjmp.cc
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

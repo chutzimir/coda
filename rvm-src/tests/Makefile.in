@@ -41,12 +41,15 @@
 #   	RVM Test Programs Makefile
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
 # Need to conditionalize this
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = testrvm rvm_basher
 TESTS = testrvm rvm_basher
@@ -95,5 +98,5 @@ installlwp:
 
 lwp:	lwp_basher
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
 

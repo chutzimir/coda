@@ -52,11 +52,14 @@
 # The REAL Makefile
 # The other Makefiles invoke this after setting: CC CFLAGS LFLAGS
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = rp2gen
 
@@ -84,4 +87,4 @@ crout.o: crout.c rp2.h
 
 util.o	: util.c rp2.h
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

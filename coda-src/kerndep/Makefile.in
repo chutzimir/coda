@@ -29,12 +29,15 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
 # Need to conditionalize this
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 # presto changeo!
 INCLDIR := $(INCLDIR)/cfs
@@ -62,4 +65,4 @@ endif
 OFILES= setpag.o pioctl.o
 $(OFILES): $(HEADERS)
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

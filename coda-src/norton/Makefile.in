@@ -14,11 +14,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = norton norton-reinit
 SCRIPTS     = reinit
@@ -65,4 +68,4 @@ parser.o: parser.cc parser.h
 
 commands.o: commands.cc parser.h
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

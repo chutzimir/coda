@@ -50,11 +50,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 HEADERS     = $(RP2HEADERS) $(OTHERHEADERS) $(RP2FILES)
 RP2FILES    = res.rpc2 vcrcommon.rpc2 callback.rpc2 vice.rpc2 volutil.rpc2 \
@@ -87,4 +90,4 @@ OTHERHEADERS = venusioctl.h srv.h operations.h recov_vollog.h
 
 
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

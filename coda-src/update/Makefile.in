@@ -50,11 +50,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = updatemon updatesrv updateclnt
 HEADERS	    = update.h update.rpc2
@@ -93,4 +96,4 @@ updatesrv.o: ${HFILES}
 updateclnt.o: ${HFILES} $(INCLDIR)/volutil.rpc2
 updatemon.o: ${HFILES}
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

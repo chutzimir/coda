@@ -53,11 +53,14 @@
 # Other Makefiles invoke this one after setting: CPU CC CPP CFLAGS and LIBS
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES  = ctest stest rpc2test
 LIBRARIES    = librpc2.a libse.a
@@ -97,4 +100,4 @@ $(OFILES): $(HFILES)
 $(SEOFILES): $(HFILES) $(SEHFILES)
 $(ASMOFILES): 
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

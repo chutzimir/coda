@@ -34,11 +34,14 @@
 #  Josh Raiff
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
   I =  scripts
  II =  kerndep dir 
@@ -63,7 +66,7 @@ VIII =  venus advice repair res
 SUBDIRS = $(I) $(II) $(III) $(IV) $(V) $(VI) $(VII) $(VIII) $(IX) \
 	  $(X) $(XI)
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
 
 
 

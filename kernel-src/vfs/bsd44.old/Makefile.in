@@ -47,11 +47,14 @@
 #
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH = @srcdir@
 TOPOBJ= @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 # presto changeo!
 INCLDIR := $(INCLDIR)/cfs
@@ -63,7 +66,7 @@ HEADERS     = cfs.h cfs_LINUX.h cfs_MACH.h cfs_NetBSD.h cfs_FreeBSD.h cfs_opstat
 LIBRARIES   =
 EXECUTABLES =
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
 
 ##################################################################################
 #		CLEAN UP

@@ -50,11 +50,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 LIBRARIES = libvol.a
 HEADERS	  = nfs.h errors.h viceinode.h vldb.h \
@@ -84,4 +87,4 @@ volhash.o: volhash.cc volhash.h ${INCLDIR}/inconsist.h
 vrdb.o: vrdb.cc vrdb.h
 vsg.o: vsg.cc vsg.h 
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules

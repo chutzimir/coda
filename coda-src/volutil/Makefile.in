@@ -50,11 +50,14 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = volutil parserecdump backup readdump merge
 SSBINS      = $(EXECUTABLES)
@@ -159,7 +162,7 @@ readdump: readdump.o dumpstream.o dumpstuff.o ${LIBS}
 parserecdump: parserecdump.o ${LIBS}
 	$(CXX) $(LIBFLAGS) parserecdump.o ${LIBS} -o parserecdump
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
 
 
 

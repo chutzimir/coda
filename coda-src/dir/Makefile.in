@@ -50,12 +50,15 @@
 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
 # Need to conditionalize this
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 LIBRARIES = libdir.a salvage.o buffer.o dir.o 
 HEADERS   = coda_dir.h dir.private.h
@@ -69,5 +72,5 @@ libdir.a:  $(OFILES)
 
 $(OFILES): $(HEADERS)
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
 

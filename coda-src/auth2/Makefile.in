@@ -48,11 +48,14 @@
 # 
 
 TOPDIR = @top_srcdir@
+ifndef MAKDIR
+MAKDIR = @top_srcdir@/configs
+endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(TOPDIR)/Makeconf
+include $(MAKDIR)/Makeconf
 
 EXECUTABLES = auth2 authmon initpw au oldtokens
 SSBINS      = auth2 authmon initpw au
@@ -106,4 +109,4 @@ auth2.client.o: auth2.client.cc $(HFILES)
 initpw.o: initpw.cc $(HFILES)
 au.o:	au.cc $(HFILES)
 
-include $(TOPDIR)/Makerules
+include $(MAKDIR)/Makerules
