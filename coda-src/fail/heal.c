@@ -37,7 +37,7 @@ static char *rcsid = "$Header$";
 
 
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <strings.h>
@@ -131,7 +131,7 @@ int heal(int argc, char ** argv)
 	    for (j = 0; j < rc; j++) 
 		ntohFF(&filters[j]);
 	    he2 = gethostbyname(host2);
-	    assert(he2);
+	    CODA_ASSERT(he2);
 	    for (j = 0; j < rc; j++) {
 		/* if filter matches then  remove it */
 		int code;
@@ -164,7 +164,7 @@ int heal(int argc, char ** argv)
 	    for (j = 0; j < rc; j++) 
 		ntohFF(&filters[j]);
 	    he1 = gethostbyname(host1);
-	    assert(he1);
+	    CODA_ASSERT(he1);
 	    for (j = 0; j < rc; j++) {
 		/* if filter matches then  remove it */
 		int code;

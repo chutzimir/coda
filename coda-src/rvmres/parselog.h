@@ -54,7 +54,7 @@ struct remoteloglist : public olink {
     }
 	
     ~remoteloglist() {
-	// assert(slelist.count() == 0);
+	// CODA_ASSERT(slelist.count() == 0);
     }
 };
 

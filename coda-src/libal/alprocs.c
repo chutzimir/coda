@@ -626,7 +626,7 @@ int AL_Initialize(IN char *Version, IN char *pdbFile, IN char *pcfFile)
     LogMsg(4, AL_DebugLevel,
 	stdout, "Library version: '%s'\tHeader version: '%s'", AL_VERSION, Version);
 
-    assert(strcmp(Version, AL_VERSION) == 0);
+    CODA_ASSERT(strcmp(Version, AL_VERSION) == 0);
 
     /* We do not free AL_pdbFileName or AL_pcfFileName; this is
 	because they may be aliased as pdbFile and pcfFile if
@@ -843,7 +843,7 @@ RetryGet:
     if (mystatbuf.st_mtime != PdbStatBuf.st_mtime)
 	{
 	/* .pdb file has changed since we last did AL_Initialize(). Redo. */
-	assert(AL_Initialize(AL_VERSION, AL_pdbFileName, AL_pcfFileName) == 0);
+	CODA_ASSERT(AL_Initialize(AL_VERSION, AL_pdbFileName, AL_pcfFileName) == 0);
 	fclose(yyin);
 	goto RetryGet;
 	}

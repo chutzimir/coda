@@ -78,7 +78,7 @@ rec_smolist::~rec_smolist() {
 }
 
 void rec_smolist::insert(rec_smolink *p) {
-    assert(p->next == 0);
+    CODA_ASSERT(p->next == 0);
 
     if (last !=	0) {	// at least one entry exists
 	RVMLIB_MODIFY(p->next, last->next);
@@ -92,7 +92,7 @@ void rec_smolist::insert(rec_smolink *p) {
 
 
 void rec_smolist::append(rec_smolink *p) {
-    assert(p->next == 0);
+    CODA_ASSERT(p->next == 0);
 
     if (last !=	0) {	/* at least one entry exists */
 	RVMLIB_MODIFY(p->next, last->next);
@@ -133,7 +133,7 @@ rec_smolink *rec_smolist::remove(rec_smolink *p) {
 rec_smolink *rec_smolist::get() {
     if (last ==	0) return(0);	    /* empty list */
     rec_smolink *q = last->next;
-    assert(q->next);
+    CODA_ASSERT(q->next);
     RVMLIB_MODIFY(last->next, q->next);	    // remove head entry
     RVMLIB_MODIFY(q->next, 0);		    // reset removed entry
     if (q == last) {

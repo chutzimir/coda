@@ -71,6 +71,8 @@ NO_LEX = yes
 
 HFILES = al.h parsepdb.h pcf.h prs.h prs_fs.h
 
+LIBS = $(LIBUTIL) $(LIBBASE)
+
 libal.a:  alprocs.o pcfprocs.o parsepdb.o
 
 parsepdb.o: y.tab.c lex.yy.c $(HFILES)
@@ -90,7 +92,7 @@ y.tab.c: parsepdb.yacc
 pcfgen:	pcfgen.o libal.a $(LIBUTIL)
 	$(CC) $(LIBFLAGS) pcfgen.o libal.a $(LIBUTIL) -o pcfgen
 
-altest: altest.o libal.a $(LIBUTIL)
-	$(CC) ${LIBFLAGS} altest.o libal.a $(LIBUTIL) -o altest
+altest: altest.o libal.a $(LIBS)
+	$(CC) ${LIBFLAGS} altest.o libal.a $(LIBS) -o altest
 
 include $(TOPDIR)/configs/Makerules

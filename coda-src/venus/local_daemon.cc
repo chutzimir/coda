@@ -133,7 +133,7 @@ void lrdb::CheckLocalSubtree()
 	    char fullpath[MAXPATHLEN];
 	    snprintf(fullpath, MAXPATHLEN, "%s/%s", RootPath, rfm->GetName());
 	    ViceFid *objFid = rfm->GetGlobalRootFid();
-	    ASSERT(objFid);
+	    CODA_ASSERT(objFid);
 	    LOG(0, ("LocalInconsistentObj: objFid=%x.%x.%x\n",
 		    objFid->Volume, objFid->Vnode, objFid->Unique));
 	    NotifyUsersObjectInConflict(fullpath, objFid);

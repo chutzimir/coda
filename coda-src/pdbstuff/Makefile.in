@@ -60,7 +60,7 @@ include $(TOPDIR)/Makeconf
 EXECUTABLES = pwd2pdb mvdb
 SSBINS      = $(EXECUTABLES)
 
-LIBS = $(LIBUTIL)
+LIBS = $(LIBUTIL) $(LIBBASE)
 
 DOCFILES = mvdb.1
 TESTFILES = itcgroups vice.pdb

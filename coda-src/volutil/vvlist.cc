@@ -155,9 +155,9 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
     char buffer[LISTLINESIZE];
     int vnum, unique, d, vvStoreIdHost, vvStoreIdUniquifier;
     nlists = listsize;
-    assert(nlists > 0);
+    CODA_ASSERT(nlists > 0);
     vvlist = (vvent **)malloc(sizeof(vvent*) * nlists);
-    assert(vvlist != NULL);
+    CODA_ASSERT(vvlist != NULL);
     bzero((void *)vvlist, sizeof(vvent*) * nlists);
     
     LogMsg(9, VolDebugLevel, stdout, "After malloc of vvlist, entering do loop");
@@ -174,7 +174,7 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
 		LogMsg(19, VolDebugLevel, stdout, "vvtable: found a vnode %d.%d StoreId %x.%x.",
 		    vnum, unique, vvStoreIdHost, vvStoreIdUniquifier);
 		vvent *tmp = (vvent *)malloc(sizeof(vvent));
-		assert(tmp != NULL);
+		CODA_ASSERT(tmp != NULL);
 		tmp->StoreId.Host = vvStoreIdHost;
 		tmp->StoreId.Uniquifier = vvStoreIdUniquifier;
 		tmp->unique = unique;
@@ -187,7 +187,7 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
 		{
 		    LogMsg(0, VolDebugLevel, stdout, "vvtable: Vnode %d.%d StoreId %x.%x, has a bad index %d for vvlist[%d]\n",
 			   vnum, unique, vvStoreIdHost, vvStoreIdUniquifier, bitnum, nlists);
-		    assert(0);
+		    CODA_ASSERT(0);
 		}
 
 		tmp->next = vvlist[bitnum];

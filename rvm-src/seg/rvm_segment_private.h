@@ -41,7 +41,7 @@ static char *rcsid = "$Header$";
 
 #ifndef _RVM_SEGMENT_PRIVATE_H_
 #define _RVM_SEGMENT_PRIVATE_H_
-#include <assert.h>
+#include "coda_assert.h"
 /* Worker definitions */
 
 extern rvm_return_t allocate_vm();

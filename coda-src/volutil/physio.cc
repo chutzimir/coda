@@ -159,7 +159,7 @@ int ReallyWrite (void *formal_file, long block, char *data)
 	    if (!FidCmp(tmpsdp, sdp))
 		break;
 	}
-	assert(tmpsdp);
+	CODA_ASSERT(tmpsdp);
 	DirHtb->remove(&fid, tmpsdp);
 	delete tmpsdp;
     }
@@ -194,7 +194,7 @@ void FidCpy (void *formal_tofile, void *formal_fromfile)
 void Die (char *msg)
 {
     printf("%s\n", msg);
-    assert(0);
+    CODA_ASSERT(0);
 }
 */
 

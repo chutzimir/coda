@@ -123,7 +123,7 @@ extern void ViceTerminate();
 
 #define	SetAccessList(vptr, ACL, ACLSize)\
 {\
-    assert((vptr)->disk.type == vDirectory);\
+    CODA_ASSERT((vptr)->disk.type == vDirectory);\
     (ACL) = VVnodeACL((vptr));\
     (ACLSize) = VAclSize((vptr));\
 }

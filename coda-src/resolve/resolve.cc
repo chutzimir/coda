@@ -60,7 +60,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <assert.h> 
+#include "coda_assert.h" 
 #include <inodeops.h>
 
 #include <parser.h>
@@ -218,7 +218,7 @@ int getunixdirreps C_ARGS((int nreplicas, char *names[], resreplica **reps))
   }
   /* allocate space for dir entries  - allocate some extra nodes */
   direntriesarrsize = (nreplicas + 1) * (buf.st_size/AVGDIRENTRYSIZE);
-  assert(direntriesarr = (resdir_entry *)malloc(direntriesarrsize * sizeof(resdir_entry)));
+  CODA_ASSERT(direntriesarr = (resdir_entry *)malloc(direntriesarrsize * sizeof(resdir_entry)));
   nextavailindex = -1;
   totaldirentries = 0;
 
@@ -477,7 +477,7 @@ int NameNameResolve(int first, int last, int nreplicas, resreplica *dirs, struct
     }
     int answers[MAXHOSTS];
     for (i= 0; i < MAXHOSTS; i++) answers[i] = -1;
-    assert((last-first) <= MAXHOSTS);
+    CODA_ASSERT((last-first) <= MAXHOSTS);
     for (i = first; i < last; i++) {
 	resdir_entry *rde = sortedArrByName[i];
 	printf("Should %s%s be removed? ",

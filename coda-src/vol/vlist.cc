@@ -54,7 +54,7 @@ extern "C" {
 
 int VLECmp(vle *a, vle *b) 
 {
-	assert(FID_VolEQ(&a->fid, &b->fid));
+	CODA_ASSERT(FID_VolEQ(&a->fid, &b->fid));
 	return FID_Cmp(&a->fid, &b->fid);
 }
 

@@ -137,7 +137,7 @@ void VolUtilLWP(int *myindex) {
     /* tag this lwp as a volume utility */
     pt = (ProgramType *) malloc(sizeof(ProgramType));
     *pt = volumeUtility;
-    assert(LWP_NewRock(FSTAG, (char *)pt) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_NewRock(FSTAG, (char *)pt) == LWP_SUCCESS);
 
     myfilter.FromWhom = ONESUBSYS;
     myfilter.OldOrNew = OLDORNEW;
@@ -181,7 +181,7 @@ static void InitServer() {
 
     subsysid.Tag = RPC2_SUBSYSBYID;
     subsysid.Value.SubsysId = UTIL_SUBSYSID;
-    assert(RPC2_Export(&subsysid) == RPC2_SUCCESS);
+    CODA_ASSERT(RPC2_Export(&subsysid) == RPC2_SUCCESS);
     }
 
 static long VolGetKey(RPC2_CountedBS *cid, RPC2_EncryptionKey id, RPC2_EncryptionKey skey) {

@@ -80,7 +80,7 @@ long S_ShowCallbacks(RPC2_Handle rpcid, ViceFid *fid, SE_Descriptor *formal_sed)
     strcpy(filename, CBFILE);
     mktemp(filename);
     cbfile = fopen(filename, "w");
-    assert(cbfile != NULL);
+    CODA_ASSERT(cbfile != NULL);
 
     PrintCallBacks(fid, cbfile);
     PrintCallBackState(cbfile);

@@ -58,7 +58,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/time.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include "lwp.h"
 
 char semaphore;
@@ -90,12 +90,12 @@ int main(int argc, char **argv)
     last_context_switch.tv_usec = 0;
 
 #ifdef	__linux__
-    assert(LWP_Init(LWP_VERSION, 0, (PROCESS *)&pid) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_Init(LWP_VERSION, 0, (PROCESS *)&pid) == LWP_SUCCESS);
 #else
-    assert(LWP_Init(LWP_VERSION, 0, &pid) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_Init(LWP_VERSION, 0, &pid) == LWP_SUCCESS);
 #endif
-    assert(LWP_CreateProcess((PFI)OtherProcess,4096,0, 0, c, (PROCESS *)&otherpid) == LWP_SUCCESS);
-    assert(IOMGR_Initialize() == LWP_SUCCESS);
+    CODA_ASSERT(LWP_CreateProcess((PFI)OtherProcess,4096,0, 0, c, (PROCESS *)&otherpid) == LWP_SUCCESS);
+    CODA_ASSERT(IOMGR_Initialize() == LWP_SUCCESS);
     waitarray[0] = &semaphore;
     waitarray[1] = 0;
     gettimeofday(&t1, NULL);

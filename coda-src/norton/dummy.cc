@@ -39,7 +39,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 #include <stdio.h>
-#include <assert.h>
+#include "coda_assert.h"
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -60,14 +60,14 @@ void PollAndYield() {
     dlist dl;
     ViceFid fid;
 
-    assert(0);
+    CODA_ASSERT(0);
     FindVLE(dl, &fid);
     return(0);
 }
 
 void Die(char *msg) {
     fprintf(stderr, "%s\n", msg);
-    assert(0);
+    CODA_ASSERT(0);
     return;
 }
 
@@ -75,7 +75,7 @@ int GetFsObj(ViceFid *fid, Volume **volptr, Vnode **vptr,
 	     int lock, int VolumeLock, int ignoreIncon, int ignoreBQ,
 	     int getdirhandle)
 {
-    assert(0);
+    CODA_ASSERT(0);
     return(0);
 }
 

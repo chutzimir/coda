@@ -197,7 +197,7 @@ static char *get(DumpBuffer_t *buf, int size, int *error)
 static char *put(DumpBuffer_t *buf, int size, int *error)
 {
     *error = 0;
-    assert(buf->DumpBufPtr - size >= buf->DumpBuf);
+    CODA_ASSERT(buf->DumpBufPtr - size >= buf->DumpBuf);
     buf->DumpBufPtr -= size;
     return (char *) buf->DumpBufPtr;
 }

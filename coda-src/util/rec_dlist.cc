@@ -74,7 +74,7 @@ void *rec_dlist::operator new(size_t size) {
     rec_dlist *r = 0;
     
     r = (rec_dlist *)rvmlib_rec_malloc(size);
-    assert(r);
+    CODA_ASSERT(r);
     return(r);
 }
 

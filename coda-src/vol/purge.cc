@@ -67,7 +67,7 @@ extern "C" {
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <assert.h>
+#include "coda_assert.h"
 
 #include <lwp.h>
 #include <lock.h>
@@ -104,7 +104,7 @@ void VPurgeVolume(Volume *vp)
     Error ec;
     PurgeIndex(vp, vLarge);
     PurgeIndex(vp, vSmall);
-    assert(DeleteVolume(V_id(vp)) == 0);
+    CODA_ASSERT(DeleteVolume(V_id(vp)) == 0);
 
     /* The following is done in VDetachVolume - but that calls*/
     /* fsync stuff also which I dont understand yet */
@@ -147,7 +147,7 @@ void PurgeIndex(Volume *vp, VnodeClass vclass)
 	    
 	    if ((vdo->type != vNull) && (vdo->vnodeMagic != vcp->magic)){
 		LogMsg(0, VolDebugLevel, stdout, "PurgeIndex:VnodeMagic field incorrect for vnode %d",i);
-		assert(0);
+		CODA_ASSERT(0);
 	    }
 	    if (vdo->inodeNumber){
 		/* decrement the reference count by one */

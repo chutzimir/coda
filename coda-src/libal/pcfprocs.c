@@ -115,7 +115,7 @@ int pcfRead(IN char *pcfile)
 #ifndef DJGPP
 #define	ERROR {flock(pcfFD, LOCK_UN); close(pcfFD); return(-1);}	/* Local to pcfRead */
 #else
-#define ERROR assert(0);
+#define ERROR CODA_ASSERT(0);
 #endif
 
 		
@@ -269,7 +269,7 @@ int pcfWrite(IN char *pcfile)
 #ifndef DJGPP
 #define	ERROR {flock(pcfFD, LOCK_UN); close(pcfFD); return(-1);}	/* Local to pcfWrite*/
 #else
-#define ERROR assert(0);
+#define ERROR CODA_ASSERT(0);
 #endif
 
     dobyteswap = FALSE;

@@ -122,10 +122,10 @@ rds_malloc(size, tid, err)
 	    LEAVE_CRITICAL_SECTION;
 	}
 
-	ASSERT(fbp->size == i);	/* Sanity check */
+	CODA_ASSERT(fbp->size == i);	/* Sanity check */
     
 	/* Check to see that the guards are valid and the type is free */
-	ASSERT((fbp->type == FREE_GUARD) && ((*BLOCK_END(fbp)) == END_GUARD));
+	CODA_ASSERT((fbp->type == FREE_GUARD) && ((*BLOCK_END(fbp)) == END_GUARD));
 		
 	/* Set the lowguard to reflect that the block has been allocated. */
 	rvmret = rvm_set_range(atid, fbp, sizeof(free_block_t));

@@ -93,7 +93,7 @@ void lqman::func(int parm) {
     /* tag this lwp as a volume utility */
     pt = (ProgramType *) malloc(sizeof(ProgramType));
     *pt = volumeUtility;
-    assert(LWP_NewRock(FSTAG, (char *)pt) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_NewRock(FSTAG, (char *)pt) == LWP_SUCCESS);
 
     for (;;) {
 	LogMsg(1, SrvDebugLevel, stdout,  "LockQueue Manager woken up");

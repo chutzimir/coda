@@ -50,7 +50,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <stdio.h>
 #ifdef __MACH__
 #include <sysent.h>
@@ -269,7 +269,7 @@ olink *olist_iterator::operator()() {
 	    nlink = (olink *)-1;
 	    return 0;
 	}
-	assert(nlink != (olink *)-1);
+	CODA_ASSERT(nlink != (olink *)-1);
 	clink = nlink;		/* we saved nlink in last iteration */
 	nlink = clink->next;	/* clink may be del. before next iter.,
 				   keep ptr to next olink now */

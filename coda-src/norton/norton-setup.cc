@@ -93,7 +93,7 @@ void LoadRVM(char * log_dev, char * data_dev, rvm_offset_t data_len) {
     rvmptt->list.count = 0;
     rvmptt->list.size = 0;
     rvmlib_set_thread_data(rvmptt);
-    assert(rvmlib_thread_data() != 0);
+    CODA_ASSERT(rvmlib_thread_data() != 0);
 
     options = rvm_malloc_options();
     options->log_dev = log_dev;

@@ -183,11 +183,11 @@ void HandleRequests(lwp)
 	    i = LWP_CreateProcess(HandleRequests, STESTSTACK, LWP_NORMAL_PRIORITY,
 			      numLWPs, "server", &pids[numLWPs]);
 #endif
-	    assert(i == LWP_SUCCESS);
+	    CODA_ASSERT(i == LWP_SUCCESS);
 	    printf("New LWP %d (%d)\n", numLWPs, pids[numLWPs]);
 	    numLWPs++;
 	}
-	assert(RPC2_AllocBuffer(RPC2_MAXPACKETSIZE-500, &OutBuff) == RPC2_SUCCESS);
+	CODA_ASSERT(RPC2_AllocBuffer(RPC2_MAXPACKETSIZE-500, &OutBuff) == RPC2_SUCCESS);
 	                          /* 500 is a fudge factor */
 	(void) ProcessPacket(cid, InBuff, OutBuff);
 	availableLWPs++;
@@ -237,7 +237,7 @@ long FindKey(IN authenticationtype, IN ClientIdent, OUT IdentKey,
 
 iopen()
     {
-    assert(1 == 0);
+    CODA_ASSERT(1 == 0);
     }
 
 
@@ -473,7 +473,7 @@ ProcessPacket(cIn, pIn, pOut)
 	    VMMaxFileSize = (int) ntohl((unsigned long)*iptr);
 	    printf("New VM file buffer size = %ld\n ", VMMaxFileSize);
 	    if (VMFileBuf) free(VMFileBuf);
-	    assert(VMFileBuf = (char *)malloc((unsigned)VMMaxFileSize));
+	    CODA_ASSERT(VMFileBuf = (char *)malloc((unsigned)VMMaxFileSize));
 	    pOut->Header.ReturnCode = RPC2_SUCCESS;
 	    pOut->Header.BodyLength = 0;
 	    i = WhatHappened(RPC2_SendResponse(cIn, pOut), "SendResponse");

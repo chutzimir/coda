@@ -5,7 +5,7 @@
             Coda: an Experimental Distributed File System
                              Release 4.0
 
-          Copyright (c) 1987-1996 Carnegie Mellon University
+          Copyright (c) 1998 Carnegie Mellon University
                          All Rights Reserved
 
 Permission  to  use, copy, modify and distribute this software and its
@@ -33,60 +33,52 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
-
-
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif __cplusplus
-
 #include <stdio.h>
-#include <errno.h>
+#include <unistd.h>
 #include "coda_assert.h"
-#include <ci.h>
-#include <sys/types.h>
-#include <sys/param.h>
-#include <netinet/in.h>
-#include <strings.h>
-#include <sys/stat.h>
-#include <rpc2.h>
 
-#ifdef __cplusplus
-}
-#endif __cplusplus
+int (*coda_assert_cleanup)() = (int (*)()) 0;
+int   coda_assert_action = CODA_ASSERT_SLEEP;
 
-#include <vice.h>
-#include "repio.h"
+void
+coda_assert(char *pred, char *file, int line)
+{
+    fprintf(stderr,"Assertion failed: %s, file \"%s\", line %d\n", pred, file, line);
+    fflush(stderr);
 
+    if (coda_assert_cleanup) (coda_assert_cleanup)();
 
-struct listhdr *harray;
-int hcount;
+    switch (coda_assert_action) {
+    default:
+	fprintf(stderr,"coda_assert: bad coda_assert_action value %d, assuming CODA_ASSERT_SLEEP\n",
+		coda_assert_action);
+	fflush(stderr);
 
-int  repair_DebugFlag;
+    case CODA_ASSERT_SLEEP:
+	fprintf(stderr, "Sleeping forever.  You may use gdb to attach to process %d.",
+		getpid());
+	fflush(stderr);
+        for (;;)
+	     sleep(1);
+	break;
 
-main(argc, argv)
-    int argc;
-    char *argv[];
-    {
-    int i, j, rc;
-    struct listhdr *newha;
-    int newhc;
+    case CODA_ASSERT_EXIT:
+	fprintf(stderr, "VENUS IS EXITTING! Bye!\n");
+	fflush(stderr);
+    	exit(77);
+	break;
 
-      rc = repair_parsefile(argv[1], &hcount, &harray);
-    if (rc < 0) exit(-1);
-
-
-    rc = repair_putdfile("/tmp/xxx", hcount, harray);
-    if (rc) {printf("repair_putdfile() failed\n"); exit(-1);}
-    
-    rc = repair_getdfile("/tmp/xxx", &newhc, &newha);
-    if (rc) {printf("repair_getdfile() failed\n"); exit(-1);}
-    
-    for (i = 0; i < newhc; i++)
-	{
-	printf("\n** Replica %lu ***\n", newha[i].replicaId);
-	for (j = 0; j < newha[i].repairCount; j++)
-	    repair_printline(&newha[i].repairList[j], stdout);
-	}
+    case CODA_ASSERT_ABORT:
+	fprintf(stderr, "VENUS WILL TRY TO DUMP CORE\n");
+	fflush(stderr);
+	abort();
+	break;
     }
+}
+
+void
+coda_note(char *pred, char *file, int line)
+{
+    fprintf(stderr,"Note failed: %s, file \"%s\", line %d\n", pred, file, line);
+    fflush(stderr);
+}

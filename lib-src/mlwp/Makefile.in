@@ -52,8 +52,8 @@ LIBRARIES = liboldlwp.a
 HEADERS   = lock.h lwp.h preempt.h timer.h cargs.h
 TESTS     = test rw  # tdb doesn't work yet
 
-OLD_LIBS = liboldlwp.a $(LIBCOMPAT) 
-NEW_LIBS = libnewlwp.a $(LIBCOMPAT)
+OLD_LIBS = liboldlwp.a $(LIBCOMPAT) $(LIBBASE)
+NEW_LIBS = libnewlwp.a $(LIBCOMPAT) $(LIBBASE)
 
 OFILES = lwp.o lock.o iomgr.o timer.o fasttime.o preempt.o process.o
 PRIVHFILES = lwp.private.h

@@ -134,8 +134,8 @@ int rds_get_stats(stats)
 
 int rds_trace_on(FILE *file)
 {
-  ASSERT(HEAP_INIT);
-  ASSERT(file);
+  CODA_ASSERT(HEAP_INIT);
+  CODA_ASSERT(file);
   rds_tracing = TRUE;
   rds_tracing_file = file;
   RDS_LOG("rdstrace: tracing on\n");
@@ -147,7 +147,7 @@ int rds_trace_on(FILE *file)
 int
 rds_trace_off ()
 {
-  ASSERT(HEAP_INIT);
+  CODA_ASSERT(HEAP_INIT);
   RDS_LOG("rdstrace: tracing off\n");
   rds_tracing = FALSE;
   return 0;
@@ -280,7 +280,7 @@ void rds_trace_dump_blocks()
 int
 rds_trace_dump_heap ()
 {
-  ASSERT(HEAP_INIT);
+  CODA_ASSERT(HEAP_INIT);
     CRITICAL({
       RDS_LOG("rdstrace: start heap_dump\n");
       RDS_LOG("rdstrace: version_string %s\n", RDS_VERSION_STAMP);

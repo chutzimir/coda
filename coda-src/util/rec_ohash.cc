@@ -72,7 +72,7 @@ void *rec_ohashtab::operator new(size_t size) {
     rec_ohashtab *r = 0;
 
     r = (rec_ohashtab *)rvmlib_rec_malloc(size);
-    assert(r);
+    CODA_ASSERT(r);
     return(r);
 }
 

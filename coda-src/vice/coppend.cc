@@ -76,7 +76,7 @@ void AddPairToCopPendingTable(ViceStoreId *sid, ViceFid *fid) {
 	    }
 	}
 	if (!found) {
-	    assert(i < MAXFIDS);
+	    CODA_ASSERT(i < MAXFIDS);
 	    cpe->fids[i] = *fid;
 	}
     }
@@ -100,7 +100,7 @@ cpent::~cpent() {
 	LogMsg(0, SrvDebugLevel, stdout,
 	       "~cpent: id is not CPENTMAGIC but %d\n",
 	       id);
-	assert(0);
+	CODA_ASSERT(0);
     }
     id = 0;
 }

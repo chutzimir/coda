@@ -63,7 +63,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <errno.h>
 #include <sys/file.h>
 #include <sys/time.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include "lwp.h"
 #include "lwp.private.h"
 #include "timer.h"
@@ -303,7 +303,7 @@ static int IOMGR_CheckDescriptors(int PollingCheck)
 		    } 
 
 	    }
-	    assert(0);
+	    CODA_ASSERT(0);
     }
 
     /* Force a new gettimeofday call so FT_AGetTimeOfDay calls work. */

@@ -222,7 +222,7 @@ static void HDBD_HandleRequests() {
 		break;
 
 	    default:
-		Choke("HDBD_HandleRequests: bogus type (%d)", m->type);
+		CHOKE("HDBD_HandleRequests: bogus type (%d)", m->type);
 	}
 
 	/* Send back the result. */

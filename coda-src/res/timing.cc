@@ -60,7 +60,7 @@ extern "C" {
 #endif
 
 #include <sys/ioctl.h>
-#include <assert.h>
+#include "coda_assert.h"
 
 #ifdef __cplusplus
 }
@@ -97,7 +97,7 @@ timing_path::~timing_path() {
     nentries = 0;
 }
 void timing_path::grow_storage() {
-    assert(nentries == maxentries);
+    CODA_ASSERT(nentries == maxentries);
     tpe *tmparr = 0;
     if (maxentries){
 	tmparr = (tpe *)malloc(sizeof(tpe) * 2 * maxentries);
@@ -108,7 +108,7 @@ void timing_path::grow_storage() {
 	tmparr = (tpe *)malloc(sizeof(tpe) * TIMEGROWSIZE);
 	maxentries += TIMEGROWSIZE;
     }
-    assert(tmparr);
+    CODA_ASSERT(tmparr);
     free(arr);
     arr = tmparr;
 	    

@@ -44,7 +44,7 @@ static char *rcsid = "$Header$";
 #include <stdio.h>
 #include <libc.h>
 #include <strings.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -381,7 +381,7 @@ InitRPC()
 	SFTP_Initializer sftpi;
 	RPC2_PortalIdent portalid, *portallist[1];
 
-	assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
+	CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
 
 	SFTP_SetDefaults(&sftpi);
 	if (sftp_ackpoint) sftpi.AckPoint = sftp_ackpoint;

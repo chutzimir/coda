@@ -411,7 +411,7 @@ public:
 {\
     if (!(ex)) {\
        (o)->print(logFile);\
-       Choke("Assertion failed: file \"%s\", line %d\n", __FILE__, __LINE__);\
+       CHOKE("Assertion failed: file \"%s\", line %d\n", __FILE__, __LINE__);\
     }\
 }
 

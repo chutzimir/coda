@@ -74,9 +74,9 @@ extern void Die(char * ...);
 
 dhashtab::dhashtab(int size, int (*hashfn)(void *), int (*CF)(dlink *, dlink *)) {
     /* Ensure that size is a power of 2 so that we can use "AND" for modulus division. */
-    /*assert(size > 0);*/ if (size <= 0) abort();
+    /*CODA_ASSERT(size > 0);*/ if (size <= 0) abort();
     for (sz = 1; sz < size; sz *= 2) ;
-    /*assert(sz == size);*/ if (sz != size) abort();
+    /*CODA_ASSERT(sz == size);*/ if (sz != size) abort();
 
     /* Allocate and initialize the array. */
     /* XXXX - hack - munge with internals to set up the compare function */

@@ -73,7 +73,7 @@ long S_PrintStats(RPC2_Handle rpcid, SE_Descriptor *formal_sed) {
     strcpy(filename, STATSFILE);
     mktemp(filename);
     statsfile = fopen(filename, "w");
-    assert(statsfile != NULL);
+    CODA_ASSERT(statsfile != NULL);
 
     PrintCounters(statsfile);
     PrintCallBackState(statsfile);

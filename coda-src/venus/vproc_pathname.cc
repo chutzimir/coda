@@ -130,7 +130,7 @@ int vproc::namev(char *path, int flags, struct venus_cnode *vpp) {
     /* Each loop iteration moves down through one pathname component. */
     for (;;) {
 	if (plen <= 0)
-	    { print(logFile); Choke("vproc::namev: plen <= 0"); }
+	    { print(logFile); CHOKE("vproc::namev: plen <= 0"); }
 
 	/* Get the next component. */
 	GetComponent(&pptr, &plen, comp);
@@ -291,7 +291,7 @@ int vproc::namev(char *path, int flags, struct venus_cnode *vpp) {
 	    default:
 		{
 		print(logFile);
-		Choke("vproc::namev: bogus vnode type (%d)!", vp.c_type);
+		CHOKE("vproc::namev: bogus vnode type (%d)!", vp.c_type);
 		}
 	}
     }

@@ -55,7 +55,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <stdio.h>
 #include <sys/file.h>
-#include <assert.h>
+#include "coda_assert.h"
 
 #ifdef __MACH__
 #include <sysent.h>

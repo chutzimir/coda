@@ -60,7 +60,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
    number of INOUT and OUT args in a call should not exceed max in case below.
 */
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <stdio.h>
 #include "rpc2.h"
 
@@ -125,7 +125,7 @@ mkcall(ClientHandler, ArgCount, HowMany, ConnList, offset, rpcval, args)
 					args[4], args[5], args[6], args[7],
 					args[8], args[9], args[10], args[11]);
 	    default:
-		assert(ArgCount <= 12);
+		CODA_ASSERT(ArgCount <= 12);
 	}
 	/*NOTREACHED*/
         return -1;

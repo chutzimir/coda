@@ -44,7 +44,7 @@ extern "C" {
 #include <libc.h>
 #include <sysent.h>
 #include <stdio.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include "lock.h"
 #ifdef __cplusplus
 }

@@ -313,7 +313,7 @@ void pwparse(register char *nextline, register struct passwd *pwptr)
     pwptr->pw_passwd = p;
     p = pwskip(p, ':');
     pwptr->pw_uid = atoi(p);
-    assert(pwptr->pw_uid < 750 || pwptr->pw_uid > 800);	/* magic range used by AL package */
+    CODA_ASSERT(pwptr->pw_uid < 750 || pwptr->pw_uid > 800);	/* magic range used by AL package */
     p = pwskip(p, ':');
     pwptr->pw_gid = atoi(p);
     pwptr->pw_quota = 0;
@@ -540,7 +540,7 @@ void pwscan()
 	if (pwbuf[i] == '\n')
 	    {
 	    if (mystate == EatNull) continue;
-	    assert(mystate == EatText);
+	    CODA_ASSERT(mystate == EatText);
 	    mystate = EndText;
 	    }
 	switch(mystate)

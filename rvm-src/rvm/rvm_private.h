@@ -55,7 +55,7 @@ static char *rcsid = "$Header$";
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include "rvm.h"
 #include "rvm_statistics.h"
 
@@ -84,9 +84,6 @@ static char *rcsid = "$Header$";
 #define FORWARD     rvm_true            /* record scan forward */
 #define REVERSE     rvm_false           /* record scan reverse */
 
-
-
-#define ASSERT(ex) assert(ex)
 
 
 /* RVM Internal Error Messages */

@@ -102,7 +102,7 @@ vindex::vindex(VolumeId volid, int vnodetype, Device dev, int size, int volindex
     /* hoping this isn't necessary...*/
     /* Make sure objsize is a power of 2 */
     for (objsize = 1; objsize < size; objsize *=2);
-    assert(objsize == size);
+    CODA_ASSERT(objsize == size);
 #endif notdef
 
     vol_id = volid;

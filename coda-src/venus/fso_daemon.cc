@@ -174,7 +174,7 @@ void fsdb::GarbageCollect() {
 	    fsobj *f = strbase(fsobj, d, del_handle);
 
 	    if (!DYING(f))
-		{ f->print(logFile); Choke("fsdb::GarbageCollect: !dying"); }
+		{ f->print(logFile); CHOKE("fsdb::GarbageCollect: !dying"); }
 
 	    /* Skip busy and local entries. */
 	    if (!GCABLE(f)) {

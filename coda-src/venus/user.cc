@@ -220,7 +220,7 @@ vuid_t ConsoleUser() {
 	}
     }
     if (fclose(fp) == EOF)
-	Choke("ConsoleUser: fclose(%s) failed", UTMP_FILE);
+	CHOKE("ConsoleUser: fclose(%s) failed", UTMP_FILE);
 #endif
 #endif
     return(vuid);

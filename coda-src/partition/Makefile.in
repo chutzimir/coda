@@ -46,7 +46,7 @@ EXECUTABLES = makeftree inoder
 SSBINS=makeftree inoder
 
 LIBRARIES = libpartition.a
-LIBS = $(LIBPARTITION) $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
+LIBS = $(LIBPARTITION) $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP) $(LIBBASE)
 
 
 libpartition.a: $(LIBOBS)

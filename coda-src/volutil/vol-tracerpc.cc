@@ -78,12 +78,12 @@ long S_TraceRpc(RPC2_Handle rpcid, SE_Descriptor *formal_sed) {
     strcpy(filename, TRACEFILE);
     mktemp(filename);
     tracefile = fopen(filename, "w");
-    assert(tracefile != NULL);
+    CODA_ASSERT(tracefile != NULL);
 
     if (!RPCTraceBufInited) {
 	RPC2_InitTraceBuffer(RPCTRACEBUFSIZE);
 	RPCTraceBufInited = 1;
-	assert(!RPC2_Trace);
+	CODA_ASSERT(!RPC2_Trace);
 	RPC2_Trace = 1;
 	fprintf(tracefile, "Inited trace buffer; tracing is now ON\n");
     }

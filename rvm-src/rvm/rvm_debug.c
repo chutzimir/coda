@@ -121,7 +121,7 @@ rvm_bool_t in_heap(addr,buf,len)
     for (i=0; i<NUM_TWOS; i++)
         if ((len >= twos[i]) && (len < twos[i+1]))
             break;
-    ASSERT(i != NUM_TWOS);
+    CODA_ASSERT(i != NUM_TWOS);
 
     if ((addr >= buf) && (addr < (buf+twos[i])))
         return rvm_true;
@@ -597,7 +597,7 @@ rvm_bool_t chk_node(node,struct_id)
       case dev_region_id:
         retval = chk_dev_node((dev_region_t *)node);
         break;
-      default:      ASSERT(rvm_false);
+      default:      CODA_ASSERT(rvm_false);
         }
 
     return retval;

@@ -5,7 +5,7 @@
             Coda: an Experimental Distributed File System
                              Release 4.0
 
-          Copyright (c) 1987-1996 Carnegie Mellon University
+          Copyright (c) 1998 Carnegie Mellon University
                          All Rights Reserved
 
 Permission  to  use, copy, modify and distribute this software and its
@@ -32,61 +32,23 @@ Mellon the rights to redistribute these changes without encumbrance.
 static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
+#ifndef _CODA_ASSERT_H_
+#define _CODA_ASSERT_H_ 1
+
+#define CODA_ASSERT(pred) do { if (!(pred)) coda_assert(#pred, __FILE__, __LINE__) ; } while (0)
+#define CODA_NOTE(pred)   do { if (!(pred)) coda_note  (#pred, __FILE__, __LINE__) ; } while (0)
+
+#define CODA_ASSERT_SLEEP	1
+#define CODA_ASSERT_EXIT	2
+#define CODA_ASSERT_ABORT	3
+#define CODA_ASSERT_CORE	3
+
+extern int (*coda_assert_cleanup)(void);
+extern int   coda_assert_action;
+
+extern void coda_assert(char *pred, char *file, int line);
+extern void coda_note(char *pred, char *file, int line);
 
 
+#endif  /* CODA_ASSERT_H_ */
 
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif __cplusplus
-
-#include <stdio.h>
-#include <errno.h>
-#include "coda_assert.h"
-#include <ci.h>
-#include <sys/types.h>
-#include <sys/param.h>
-#include <netinet/in.h>
-#include <strings.h>
-#include <sys/stat.h>
-#include <rpc2.h>
-
-#ifdef __cplusplus
-}
-#endif __cplusplus
-
-#include <vice.h>
-#include "repio.h"
-
-
-struct listhdr *harray;
-int hcount;
-
-int  repair_DebugFlag;
-
-main(argc, argv)
-    int argc;
-    char *argv[];
-    {
-    int i, j, rc;
-    struct listhdr *newha;
-    int newhc;
-
-      rc = repair_parsefile(argv[1], &hcount, &harray);
-    if (rc < 0) exit(-1);
-
-
-    rc = repair_putdfile("/tmp/xxx", hcount, harray);
-    if (rc) {printf("repair_putdfile() failed\n"); exit(-1);}
-    
-    rc = repair_getdfile("/tmp/xxx", &newhc, &newha);
-    if (rc) {printf("repair_getdfile() failed\n"); exit(-1);}
-    
-    for (i = 0; i < newhc; i++)
-	{
-	printf("\n** Replica %lu ***\n", newha[i].replicaId);
-	for (j = 0; j < newha[i].repairCount; j++)
-	    repair_printline(&newha[i].repairList[j], stdout);
-	}
-    }

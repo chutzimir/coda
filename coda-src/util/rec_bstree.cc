@@ -126,7 +126,7 @@ void *rec_bstree::operator new (size_t size) {
     rec_bstree *r = 0;
 
     r = (rec_bstree *)rvmlib_rec_malloc(size);
-    assert(r);
+    CODA_ASSERT(r);
     return(r);
 }
 

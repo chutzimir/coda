@@ -179,7 +179,7 @@ long S_VolMakeVLDB(RPC2_Handle rpcid, RPC2_String formal_infile) {
     GetServerNames();
     InitAddEntry();
 
-    assert(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
 
     volumelist = fopen(infile, "r");
     if (volumelist == NULL) {

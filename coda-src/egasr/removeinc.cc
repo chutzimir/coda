@@ -47,7 +47,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <strings.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <errno.h>
 #include <venusioctl.h>
 #include <vcrcommon.h>

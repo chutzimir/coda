@@ -1016,7 +1016,7 @@ void lrdb::SetSubtreeView(char NewView, char *msg)
 		    msg, ParentPath, Name);
 	    break;
 	default:
-	    Choke("lrdb::SetSubtreeView: bogus new view (%d)", NewView);
+	    CHOKE("lrdb::SetSubtreeView: bogus new view (%d)", NewView);
 	}
 	if (OldView == SUBTREE_MIXED_VIEW) {   /* check the top nodes of the subtree */
 	    /* check fake root object */
@@ -1095,7 +1095,7 @@ void lrdb::SetSubtreeView(char NewView, char *msg)
 	    sprintf(msg, "%s succeeded", msg);
 	    continue;
 	}
-	Choke("lrdb::SetSubtreeView: bogus views (%d, %d)\n", OldView, NewView);
+	CHOKE("lrdb::SetSubtreeView: bogus views (%d, %d)\n", OldView, NewView);
     }
 }
 
@@ -1117,7 +1117,7 @@ void lrdb::ReplaceRepairFid(ViceFid *NewGlobalFid, ViceFid *LocalFid)
 	    return;
 	}
     }
-    Choke("lrdb::TranlsateRepairFid: LocalFid not in the LGM map");
+    CHOKE("lrdb::TranlsateRepairFid: LocalFid not in the LGM map");
 }
 
 /* must not be called from within a transactin */

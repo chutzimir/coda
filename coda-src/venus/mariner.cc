@@ -298,7 +298,7 @@ mariner::~mariner() {
 
 
 int mariner::Read() {
-    if (!DataReady) Choke("mariner::Read: not DataReady!");
+    if (!DataReady) CHOKE("mariner::Read: not DataReady!");
 
     /* Pull the next message out of the socket. */
     int n = ::read(fd, commbuf, (int)(sizeof(commbuf) - 1));
@@ -344,7 +344,7 @@ void mariner::AwaitRequest() {
     }
 
     VprocWait((char *)this);
-    if (dying) Choke("mariner::AwaitRequest: signalled while dying!");
+    if (dying) CHOKE("mariner::AwaitRequest: signalled while dying!");
 }
 
 
@@ -372,7 +372,7 @@ void mariner::main(void *parm) {
 	AwaitRequest();
 
 	/* Sanity check new request. */
-	if (idle) Choke("Mariner: signalled but not dispatched!");
+	if (idle) CHOKE("Mariner: signalled but not dispatched!");
 
 	LOG(100, ("mariner::main: cmd = \"%s\"\n", commbuf));
 
@@ -395,7 +395,7 @@ void mariner::main(void *parm) {
 	    Write("LogLevel is now %d\n", LogLevel);
 	}
 	else if (STREQ(argv[0], "dumpcore")) {
-	    Choke("Telnet");
+	    CHOKE("Telnet");
 	}
 	else if (STREQ(argv[0], "quit")) {
 	    dying = 1;

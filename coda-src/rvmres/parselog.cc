@@ -102,11 +102,11 @@ void ParseRemoteLogs(char *buf, int bufsize, int nentries,
 	    loglist = FindLogList(currenthe, vnode, unique);
 	    if (loglist == NULL) {
 		loglist = new remoteloglist(vnode, unique);
-		assert(loglist);
+		CODA_ASSERT(loglist);
 		currenthe->vlist.append(loglist);
 	    }
 	}
-	assert(loglist);
+	CODA_ASSERT(loglist);
 
 	// append entry to vnode's list of log entries 
 	loglist->slelist.append(r);
@@ -137,7 +137,7 @@ static void ReadOpsFromBuf(char *buf, int bufsize,
 	r->InitFromRecleBuf(&tmpptr);
 	index++;
     }
-    assert(index == nentries);
+    CODA_ASSERT(index == nentries);
 }
 
 // FindLogList
@@ -153,9 +153,9 @@ remoteloglist *FindLogList(he *hostent, VnodeId vn, Unique_t un) {
 
 olist *FindRemoteLog(olist *AllLogs, unsigned long hostid, 
 				 ViceFid *Fid) {
-    assert(hostid != ThisHostAddr);
+    CODA_ASSERT(hostid != ThisHostAddr);
     he *rhe = FindHE(AllLogs, hostid);
-    assert(rhe);
+    CODA_ASSERT(rhe);
     remoteloglist *rllp = FindLogList(rhe, Fid->Vnode, Fid->Unique);
     if (rllp) return(&rllp->slelist);
     else return(NULL);

@@ -87,7 +87,7 @@ struct DaemonInfo {
 
 void DaemonInit() {
     if (TM_Init(&DaemonList))
-	Choke("Couldn't create DaemonList!");
+	CHOKE("Couldn't create DaemonList!");
 
     /* set timer for once-a-day log messages */
     InitOneADay(); 

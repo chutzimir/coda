@@ -92,7 +92,7 @@ long RS_LockAndFetch(RPC2_Handle RPCid, ViceFid *Fid,
     int nentries  = 0;
 
     SLog(1, "Entering RS_LockAndFetch %s\n", FID_(Fid));
-    assert(Request == FetchStatus);
+    CODA_ASSERT(Request == FetchStatus);
 
     // first set out parameters
     InitVV(VV);
@@ -150,7 +150,7 @@ long RS_LockAndFetch(RPC2_Handle RPCid, ViceFid *Fid,
 	    // by using rename_rle we hope that all strings will fit 
 	    // in the buffer length being returned.
 	    nentries = V_VolLog(volptr)->size;
-	    assert(nentries > 0);
+	    CODA_ASSERT(nentries > 0);
 	
 	    // *logsize = nentries * (sizeof(recle) + sizeof(rename_rle));
 	    *logsize = nentries * 200;
@@ -174,7 +174,7 @@ long RS_LockAndFetch(RPC2_Handle RPCid, ViceFid *Fid,
     int filecode = 0;
     if (vptr){
 	    VPutVnode((Error *)&filecode, vptr);
-	    assert(filecode == 0);
+	    CODA_ASSERT(filecode == 0);
 	    vptr = 0;
     }
     if (errorcode && volptr && ObtainedLock)

@@ -48,7 +48,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <sys/types.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <stdio.h>
 #include <struct.h>
 #include <lwp.h>
@@ -248,7 +248,7 @@ long DirResolve(res_mgrpent *mgrp, ViceFid *Fid, ViceVersionVector **VV,
 	    for (int i = 0; i < VSG_MEMBERS; i++) {
 		if (dirlengths[i]) {
 		    dirbufs[i] = (char *)malloc(dirlengths[i]);
-		    assert(dirbufs[i]);
+		    CODA_ASSERT(dirbufs[i]);
 		    sidvar_bufs[i].Value.SmartFTPD.FileInfo.ByAddr.vmfile.SeqLen = 
 			dirlengths[i];
 		    sidvar_bufs[i].Value.SmartFTPD.FileInfo.ByAddr.vmfile.MaxSeqLen = 
@@ -390,7 +390,7 @@ static char *CollectLogs(res_mgrpent *mgrp, ViceFid *fid, int *sizes,
 	       *totalsize += logsizevar_bufs[i];
        if (*totalsize > 0) {
 	   logbuffer = (char *)malloc(*totalsize);
-	   assert(logbuffer != 0);
+	   CODA_ASSERT(logbuffer != 0);
        }
        else 
 	   goto Exit;
@@ -649,7 +649,7 @@ static int CompareDirContents(SE_Descriptor *sidvar_bufs) {
 		char fname[256];
 		sprintf(fname, "/tmp/dir%d", j);
 		int fd = open(fname, O_CREAT | O_TRUNC | O_RDWR, 0777);
-		assert(fd > 0);
+		CODA_ASSERT(fd > 0);
 		write(fd, sidvar_bufs[j].Value.SmartFTPD.FileInfo.ByAddr.vmfile.SeqBody, 
 		      length);
 		close(fd);

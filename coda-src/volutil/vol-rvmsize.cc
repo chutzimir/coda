@@ -85,7 +85,7 @@ long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
     ProgramType *pt;
 
     LogMsg(9, VolDebugLevel, stdout, "Checking lwp rock in S_VolRVMSize");
-    assert(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
 
     LogMsg(9, VolDebugLevel, stdout, "Entering VolRVMSize()");
     VInitVolUtil(volumeUtility);
@@ -139,7 +139,7 @@ long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
     int vnodeindex;
     while ((vnodeindex = vnext(vnode)) != -1) {
 	int tmp;
-	assert(vnode->inodeNumber != 0);
+	CODA_ASSERT(vnode->inodeNumber != 0);
 	DirInode *dip = (DirInode *)(vnode->inodeNumber);
 	tmp = DI_Pages(dip) * DIR_PAGESIZE;
 	size +=  tmp;

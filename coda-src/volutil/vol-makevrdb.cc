@@ -107,7 +107,7 @@ long S_VolMakeVRDB(RPC2_Handle rpcid, RPC2_String formal_infile) {
 	goto Exit;
     }
     vre = new vrent();
-    assert(vre);
+    CODA_ASSERT(vre);
     while (fgets(line, sizeof(line), vrlist) != NULL) {
 	lineno++;
 	int servercount;

@@ -43,7 +43,7 @@ static char *rcsid = "$Header$";
 
 #ifdef __STDC__
 #include <string.h>
-#include <assert.h>
+#include "coda_assert.h"
 #endif 
 
 #include "rds.h"
@@ -212,15 +212,11 @@ int           rm_from_list();
 void coalesce();
 
 
-/* ASSERT that preserves stack */
-#define ASSERT(ex) assert(ex)
-
-
 #if 0
-#ifdef ASSERT
-#undef ASSERT
+#ifdef CODA_ASSERT
+#undef CODA_ASSERT
 #endif
-#define ASSERT(ex) \
+#define CODA_ASSERT(ex) \
     { \
     if (!(ex)) \
         { \

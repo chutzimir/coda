@@ -54,7 +54,7 @@ extern "C" {
 vmindex::vmindex(int sz) {
     if (sz > 0) {
 	indices = new unsigned long[sz];
-	assert(indices);
+	CODA_ASSERT(indices);
 	size = sz;
 	count = 0;
     }
@@ -80,7 +80,7 @@ void vmindex::add(unsigned long a) {
 	if (size) newsize = size * 2;
 	else newsize = DEFAULTINDEXSIZE;
 	unsigned long *newindex = new unsigned long[newsize];
-	assert(newindex);
+	CODA_ASSERT(newindex);
 	for (int i = 0; i < size; i++) 
 	    newindex[i] = indices[i];
 	delete[] indices;

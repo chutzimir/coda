@@ -43,7 +43,7 @@ static char *rcsid = "$Header$";
  * the log.
  */
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <setjmp.h>
 #include <stdlib.h>
 #include <sys/file.h>
@@ -199,7 +199,7 @@ static int confirm_rounded_value(pvalue, base, unit, round_dir, min)
     } else if (base == 8) {
 	sprintf(string, "0%o (in decimal %u)", *pvalue, *pvalue);
     } else {
-	assert(0);		/* illegal base value */
+	CODA_ASSERT(0);		/* illegal base value */
     }
 
     printf("   ====> You have entered %s. ", string);
@@ -223,7 +223,7 @@ static int confirm_rounded_value(pvalue, base, unit, round_dir, min)
     	} else if (base == 8) {
     	    sprintf(string, "0%o (in decimal %u)", t2, t2);
     	} else {
-    	    assert(0);		/* illegal base value */
+    	    CODA_ASSERT(0);		/* illegal base value */
     	}
 
 	printf("\n");

@@ -165,7 +165,7 @@ void B_CopyToPacket(bMask, whichPacket)
     register unsigned int *bMask;
     register RPC2_PacketBuffer *whichPacket;
     {
-    assert(BITMASKWIDTH <= 2);	/* for now */
+    CODA_ASSERT(BITMASKWIDTH <= 2);	/* for now */
     whichPacket->Header.BitMask0 = (unsigned) bMask[0];
     whichPacket->Header.BitMask1 = (unsigned) bMask[1];
     }
@@ -174,7 +174,7 @@ void B_CopyFromPacket(whichPacket, bMask)
     register unsigned int *bMask;
     register RPC2_PacketBuffer *whichPacket;
     {
-    assert(BITMASKWIDTH <= 2);	/* for now */
+    CODA_ASSERT(BITMASKWIDTH <= 2);	/* for now */
     bMask[0] = (unsigned) whichPacket->Header.BitMask0;
     bMask[1] = (unsigned) whichPacket->Header.BitMask1;
     }

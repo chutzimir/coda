@@ -42,7 +42,7 @@ static char *rcsid = "$Header$";
 #include <rds.h>
 #include <rds_private.h>
 #include <rvm_segment.h>
-#include <assert.h>
+#include "coda_assert.h"
 
 	    /************** NOTE: ***************/
 /* we create our own transactions in the following routines, even

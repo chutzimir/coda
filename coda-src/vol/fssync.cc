@@ -141,7 +141,7 @@ void FSYNC_fsInit() {
     LogMsg(9, VolDebugLevel, stdout,  "Entering FSYNC_fsInit(), creating LWP");
     rc = LWP_CreateProcess((PFIC)FSYNC_sync, 5*1024, USUAL_PRIORITY,
 					    0, "FSYNC_sync", &pid);
-    assert (rc == LWP_SUCCESS);
+    CODA_ASSERT (rc == LWP_SUCCESS);
 }
 
 /* Wake up periodically to delete outdated relocation information */
@@ -163,7 +163,7 @@ static void FSYNC_sync() {
 	    }
 	}
 	/* Note: this call is just being used as a timer */
-        assert(IOMGR_Select(0, NULL, 0, 0, timep) == 0);
+        CODA_ASSERT(IOMGR_Select(0, NULL, 0, 0, timep) == 0);
     }
 }
 
@@ -358,7 +358,7 @@ static int FindUtility (register int myid)
     register int i;
     for(i=0;i<MAXUTILITIES;i++)
         if (UtilityId[i] == myid) return i;
-    assert(1 == 2);
+    CODA_ASSERT(1 == 2);
     return -1;
 }
 

@@ -232,7 +232,7 @@ int rds_do_free(list, mode)
 	    free_block_t *bp = BLOCK_HDR((list->table)[i]); 
 
 	    /* Set the lowguard to reflect that the block has been allocated. */
-	    ASSERT(bp->type == ALLOC_GUARD);
+	    CODA_ASSERT(bp->type == ALLOC_GUARD);
 	    rvmret = rvm_set_range(tid, &(bp->type), sizeof(guard_t));
 	    if (rvmret != RVM_SUCCESS) {
 		err = (int)rvmret;

@@ -78,7 +78,7 @@ extern void Die(char * ...);
 void *rec_dhashtab::operator new(size_t size) {
     rec_dhashtab *r = 0;
     r = (rec_dhashtab *)rvmlib_rec_malloc(sizeof(rec_dhashtab));
-    assert(r);
+    CODA_ASSERT(r);
     return(r);
 }
 

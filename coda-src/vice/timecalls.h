@@ -41,7 +41,7 @@ extern "C" {
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/file.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <mach.h>
 
 #include <sys/ioctl.h>

@@ -40,7 +40,7 @@ static char *rcsid = "$Header$";
   Walter Smith
  */
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <sys/param.h>
 #include <stdio.h>
 #include <stdlib.h>

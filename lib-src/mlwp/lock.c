@@ -57,7 +57,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 
 #include <stdio.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include "lwp.h"
 #include "lwp.private.h"
 #include "lock.h"
@@ -133,7 +133,7 @@ void Lock_ReleaseR(register struct Lock *lock)
 	PROCESS me = LWP_ThisProcess();
 
 	if (lock->excl_locked & WRITE_LOCK) {
-	    assert(lock->excl_locker == me);
+	    CODA_ASSERT(lock->excl_locker == me);
 	    lock->excl_locker = NULL;
 	}
 
@@ -152,7 +152,7 @@ void Lock_ReleaseW(register struct Lock *lock)
 	PROCESS me = LWP_ThisProcess();
 
 	if (lock->excl_locked & WRITE_LOCK) {
-	    assert(lock->excl_locker == me);
+	    CODA_ASSERT(lock->excl_locker == me);
 	    lock->excl_locker = NULL;
 	}
 

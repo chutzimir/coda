@@ -48,7 +48,7 @@ static char *rcsid = "$Header$";
  */
 
 #include <stdio.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <strings.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -148,7 +148,7 @@ InitRPC()
     RPC2_SubsysIdent subsysid;
     struct timeval tout;
 
-    assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
 
     /* We have to have a port to use fcon */
 

@@ -62,7 +62,7 @@ extern "C" {
 #define HDB_ASSERT(ex) \
 {\
    if (!(ex)) {\
-     Choke("Assertion failed: file \"%s\", line %d\n", __FILE__, __LINE__);\
+     CHOKE("Assertion failed: file \"%s\", line %d\n", __FILE__, __LINE__);\
    }\
 }
 

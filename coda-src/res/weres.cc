@@ -212,7 +212,7 @@ FreeLocks:
     Error filecode = 0;
     if (vptr) {
 	VPutVnode(&filecode, vptr);
-	assert(filecode == 0);
+	CODA_ASSERT(filecode == 0);
     }
     PutVolObj(&volptr, NO_LOCK);
     RVMLIB_END_TRANSACTION(flush, &(status));

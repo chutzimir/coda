@@ -82,7 +82,7 @@ class assocrefs_iterator;
 extern "C" {
 #endif __cplusplus
 
-#include <assert.h>
+#include "coda_assert.h"
 #ifdef __MACH__
 #include <libc.h>
 #endif /* __MACH__ */
@@ -123,7 +123,7 @@ class assockey {
 
   public:
     virtual int	operator==(assockey& Key)   /* MUST be redefined by deriver! */
-	{ assert(0); return((char *)this == (char *)&Key); }
+	{ CODA_ASSERT(0); return((char *)this == (char *)&Key); }
 };
 
 

@@ -128,6 +128,9 @@ int main(int argc, char **argv) {
 	    VenusMajorVersion, VenusMinorVersion, RecovVersionNumber);
     fflush(stderr);
 
+    coda_assert_action = CODA_ASSERT_SLEEP;
+    coda_assert_cleanup = WorkerCloseMuxfd;
+
     ParseCmdline(argc, argv);
     DefaultCmdlineParms();   /* read vstab */
     CdToCacheDir(); 
@@ -543,7 +546,7 @@ extern "C" {
  */
 iopen(int dev, int inode_number, int flag)
 {
-    assert(0);
+    CODA_ASSERT(0);
 }
 
 #ifdef __cplusplus

@@ -46,7 +46,7 @@ extern "C" {
 #endif __cplusplus
 
 //#include <stdlib.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <libc.h>
 #include "lock.h"
 
@@ -790,7 +790,7 @@ vmon_data *bufpool::getSlot(void)
 	    break;
 	case dataClass_last_tag:
 	default:
-	    assert(0);
+	    CODA_ASSERT(0);
 	}
     } else {
 	temp = (vmon_data*) Pool;

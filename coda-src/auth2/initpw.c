@@ -129,7 +129,7 @@ int main(int argc, char **argv)
     if (!KeyIsValid) 
 	fprintf(stderr, "WARNING: no key specified\n");
 
-    assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mypid) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mypid) == LWP_SUCCESS);
     while(TRUE)
 	{
 	if (fgets(thisline, sizeof(thisline), stdin) == NULL) 

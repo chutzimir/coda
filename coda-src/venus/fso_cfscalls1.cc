@@ -1917,7 +1917,7 @@ RepExit:
 
 		case ESYNRESOLVE:
 		case EINCONS:
-		    Choke("fsobj::SetVV: code = %d", code);
+		    CHOKE("fsobj::SetVV: code = %d", code);
 		    break;
 
 		default:

@@ -135,7 +135,7 @@ void ServerProbe(unsigned long *lastupp, unsigned long *lastdownp) {
     LOG(1, ("ServerProbe: lastup = %d, lastdown = %d\n", 
 	    lastupp?*lastupp:0, lastdownp?*lastdownp:0));
 
-    ASSERT((lastupp && lastdownp) || (!lastupp && !lastdownp));
+    CODA_ASSERT((lastupp && lastdownp) || (!lastupp && !lastdownp));
 
     int upprobe = 0, downprobe = 0;
 
@@ -290,5 +290,5 @@ void vsgdb::GetDown() {
     /* ever be hit in the course of normal operation.  It is far more likely that if the bound is reached then */
     /* we have a programming error.  Thus, we panic in such event. */
     if (VSGDB->htab.count() >= CacheFiles)
-	Choke("vsgdb::GetDown: vsg entries >= CacheFiles");
+	CHOKE("vsgdb::GetDown: vsg entries >= CacheFiles");
 }

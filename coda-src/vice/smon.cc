@@ -325,7 +325,7 @@ static void CheckRVMResStat()
 	    if (CheckSmonResult(re->Report()))
 		break;
 	    if (RVMResList->remove(re) != re)
-		assert(0);
+		CODA_ASSERT(0);
 	    delete re;
 	}
     /* we don't enqueue anything if there was already something on the list */

@@ -124,7 +124,7 @@ rds_init_heap(base, length, chunk_size, nlists, tid, err)
 
     /* Add the guard to the end of the block */
     addr = (int *)((char *)fbp + fbp->size * chunk_size);
-    ASSERT((char *)addr <= base + length);
+    CODA_ASSERT((char *)addr <= base + length);
     
     addr--;  /* point to last word in the block */
     rvmret = rvm_set_range(tid, addr, sizeof(guard_t));

@@ -136,7 +136,7 @@ struct vle : public dlink
 	};
 	
 	~vle() {
-		assert(vptr == 0);
+		CODA_ASSERT(vptr == 0);
 	};
 };
 

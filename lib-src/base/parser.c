@@ -45,7 +45,7 @@ extern "C" {
 #include <string.h>
 #include <stddef.h>
 #include <sys/param.h>
-#include <assert.h>
+#include "coda_assert.h"
 
 #define	READLINE_LIBRARY
 #include <readline.h>
@@ -457,7 +457,7 @@ char *Parser_getstr(const char *prompt, const char *deft, char *res,
     int size = strlen(prompt) + strlen(deft) + 8;
     char *theprompt;
     theprompt = malloc(size);
-    assert(theprompt);
+    CODA_ASSERT(theprompt);
 
     sprintf(theprompt, "%s [%s]: ", prompt, deft);
 
@@ -486,7 +486,7 @@ int Parser_getint(const char *prompt, long min, long max, long deft, int base)
     char *line;
     int size = strlen(prompt) + 40;
     char *theprompt = malloc(size);
-    assert(theprompt);
+    CODA_ASSERT(theprompt);
     sprintf(theprompt,"%s [%ld, (0x%lx)]: ", prompt, deft, deft);
 
     fflush(stdout);
@@ -531,14 +531,14 @@ int Parser_getbool(const char *prompt, int deft)
     char *line;
     int size = strlen(prompt) + 8;
     char *theprompt = malloc(size);
-    assert(theprompt);
+    CODA_ASSERT(theprompt);
 
     fflush(stdout);
     
     if ( deft != 0 && deft != 1 ) {
 	fprintf(stderr, "Error: Parser_getbool given bad default (%d).\n",
 		deft);
-	assert ( 0 );
+	CODA_ASSERT ( 0 );
     }
     sprintf(theprompt, "%s [%s]: ", prompt, (deft==0)? "N" : "Y");
 

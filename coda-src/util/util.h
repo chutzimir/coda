@@ -63,7 +63,7 @@ extern "C" {
 #include <stdlib.h>
 #include <signal.h>
 #include <stdio.h>
-#include <assert.h> 
+#include "coda_assert.h" 
 
 #ifndef IN  /* rpc2.private.h also defines these */
 /* Parameter usage */

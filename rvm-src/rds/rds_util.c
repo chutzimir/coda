@@ -54,7 +54,7 @@ enqueue(list, block, tid, err)
      rvm_tid_t    *tid;
      int	  *err;
 {
-    ASSERT(0);
+    CODA_ASSERT(0);
     return -1;
 }
 
@@ -224,7 +224,7 @@ get_block(size, tid, err)
 	return split(size, tid, err);
     }
 
-    ASSERT(RDS_FREE_LIST[list].head->size == size); /* Sanity check */
+    CODA_ASSERT(RDS_FREE_LIST[list].head->size == size); /* Sanity check */
 
     if (list < RDS_MAXLIST)
 	RDS_STATS.hits++;	

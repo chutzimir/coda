@@ -77,7 +77,7 @@ void arrlist::init(int msz) {
     cursize = 0;
     if (maxsize > 0) {
 	list = (void **)malloc(sizeof(void *) * maxsize);
-	assert(list);
+	CODA_ASSERT(list);
     }
     else list = NULL;
 
@@ -92,7 +92,7 @@ int arrlist::Grow(int increase) {
     else 
 	newsize = maxsize + increase;
     void **newlist = (void **)malloc(sizeof(void *) * newsize);
-    assert(newlist);
+    CODA_ASSERT(newlist);
     for (i = 0; i < maxsize; i++)
 	newlist[i] = list[i];
     for (; i < newsize; i++) 
@@ -109,7 +109,7 @@ void arrlist::add(void *p) {
 	// array is full - need to grow
 	Grow();
 
-    assert(cursize < maxsize);
+    CODA_ASSERT(cursize < maxsize);
 
     list[cursize] = p;
     cursize++;

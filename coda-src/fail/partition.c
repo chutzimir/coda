@@ -37,7 +37,7 @@ static char *rcsid = "$Header$";
 
 
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <strings.h>
@@ -99,7 +99,7 @@ int oldpartition(int argc, char ** argv)
     printf("Bind Succeeded \n");
     RPC2_SetColor(cid2, FAIL_IMMUNECOLOR);
     he1 = gethostbyname(host1);
-    assert(he1 != NULL);
+    CODA_ASSERT(he1 != NULL);
     filter.ip1 = ((unsigned char *)he1->h_addr)[0];
     filter.ip2 = ((unsigned char *)he1->h_addr)[1];
     filter.ip3 = ((unsigned char *)he1->h_addr)[2];
@@ -119,7 +119,7 @@ int oldpartition(int argc, char ** argv)
 	PrintError("Couldn't insert filter", rc);
     }
     he2 = gethostbyname(host2);
-    assert(he2 != NULL);
+    CODA_ASSERT(he2 != NULL);
     filter.ip1 = ((unsigned char *)he2->h_addr)[0];
     filter.ip2 = ((unsigned char *)he2->h_addr)[1];
     filter.ip3 = ((unsigned char *)he2->h_addr)[2];

@@ -215,7 +215,7 @@ out:
 /* Abort on platforms to which this code has not been ported yet */
 
    LogMsg(0, VolDebugLevel, stdout, "Arrgh..... ListViceInodes() has not been ported yet!!!");
-   assert(0);
+   CODA_ASSERT(0);
 #endif /* __MACH__ */
 }
 
@@ -233,7 +233,7 @@ int bread(int fd, char *buf, daddr_t blk, long size)
 /* Abort on platforms to which this code has not been ported yet */
 
    LogMsg(0, VolDebugLevel, stdout, "Arrgh..... bread() has not been ported yet!!!");
-   assert(0);
+   CODA_ASSERT(0);
 #endif /* __MACH__ */
 }
 

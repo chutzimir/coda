@@ -90,7 +90,7 @@ rvm_return_t rvm_initialize(char *rvm_version, rvm_options_t *rvm_options)
     rvm_debug(0);                       /* only causes module loading */
     if (strcmp(rvm_version,RVM_VERSION) != 0)
         return RVM_EVERSION_SKEW;       /* version skew */
-    ASSERT(sizeof(rvm_length_t) == sizeof(char *));
+    CODA_ASSERT(sizeof(rvm_length_t) == sizeof(char *));
     if ((retval=bad_options(rvm_options,rvm_true)) != RVM_SUCCESS)
         return retval;                  /* bad options ptr or record */
 

@@ -115,7 +115,7 @@ void volent::Reintegrate()
 	return;
 
     GetUser(&u, CML.owner);
-    assert(u != NULL);
+    CODA_ASSERT(u != NULL);
     if (AdviceEnabled)
         u->NotifyReintegrationActive(name);
 
@@ -453,7 +453,7 @@ int volent::PartialReintegrate(int tid) {
 	    name, tid, CML.owner));
 
     cmlent *m = CML.GetFatHead(tid);
-    ASSERT(m && m->opcode == ViceNewStore_OP);
+    CODA_ASSERT(m && m->opcode == ViceNewStore_OP);
 
     int locked = 0;
     int code = 0;
@@ -678,7 +678,7 @@ void Reintegrate(volent *v) {
     r = (o == 0)
       ? new reintegrator
       : strbase(reintegrator, o, handle);
-    ASSERT(r->idle);
+    CODA_ASSERT(r->idle);
 
     /* Set up context for reintegrator. */
     r->u.Init();
@@ -733,8 +733,8 @@ void reintegrator::main(void *parm) {
     VprocYield();
 
     for (;;) {
-	if (idle) Choke("reintegrator::main: signalled but not dispatched!");
-	if (!u.u_vol) Choke("reintegrator::main: no volume!");
+	if (idle) CHOKE("reintegrator::main: signalled but not dispatched!");
+	if (!u.u_vol) CHOKE("reintegrator::main: no volume!");
 
 	/* Do the reintegration. */
 	u.u_vol->Reintegrate();

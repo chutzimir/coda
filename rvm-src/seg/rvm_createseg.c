@@ -66,7 +66,7 @@ rvm_create_segment(DevName, DevLength, options, nregions, regionDefs)
     if (overlap(nregions, regionDefs))
 	return RVM_ERANGE;
 
-    assert( nregions <= RVM_MAX_REGIONS );
+    CODA_ASSERT( nregions <= RVM_MAX_REGIONS );
 	
     /* Erase the old contents of the segment, including entries in the log */
 

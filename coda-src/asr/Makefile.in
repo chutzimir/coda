@@ -45,7 +45,7 @@ HEADERS     = asr.h ruletypes.h
 
 YFLAGS += -d
 
-LIBS=	$(LIBKERNDEP) $(LIBUTIL)
+LIBS=	$(LIBKERNDEP) $(LIBUTIL) $(LIBBASE)
 
 #uncomment if you want to turn on timing of the ASR 
 #PERSONAL_FLAGS= -DTIMING

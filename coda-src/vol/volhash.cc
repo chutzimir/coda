@@ -100,7 +100,7 @@ void InitVolTable(int size)
 vhashtab::vhashtab(int size, int (*hashfn)(void *), char *n)
 : ohashtab(size, hashfn)
 {
-    assert(size > 0);
+    CODA_ASSERT(size > 0);
     name = new char [strlen(n) + 1];
     strcpy(name, n);
     vols = 0;

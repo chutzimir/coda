@@ -50,7 +50,7 @@ extern "C" {
 
 #include <sys/wait.h>
 #include <strings.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <errno.h>
 #include <venusioctl.h>
 #include <vcrcommon.h>
@@ -232,7 +232,7 @@ void command_t::expandreplicas(int n, char **repnames) {
 		index++;
 	    }
 	}
-	assert(index == countargs);
+	CODA_ASSERT(index == countargs);
 	argc = countargs;
 	free(arglist);
 	arglist = newarglist;
@@ -565,7 +565,7 @@ void rule_t::print(int fd) {
 }
 
 arg_t::arg_t(char *c) {
-    assert((strlen(c) < MAXPATHLEN));
+    CODA_ASSERT((strlen(c) < MAXPATHLEN));
     strcpy(name, c);
     replicaid = NOREPLICAID;
 }

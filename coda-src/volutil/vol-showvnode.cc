@@ -114,7 +114,7 @@ long S_VolShowVnode(RPC2_Handle rpcid, RPC2_Unsigned formal_volid, RPC2_Unsigned
     VolumeId volid = (VolumeId)formal_volid;
 
     LogMsg(9, VolDebugLevel, stdout, "Checking lwp rock in S_VolShowVnode");
-    assert(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
 
     LogMsg(9, VolDebugLevel, stdout, "Entering VolShowVnode(%d, 0x%x, 0x%x)", rpcid, volid, vnodeid);
 

@@ -235,7 +235,7 @@ void vdb::GetDown() {
     /* extremely unlikely that this bound will ever be hit in the course of normal operation.  It is far more */
     /* likely that if the bound is reached then we have a programming error.  Thus, we panic in such event. */
     if (VDB->htab.count() >= CacheFiles)
-	Choke("vdb::GetDown: volume entries >= CacheFiles");
+	CHOKE("vdb::GetDown: volume entries >= CacheFiles");
 }
 
 

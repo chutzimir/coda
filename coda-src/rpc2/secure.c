@@ -104,7 +104,7 @@ void rpc2_Encrypt(IN FromBuffer, OUT ToBuffer, IN HowManyBytes, IN WhichKey, IN 
     register long i;
     
     PRE_BeginCritical();
-    assert(EncryptionType == RPC2_XOR);	/* for now */
+    CODA_ASSERT(EncryptionType == RPC2_XOR);	/* for now */
     
     p = (unsigned char *)FromBuffer;		/* ptr to next input char */
     q = (unsigned char *)WhichKey;		/* ptr to next key char */
@@ -128,7 +128,7 @@ void rpc2_Decrypt(IN FromBuffer, OUT ToBuffer,  IN HowManyBytes, IN WhichKey, IN
 
     {
     PRE_BeginCritical();
-    assert(EncryptionType == RPC2_XOR);
+    CODA_ASSERT(EncryptionType == RPC2_XOR);
     rpc2_Encrypt(FromBuffer, ToBuffer, HowManyBytes, WhichKey, EncryptionType);
     PRE_EndCritical();
     }

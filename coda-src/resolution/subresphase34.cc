@@ -120,7 +120,7 @@ long RS_ResPhase34(RPC2_Handle RPCid, ViceFid *Fid, ViceStoreId *logid,
     // spool a resolution record and set status
     {
 	vle *ov = FindVLE(*vlist, Fid);
-	assert(ov && ov->vptr);
+	CODA_ASSERT(ov && ov->vptr);
 	if (errorCode = SpoolVMLogRecord(vlist, ov->vptr, volptr, 
 					 logid, ResolveNULL_OP, 0)) {
 	    if (errorCode == ENOSPC) {

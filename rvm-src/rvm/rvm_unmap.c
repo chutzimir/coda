@@ -90,7 +90,7 @@ rvm_return_t rvm_unmap(rvm_region)
     /* remove from region tree and unlock tree */
     if (!tree_delete(&region_tree,(tree_node_t *)region->mem_region,
                       mem_total_include))
-        ASSERT(rvm_false);              /* couldn't find node */
+        CODA_ASSERT(rvm_false);              /* couldn't find node */
     rw_unlock(&region_tree_lock,w);     /* end region_tree_lock crit sect */
     rw_unlock(&region->region_lock,w);  /* end region_lock crit sect */
 

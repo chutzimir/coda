@@ -48,7 +48,7 @@ extern "C" {
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <assert.h>
+#include "coda_assert.h"
 #include <ctype.h>
 #include <fail.h>
 #include <netdb.h>
@@ -160,7 +160,7 @@ void InitRPC() {
     PROCESS mylpid;
     int rc;
 
-    assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
+    CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
 
     rc = RPC2_Init(RPC2_VERSION, 0, NULL, -1, NULL);
     if (rc == RPC2_SUCCESS) return;

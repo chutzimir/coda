@@ -43,7 +43,7 @@ static char *rcsid = "$Header$";
  */
 #include <stdio.h>
 #include <strings.h>
-#include <assert.h>
+#include "coda_assert.h"
 #include <signal.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -225,7 +225,7 @@ InitRPC()
 	RPC2_PortalIdent portalid, *portallist[1];
 	RPC2_SubsysIdent subsysid;
 
-	assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
+	CODA_ASSERT(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
 
 	portalid.Tag = RPC2_PORTALBYINETNUMBER;
 	portalid.Value.InetPortNumber = htons(FTPORTAL);
@@ -240,7 +240,7 @@ InitRPC()
 	}
 	subsysid.Tag = RPC2_SUBSYSBYID;
 	subsysid.Value.SubsysId = FTSUBSYSID;
-	assert(RPC2_Export(&subsysid) == RPC2_SUCCESS);
+	CODA_ASSERT(RPC2_Export(&subsysid) == RPC2_SUCCESS);
 }
 
 iopen(int dummy1, int dummy2, int dummy3){}

@@ -78,7 +78,8 @@ LIBS=	${LIBVICEERROR}\
 	${LIBKERNDEP}\
 	$(LIBTHREADS)\
 	$(LIBMACH)\
-	$(LIBCOMPAT)
+	$(LIBCOMPAT)\
+	$(LIBBASE)
 
 updatesrv: updatesrv.o update.server.o ${LIBS}
 	$(CXX) $(LIBFLAGS) updatesrv.o update.server.o ${LIBS} -o updatesrv

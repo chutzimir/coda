@@ -145,7 +145,7 @@ Volume *VCreateVolume(Error *ec, char *partition, VolumeId volumeId,
     if (AllowResolution && rvmlogsize) {
 	LogMsg(1, SrvDebugLevel, stdout, "Creating log for volume\n");
 	vol.log = new recov_vol_log(volumeId);
-	assert(vol.log);
+	CODA_ASSERT(vol.log);
 	vol.ResOn = RVMRES;
 	vol.maxlogentries = rvmlogsize;
     }

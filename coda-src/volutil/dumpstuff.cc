@@ -182,7 +182,7 @@ byte *Reserve(DumpBuffer_t *buf, int n)
 	current = buf->DumpBufPtr;
     }
     buf->DumpBufPtr += n;
-    assert(buf->DumpBufPtr <= buf->DumpBufEnd);
+    CODA_ASSERT(buf->DumpBufPtr <= buf->DumpBufEnd);
     return current;
 }
 
@@ -343,7 +343,7 @@ int DumpFile(DumpBuffer_t *buf, byte tag, int fd, int vnode)
 	if (n < howMany){
 	    LogMsg(0, VolDebugLevel, stdout, "Error reading inode %d for vnode %d; dump aborted",
 	    	status.st_ino, vnode);
-	    assert(0);
+	    CODA_ASSERT(0);
 	}
     }
     return 0;
