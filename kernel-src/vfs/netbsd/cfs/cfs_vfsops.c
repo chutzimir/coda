@@ -14,6 +14,9 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.4  1996/12/12 22:11:00  bnoble
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ *
  * Revision 1.3  1996/11/08 18:06:12  bnoble
  * Minor changes in vnode operation signature, VOP_UPDATE signature, and
  * some newly defined bits in the include files.
@@ -269,7 +272,7 @@ cfs_unmount(vfsp, mntflags, p)
 	    if (!IS_DYING(VTOC(op->rootvp)))
 		return (EBUSY); 	/* Venus is still running */
 	    
-	    active = cfs_kill(vfsp);
+	    active = cfs_kill(vfsp, NOT_DOWNCALL);
 	    
 	    if (active > 1) {	/* 1 is for rootvp */
 		error = EBUSY;
@@ -293,7 +296,7 @@ cfs_unmount(vfsp, mntflags, p)
 	    
 	    VN_RELE(op->rootvp);
 	    /* Kill them again...we have to get rid of the rootvp */
-	    active = cfs_kill(vfsp);
+	    active = cfs_kill(vfsp, NOT_DOWNCALL);
 	    if (active) {
 		panic("cfs_unmount: couldn't kill root vnode");
 	    }

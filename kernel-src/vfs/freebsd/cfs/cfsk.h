@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.5  1996/12/12 22:10:54  bnoble
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ *
  * Revision 1.4  1996/12/05 16:20:04  bnoble
  * Minor debugging aids
  *
@@ -650,6 +653,15 @@ extern struct vnode *cfs_ctlvp;
 
 #define	ISDIR(fid)		((fid).Vnode & 0x1)
 
+/* 
+ * An enum to tell us whether something that will remove a reference
+ * to a cnode was a downcall or not
+ */
+enum dc_status {
+    IS_DOWNCALL = 6,
+    NOT_DOWNCALL = 7
+};
+
 /* Some declarations of local utility routines */
 
 extern int cfscall C_ARGS((struct cfs_mntinfo *, int , int *, char *));
@@ -672,19 +684,19 @@ extern int cfs_vfsop_print_entry;
 extern int  cfs_vmflush __P(());
 extern void print_cfsnc __P(());
 extern void cfsnc_init __P(());
-extern int  cfsnc_resize __P((int, int));
+extern int  cfsnc_resize __P((int, int, enum dc_status));
 extern void cfsnc_gather_stats __P(());
-extern void cfs_flush __P(());
+extern void cfs_flush __P((enum dc_status));
 extern void cfs_testflush __P(());
-extern void cfsnc_purge_user __P((struct ucred *));
-extern void cfsnc_zapParentfid __P((ViceFid *));
-extern void cfsnc_zapvnode __P((ViceFid *, struct ucred *));
-extern void cfsnc_zapfid __P((ViceFid *));
+extern void cfsnc_purge_user __P((struct ucred *, enum dc_status));
+extern void cfsnc_zapParentfid __P((ViceFid *, enum dc_status));
+extern void cfsnc_zapvnode __P((ViceFid *, struct ucred *, enum dc_status));
+extern void cfsnc_zapfid __P((ViceFid *, enum dc_status));
 extern void cfsnc_replace __P((ViceFid *, ViceFid *));
 extern void cfs_save __P((struct cnode *));
-extern void cfsnc_flush __P(());
+extern void cfsnc_flush __P((enum dc_status));
 extern int  cfs_vnodeopstats_init __P(());
-extern int  cfs_kill __P((VFS_T *));
+extern int  cfs_kill __P((VFS_T *, enum dc_status dcstat));
 extern void cfs_unsave __P((struct cnode *));
 extern int  getNewVnode __P((struct vnode **));
 extern void print_vattr __P((struct vattr *));
