@@ -176,7 +176,7 @@ void HandleRequests(lwp)
 	if ((--availableLWPs <= 0) &&
 	    (numLWPs < maxLWPs)) {
 #if	__GNUC__ >= 2
-	    i = LWP_CreateProcess((PFIC)HandleRequests, 8192, LWP_NORMAL_PRIORITY,
+	    i = LWP_CreateProcess((PFIC)HandleRequests, 16384, LWP_NORMAL_PRIORITY,
 			      (char *)numLWPs, "server", &pids[numLWPs]);
 /* ??? */
 #else

@@ -3549,11 +3549,16 @@ void RecoverPathName(char *path, ViceFid *fid, ClientModifyLog *CML, cmlent *sta
 }
 
 
-int volent::CheckPointMLEs(vuid_t vuid, char *ckpdir) {
+int volent::CheckPointMLEs(vuid_t vuid, char *ckpdir) 
+{
     if (CML.count() == 0)
 	return(ENOENT);
     if (CML.owner != vuid && vuid != V_UID)
 	return(EACCES);
+
+    if ( rvmlib_in_transaction() ) {
+	    Choke("CheckPointMLEs started while in transaction!");
+    }
 
     int code = CML.CheckPoint(ckpdir);
     return(code);
