@@ -15,6 +15,9 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.7  1997/01/12 22:57:24  bnoble
+ * Filter O_EXCL from cfs_nb_open mode bits
+ *
  * Revision 1.6  1996/12/05 16:20:14  bnoble
  * Minor debugging aids
  *
@@ -46,6 +49,8 @@
 #include <cfs/cfs.h>
 #include <cfs/cfs_vnodeops.h>
 #include <cfs/cnode.h>
+
+#include <sys/fcntl.h>
 
 /* What we are delaying for in printf */
 int cfs_printf_delay = 0;  /* in microseconds */
@@ -205,7 +210,13 @@ cfs_nb_open(v)
     struct vop_open_args *ap = v;
 
     ENTRY;
-    return (cfs_open(&(ap->a_vp), ap->a_mode, ap->a_cred, ap->a_p));
+    /* 
+     * NetBSD can pass the O_EXCL flag in mode, even though the check
+     * has already happened.  Venus defensively assumes that if open
+     * is passed the EXCL, it must be a bug.  We strip the flag here.
+     */
+    return (cfs_open(&(ap->a_vp), ap->a_mode & (~O_EXCL), ap->a_cred, 
+		     ap->a_p));
 }
 
 int
@@ -306,8 +317,7 @@ cfs_nb_readlink(v)
 /*
  * CFS abort op, called after namei() when a CREATE/DELETE isn't actually
  * done. If a buffer has been saved in anticipation of a cfs_create or
- * a cfs_remove, delete it.
- */
+ * a cfs_remove, delete it.  */
 /* ARGSUSED */
 int
 cfs_nb_abortop(v)
