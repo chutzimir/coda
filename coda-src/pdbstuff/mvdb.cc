@@ -79,7 +79,14 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <errno.h>
+#ifdef __MACH__
 #include <libc.h>
+#include <sysent.h>
+#endif __MACH__
+#if __NetBSD__ || LINUX
+#include <unistd.h>
+#include <stdlib.h>
+#endif __NetBSD__
 #include <sysent.h>
 
 #ifdef __cplusplus

@@ -68,7 +68,7 @@ extern "C" {
 #include <libc.h>
 #include <sysent.h>
 #endif __MACH__
-#ifdef __NetBSD__
+#if __NetBSD__ || LINUX
 #include <unistd.h>
 #include <stdlib.h>
 #endif __NetBSD__
