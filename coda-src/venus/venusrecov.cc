@@ -490,12 +490,15 @@ PRIVATE void Recov_InitRVM() {
     }
 
     rvm_return_t ret = RVM_INIT(&Recov_Options);
-    if (ret != RVM_SUCCESS) {
-	if (ret == RVM_EINTERNAL)
-	    Choke("Recov_InitRVM: RVM_INIT failed, internal error %s", rvm_errmsg);
-	else
-	    Choke("Recov_InitRVM: RVM_INIT failed (%d)", ret);
-    }
+    if (ret == RVM_ELOG_VERSION_SKEW) {
+	eprint("Recov_InitRVM: RVM_INIT failed, RVM log version skew");
+	eprint("Venus not started");
+	exit(-1);
+    } else if (ret == RVM_EINTERNAL)
+	Choke("Recov_InitRVM: RVM_INIT failed, internal error %s", rvm_errmsg);
+    else if (ret != RVM_SUCCESS)
+	Choke("Recov_InitRVM: RVM_INIT failed (%d)", ret);
+
 }
 
 
