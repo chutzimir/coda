@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.7  1997/11/20 11:46:42  rvb
- * Capture current cfs_venus
+ * Revision 1.5.4.8  1997/11/26 15:28:58  rvb
+ * Cant make downcall pbuf == union cfs_downcalls yet
  *
+ * Revision 1.5.4.7  97/11/20  11:46:42  rvb
+ * Capture current cfs_venus
+ * 
  * Revision 1.5.4.6  97/11/18  10:27:16  rvb
  * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  * 
@@ -489,7 +492,7 @@ cfs_cacheprint(whoIam)
  */
 
 int handleDownCall(opcode, out)
-     int opcode; struct outputArgs *out;
+     int opcode; union cfs_downcalls *out;
 {
     int error;
     
@@ -508,7 +511,7 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.reqs[CFS_PURGEUSER]++;
 	  
 	  /* XXX - need to prevent fsync's */
-	  cfsnc_purge_user(&out->d.cfs_purgeuser.cred, IS_DOWNCALL);
+	  cfsnc_purge_user(&out->purgeuser.cred, IS_DOWNCALL);
 	  return(0);
       }
 	
@@ -519,7 +522,7 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPFILE]++;
 	  
-	  cp = cfs_find(&out->d.cfs_zapfile.CodaFid);
+	  cp = cfs_find(&out->zapfile.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
@@ -548,12 +551,12 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPDIR]++;
 	  
-	  cp = cfs_find(&out->d.cfs_zapdir.CodaFid);
+	  cp = cfs_find(&out->zapdir.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
 	      cp->c_flags &= ~C_VATTR;
-	      cfsnc_zapParentfid(&out->d.cfs_zapdir.CodaFid, IS_DOWNCALL);     
+	      cfsnc_zapParentfid(&out->zapdir.CodaFid, IS_DOWNCALL);     
 	      
 	      CFSDEBUG(CFS_ZAPDIR, myprintf(("zapdir: fid = (%x.%x.%x), 
                                           refcnt = %d\n",cp->c_fid.Volume, 
@@ -573,7 +576,7 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPVNODE]++;
 	  
-	  cfsnc_zapvnode(&out->d.cfs_zapvnode.VFid, &out->d.cfs_zapvnode.cred,
+	  cfsnc_zapvnode(&out->zapvnode.VFid, &out->zapvnode.cred,
 			 IS_DOWNCALL);
 	  return(0);
       }	
@@ -585,18 +588,18 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_PURGEFID]++;
 	  
-	  cp = cfs_find(&out->d.cfs_purgefid.CodaFid);
+	  cp = cfs_find(&out->purgefid.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
-	      if (ODD(out->d.cfs_purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
-		  cfsnc_zapParentfid(&out->d.cfs_purgefid.CodaFid,
+	      if (ODD(out->purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
+		  cfsnc_zapParentfid(&out->purgefid.CodaFid,
 				     IS_DOWNCALL);     
 	      }
 	      
 	      cp->c_flags &= ~C_VATTR;
-	      cfsnc_zapfid(&out->d.cfs_purgefid.CodaFid, IS_DOWNCALL);
-	      if (!(ODD(out->d.cfs_purgefid.CodaFid.Vnode)) 
+	      cfsnc_zapfid(&out->purgefid.CodaFid, IS_DOWNCALL);
+	      if (!(ODD(out->purgefid.CodaFid.Vnode)) 
 		  && (CTOV(cp)->v_flag & VTEXT)) {
 		  
 		  error = cfs_vmflush(cp);
@@ -619,18 +622,18 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_REPLACE]++;
 	  
-	  cp = cfs_find(&out->d.cfs_replace.OldFid);
+	  cp = cfs_find(&out->replace.OldFid);
 	  if (cp != NULL) { 
 	      /* remove the cnode from the hash table, replace the fid, and reinsert */
 	      vref(CTOV(cp));
 	      cfs_unsave(cp);
-	      cp->c_fid = out->d.cfs_replace.NewFid;
+	      cp->c_fid = out->replace.NewFid;
 	      cfs_save(cp);
 
 	      CFSDEBUG(CFS_REPLACE, myprintf(("replace: oldfid = (%x.%x.%x), newfid = (%x.%x.%x), cp = 0x%x\n",
-					   out->d.cfs_replace.OldFid.Volume,
-					   out->d.cfs_replace.OldFid.Vnode,
-					   out->d.cfs_replace.OldFid.Unique,
+					   out->replace.OldFid.Volume,
+					   out->replace.OldFid.Vnode,
+					   out->replace.OldFid.Unique,
 					   cp->c_fid.Volume, cp->c_fid.Vnode, 
 					   cp->c_fid.Unique, cp));)
 	      vrele(CTOV(cp));

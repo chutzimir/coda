@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.18.7  1997/11/25 09:40:49  rvb
- * Final cfs_venus.c w/o macros, but one locking bug
+ * Revision 1.4.18.8  1997/11/26 15:28:57  rvb
+ * Cant make downcall pbuf == union cfs_downcalls yet
  *
+ * Revision 1.4.18.7  97/11/25  09:40:49  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
+ * 
  * Revision 1.4.18.6  97/11/20  11:46:41  rvb
  * Capture current cfs_venus
  * 
@@ -322,11 +325,11 @@ vc_nb_write(dev, uiop, flag)
 	myprintf(("vcwrite got a call for %d.%d\n", opcode, seq));
     
     if (DOWNCALL(opcode)) {
-	struct cfs_out_hdr pbuf;
+	union outputArgs pbuf;
 	
 	/* get the rest of the data. */
 	uiop->uio_rw = UIO_WRITE;
-	error = uiomove((caddr_t)&pbuf.result, sizeof(pbuf) - (sizeof(int)*2), uiop);
+	error = uiomove((caddr_t)&pbuf.cfs_purgeuser.oh.result, sizeof(pbuf) - (sizeof(int)*2), uiop);
 	if (error) {
 	    myprintf(("vcwrite: error (%d) on uiomove (Op %d seq %d)\n", 
 		      error, opcode, seq));

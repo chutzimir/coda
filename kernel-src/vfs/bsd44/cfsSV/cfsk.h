@@ -206,7 +206,7 @@ enum dc_status {
 
 
 /* Prototypes of functions exported within cfs */
-extern int handleDownCal(int opcode, struct outputArgs *out);
+extern int handleDownCal(int opcode, union cfs_downcalls *out);
 extern struct cnode *makecfsnode(ViceFid *, struct mount *, short);
 extern int cfscall(struct cfs_mntinfo *, int , int *, char *);
 extern int  cfs_vmflush __P(());
