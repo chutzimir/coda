@@ -1,4 +1,4 @@
-#!/usr/coda/etc/wish -f
+#!/bin/sh
 # The next line restarts using wish\
 exec /coda/misc/tcl/@sys/beta/bin/wish  "$0" "$@"
 #ifndef _BLURB_
