@@ -74,7 +74,6 @@ no_storage(proc)
 char *copy(s)
     char *s;
 {
-    extern char *malloc();
     register char *new;
     register int len;
 

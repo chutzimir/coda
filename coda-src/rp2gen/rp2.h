@@ -57,7 +57,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 
 #include "rpc2.h"
-extern char *malloc(), *calloc();
 
 /* Satya (7/31/96): changed bool, FALSE, TRUE to rp2_bool, RP2_{FALSE,TRUE}
 to avoid name clash with builtin bool on some versions of gcc; similar to
