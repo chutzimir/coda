@@ -92,6 +92,8 @@ LIBS=	$(LIBUTIL)\
 RP2FILES= $(INCLDIR)/vice.rpc2 $(INCLDIR)/mond.rpc2 	$(INCLDIR)/admon.rpc2\
  $(INCLDIR)/adsrv.rpc2 $(INCLDIR)/callback.rpc2 $(INCLDIR)/fcon.rpc2
 
+RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
+
 HFILES= advice.h adviceconn.h advice_daemon.h binding.h comm.h fso.h hdb.h local.h mariner.h venusrecov.h sighand.h simulate.h user.h venuscb.h venusstats.h venusvm.h venus.private.h venusvol.h vproc.h worker.h
 
 
