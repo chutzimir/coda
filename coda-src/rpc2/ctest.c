@@ -599,6 +599,8 @@ void DoBinding(RPC2_Handle *cid)
 	bparms.SharedSecret = (RPC2_EncryptionKey *)ekey;
 	}
 
+    bparms.AuthenticationType = 0;	/* server doesn't care */
+
     if (WhatHappened(RPC2_NewBinding(&hid, &sid, &ssid, &bparms, cid),
             "NewBinding") < RPC2_ELIMIT)
 	exit(-1);

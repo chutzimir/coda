@@ -73,7 +73,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "test.h"
 
 #define SUBSYS_SRV 1001
-#define STESTSTACK 0x10000
+#define STESTSTACK 0x18000
 extern etext();
 extern long RPC2_Perror;
 extern long RPC2_DebugLevel;
@@ -197,7 +197,9 @@ void HandleRequests(lwp)
     }
 }
 
-long FindKey(IN ClientIdent, OUT IdentKey, OUT SessionKey)
+long FindKey(IN authenticationtype, IN ClientIdent, OUT IdentKey,
+	     OUT SessionKey)
+    RPC2_Integer authenticationtype;
     RPC2_CountedBS *ClientIdent;
     RPC2_EncryptionKey IdentKey;
     RPC2_EncryptionKey SessionKey;
