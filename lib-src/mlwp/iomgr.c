@@ -63,6 +63,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <errno.h>
 #include <sys/file.h>
 #include <sys/time.h>
+#include <assert.h>
 #include "lwp.h"
 #include "lwp.private.h"
 #include "timer.h"
