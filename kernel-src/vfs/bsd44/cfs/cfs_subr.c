@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.5  1997/11/13 22:03:00  rvb
- * pass2 cfs_NetBSD.h mt
+ * Revision 1.5.4.6  1997/11/18 10:27:16  rvb
+ * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  *
+ * Revision 1.5.4.5  97/11/13  22:03:00  rvb
+ * pass2 cfs_NetBSD.h mt
+ * 
  * Revision 1.5.4.4  97/11/12  12:09:39  rvb
  * reorg pass1
  * 
@@ -177,13 +180,11 @@ static char *rcsid = "$Header$";
 
 struct cnode *cfs_find(ViceFid *fid);
 
-
-/* God this kills me. Isn't there a better way of going about this? - DCS*/
-char pass_process_info;
-
-
 int cfs_active = 0;
+int cfs_reuse = 0;
+int cfs_new = 0;
 
+struct cnode *cfs_freelist = NULL;
 struct cnode *cfs_cache[CFS_CACHESIZE];
 
 #define cfshash(fid) \
@@ -192,6 +193,272 @@ struct cnode *cfs_cache[CFS_CACHESIZE];
 #define	CNODE_NEXT(cp)	((cp)->c_next)
 
 #define ODD(vnode)        ((vnode) & 0x1)
+
+/*
+ * Allocate a cnode.
+ */
+struct cnode *
+cfs_alloc()
+{
+    struct cnode *cp;
+
+    if (cfs_freelist) {
+	cp = cfs_freelist;
+	cfs_freelist = CNODE_NEXT(cp);
+	cfs_reuse++;
+    }
+    else {
+	CFS_ALLOC(cp, struct cnode *, sizeof(struct cnode));
+	/* NetBSD vnodes don't have any Pager info in them ('cause there are
+	   no external pagers, duh!) */
+#define VNODE_VM_INFO_INIT(vp)         /* MT */
+	VNODE_VM_INFO_INIT(CTOV(cp));
+	cfs_new++;
+    }
+    bzero(cp, sizeof (struct cnode));
+
+    return(cp);
+}
+
+/*
+ * Deallocate a cnode.
+ */
+void
+cfs_free(cp)
+     register struct cnode *cp;
+{
+    
+    CNODE_NEXT(cp) = cfs_freelist;
+    cfs_freelist = cp;
+}
+
+/*
+ * Put a cnode in the hash table
+ */
+void
+cfs_save(cp)
+     struct cnode *cp;
+{
+	CNODE_NEXT(cp) = cfs_cache[cfshash(&cp->c_fid)];
+	cfs_cache[cfshash(&cp->c_fid)] = cp;
+}
+
+/*
+ * Remove a cnode from the hash table
+ */
+void
+cfs_unsave(cp)
+     struct cnode *cp;
+{
+    struct cnode *ptr;
+    struct cnode *ptrprev = NULL;
+    
+    ptr = cfs_cache[cfshash(&cp->c_fid)]; 
+    while (ptr != NULL) { 
+	if (ptr == cp) { 
+	    if (ptrprev == NULL) {
+		cfs_cache[cfshash(&cp->c_fid)] 
+		    = CNODE_NEXT(ptr);
+	    } else {
+		CNODE_NEXT(ptrprev) = CNODE_NEXT(ptr);
+	    }
+	    CNODE_NEXT(cp) = (struct cnode *)NULL;
+	    
+	    return; 
+	}	
+	ptrprev = ptr;
+	ptr = CNODE_NEXT(ptr);
+    }	
+}
+
+/*
+ * Lookup a cnode by fid. If the cnode is dying, it is bogus so skip it.
+ * NOTE: this allows multiple cnodes with same fid -- dcs 1/25/95
+ */
+struct cnode *
+cfs_find(fid) 
+     ViceFid *fid;
+{
+    struct cnode *cp;
+
+    cp = cfs_cache[cfshash(fid)];
+    while (cp) {
+	if ((cp->c_fid.Vnode == fid->Vnode) &&
+	    (cp->c_fid.Volume == fid->Volume) &&
+	    (cp->c_fid.Unique == fid->Unique) &&
+	    (!IS_UNMOUNTING(cp)))
+	    {
+		cfs_active++;
+		return(cp); 
+	    }		    
+	cp = CNODE_NEXT(cp);
+    }
+    return(NULL);
+}
+
+/*
+ * cfs_kill is called as a side effect to vcopen. To prevent any
+ * cnodes left around from an earlier run of a venus or warden from
+ * causing problems with the new instance, mark any outstanding cnodes
+ * as dying. Future operations on these cnodes should fail (excepting
+ * cfs_inactive of course!). Since multiple venii/wardens can be
+ * running, only kill the cnodes for a particular entry in the
+ * cfs_mnttbl. -- DCS 12/1/94 */
+
+int
+cfs_kill(whoIam, dcstat)
+	struct mount *whoIam;
+	enum dc_status dcstat;
+{
+	int hash, count = 0;
+	struct cnode *cp;
+	
+	/* 
+	 * Algorithm is as follows: 
+	 *     Second, flush whatever vnodes we can from the name cache.
+	 * 
+	 *     Finally, step through whatever is left and mark them dying.
+	 *        This prevents any operation at all.
+	 */
+	
+	/* This is slightly overkill, but should work. Eventually it'd be
+	 * nice to only flush those entries from the namecache that
+	 * reference a vnode in this vfs.  */
+	cfsnc_flush(dcstat);
+	
+	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
+			if (CTOV(cp)->v_mount == whoIam) {
+#ifdef	DEBUG
+				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
+#endif
+				count++;
+				CFSDEBUG(CFS_FLUSH, 
+					 myprintf(("Live cnode fid %x-%x-%x flags %d count %d\n",
+						   (cp->c_fid).Volume,
+						   (cp->c_fid).Vnode,
+						   (cp->c_fid).Unique, 
+						   cp->c_flags,
+						   CTOV(cp)->v_usecount)); );
+			}
+		}
+	}
+	return count;
+}
+
+/*
+ * There are two reasons why a cnode may be in use, it may be in the
+ * name cache or it may be executing.  
+ */
+void
+cfs_flush(dcstat)
+	enum dc_status dcstat;
+{
+    int hash;
+    struct cnode *cp;
+    
+    cfs_clstat.ncalls++;
+    cfs_clstat.reqs[CFS_FLUSH]++;
+    
+    cfsnc_flush(dcstat);	    /* flush files from the name cache */
+
+    for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+	for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {  
+	    if (!ODD(cp->c_fid.Vnode)) /* only files can be executed */
+		cfs_vmflush(cp);
+	}
+    }
+}
+
+/*
+ * As a debugging measure, print out any cnodes that lived through a
+ * name cache flush.  
+ */
+void
+cfs_testflush()
+{
+    int hash;
+    struct cnode *cp;
+    
+    for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+	for (cp = cfs_cache[hash];
+	     cp != NULL;
+	     cp = CNODE_NEXT(cp)) {  
+	    myprintf(("Live cnode fid %x-%x-%x count %d\n",
+		      (cp->c_fid).Volume,(cp->c_fid).Vnode,
+		      (cp->c_fid).Unique, CTOV(cp)->v_usecount));
+	}
+    }
+}
+
+/*
+ *     First, step through all cnodes and mark them unmounting.
+ *         NetBSD kernels may try to fsync them now that venus
+ *         is dead, which would be a bad thing.
+ *
+ */
+cfs_unmounting(whoIam)
+	struct mount *whoIam;
+{	
+	int hash;
+	struct cnode *cp;
+	int count = 0;
+
+	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
+			if (CTOV(cp)->v_mount == whoIam) {
+				cp->c_flags |= C_UNMOUNTING;
+			}
+		}
+	}
+}
+
+#ifdef	DEBUG
+cfs_checkunmounting(mp)
+	struct mount *mp;
+{	
+	register struct vnode *vp, *nvp;
+	struct cnode *cp;
+	int count = 0, bad = 0;
+loop:
+	for (vp = mp->mnt_vnodelist.lh_first; vp; vp = nvp) {
+		if (vp->v_mount != mp)
+			goto loop;
+		nvp = vp->v_mntvnodes.le_next;
+		cp = VTOC(vp);
+		count++;
+		if (!(cp->c_flags & C_UNMOUNTING)) {
+			bad++;
+			printf("vp %x, cp %x missed\n", vp, cp);
+			cp->c_flags |= C_UNMOUNTING;
+		}
+	}
+}
+
+cfs_cacheprint(whoIam)
+	struct mount *whoIam;
+{	
+	int hash;
+	struct cnode *cp;
+	int count = 0;
+
+	printf("cfs_cacheprint: cfs_ctlvp %x, cp %x", cfs_ctlvp, VTOC(cfs_ctlvp));
+	cfsnc_name(cfs_ctlvp);
+	printf("\n");
+
+	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
+		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
+			if (CTOV(cp)->v_mount == whoIam) {
+				printf("cfs_cacheprint: vp %x, cp %x", CTOV(cp), cp);
+				cfsnc_name(cp);
+				printf("\n");
+				count++;
+			}
+		}
+	}
+	printf("cfs_cacheprint: count %d\n", count);
+}
+#endif
 
 /*
  * There are 6 cases where invalidations occur. The semantics of each
@@ -368,236 +635,6 @@ int handleDownCall(opcode, out)
 	  return (0);
       }			   
     }
-}
-
-
-/*
- *     First, step through all cnodes and mark them unmounting.
- *         NetBSD kernels may try to fsync them now that venus
- *         is dead, which would be a bad thing.
- *
- */
-cfs_unmounting(whoIam)
-	struct mount *whoIam;
-{	
-	int hash;
-	struct cnode *cp;
-	int count = 0;
-
-	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (CTOV(cp)->v_mount == whoIam) {
-				cp->c_flags |= C_UNMOUNTING;
-			}
-		}
-	}
-}
-
-#ifdef	DEBUG
-cfs_checkunmounting(mp)
-	struct mount *mp;
-{	
-	register struct vnode *vp, *nvp;
-	struct cnode *cp;
-	int count = 0, bad = 0;
-loop:
-	for (vp = mp->mnt_vnodelist.lh_first; vp; vp = nvp) {
-		if (vp->v_mount != mp)
-			goto loop;
-		nvp = vp->v_mntvnodes.le_next;
-		cp = VTOC(vp);
-		count++;
-		if (!(cp->c_flags & C_UNMOUNTING)) {
-			bad++;
-			printf("vp %x, cp %x missed\n", vp, cp);
-			cp->c_flags |= C_UNMOUNTING;
-		}
-	}
-}
-
-cfs_cacheprint(whoIam)
-	struct mount *whoIam;
-{	
-	int hash;
-	struct cnode *cp;
-	int count = 0;
-
-	printf("cfs_cacheprint: cfs_ctlvp %x, cp %x", cfs_ctlvp, VTOC(cfs_ctlvp));
-	cfsnc_name(cfs_ctlvp);
-	printf("\n");
-
-	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (CTOV(cp)->v_mount == whoIam) {
-				printf("cfs_cacheprint: vp %x, cp %x", CTOV(cp), cp);
-				cfsnc_name(cp);
-				printf("\n");
-				count++;
-			}
-		}
-	}
-	printf("cfs_cacheprint: count %d\n", count);
-}
-
-#endif
-
-/*
- * cfs_kill is called as a side effect to vcopen. To prevent any
- * cnodes left around from an earlier run of a venus or warden from
- * causing problems with the new instance, mark any outstanding cnodes
- * as dying. Future operations on these cnodes should fail (excepting
- * cfs_inactive of course!). Since multiple venii/wardens can be
- * running, only kill the cnodes for a particular entry in the
- * cfs_mnttbl. -- DCS 12/1/94 */
-
-int
-cfs_kill(whoIam, dcstat)
-	struct mount *whoIam;
-	enum dc_status dcstat;
-{
-	int hash, count = 0;
-	struct cnode *cp;
-	
-	/* 
-	 * Algorithm is as follows: 
-	 *     Second, flush whatever vnodes we can from the name cache.
-	 * 
-	 *     Finally, step through whatever is left and mark them dying.
-	 *        This prevents any operation at all.
-	 */
-	
-	/* This is slightly overkill, but should work. Eventually it'd be
-	 * nice to only flush those entries from the namecache that
-	 * reference a vnode in this vfs.  */
-	cfsnc_flush(dcstat);
-	
-	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (CTOV(cp)->v_mount == whoIam) {
-#ifdef	DEBUG
-				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
-#endif
-				count++;
-				CFSDEBUG(CFS_FLUSH, 
-					 myprintf(("Live cnode fid %x-%x-%x flags %d count %d\n",
-						   (cp->c_fid).Volume,
-						   (cp->c_fid).Vnode,
-						   (cp->c_fid).Unique, 
-						   cp->c_flags,
-						   CTOV(cp)->v_usecount)); );
-			}
-		}
-	}
-	return count;
-}
-
-/*
- * There are two reasons why a cnode may be in use, it may be in the
- * name cache or it may be executing.  
- */
-void
-cfs_flush(dcstat)
-	enum dc_status dcstat;
-{
-    int hash;
-    struct cnode *cp;
-    
-    cfs_clstat.ncalls++;
-    cfs_clstat.reqs[CFS_FLUSH]++;
-    
-    cfsnc_flush(dcstat);	    /* flush files from the name cache */
-
-    for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-	for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {  
-	    if (!ODD(cp->c_fid.Vnode)) /* only files can be executed */
-		cfs_vmflush(cp);
-	}
-    }
-}
-
-/*
- * As a debugging measure, print out any cnodes that lived through a
- * name cache flush.  
- */
-void
-cfs_testflush()
-{
-    int hash;
-    struct cnode *cp;
-    
-    for (hash = 0; hash < CFS_CACHESIZE; hash++) {
-	for (cp = cfs_cache[hash];
-	     cp != NULL;
-	     cp = CNODE_NEXT(cp)) {  
-	    myprintf(("Live cnode fid %x-%x-%x count %d\n",
-		      (cp->c_fid).Volume,(cp->c_fid).Vnode,
-		      (cp->c_fid).Unique, CTOV(cp)->v_usecount));
-	}
-    }
-}
-
-/*
- * Put a cnode in the hash table
- */
-void
-cfs_save(cp)
-     struct cnode *cp;
-{
-	CNODE_NEXT(cp) = cfs_cache[cfshash(&cp->c_fid)];
-	cfs_cache[cfshash(&cp->c_fid)] = cp;
-}
-
-/*
- * Remove a cnode from the hash table
- */
-void
-cfs_unsave(cp)
-     struct cnode *cp;
-{
-    struct cnode *ptr;
-    struct cnode *ptrprev = NULL;
-    
-    ptr = cfs_cache[cfshash(&cp->c_fid)]; 
-    while (ptr != NULL) { 
-	if (ptr == cp) { 
-	    if (ptrprev == NULL) {
-		cfs_cache[cfshash(&cp->c_fid)] 
-		    = CNODE_NEXT(ptr);
-	    } else {
-		CNODE_NEXT(ptrprev) = CNODE_NEXT(ptr);
-	    }
-	    CNODE_NEXT(cp) = (struct cnode *)NULL;
-	    
-	    return; 
-	}	
-	ptrprev = ptr;
-	ptr = CNODE_NEXT(ptr);
-    }	
-}
-
-/*
- * Lookup a cnode by fid. If the cnode is dying, it is bogus so skip it.
- * NOTE: this allows multiple cnodes with same fid -- dcs 1/25/95
- */
-struct cnode *
-cfs_find(fid) 
-     ViceFid *fid;
-{
-    struct cnode *cp;
-
-    cp = cfs_cache[cfshash(fid)];
-    while (cp) {
-	if ((cp->c_fid.Vnode == fid->Vnode) &&
-	    (cp->c_fid.Volume == fid->Volume) &&
-	    (cp->c_fid.Unique == fid->Unique) &&
-	    (!IS_UNMOUNTING(cp)))
-	    {
-		cfs_active++;
-		return(cp); 
-	    }		    
-	cp = CNODE_NEXT(cp);
-    }
-    return(NULL);
 }
 
 /* cfs_grab_vnode: lives in either cfs_mach.c or cfs_nbsd.c */

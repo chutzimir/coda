@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.18.4  1997/11/13 22:02:59  rvb
- * pass2 cfs_NetBSD.h mt
+ * Revision 1.4.18.5  1997/11/18 10:27:15  rvb
+ * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  *
+ * Revision 1.4.18.4  97/11/13  22:02:59  rvb
+ * pass2 cfs_NetBSD.h mt
+ * 
  * Revision 1.4.18.3  97/11/12  12:09:38  rvb
  * reorg pass1
  * 
@@ -82,6 +85,14 @@ int cfs_psdev_print_entry = 0;
 #else
 #define ENTRY
 #endif 
+
+
+/* vcfsattach: do nothing */
+void
+vcfsattach(n)
+    int n;
+{
+}
 
 /* 
  * These functions are written for NetBSD.

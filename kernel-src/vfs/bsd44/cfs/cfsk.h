@@ -25,12 +25,12 @@ do {                                                                      \
  * global cache state control
  */
 extern int cfsnc_use;
-extern int cfsnc_debug;
 
 /*
  * Used to select debugging statements throughout the cfs code.
  */
 extern int cfsdebug;
+extern int cfsnc_debug;
 extern int cfs_printf_delay;
 extern int cfs_vnop_print_entry;
 extern int cfs_psdev_print_entry;
@@ -44,7 +44,6 @@ do {                            \
 	delay(cfs_printf_delay);\
     printf args ;               \
 } while (0)
-
 
 struct cfs_clstat {
 	int	ncalls;			/* client requests */
@@ -192,16 +191,8 @@ extern struct cfs_mntinfo cfs_mnttbl[]; /* indexed by minor device number */
  * Used for identifying usage of "Control" object
  */
 extern struct vnode *cfs_ctlvp;
-
-
-/* Acckkk! IS_ROOT_VP is currently a hack that assumes coda venus is
-   only vfs on this mnttbl */
-
-#define	IS_ROOT_VP(vp)		((vp) == vtomi((vp))->mi_vfschain.rootvp)
 #define	IS_CTL_VP(vp)		((vp) == cfs_ctlvp)
-#define CFS_CTL_VP		cfs_ctlvp
-
-#define	IS_CTL_NAME(dvp, name)	(IS_ROOT_VP((dvp))                   \
+#define	IS_CTL_NAME(vp, name)	(((vp) == vtomi((vp))->mi_vfschain.rootvp)    \
 				 && strcmp(name, CFS_CONTROL) == 0)
 
 /* 
@@ -213,14 +204,11 @@ enum dc_status {
     NOT_DOWNCALL = 7
 };
 
-/* Some declarations of local utility routines */
-
-extern int cfscall(struct cfs_mntinfo *, int , int *, char *);
-extern struct cnode *makecfsnode(ViceFid *, struct mount *, short);
-extern int handleDownCal(int opcode, struct outputArgs *out);
-extern int cfs_grab_vnode(dev_t, ino_t, struct vnode **);
 
 /* Prototypes of functions exported within cfs */
+extern int handleDownCal(int opcode, struct outputArgs *out);
+extern struct cnode *makecfsnode(ViceFid *, struct mount *, short);
+extern int cfscall(struct cfs_mntinfo *, int , int *, char *);
 extern int  cfs_vmflush __P(());
 extern void cfs_flush __P((enum dc_status));
 extern void cfs_testflush __P(());

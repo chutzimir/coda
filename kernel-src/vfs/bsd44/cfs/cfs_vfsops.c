@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.4  1997/11/13 22:03:01  rvb
- * pass2 cfs_NetBSD.h mt
+ * Revision 1.5.14.5  1997/11/18 10:27:17  rvb
+ * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  *
+ * Revision 1.5.14.4  97/11/13  22:03:01  rvb
+ * pass2 cfs_NetBSD.h mt
+ * 
  * Revision 1.5.14.3  97/11/12  12:09:40  rvb
  * reorg pass1
  * 
@@ -100,6 +103,7 @@
 #include <cfs/cfs.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
+#include <cfs/cfs_vfsops.h>
 #include <cfs/cfs_opstats.h>
 
 int cfsdebug = 0;
@@ -128,6 +132,28 @@ struct cfs_op_stats cfs_vfsopstats[CFS_VFSOPS_SIZE];
 extern int cfsnc_initialized;     /* Set if cache has been initialized */
 extern int vc_nb_open __P((dev_t, int, int, struct proc *));
 extern struct cdevsw cdevsw[];    /* For sanity check in cfs_mount */
+
+
+/* NetBSD interface to statfs */
+int cfs_nb_statfs    __P((struct mount *, struct statfs *, struct proc *));
+
+struct vfsops cfs_vfsops = {
+    MOUNT_CFS,
+    cfs_mount,
+    cfs_start,
+    cfs_unmount,
+    cfs_root,
+    cfs_quotactl,
+    cfs_nb_statfs,
+    cfs_sync,
+    cfs_vget,
+    (int (*) (struct mount *, struct fid *, struct mbuf *, struct vnode **,
+	      int *, struct ucred **))
+	eopnotsupp,
+    (int (*) (struct vnode *, struct fid *)) eopnotsupp,
+    cfs_init,
+    0
+};
 
 cfs_vfsopstats_init()
 {
@@ -453,7 +479,45 @@ cfs_quotactl(vfsp, cmd, uid, arg, p)
     ENTRY;
     return (EOPNOTSUPP);
 }
+     
+/*
+ * Get file system statistics.
+ */
+int
+cfs_nb_statfs(vfsp, sbp, p)
+    register struct mount *vfsp;
+    struct statfs *sbp;
+    struct proc *p;
+{
+    ENTRY;
+/*  MARK_ENTRY(CFS_STATFS_STATS); */
+    if (!CFS_MOUNTED(vfsp)) {
+/*	MARK_INT_FAIL(CFS_STATFS_STATS);*/
+	return(EINVAL);
+    }
     
+    bzero(sbp, sizeof(struct statfs));
+    /* XXX - what to do about f_flags, others? --bnoble */
+    /* Below This is what AFS does
+    	#define NB_SFS_SIZ 0x895440
+     */
+    /* Note: Normal fs's have a bsize of 0x400 == 1024 */
+    sbp->f_type = 0;
+    sbp->f_bsize = 8192; /* XXX */
+    sbp->f_iosize = 8192; /* XXX */
+#define NB_SFS_SIZ 0x8AB75D
+    sbp->f_blocks = NB_SFS_SIZ;
+    sbp->f_bfree = NB_SFS_SIZ;
+    sbp->f_bavail = NB_SFS_SIZ;
+    sbp->f_files = NB_SFS_SIZ;
+    sbp->f_ffree = NB_SFS_SIZ;
+    bcopy((caddr_t)&(vfsp->mnt_stat.f_fsid), (caddr_t)&(sbp->f_fsid), sizeof (fsid_t));
+    strncpy(sbp->f_fstypename, MOUNT_CFS, MFSNAMELEN-1);
+    strcpy(sbp->f_mntonname, "/coda");
+    strcpy(sbp->f_mntfromname, "CFS");
+/*  MARK_INT_SAT(CFS_STATFS_STATS); */
+    return(0);
+}
 
 /*
  * Flush any pending I/O.
@@ -470,7 +534,6 @@ cfs_sync(vfsp, waitfor, cred, p)
     MARK_INT_SAT(CFS_SYNC_STATS);
     return(0);
 }
-
 
 int
 cfs_vget(vfsp, ino, vpp)
@@ -508,8 +571,8 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
     MARK_ENTRY(CFS_VGET_STATS);
     /* Check for vget of control object. */
     if (IS_CTL_FID(&cfid->cfid_fid)) {
-	*vpp = CFS_CTL_VP;
-	vref(CFS_CTL_VP);
+	*vpp = cfs_ctlvp;
+	vref(cfs_ctlvp);
 	MARK_INT_SAT(CFS_VGET_STATS);
 	return(0);
     }
@@ -596,4 +659,3 @@ int getNewVnode(vpp)
     return cfs_fhtovp(mi->mi_vfschain.vfsp, (struct fid*)&cfid, NULL, vpp,
 		      NULL, NULL);
 }
-     

@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.3  1997/11/13 22:02:57  rvb
- * pass2 cfs_NetBSD.h mt
+ * Revision 1.5.4.4  1997/11/18 10:27:13  rvb
+ * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  *
+ * Revision 1.5.4.3  97/11/13  22:02:57  rvb
+ * pass2 cfs_NetBSD.h mt
+ * 
  * Revision 1.5.4.2  97/11/12  12:09:35  rvb
  * reorg pass1
  * 
@@ -197,6 +200,49 @@ int cfsnc_debug = 0;
 
 
 /*
+ * Entry points for the CFS Name Cache
+ */
+
+/*  
+ * Initialize the cache, the LRU structure and the Hash structure(s)
+ */
+
+#define TOTAL_CACHE_SIZE 	(sizeof(struct cfscache) * cfsnc_size)
+#define TOTAL_HASH_SIZE 	(sizeof(struct cfshash)  * cfsnc_hashsize)
+
+int cfsnc_initialized = 0;      /* Initially the cache has not been initialized */
+
+void
+cfsnc_init()
+{
+    register int i;
+
+    /* zero the statistics structure */
+    
+    bzero(&cfsnc_stat, (sizeof(struct cfsnc_statistics)));
+
+    printf("CFS NAME CACHE: CACHE %d, HASH TBL %d\n", CFSNC_CACHESIZE, CFSNC_HASHSIZE);
+    CFS_ALLOC(cfsncheap, struct cfscache *, TOTAL_CACHE_SIZE);
+    CFS_ALLOC(cfsnchash, struct cfshash *, TOTAL_HASH_SIZE);
+    
+    cfsnc_lru.lru_next = 
+	cfsnc_lru.lru_prev = (struct cfscache *)LRU_PART(&cfsnc_lru);
+    
+    
+    for (i=0; i < cfsnc_size; i++) {	/* initialize the heap */
+	CFSNC_LRUINS(&cfsncheap[i], &cfsnc_lru);
+	CFSNC_HSHNUL(&cfsncheap[i]);
+	cfsncheap[i].cp = cfsncheap[i].dcp = (struct cnode *)0;
+    }
+    
+    for (i=0; i < cfsnc_hashsize; i++) {	/* initialize the hashtable */
+	CFSNC_HSHNUL((struct cfscache *)&cfsnchash[i]);
+    }
+    
+    cfsnc_initialized++;
+}
+
+/*
  * Auxillary routines -- shouldn't be entry points
  */
 
@@ -249,92 +295,10 @@ cfsnc_find(dcp, name, namelen, cred, hash)
 	return((struct cfscache *)0);
 }
 
-static void
-cfsnc_remove(cncp, dcstat)
-	struct cfscache *cncp;
-	enum dc_status dcstat;
-{
-	/* 
-	 * remove an entry -- vrele(cncp->dcp, cp), crfree(cred),
-	 * remove it from it's hash chain, and
-	 * place it at the head of the lru list.
-	 */
-        CFSNC_DEBUG(CFSNC_REMOVE,
-		    myprintf(("cfsnc_remove %s from parent %x.%x.%x\n",
-			   cncp->name, (cncp->dcp)->c_fid.Volume,
-			   (cncp->dcp)->c_fid.Vnode, (cncp->dcp)->c_fid.Unique));)
-
-  	CFSNC_HSHREM(cncp);
-
-	CFSNC_HSHNUL(cncp);		/* have it be a null chain */
-	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->dcp)->v_usecount == 1)) {
-		cncp->dcp->c_flags |= C_PURGING;
-	}
-	vrele(CTOV(cncp->dcp)); 
-
-	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->cp)->v_usecount == 1)) {
-		cncp->cp->c_flags |= C_PURGING;
-	}
-	vrele(CTOV(cncp->cp)); 
-
-	crfree(cncp->cred); 
-	bzero(DATA_PART(cncp),DATA_SIZE);
-
-	/* Put the null entry just after the least-recently-used entry */
-	/* LRU_TOP adjusts the pointer to point to the top of the structure. */
-	CFSNC_LRUREM(cncp);
-	CFSNC_LRUINS(cncp, LRU_TOP(cfsnc_lru.lru_prev));
-}
-
-
-/*
- * Entry points for the CFS Name Cache
- */
-
-/*  
- * Initialize the cache, the LRU structure and the Hash structure(s)
- */
-
-#define TOTAL_CACHE_SIZE 	(sizeof(struct cfscache) * cfsnc_size)
-#define TOTAL_HASH_SIZE 	(sizeof(struct cfshash)  * cfsnc_hashsize)
-
-int cfsnc_initialized = 0;      /* Initially the cache has not been initialized */
-
-void
-cfsnc_init()
-{
-    register int i;
-
-    /* zero the statistics structure */
-    
-    bzero(&cfsnc_stat, (sizeof(struct cfsnc_statistics)));
-
-    printf("CFS NAME CACHE: CACHE %d, HASH TBL %d\n", CFSNC_CACHESIZE, CFSNC_HASHSIZE);
-    CFS_ALLOC(cfsncheap, struct cfscache *, TOTAL_CACHE_SIZE);
-    CFS_ALLOC(cfsnchash, struct cfshash *, TOTAL_HASH_SIZE);
-    
-    cfsnc_lru.lru_next = 
-	cfsnc_lru.lru_prev = (struct cfscache *)LRU_PART(&cfsnc_lru);
-    
-    
-    for (i=0; i < cfsnc_size; i++) {	/* initialize the heap */
-	CFSNC_LRUINS(&cfsncheap[i], &cfsnc_lru);
-	CFSNC_HSHNUL(&cfsncheap[i]);
-	cfsncheap[i].cp = cfsncheap[i].dcp = (struct cnode *)0;
-    }
-    
-    for (i=0; i < cfsnc_hashsize; i++) {	/* initialize the hashtable */
-	CFSNC_HSHNUL((struct cfscache *)&cfsnchash[i]);
-    }
-    
-    cfsnc_initialized++;
-}
-
 /*
  * Enter a new (dir cnode, name) pair into the cache, updating the
  * LRU and Hash as needed.
  */
-
 void
 cfsnc_enter(dcp, name, cred, cp)
     struct cnode *dcp;
@@ -414,7 +378,6 @@ cfsnc_enter(dcp, name, cred, cp)
  * Find the (dir cnode, name) pair in the cache, if it's cred
  * matches the input, return it, otherwise return 0
  */
-
 struct cnode *
 cfsnc_lookup(dcp, name, cred)
 	struct cnode *dcp;
@@ -465,10 +428,46 @@ cfsnc_lookup(dcp, name, cred)
 	return(cncp->cp);
 }
 
+static void
+cfsnc_remove(cncp, dcstat)
+	struct cfscache *cncp;
+	enum dc_status dcstat;
+{
+	/* 
+	 * remove an entry -- vrele(cncp->dcp, cp), crfree(cred),
+	 * remove it from it's hash chain, and
+	 * place it at the head of the lru list.
+	 */
+        CFSNC_DEBUG(CFSNC_REMOVE,
+		    myprintf(("cfsnc_remove %s from parent %x.%x.%x\n",
+			   cncp->name, (cncp->dcp)->c_fid.Volume,
+			   (cncp->dcp)->c_fid.Vnode, (cncp->dcp)->c_fid.Unique));)
+
+  	CFSNC_HSHREM(cncp);
+
+	CFSNC_HSHNUL(cncp);		/* have it be a null chain */
+	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->dcp)->v_usecount == 1)) {
+		cncp->dcp->c_flags |= C_PURGING;
+	}
+	vrele(CTOV(cncp->dcp)); 
+
+	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->cp)->v_usecount == 1)) {
+		cncp->cp->c_flags |= C_PURGING;
+	}
+	vrele(CTOV(cncp->cp)); 
+
+	crfree(cncp->cred); 
+	bzero(DATA_PART(cncp),DATA_SIZE);
+
+	/* Put the null entry just after the least-recently-used entry */
+	/* LRU_TOP adjusts the pointer to point to the top of the structure. */
+	CFSNC_LRUREM(cncp);
+	CFSNC_LRUINS(cncp, LRU_TOP(cfsnc_lru.lru_prev));
+}
+
 /*
  * Remove all entries with a parent which has the input fid.
  */
-
 void
 cfsnc_zapParentfid(fid, dcstat)
 	ViceFid *fid;
@@ -554,7 +553,6 @@ cfsnc_zapfid(fid, dcstat)
 /* 
  * Remove all entries which match the fid and the cred
  */
-
 void
 cfsnc_zapvnode(fid, cred, dcstat)	
 	ViceFid *fid;
@@ -577,7 +575,6 @@ cfsnc_zapvnode(fid, cred, dcstat)
 /*
  * Remove all entries which have the (dir vnode, name) pair
  */
-
 void
 cfsnc_zapfile(dcp, name)
 	struct cnode *dcp;
@@ -619,7 +616,6 @@ cfsnc_zapfile(dcp, name)
  * Remove all the entries for a particular user. Used when tokens expire.
  * A user is determined by his/her effective user id (id_uid).
  */
-
 void
 cfsnc_purge_user(cred, dcstat)
 	struct ucred    *cred;
@@ -664,7 +660,6 @@ cfsnc_purge_user(cred, dcstat)
 /*
  * Flush the entire name cache. In response to a flush of the Venus cache.
  */
-
 void
 cfsnc_flush(dcstat)
 	enum dc_status dcstat;
@@ -729,7 +724,6 @@ cfsnc_flush(dcstat)
 /* 
  * This routine should print out all the hash chains to the console.
  */
-
 void
 print_cfsnc()
 {
@@ -765,10 +759,10 @@ cfsnc_gather_stats()
 	    max = cfsnchash[i].length;
 	}
 
-/*
- * When computing the Arithmetic mean, only count slots which 
- * are not empty in the distribution.
- */
+	/*
+	 * When computing the Arithmetic mean, only count slots which 
+	 * are not empty in the distribution.
+	 */
         cfsnc_stat.Sum_bucket_len = sum;
         cfsnc_stat.Num_zero_len = zeros;
         cfsnc_stat.Max_bucket_len = max;
