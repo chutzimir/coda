@@ -45,11 +45,11 @@ static char *rcsid = "$Header$";
 #define STARTASR_INTERVAL  300   /* Number seconds before asr can be retired */
 
 /* Definitions:  Pathnames to other executables... */
-#define CODACONSOLEOUT "/usr/local/bin/tixwish"
-#define CODACONSOLE "/usr/local/lib/coda/CodaConsole"
-#define JUMPSTARTASR "/usr/coda/etc/parser"        
+#define CODACONSOLEOUT "tixwish"
+#define CODACONSOLE "/usr/lib/coda/CodaConsole"
+#define JUMPSTARTASR "parser"        
 
-#define CFS "/usr/coda/etc/cfs"
+#define CFS "cfs"
 
 #define UserVolume "/coda/usr"
 #define UsernameEnvironmentVariable "USER"
