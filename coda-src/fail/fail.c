@@ -128,10 +128,10 @@ long flags;	/* for future use (should be 0) */
     strcpy(clientName, name);
     Fail_SendPredicate = StdSendPredicate;
     Fail_RecvPredicate = StdRecvPredicate;
-    theFilters[(int)sendSide] = (FailFilter *) malloc(0);
-    theFilters[(int)recvSide] = (FailFilter *) malloc(0);
-    theQueues[(int)sendSide] = (int *) malloc(0);
-    theQueues[(int)recvSide] = (int *) malloc(0);
+    theFilters[(int)sendSide] = (FailFilter *) NULL;
+    theFilters[(int)recvSide] = (FailFilter *) NULL;
+    theQueues[(int)sendSide] = (int *) NULL;
+    theQueues[(int)recvSide] = (int *) NULL;
     numFilters[0] = numFilters[1] = 0;
     Delay_Init();
     return 0;
