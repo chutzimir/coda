@@ -33,11 +33,6 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
-
-
-
-
-
 /*
  *
  * Manifest constants for Venus, plus declarations for source files without their own headers.
@@ -76,6 +71,10 @@ extern "C" {
 
 /* from venus */
 #include "venusstats.h"
+
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
 
 /*  *****  New error codes.  *****  */
 #if defined(__linux__) || defined(__BSD44__)

@@ -150,7 +150,7 @@ void CacheFile::ResetContainer() {
 
     int tfd;
     struct stat tstat;
-    if ((tfd = ::open(name, O_RDWR | O_CREAT | O_TRUNC, V_MODE)) < 0)
+    if ((tfd = ::open(name, O_RDWR | O_CREAT | O_TRUNC | O_BINARY, V_MODE)) < 0)
 	Choke("CacheFile::ResetContainer: open failed (%d)", errno);
 #ifndef DJGPP
     if (::fchmod(tfd, V_MODE) < 0)
@@ -207,7 +207,7 @@ void CacheFile::Copy(CacheFile *source) {
     struct stat tstat;
     char buf[DIR_PAGESIZE];
 
-    if ((tfd = ::open(name, O_RDWR | O_CREAT | O_TRUNC, V_MODE)) < 0)
+    if ((tfd = ::open(name, O_RDWR | O_CREAT | O_TRUNC| O_BINARY, V_MODE)) < 0)
 	Choke("CacheFile::Copy: open failed (%d)", errno);
 #ifndef DJGPP
     if (::fchmod(tfd, V_MODE) < 0)
@@ -220,7 +220,7 @@ void CacheFile::Copy(CacheFile *source) {
 	Choke("CacheFile::ResetCopy: fchown failed (%d)", errno);
 #endif
 #endif
-    if ((ffd = ::open(source->name, O_RDONLY, V_MODE)) < 0)
+    if ((ffd = ::open(source->name, O_RDONLY| O_BINARY, V_MODE)) < 0)
 	Choke("CacheFile::Copy: source open failed (%d)", errno);
 
     for (;;) {

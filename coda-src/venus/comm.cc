@@ -269,7 +269,7 @@ void CommInit() {
 	/* SFTP initialization. */
 	s = getservbyname("venus-se", 0);
 	if (s == 0) 
-		Choke("CommInit: getservbyname failed; check /etc/services");
+	  Choke("CommInit: getservbyname failed; check /etc/services");
 	SFTP_Initializer sei;
 	SFTP_SetDefaults(&sei);
 	sei.WindowSize = sftp_windowsize;

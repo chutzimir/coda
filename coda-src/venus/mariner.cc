@@ -120,8 +120,8 @@ void MarinerInit() {
     /* Look up the well-known CODA mariner service. */
     struct servent *serventp = getservbyname(MarinerService, 0);
     if (!serventp) {
-	eprint("MarinerInit: mariner service lookup failed!");
-	return;
+      eprint("MarinerInit: mariner service lookup failed!");
+      return;
     }
 
     /* Bind to it. */

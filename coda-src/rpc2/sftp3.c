@@ -157,6 +157,7 @@ int sftp_InitIO(register struct SFTP_Entry *sEntry)
 	omode = 0;
 	oflags = O_RDONLY;
     }
+    oflags |= O_BINARY;
 
 
     switch(sftpd->Tag) {

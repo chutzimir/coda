@@ -116,9 +116,9 @@ class bsnode {
     virtual ~bsnode();
 
     bstree *tree();
-    virtual void print();
-    virtual void print(FILE *);
-    virtual void print(int);
+    void print();
+    void print(FILE *);
+    void print(int);
 };
 
 

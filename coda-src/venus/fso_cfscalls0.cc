@@ -145,9 +145,6 @@ int fsobj::Fetch(vuid_t vuid) {
     int i, fd = 0, npages;
     struct DirHeader *hdrptr;
     {
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 	    Recov_BeginTrans();
 	    RVMLIB_REC_OBJECT(flags);
 	    flags.fetching = 1;

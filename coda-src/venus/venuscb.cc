@@ -89,7 +89,7 @@ extern void rpc2_PrintSEDesc(SE_Descriptor *, FILE *);
 
 
 const char CBSubsys[] = "Vice2-CallBack";
-const int CallBackServerStackSize = 16384;
+const int CallBackServerStackSize = 32768;
 
 int MaxCBServers = UNSET_MAXCBSERVERS;
 int cbbreaks = 0;	/* count of broken callbacks */
