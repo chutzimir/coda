@@ -3018,7 +3018,7 @@ int CheckFetchSemantics(ClientEntry *client, Vnode **avptr, Vnode **vptr,
 	if (SystemUser(client)) {
 	    if (((*vptr)->disk.type == vDirectory && !(*rights & PRSFS_LOOKUP)) ||
 		((*vptr)->disk.type != vDirectory && !(*rights & PRSFS_READ))) {
-		LogMsg(0, SrvDebugLevel, stdout, "CheckFetchSemantics: rights violation (%x : %x) (%x.%x.%x)",
+		LogMsg(1, SrvDebugLevel, stdout, "CheckFetchSemantics: rights violation (%x : %x) (%x.%x.%x)",
 			*rights, *anyrights,
 			Fid.Volume, Fid.Vnode, Fid.Unique);
 		return(EACCES);
@@ -3026,7 +3026,7 @@ int CheckFetchSemantics(ClientEntry *client, Vnode **avptr, Vnode **vptr,
 
 	    if (!IsOwner && (*vptr)->disk.type == vFile) {
 		if (CheckReadMode(client, *vptr)) {
-		    LogMsg(0, SrvDebugLevel, stdout, "CheckFetchSemantics: mode-bits violation (%x.%x.%x)",
+		    LogMsg(1, SrvDebugLevel, stdout, "CheckFetchSemantics: mode-bits violation (%x.%x.%x)",
 			    Fid.Volume, Fid.Vnode, Fid.Unique);
 		    return(EACCES);
 		}
