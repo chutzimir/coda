@@ -94,7 +94,7 @@ struct icreate_args {
 /* icreate() system call to create a new inode on a given device.
    If successful the call returns the number of the newly created inode (> 0).
    Otherwise it returns -1 */ 
-int icreate(p, uap, retval)
+int sys_icreate(p, uap, retval)
      struct proc *p;
      register struct icreate_args *uap;
      int *retval;
@@ -175,10 +175,10 @@ struct iopen_args {
  * Otherwise return -1 
  */
 int
-iopen(p, uap, retval)
-     struct proc *p;
-     register struct iopen_args *uap;
-     int *retval;
+sys_iopen(p, uap, retval)
+    struct proc *p;
+    register struct iopen_args *uap;
+    int *retval;
 {
     register struct inode *ip;
     register struct file *fp;
@@ -440,10 +440,10 @@ ireadwrite(p, uap, retval, rw)
  * way to get these routines ported. -- pkumar 5/95 
  */
 int
-iread(p, uap, retval)
-     struct proc *p;
-     register struct ireadwrite_args *uap;
-     int *retval;
+sys_iread(p, uap, retval)
+    struct proc *p;
+    register struct ireadwrite_args *uap;
+    int *retval;
 {
     printf("iread(dev=%d inode=%d inode_p1=%d offset=%u cbuf=%x count=%u) called\n",
 	   uap->dev, uap->inode, uap->inode_p1, uap->offset,
@@ -453,10 +453,10 @@ iread(p, uap, retval)
 }
 
 int
-iwrite(p, uap, retval)
-     struct proc *p;
-     register struct ireadwrite_args *uap;
-     int *retval;
+sys_iwrite(p, uap, retval)
+    struct proc *p;
+    register struct ireadwrite_args *uap;
+    int *retval;
 {
     printf("iwrite(dev=%d inode=%d inode_p1=%d offset=%u cbuf=%x count=%u) called\n", 
 	   uap->dev, uap->inode, uap->inode_p1, uap->offset,
@@ -545,20 +545,20 @@ iincdec(p, uap, retval, amount)
 
 
 int
-iinc(p, uap, retval)
-     struct proc *p;
-     register struct iincdec_args *uap;
-     int *retval;
+sys_iinc(p, uap, retval)
+    struct proc *p;
+    register struct iincdec_args *uap;
+    int *retval;
 {
     printf("iinc(dev=%d inode=%d inode_p1=%d) called\n",
 	   uap->dev, uap->inode, uap->inode_p1);
     return(iincdec(p, uap, retval, 1)); 
 }
 int
-idec(p, uap, retval)
-     struct proc *p;
-     register struct iincdec_args *uap;
-     int *retval;
+sys_idec(p, uap, retval)
+    struct proc *p;
+    register struct iincdec_args *uap;
+    int *retval;
 {
     printf("idec(dev=%d inode=%d inode_p1=%d) called\n",
 	   uap->dev, uap->inode, uap->inode_p1);
@@ -573,10 +573,10 @@ struct pioctl_args {
     int		follow;
 };
 int
-pioctl(p, uap, retval)
-     struct proc *p;
-     register struct pioctl_args *uap;
-     int *retval;
+sys_pioctl(p, uap, retval)
+    struct proc *p;
+    register struct pioctl_args *uap;
+    int *retval;
 {
     printf("pioctl(path=%s com=%d comarg=%s follow=%d) called\n",
 	   uap->path, uap->com, uap->comarg, uap->follow);
