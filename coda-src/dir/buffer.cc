@@ -63,7 +63,7 @@ extern "C" {
 #ifdef __MACH__
 #include <libc.h>
 #endif __MACH__
-#ifdef __NetBSD__
+#if __NetBSD__ || LINUX
 #include <stdlib.h>
 #endif __NetBSD__
 #ifdef __cplusplus
@@ -71,7 +71,7 @@ extern "C" {
 #endif __cplusplus
 
 
-#include "dir.h"
+#include "coda_dir.h"
 #include "dir.private.h"
 
 /* page hash table size */

@@ -78,7 +78,7 @@ extern "C" {
 }
 #endif __cplusplus
 
-#include "dir.h"
+#include "coda_dir.h"
 #include "dir.private.h"
 
 /* definitions for PRIVATE functions */

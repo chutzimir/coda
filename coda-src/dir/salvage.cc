@@ -80,7 +80,7 @@ extern "C" {
 #endif __cplusplus
 
 
-#include "dir.h"
+#include "coda_dir.h"
 #include "dir.private.h"
 
 /* This routine is called with one parameter, the id (the same thing that is passed to physio or the buffer package) of a directory to check.  It returns 1 if the directory looks good, and 0 otherwise. */
