@@ -43,7 +43,7 @@ Pittsburgh, PA.
 
 #ifdef __cplusplus
 extern "C" {
-#endif __cplusplus
+#endif
 
 #include <sys/types.h>
 
@@ -72,9 +72,10 @@ extern "C" {
 #include <partition.h>
 #include <volutil.h>
 #include <vice.h>
+
 #ifdef __cplusplus
 }
-#endif __cplusplus
+#endif
 
 #include <voltypes.h>
 #include <cvnode.h>
