@@ -147,6 +147,7 @@ void volent::Reintegrate()
 
             code = IncReintegrate(thisTid);
 
+            MarinerLog("reintegrate::%s, %d/%d\n", name, nrecs, startedrecs);
             eprint("Reintegrate: %s, %d/%d records, result = %s", 
                     name, nrecs, startedrecs, VenusRetStr(code));
 

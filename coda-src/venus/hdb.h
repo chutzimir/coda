@@ -171,7 +171,7 @@ const int HDB_NBUCKETS = 2048;
 const int HDBENT_MagicNumber = 8204933;
 const int HDBMaxFreeEntries = 32;
 
-const int BLOCKS_PER_HDBE = 16;
+const int BLOCKS_PER_HDBE = 48;
 const int DFLT_HDBE = DFLT_CB / BLOCKS_PER_HDBE;
 const int UNSET_HDBE = -1;
 const int MIN_HDBE = MIN_CB / BLOCKS_PER_HDBE;

@@ -125,7 +125,7 @@ const int VOLENTMaxFreeEntries = 8;
 const int MLENT_MagicNumber = 5214113;
 const int MLENTMaxFreeEntries = 32;
 
-const int BLOCKS_PER_MLE = 16;			    /* rule of thumb */
+const int BLOCKS_PER_MLE = 6;			    /* rule of thumb */
 const int DFLT_MLE = DFLT_CB / BLOCKS_PER_MLE;
 const int UNSET_MLE = -1;
 const int MIN_MLE = MIN_CB / BLOCKS_PER_MLE;
