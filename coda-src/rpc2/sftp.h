@@ -428,8 +428,8 @@ extern void sftp_InitPacket();
 extern void sftp_InitTrace();
 void sftp_vfclose(SE_Descriptor *sdesc, int openfd);
 int sftp_vfwritefile(register SE_Descriptor *sdesc, int openfd, char *buf, int nbytes);
-int sftp_vfreadfile(register SE_Descriptor *sdesc, long openfd, char *buf);
-int sftp_vfsize(register SE_Descriptor *sdesc, long openfd);
+int sftp_piggybackfileread(register SE_Descriptor *sdesc, long openfd, char *buf);
+int sftp_piggybackfilesize(register SE_Descriptor *sdesc, long openfd);
 void sftp_TraceBogus(long filenum, long linenum);
 
 extern void sftp_InitRTT();
