@@ -43,27 +43,22 @@ extern "C" {
 #include "y.tab.h"
 #include "asr.h"
 #include <stdio.h>
-#ifdef	__linux__
-#include <stdlib.h>
-#else
+#ifdef __MACH__
 #include <libc.h>
 #endif
+#if defined(__linux__) || defined(__NetBSD__)
+#include <stdlib.h>
+#endif /* __NetBSD__ || LINUX */
 extern int yylook();
 
 #define YYERRCODE	256		/* gross hack to simulate error */
 int yywrap() {
 	return(1);
 }
-#ifdef	__linux__
 int yyback(int *p, int m);
 int yyoutput(int);
 static void yyunput(int, char *);
 
-#else
-int yyback(int *p, int m);
-int yyoutput(int);
-int yyunput(int);
-#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus

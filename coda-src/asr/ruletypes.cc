@@ -264,7 +264,11 @@ int command_t::execute() {
 	// parent process 
 	union wait cstatus;
 	int cpid = rc;
+#ifdef	__NetBSD__
+	for (rc = wait(&cstatus.w_status); (rc != -1) && (rc != cpid); rc = wait(&cstatus.w_status))
+#else
 	for (rc = wait(&cstatus); (rc != -1) && (rc != cpid); rc = wait(&cstatus))
+#endif
 	    fprintf(stderr, "Waiting for %d to finish ...\n", cpid);
 	if (cstatus.w_coredump) {
 	    fprintf(stderr, "%s dumped core\n", name);
