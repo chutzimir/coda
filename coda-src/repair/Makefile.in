@@ -29,7 +29,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -51,5 +51,5 @@ reptest: reptest.o (OFILES) $(LIBS)
 repair:  repair.o $(OFILES) $(LIBS) $(LIBCS)
 	$(CXX) $(LIBFLAGS) repair.o $(OFILES) $(LIBS) $(LIBCS) -o repair
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
 

@@ -29,7 +29,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -78,4 +78,4 @@ fcon.client.o: fcon.client.c
 fcon.server.o: fcon.server.c
 ttyfcon.o: ttyfcon.c fcon.h
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules

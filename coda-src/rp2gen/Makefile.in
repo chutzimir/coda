@@ -53,7 +53,7 @@
 # The other Makefiles invoke this after setting: CC CFLAGS LFLAGS
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -87,4 +87,4 @@ crout.o: crout.c rp2.h
 
 util.o	: util.c rp2.h
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules

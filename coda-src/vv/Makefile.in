@@ -30,7 +30,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -46,5 +46,5 @@ libvv.a:	inconsist.o nettohost.o
 inconsist.o:	inconsist.cc inconsist.h
 nettohost.o:    nettohost.cc inconsist.h nettohost.h
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
 

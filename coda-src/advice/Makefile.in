@@ -30,7 +30,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -91,4 +91,4 @@ adsrv.client.o:  $(HFILES) $(HEADERS)
 
 test_bstree.o: test_bstree.h test_bstree.cc mybstree.h mybstree.cc
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules

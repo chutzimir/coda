@@ -30,7 +30,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -50,4 +50,4 @@ removeinc: removeinc.o $(LIBS)
 filerepair: filerepair.o $(LIBS)
 	$(CXX) $(LIBFLAGS) $^ ${LIBS} -o filerepair
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules

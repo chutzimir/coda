@@ -51,7 +51,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -72,5 +72,5 @@ libdir.a:  $(OFILES)
 
 $(OFILES): $(HEADERS)
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
 

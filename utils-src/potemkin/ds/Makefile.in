@@ -37,7 +37,7 @@
 
 TOPDIR= @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH = @srcdir@
@@ -61,7 +61,7 @@ HEADERS = ds_hash.h ds_list.h ds_log.h ds_rrlist.h ds_safeq.h odytypes.h
 libds.a: $(OFILES)
 
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
 
 
 

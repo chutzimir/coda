@@ -51,7 +51,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -74,5 +74,5 @@ SCRIPTS := $(VENUS-SCRIPTS) $(BACKUP-SCRIPTS)\
 CSBINS = newvenus vutil $(VENUS-SCRIPTS)
 SSBINS = $(BACKUP-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCRIPTS) $(VOL-SCRIPTS) $(VICE-SETUP)
 BBINS = $(BACKUP-SCRIPTS)
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
 

@@ -51,7 +51,7 @@
 
 TOPDIR = @top_srcdir@
 ifndef MAKDIR
-MAKDIR = @top_srcdir@/configs
+MAKDIR = @top_srcdir@
 endif
 srcdir = @srcdir@
 VPATH  = @srcdir@
@@ -92,4 +92,4 @@ cpasswd.o:	cpasswd.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h
 ctokens.o:	ctokens.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h 
 testlog.o:	testlog.cc ${INCLDIR}/auth2.h ${INCLDIR}/rpc2.h
 
-include $(MAKDIR)/Makerules
+include $(MAKDIR)/configs/Makerules
