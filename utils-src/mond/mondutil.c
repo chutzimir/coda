@@ -45,6 +45,7 @@ extern "C" {
 #include <signal.h>
 #include <stdio.h>
 #include <mach.h>
+#include <errno.h>
 #include "lwp.h"
 #include "rpc2.h"
 #include "lock.h"
@@ -220,7 +221,6 @@ static void TermSignal() {
 
 static void ChildSignal() {
     /* just wait on it and bail */
-    extern int errno;
     union wait status;
     int pid;
     pid = wait3(&status,WNOHANG,0);

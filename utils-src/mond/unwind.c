@@ -95,8 +95,6 @@ static FILE *lockFile;
 static bool done = mfalse;
 static bool everError = mfalse;
 
-extern int errno;
-
 void Log_Done();
 
 static void ParseArgs(int, char*[]);
