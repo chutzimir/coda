@@ -83,7 +83,7 @@ long S_TraceRpc(RPC2_Handle rpcid, SE_Descriptor *formal_sed) {
     if (!RPCTraceBufInited) {
 	RPC2_InitTraceBuffer(RPCTRACEBUFSIZE);
 	RPCTraceBufInited = 1;
-	assert(!RPC2_Trace)
+	assert(!RPC2_Trace);
 	RPC2_Trace = 1;
 	fprintf(tracefile, "Inited trace buffer; tracing is now ON\n");
     }

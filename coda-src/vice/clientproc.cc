@@ -218,7 +218,7 @@ PRIVATE HostTable *client_GetVenusId(RPC2_Handle RPCid)
 
 	/* Look for a corresponding host entry. */
 	for (i = 0; i < maxHost; i++)
-		if (hostTable[i].host == (unsigned int) peer.RemoteHost.Value.InetAddress &&
+		if (hostTable[i].host == peer.RemoteHost.Value.InetAddress &&
 		    hostTable[i].port == peer.RemotePortal.Value.InetPortNumber)
 			break;
 	
@@ -230,7 +230,6 @@ PRIVATE HostTable *client_GetVenusId(RPC2_Handle RPCid)
 		hostTable[i].FirstClient = 0;
 		hostTable[i].id = 0;
 		sprintf(hostTable[i].HostName, "%08x", htonl(hostTable[i].host));
-
 		Lock_Init(&hostTable[i].lock);
 		maxHost++;
 	}

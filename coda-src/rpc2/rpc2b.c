@@ -142,7 +142,7 @@ long RPC2_Init(
 		rpc2_Quit(RPC2_SEFAIL2);
 
     c = "SocketListener";
-    LWP_CreateProcess((PFIC)rpc2_SocketListener, 0x1000, 
+    LWP_CreateProcess((PFIC)rpc2_SocketListener, 0x3000, 
 		      LWP_NORMAL_PRIORITY, NULL,
 		      c, &rpc2_SocketListenerPID);
 

@@ -202,8 +202,13 @@ long ViceConnectFS(RPC2_Handle RPCid, RPC2_Unsigned ViceVersion, ViceClient *Cli
 	/* set up a callback channel if there isn't one for this host */
 	if (client->VenusId->id == 0) 
 		errorCode = CLIENT_MakeCallBackConn(client);
-	else 
+	else {
 		errorCode = CallBack(client->VenusId->id, &NullFid);
+		if ( errorCode  == RPC2_NAKED ) {
+			/* XXX tear down naked connection */
+		errorCode = CLIENT_MakeCallBackConn(client);
+		}
+	}			
     }
     LogMsg(2, SrvDebugLevel, stdout, "ViceConnectFS returns %s", 
 	   ViceErrorMsg((int) errorCode));
@@ -751,9 +756,7 @@ long ViceGetTime(RPC2_Handle RPCid, RPC2_Unsigned *seconds, RPC2_Integer *usecon
 
 
 /*
-  BEGIN_HTML
-  <a name="ViceNewConnection"><strong>Called the first time a client contacts a server</strong></a> 
-  END_HTML
+ViceNewConnection: Called after a new bind request is received.
 */
 
 long ViceNewConnection(RPC2_Handle RPCid, RPC2_Integer set, RPC2_Integer sl,

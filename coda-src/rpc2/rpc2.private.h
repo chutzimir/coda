@@ -464,10 +464,12 @@ extern void rpc2_ProcessPackets(), rpc2_ExpireEvents();
 
 /* Connection manipulation routines  */
 extern void rpc2_InitConn(), rpc2_FreeConn(), rpc2_SetConnError();
-extern struct CEntry *rpc2_AllocConn(), *rpc2_FindCEAddr(), *rpc2_ConnFromBindInfo(),
-	*rpc2_GetConn();
-extern bool rpc2_TestState();
-extern void rpc2_IncrementSeqNumber();
+extern struct CEntry *rpc2_AllocConn();
+struct CEntry *rpc2_FindCEAddr(RPC2_Handle whichHandle);
+struct CEntry *rpc2_ConnFromBindInfo(RPC2_HostIdent *whichHost, RPC2_PortalIdent *whichPortal, RPC2_Integer whichUnique);
+struct CEntry *rpc2_GetConn(RPC2_Handle handle);
+extern void rpc2_IncrementSeqNumber(struct CEntry *);
+/*  XXX where is this baby extern bool rpc2_TestState(); */
 
 /* Host manipulation routines */
 extern void rpc2_InitHost(), rpc2_FreeHost();

@@ -82,7 +82,7 @@ extern void ViceTerminate();
 extern void ViceUpdateDB();
 extern void SwapLog();
 extern void SwapMalloc();
-extern int volUtil_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*, SE_Descriptor*);
+extern long int volUtil_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*, SE_Descriptor*);
 
 PRIVATE void InitServer();
 PRIVATE void VolUtilLWP(int *);

@@ -187,7 +187,7 @@ PRIVATE int lockReplicas(volinfo_t *vol);
 PRIVATE void unlockReplicas(volinfo_t *vol);
 PRIVATE int backup(volinfo_t *vol);
 PRIVATE void VUInitServerList();
-extern int volDump_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*,
+extern int long volDump_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*,
 				  SE_Descriptor*);
 
 

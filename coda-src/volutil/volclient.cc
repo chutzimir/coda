@@ -150,7 +150,7 @@ PRIVATE void V_InitRPC(int timeout);
 PRIVATE int V_BindToServer(char *fileserver, RPC2_Handle *RPCid);
 PRIVATE void Die(char *msg);
 PRIVATE void VolDumpLWP(struct rockInfo *rock);
-extern int volDump_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*,SE_Descriptor*);
+extern long int volDump_ExecuteRequest(RPC2_Handle, RPC2_PacketBuffer*,SE_Descriptor*);
 
 int main(int argc, char **argv) {
 #ifndef __CYGWIN32__

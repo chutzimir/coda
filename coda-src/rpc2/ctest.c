@@ -374,6 +374,7 @@ int main(int arg, char **argv)
 		while(i--)
 		    {
 		    Buff1->Header.BodyLength = 0;
+		    Buff1->Header.Opcode = opcode;
 		    tt = RPC2_MakeRPC(cid, Buff1, (SE_Descriptor *)NULL, &Buff2, 
 				      (struct timeval *)NULL, (long)0);
 		    if (tt != RPC2_SUCCESS)break;

@@ -104,7 +104,6 @@ extern int Fcon_Init();
 }
 #endif __cplusplus
 
-extern void setmyname(char *);
 
 #include <rvmlib.h>
 
@@ -383,15 +382,6 @@ main(int argc, char *argv[])
 	exit(-1);
     }
 
-    setmyname(argv[0]);
-
-    
-
-    len = (int) strlen(argv[0]);
-    for(i = 0;i < len;i++) {
-	*(argv[0]+i) = ' ';
-    }
-    strcpy(argv[0],"srv");
 
     if(chdir("/vice/srv")) {
 	LogMsg(0, 0, stdout, "could not cd to /vice/srv - exiting");

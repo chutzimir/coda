@@ -61,7 +61,7 @@ ifneq ($(SHORTSYS),djgpp)
 SUBDIRS = $(I) $(II) $(III) $(IV) $(V) $(VI) $(VII) $(VIII) $(IX) \
 	  $(X) $(XI)
 else
-SUBDIRS = $(I) $(II) $(III) $(IV) $(V) $(VI) $(VII)
+SUBDIRS = $(II) $(III) $(IV) $(V) $(VI) $(VII)
 endif
 
 include $(MAKDIR)/configs/Makerules
