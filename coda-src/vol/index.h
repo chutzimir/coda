@@ -45,12 +45,12 @@ static char *rcsid = "$Header$";
 class vindex {
   friend class vindex_iterator;
     Device  unix_dev;
-    VolId   vol_id;	    /* unique volume id of object's volume */
+    VolumeId   vol_id;	    /* unique volume id of object's volume */
     int	    vol_index;	    /* index of object's volume in recoverable storage */
     int	    vtype;	    /* vLarge (= 0) or vSmall (= 1) (from cvnode.h) */
     int	    camindex;
 public:
-    vindex(VolId volid = -1, int vnodetype = -1, Device dev = -1,
+    vindex(VolumeId volid = -1, int vnodetype = -1, Device dev = -1,
 	   int size = -1, int volindex = -1);
     operator=(vindex&);
     ~vindex();

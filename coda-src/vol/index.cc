@@ -92,7 +92,7 @@ extern "C" {
 
 /* Initialize the vindex structure with client supplied parameters */
 /* if no arguments are supplied, they are initialized to -1 */
-vindex::vindex(VolId volid, int vnodetype, Device dev, int size, int volindex)
+vindex::vindex(VolumeId volid, int vnodetype, Device dev, int size, int volindex)
 /*    volid	    unique identifier of object's volume */
 /*    vnodetype	    vLarge or vSmall */
 /*    dev	    device on which index file resides */

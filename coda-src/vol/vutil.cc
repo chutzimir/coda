@@ -107,10 +107,10 @@ struct VolumeHeader tempHeader;
    file server and WILL BE DESTROYED the next time a system salvage is performed */
 
 /* This must be called from within a transaction! */
-Volume *VCreateVolume(Error *ec, char *partition, VolId volumeId, VolId parentId, 
-		      VolId groupId, int type, int rvmlogsize) {
+Volume *VCreateVolume(Error *ec, char *partition, VolumeId volumeId, VolumeId parentId, 
+		      VolumeId groupId, int type, int rvmlogsize) {
 
-    /*    VolId parentId;  Should be the same as volumeId if volume is readwrite */
+    /*    VolumeId parentId;  Should be the same as volumeId if volume is readwrite */
     /* type is the type of the volume we are creating */
 
     VolumeDiskData vol;
