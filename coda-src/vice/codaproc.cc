@@ -387,7 +387,7 @@ long ViceResolve(RPC2_Handle cid, ViceFid *Fid) {
     errorCode = mgrp->CheckResult();
 
     // delete hosts from mgroup where rpc succeeded but call returned error 
-    lockerror = CheckRetCodes((unsigned long *)mgrp->rrcc.retcodes, 
+    lockerror = CheckResRetCodes((unsigned long *)mgrp->rrcc.retcodes, 
 			      mgrp->rrcc.hosts, hosts);
     errorCode = mgrp->GetHostSet(hosts);
 
@@ -427,7 +427,9 @@ FreeGroups:
 	LogMsg(0, SrvDebugLevel, stdout,  
 	       "ViceResolve:Couldnt lock volume %x at all accessible servers",
 		Fid->Volume);
-	return(EWOULDBLOCK);
+	if ( lockerror != VNOVNODE ) 
+	    lockerror = EWOULDBLOCK;
+	return(lockerror);
     }
     if (errorCode){
 	if (errorCode == ETIMEDOUT) 
