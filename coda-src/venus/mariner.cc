@@ -201,7 +201,7 @@ void MarinerLog(char *fmt ...) {
     char buf[180];
 
     va_start(ap, fmt);
-    vsprintf(buf, fmt, ap);
+    vsnprintf(buf, 180, fmt, ap);
     va_end(ap);
 
     int len = (int) strlen(buf);
