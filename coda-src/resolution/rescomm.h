@@ -49,7 +49,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-#ifndef LINUX
+#if 0
 #include <cthreads.h>
 #endif 
 #include <rpc2.h>
