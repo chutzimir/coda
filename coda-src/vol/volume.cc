@@ -377,7 +377,7 @@ void VInitVolumePackage(int nLargeVnodes, int nSmallVnodes, int DoSalvage) {
     /* Setting Debug to 1 and List to 0; maybe remove later ***ehs***/
     /* invoke salvager for full salvage */
     *pt = salvager;	/* MUST set *pt to salvager before vol_salvage */
-#ifndef __linux__
+#ifdef __MACH__
     assert(S_VolSalvage(0, NULL, 0, DoSalvage, 1, 0) == 0);
 #endif
     *pt = fileServer;
