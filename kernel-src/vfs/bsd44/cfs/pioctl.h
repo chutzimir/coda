@@ -9,9 +9,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.2  1996/01/02 16:57:27  bnoble
- * Added support for Coda MiniCache and raw inode calls (final commit)
+ * Revision 1.2.34.1  1997/11/12 12:38:11  rvb
+ * mach_vioctl.h -> pioctl.h
  *
+ * Revision 1.2  96/01/02  16:57:27  bnoble
+ * Added support for Coda MiniCache and raw inode calls (final commit)
+ * 
  * Revision 1.1.2.1  1995/12/20 01:57:54  bnoble
  * Added CFS-specific files
  *
@@ -42,9 +45,6 @@
 
 #ifndef	_SYS_VICEIOCTL_H_
 #define _SYS_VICEIOCTL_H_
-
-#include <sys/types.h>
-#include <sys/ioctl.h>
 
 struct ViceIoctl {
 	caddr_t in, out;	/* Data to be transferred in, or out */
