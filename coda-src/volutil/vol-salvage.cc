@@ -338,6 +338,11 @@ PRIVATE int SalvageFileSys(char *path, VolumeId singleVolumeNumber)
 	LogMsg(0, VolDebugLevel, stdout, "\"%s\" is not a mounted file system", path);
 	return(VNOVNODE);
     }
+#else 
+    /* Name isn't used by anything put LogMsg, but we better initialize it. 
+     * (raiff 5/12/97)
+     */
+    name = "";
 #endif
     VLockPartition(path);
     if (singleVolumeNumber || ForceSalvage)
