@@ -311,15 +311,13 @@ Exit:
 }
 
 /*
-  BEGIN_HTML
-  <a name="ViceResolve"><strong>Resolve the diverging replicas of an object</strong></a> 
-  END_HTML
+  ViceResolve: Resolve the diverging replicas of an object
 */
 long ViceResolve(RPC2_Handle cid, ViceFid *Fid) {
     int errorCode = 0;
     Volume *volptr = 0;	    /* the volume ptr */
     Vnode *vptr = 0;	    /* the vnode ptr */
-    VolumeId VSGVolnum = Fid->Volume;
+    VolumeId VSGVolnum;
     int	status = 0;	    /* transaction status variable */
     ViceVersionVector VV;
     ResStatus rstatus;
@@ -335,6 +333,14 @@ long ViceResolve(RPC2_Handle cid, ViceFid *Fid) {
     ResPathElem *pathelembuf = NULL;
     int j;
 
+    if ( Fid ) 
+        VSGVolnum = Fid->Volume;
+    else { 
+	LogMsg(0, SrvDebugLevel, stdout, "ViceResolve: I was handed NULL Fid");
+	assert(0);
+    }
+
+       
     if (pathtiming && probingon && (!(ISDIR(*Fid)))) {
 	FileresTPinfo = new timing_path(MAXPROBES);
 	PROBE(FileresTPinfo, COORDSTARTVICERESOLVE);
