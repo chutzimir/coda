@@ -97,6 +97,10 @@ endif
 
 ifeq ($(RVMTARGET),lwp)
 CFLAGS += -DRVM_USELWP
+
+%.o : $(srcdir)/../rvm/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 LIBRARIES   = librvmlwp.a
 librvmlwp.a: $(LIBOBJ)
 endif
