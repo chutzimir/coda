@@ -59,7 +59,7 @@ int small = 500;
 
 vv_t NullVV = {{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0}, 0};
 
-PollAndYield() {
+void PollAndYield() {
     dlist dl;
     ViceFid fid;
 

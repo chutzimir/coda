@@ -65,7 +65,7 @@ class recov_vol_log {
 				ViceVersionVector *, ResStatus *, 
 				RPC2_Integer *, RPC2_Integer,
 				RPC2_Integer *, ResPathElem *);
-    friend void DumpLog(rec_dlist *, Volume *, char **, int *, int *);
+    friend void DumpLog(rec_dlist *, struct Volume *, char **, int *, int *);
     friend int DumpVolDiskData(int, VolumeDiskData *);
     
     // recoverable part 

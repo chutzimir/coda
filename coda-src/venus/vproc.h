@@ -321,7 +321,7 @@ extern long FidToNodeid(ViceFid *);
 #ifdef __linux__
 
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_euid))
-#define	CRTORUID(cred)	((vuid_t)((cred).cr_fsuid))
+#define	CRTORUID(cred)	((vuid_t)((cred).cr_euid))
 #else
 
 /* XXX BSD needs to think through what they want!!!! 

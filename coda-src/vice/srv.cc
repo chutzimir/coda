@@ -131,7 +131,6 @@ extern "C" {
 
 
 #include <srv.h>
-#include <codadir.h>
 #include <vice.private.h>
 #include <recov.h>
 #include <camprivate.h>

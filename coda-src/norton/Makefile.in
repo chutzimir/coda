@@ -43,6 +43,7 @@ NLIBS =	$(LIBIBERTY) \
 	$(LIBSEG) 	\
 	$(LIBCODARVM) 	\
 	$(LIBOLDLWP)	\
+	$(LIBBASE)      \
 	$(LIBMACH)	\
 	$(LIBCOMPAT)	\
 	$(LIBREADLINE)  \
