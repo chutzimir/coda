@@ -703,6 +703,7 @@ void PurgeLog(rec_dlist *list, Volume *vol, vmindex *ind) {
 void DumpLog(rec_dlist *log, Volume *vp, char **buf, int *bufsize, int *nentries) {
     int maxsize = V_VolLog(vp)->size * (sizeof(recle) + sizeof(rename_rle));
     *buf = (char *)malloc(maxsize);
+    assert(buf);
     int lastentry = 0;
 
     *nentries = *nentries + log->count();	// assume nentries has been initialized by caller
