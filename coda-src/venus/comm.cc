@@ -708,6 +708,7 @@ srvent *FindServerByCBCid(RPC2_Handle connid) {
 
 void GetServer(srvent **spp, unsigned long host) {
     LOG(100, ("GetServer: host = %x\n", host));
+    assert(host != 0);
 
     srvent *s = FindServer(host);
     if (s) {

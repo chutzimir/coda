@@ -449,11 +449,8 @@ static void Recov_InitRVM() {
 		   VenusLogDevice, VenusLogDeviceSize);
 
 	    int fd = 0;
-#ifndef DJGPP
-	    if ((fd = open(VenusDataDevice, O_WRONLY | O_CREAT | O_TRUNC, 0600)) < 0)
-#else
-	    if ((fd = open(VenusDataDevice, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0600)) < 0)
-#endif
+	    if ((fd = open(VenusDataDevice,
+			   O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0600)) < 0)
 		Choke("Recov_InitRVM: create of (%s) failed (%d)",
 		    VenusDataDevice, errno);
 	    {
