@@ -51,24 +51,21 @@ extern "C" {
 #include <strings.h>
 #include <sys/stat.h>
 #include <setjmp.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
 #include <inodeops.h>
 #include <rpc2.h>
 #include <signal.h>
+
+#include <vice.h>
+#include <auth2.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <vice.h>
 #include <venusioctl.h>
-#include <auth2.h>
 #include <repio.h>
 #include <resolve.h>
 #include <inconsist.h>
