@@ -586,7 +586,12 @@ int fsobj::GetAttr(vuid_t vuid, RPC2_BoundedBS *acl) {
 		 */
 		char VFlags[PIGGY_VALIDATIONS];
 		RPC2_CountedBS VFlagBS;
-		VFlagBS.SeqLen = 0;
+
+		/* Temporary quickfix:
+		 * Although we are not sending anything, we need to give
+		 * the server enough space to jot down the returnvalues.
+		 *  -JH */
+		VFlagBS.SeqLen = numPiggyFids;
 		VFlagBS.SeqBody = (RPC2_ByteSeq)VFlags;
 
 		ARG_MARSHALL_BS(IN_OUT_MODE, RPC2_CountedBS, VFlagvar, VFlagBS, VSG_MEMBERS, VENUS_MAXBSLEN);
