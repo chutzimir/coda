@@ -226,6 +226,9 @@ int VN_DCommit(Vnode *vnp);
 int VN_DAbort(Vnode *vnp);
 PDirHandle VN_SetDirHandle(struct Vnode *vn);
 void VN_PutDirHandle(struct Vnode *vn);
+void VN_DropDirHandle(struct Vnode *vn);
+void VN_CopyOnWrite(struct Vnode *vptr);
+
 void VN_VN2Fid(struct Vnode *, struct Volume *, struct ViceFid *);
 void VN_VN2PFid(struct Vnode *, struct Volume *, struct ViceFid *);
 

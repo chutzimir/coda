@@ -296,7 +296,7 @@ extern void Die(char *);
 /* srv.c */
 extern void SetStatus(Vnode *, ViceStatus *, Rights, Rights);
 extern int GetRights (PRS_InternalCPS *, AL_AccessList *, int, Rights *, Rights *);
-extern int GetFsObj(ViceFid *, Volume **, Vnode **, int, int, int , int);
+extern int GetFsObj(ViceFid *, Volume **, Vnode **, int, int, int , int, int);
 extern int SystemUser(ClientEntry *);
 extern int AdjustDiskUsage(Volume *, int);
 extern void ChangeDiskUsage(Volume *, int);

@@ -99,7 +99,7 @@ long RS_FetchDirContents(RPC2_Handle RPCid, ViceFid *Fid,
 	}
 	
 	SLog(9, "RS_FetchDirContents: Going to Fetch Object %s", FID_(Fid));
-	errorcode = GetFsObj(Fid, &volptr, &vptr, READ_LOCK, NO_LOCK, 1, 0);
+	errorcode = GetFsObj(Fid, &volptr, &vptr, READ_LOCK, NO_LOCK, 1, 0, 0);
 	if (errorcode) 
 		goto Exit;
     }
@@ -112,6 +112,7 @@ long RS_FetchDirContents(RPC2_Handle RPCid, ViceFid *Fid,
 			     (2 * sizeof(int))/* for quota */);
 	assert(buf);
 	bcopy((const void *)DH_Data(dh), buf, vptr->disk.length);
+	VN_PutDirHandle(vptr);
         size = vptr->disk.length;
     }
 
@@ -210,7 +211,7 @@ long RS_ClearIncon(RPC2_Handle RPCid, ViceFid *Fid,
     }
     
     // get the object 
-    if (errorcode = GetFsObj(Fid, &volptr, &vptr, WRITE_LOCK, NO_LOCK, 1, 0)) {
+    if (errorcode = GetFsObj(Fid, &volptr, &vptr, WRITE_LOCK, NO_LOCK, 1, 0, 0)) {
 	SLog(0, "RS_ClearIncon: GetFsObj returns error %d, fid %s", 
 	       errorcode, FID_(Fid));
 	errorcode = EINVAL;

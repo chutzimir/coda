@@ -121,7 +121,7 @@ int venus_relay_addr = 0x7f000001;
 /* local-repair modification */
 int main(int argc, char **argv) {
     /* Print to the console -- important during reboot. */
-#ifndef DJGPP
+#if ! defined(__CYGWIN32__) && ! defined(DJGPP)
     freopen("/dev/console", "w", stderr);
 #endif
     fprintf(stderr, "Coda Venus, version %d.%d (%d)\n\r",

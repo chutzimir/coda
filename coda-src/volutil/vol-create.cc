@@ -244,13 +244,7 @@ static int ViceCreateRoot(Volume *vp)
 
     /* SetSalvageDirHandle(&dir, V_id(vp), vp->device, 0); */
     dir = VN_SetDirHandle(vn);
-    /* Updated the vnode number in the dirhandle for rvm dir package */
-#if 0
-    dir.vnode = bitNumberToVnodeNumber(0, vLarge);
-    dir.unique = 1;
-    did.Volume = V_id(vp);
-#endif
-    /* not sure if this wants bit number or vnode id **ehs***/
+
     did.Vnode = (VnodeId)bitNumberToVnodeNumber(0, vLarge);
     LogMsg(29, VolDebugLevel, stdout, 
 	   "ViceCreateRoot: did.Vnode = %d", did.Vnode);
@@ -299,13 +293,14 @@ static int ViceCreateRoot(Volume *vp)
     vn->volumePtr = vp;
     bcopy((const void *)vnode, (void *)&vn->disk, sizeof(VnodeDiskObject));
     VN_DCommit(vn);   
+    VN_PutDirHandle(vn);
+
     bcopy((const void *)&(vn->disk), (void *) vnode, sizeof(VnodeDiskObject));
-    /* should be cautious here - it is a large vnode - so acl should also be 
-      copied.  But DCommit doesnt touch it */
     assert(vnode->inodeNumber != 0);
     assert(vnode->uniquifier == 1);
 
-    /* create the resolution log for this vnode if rvm resolution is turned on */
+    /* create the resolution log for this vnode if rvm resolution is
+       turned on */
     if (AllowResolution && V_RVMResOn(vp)) {
 	LogMsg(0, SrvDebugLevel, stdout, "Creating new log for root vnode\n");
 	CreateRootLog(vp, vn);

@@ -93,7 +93,8 @@ long RS_ResPhase2(RPC2_Handle RPCid, ViceFid *Fid, RPC2_Integer *size,
     // get objects 
     {
 	v = AddVLE(*vlist, Fid);
-	if (errorCode = GetFsObj(Fid, &volptr, &v->vptr, READ_LOCK, NO_LOCK, 0, 0))
+	if (errorCode = GetFsObj(Fid, &volptr, &v->vptr, READ_LOCK, 
+				 NO_LOCK, 0, 0, 0))
 	    goto Exit;
     }
     // Check Phase2 Semantics 
