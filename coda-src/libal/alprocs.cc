@@ -87,6 +87,7 @@ extern "C" {
 }
 #endif __cplusplus
 
+
 #include <util.h>
 #include "prs.h"
 #include "al.h"
@@ -836,7 +837,18 @@ RetryGet:
 
     yyinFileName = AL_pdbFileName;
     fseek(yyin, seekval, 0);
-    yyparse();
+
+    {
+      /* NOTE: following code involves uglyness with C++ name mangling */
+      typedef struct yy_buffer_state *YY_BUFFER_STATE;
+      YY_BUFFER_STATE yy_create_buffer(FILE *, int);
+      void yy_switch_to_buffer(YY_BUFFER_STATE);
+      void yy_delete_buffer(YY_BUFFER_STATE);
+      YY_BUFFER_STATE yybuf = yy_create_buffer(yyin, 4096);
+      yy_switch_to_buffer(yybuf);
+      yyparse();
+      yy_delete_buffer(yybuf);
+    }
     flock(fileno(yyin), LOCK_UN);	/* ignore return codes */
     fclose(yyin);
     if (AL_DebugLevel > 0) PrintEntry();
