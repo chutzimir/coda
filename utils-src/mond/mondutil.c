@@ -387,7 +387,7 @@ void zombie(int sig, int code, struct sigcontext *scp) {
     static death=0;
     if (!death) {
 	death = 1;
-	bcopy(scp, &OldContext, sizeof(struct sigcontext));
+	memcpy(&OldContext, scp, sizeof(struct sigcontext));
 	LogMsg(0, 0, LogFile,  "****** INTERRUPTED BY SIGNAL %d CODE %d ******", sig, code);
 	LogMsg(0, 0, LogFile,  "****** Aborting outstanding transactions, stand by...");
 	
