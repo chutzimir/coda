@@ -484,7 +484,9 @@ void vproc::GetStamp(char *buf) {
 	case VPT_Simulator:	t = 'S'; break;
 	case VPT_AdviceDaemon:  t = 'A'; break;
 	case VPT_LRDaemon:  	t = 'L'; break;
-	default:	Choke("vproc::GetStamp: bogus type (%d)!", type);
+	default:
+		t = '?'; 
+		eprint("???vproc::GetStamp: bogus type (%d)!", type);
     }
     time_t curr_time = Vtime();
     struct tm *lt = localtime(&curr_time);
