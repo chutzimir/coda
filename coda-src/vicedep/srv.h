@@ -120,17 +120,6 @@ extern void ViceTerminate();
 #define	STREQ(a, b) (strcmp((a), (b)) == 0)
 #define	STRNEQ(a, b, n) (strncmp((a), (b), (n)) == 0)
 
-#define FID_EQ(a, b)\
-    ((a).Volume == (b).Volume && (a).Vnode == (b).Vnode && (a).Unique == (b).Unique)
-
-#define FID_LT(a, b)\
-    /* Assumes that ((a).Volume == (b).Volume)! */\
-    ((((a).Vnode) < ((b).Vnode)) || ((a).Vnode == (b).Vnode && ((a).Unique) < ((b).Unique)))
-
-#define FID_LTE(a, b)\
-    /* Assumes that ((a).Volume == (b).Volume)! */\
-    ((((a).Vnode) < ((b).Vnode)) || ((a).Vnode == (b).Vnode && ((a).Unique) <= ((b).Unique)))
-
 #define	SID_EQ(a, b)	((a).Host == (b).Host && (a).Uniquifier == (b).Uniquifier)
 
 #define	SetAccessList(vptr, ACL, ACLSize)\
@@ -349,8 +338,5 @@ extern int AllowResolution;
 
 /* coppend.c */
 extern void AddToCopPendingTable(ViceStoreId *, ViceFid *);
-
-// volutil
-extern void SetDirHandle(DirHandle *, Vnode *);
 
 #endif	not _VICE_SRV_H_

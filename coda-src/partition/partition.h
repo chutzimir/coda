@@ -41,7 +41,8 @@ static char *rcsid = "$Header$";
 #include <dirent.h>
 #include <vcrcommon.h>
 #include <voltypes.h>
-
+#include <lwp.h>
+#include <lock.h>
 #include <vicetab.h>
 /* #include <cbitmap.h> */
 #include <viceinode.h>

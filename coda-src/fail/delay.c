@@ -76,8 +76,8 @@ struct {
     int size;
 } DelayQueues = {0,0,0};
 
-PRIVATE int Delay_LWP();
-PRIVATE void SubFromTime();
+static int Delay_LWP();
+static void SubFromTime();
 PROCESS DelayLWPPid;
 
 int Delay_Init()
@@ -249,7 +249,7 @@ int MakeQueue(a, b, c, d)
 
 
 /* Decrement time fromp by amtp, return 0 if more time left, 1 otherwise */
-PRIVATE void SubFromTime(fromp, amtp)
+static void SubFromTime(fromp, amtp)
 struct timeval *fromp, *amtp;
 {
 	if (amtp->tv_usec > fromp->tv_usec) {
@@ -264,7 +264,7 @@ struct timeval *fromp, *amtp;
 }
 
 
-PRIVATE int Delay_LWP()
+static int Delay_LWP()
 {
     int i, j, socket;
     struct timeval timeToNext;

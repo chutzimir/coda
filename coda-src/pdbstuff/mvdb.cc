@@ -106,7 +106,8 @@ main(int argc, char *argv[])
     
     
     /* Obtain invocation options */
-    lockfile = (char *)getwd(ebuf);	/* lock the current directory by default */
+	/* lock the current directory by default */
+    lockfile = (char *)getcwd(ebuf, MAXPATHLEN);
     if (argc < 2) BadArgs();
 
     for (i = 1; i < argc; i++)

@@ -87,8 +87,8 @@ extern "C" {
 
 #include <auth2.h>
 
-PRIVATE char *myuser;
-PRIVATE char mypasswd[10];
+static char *myuser;
+static char mypasswd[10];
 
 int main(int argc, char **argv)
 {

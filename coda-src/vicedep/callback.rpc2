@@ -68,9 +68,9 @@ CallBackConnect (IN RPC2_Integer SideEffectType,
 		 IN RPC2_CountedBS ClientIdent)
 		 NEW_CONNECTION;
 
-CallBack	(IN ViceFid Fid);
+1: CallBack	(IN ViceFid Fid);
 
-CallBackFetch	(IN ViceFid Fid,
+2: CallBackFetch	(IN ViceFid Fid,
 		 IN OUT SE_Descriptor BD);
 
-CallBackReceivedStore (IN ViceFid Fid);
+3: CallBackReceivedStore (IN ViceFid Fid);

@@ -57,7 +57,7 @@ static char *rcsid = "$Header$";
 
 
 int Fcon_LWP();
-PRIVATE PrintRPCError(int, RPC2_Handle); /* forward decl to pacify gcc */
+static PrintRPCError(int, RPC2_Handle); /* forward decl to pacify gcc */
 
 
 int Fcon_Init()
@@ -167,7 +167,7 @@ FailFilterSide side;
     return Fail_PurgeFilters(side);
 }
 
-PRIVATE PrintRPCError(rCode, connId)
+static PrintRPCError(rCode, connId)
 int rCode;
 RPC2_Handle connId;
 {

@@ -95,10 +95,10 @@ int *Gsorted, *Goffsets, *Gseeks;
 /*------------------------------End of Shared Globals ------------------------------------------*/
 
 extern int errno;
-PRIVATE void BigSwap(INOUT int where[], IN int HowMany);
-PRIVATE void BigUnswap(INOUT int where[], IN int HowMany);
-PRIVATE int fullread(IN int fd, OUT char *buff, IN int nbytes);
-PRIVATE int fullwrite(IN int fd, INOUT char *buff, IN int nbytes);
+static void BigSwap(INOUT int where[], IN int HowMany);
+static void BigUnswap(INOUT int where[], IN int HowMany);
+static int fullread(IN int fd, OUT char *buff, IN int nbytes);
+static int fullwrite(IN int fd, INOUT char *buff, IN int nbytes);
 
 
 
@@ -427,7 +427,7 @@ int CmpGn(IN int *g1, IN int *g2)
     return( CaseFoldedCmp(LitPool+Goffsets[*g1], LitPool+Goffsets[*g2]) );
     }
 
-PRIVATE void BigSwap(INOUT int where[], IN int HowMany)
+static void BigSwap(INOUT int where[], IN int HowMany)
     {
     register int i;
     for (i = 0; i < HowMany; i++)
@@ -435,7 +435,7 @@ PRIVATE void BigSwap(INOUT int where[], IN int HowMany)
     }
 
 
-PRIVATE void BigUnswap(INOUT int where[], IN int HowMany)
+static void BigUnswap(INOUT int where[], IN int HowMany)
     {
     register int i;
     for (i = 0; i < HowMany; i++)
@@ -443,7 +443,7 @@ PRIVATE void BigUnswap(INOUT int where[], IN int HowMany)
     }
 
 
-PRIVATE int fullread(IN int fd, OUT char *buff, IN int nbytes)
+static int fullread(IN int fd, OUT char *buff, IN int nbytes)
     /* 
 	Read data from open file descriptor fd.
 
@@ -496,7 +496,7 @@ PRIVATE int fullread(IN int fd, OUT char *buff, IN int nbytes)
 
 
 
-PRIVATE int fullwrite(IN int fd, INOUT char *buff, IN int nbytes)    
+static int fullwrite(IN int fd, INOUT char *buff, IN int nbytes)    
     /* 
 	Write data on open file descriptor fd.
 
