@@ -175,11 +175,12 @@ main(int argc, char *argv[])
 #endif
 
     MonBirthTime = time(0);
-    initscr();
-    curWin = newwin(1, 1, 0, 0);
     GetArgs(argc, argv);
     InitRPC();
     rpc2_logfile = dbg;
+
+    initscr();
+    curWin = newwin(1, 1, 0, 0);
     DrawCaptions();
 
     LWP_CreateProcess((PFIC)kbdlwp, 0x4000, LWP_NORMAL_PRIORITY, NULL, "KBD", (PROCESS *)&i);
