@@ -712,7 +712,7 @@ O_FreeLocks:
 		    int nHosts = 0;
 		    for (i = 0; i < MAXHOSTS; i++)
 			if (Hosts[i] != 0) nHosts++;
-		    if (nHosts * (int)sizeof(ViceStatistics) > VC_DATASIZE)
+		    if (nHosts * (int)sizeof(ViceStatistics) > VC_MAXDATASIZE)
 			{ u.u_error = EINVAL; break; }
 
 		    /* Get statistics from each host. */
@@ -1011,7 +1011,7 @@ V_FreeLocks:
 
 		case VIOC_GETVENUSSTATS:
 		    {
-		    if (sizeof(VenusStatistics) > VC_DATASIZE)
+		    if (sizeof(VenusStatistics) > VC_MAXDATASIZE)
 			{ u.u_error = EINVAL; break; }
 
 		    VenusStatistics *Stats = (VenusStatistics *)data->out;

@@ -808,7 +808,6 @@ void va_init(struct coda_vattr *vap) {
     vap->va_mode = VA_IGNORE_MODE;
     vap->va_uid = VA_IGNORE_UID;
     vap->va_gid = VA_IGNORE_GID;
-    vap->va_fsid = VA_IGNORE_FSID;
     VA_ID(vap) = VA_IGNORE_ID;
     VA_ATIME_1(vap) = VA_IGNORE_TIME1;
     VA_ATIME_2(vap) = VA_IGNORE_TIME2;
@@ -826,7 +825,6 @@ void va_init(struct coda_vattr *vap) {
 
 
 void VattrToStat(struct coda_vattr *vap, struct stat *sp) {
-    sp->st_dev = (dev_t)(vap->va_fsid);
     sp->st_mode = vap->va_mode;
     sp->st_nlink = vap->va_nlink;
     sp->st_uid = (uid_t)(vap->va_uid);

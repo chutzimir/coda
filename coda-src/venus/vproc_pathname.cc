@@ -166,7 +166,7 @@ int vproc::namev(char *path, int flags, struct venus_vnode **vpp) {
 	/* If it is a directory, we simply make it the new parent object. */
 	/* If it is a symbolic link, we reset the pathname to be it, and continue scanning. */
 	switch(VN_TYPE(vp)) {
-	    case VCREG:
+	    case C_VREG:
 		{
 		if (plen == 0) {
 		    DISCARD_VNODE(pvp);
@@ -180,7 +180,7 @@ int vproc::namev(char *path, int flags, struct venus_vnode **vpp) {
 		goto Exit;
 		}
 
-	    case VCDIR:
+	    case C_VDIR:
 		{
 		if (plen == 0) {
 		    DISCARD_VNODE(pvp);
@@ -198,7 +198,7 @@ int vproc::namev(char *path, int flags, struct venus_vnode **vpp) {
 		break;
 		}
 
-	    case VCLNK:
+	    case C_VLNK:
 		{
 		/* Return the link if we are not to "follow" and this is the last component. */
 		if (plen == 0 && !(u.u_flags & FOLLOW_SYMLINKS)) {
@@ -209,7 +209,7 @@ int vproc::namev(char *path, int flags, struct venus_vnode **vpp) {
 		}
 
 		/* Guard against looping. */
-		if (++nlinks > CODA_MAXSYMLINK) {
+		if (++nlinks > CFS_MAXSYMLINK) {
 		    u.u_error = ELOOP;
 		    goto Exit;
 		}

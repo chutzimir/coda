@@ -2371,23 +2371,14 @@ void fsobj::GetVattr(struct coda_vattr *vap) {
     vap->va_mode = stat.Mode | FTTOVT(stat.VnodeType);
 #endif /* __linux__ || __BSD44__ */
 
-#ifdef __BSD44__
     vap->va_uid = (uid_t) stat.Owner;
     vap->va_gid = (gid_t)V_GID;
-#else
-    vap->va_uid = (short)stat.Owner;
-    vap->va_gid = (short)V_GID;
-#endif /* __BSD44__ */
-    vap->va_fsid = 1;
+    /* XXXXX    vap->va_fsid = 1;*/
     VA_ID(vap) = (IsRoot() && u.mtpoint && !IsVenusRoot())
 		       ? FidToNodeid(&u.mtpoint->fid)
 		       : FidToNodeid(&fid);
     vap->va_nlink = stat.LinkCount;
-#ifdef __BSD44__
     vap->va_size = (u_quad_t) stat.Length;
-#else 
-    vap->va_size = stat.Length;
-#endif /* __BSD44__ */
     vap->va_blocksize = V_BLKSIZE;
 #ifdef __BSD44__
     VA_MTIME_1(vap) = (time_t)stat.Date;
@@ -2421,9 +2412,9 @@ void fsobj::GetVattr(struct coda_vattr *vap) {
     }
 
     if (LogLevel >= 1000) {
-	dprint("\tmode = %#o, uid = %d, gid = %d, fsid = %d, rdev = %d\n",
+	dprint("\tmode = %#o, uid = %d, gid = %d, rdev = %d\n",
 	       vap->va_mode, vap->va_uid, vap->va_gid,
-	       vap->va_fsid, vap->va_rdev);
+	       vap->va_rdev);
 	dprint("\tid = %d, nlink = %d, size = %d, blocksize = %d, storage = %d\n",
 	       VA_ID(vap), vap->va_nlink, vap->va_size,
 	       vap->va_blocksize, VA_STORAGE(vap));

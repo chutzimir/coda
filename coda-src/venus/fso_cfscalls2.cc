@@ -440,9 +440,9 @@ int fsobj::Access(long rights, int modes, vuid_t vuid) {
 	/* Check mode bits if necessary. */
 	/* Special case if file is "virgin" and this user is the creator. */
 	if (code == 0 && !(IsVirgin() && stat.Owner == vuid))
-	    if (((modes & X_OK) != 0 && (stat.Mode & OWNEREXEC) == 0) ||
-		((modes & W_OK) != 0 && (stat.Mode & OWNERWRITE) == 0) ||
-		((modes & R_OK) != 0 && (stat.Mode & OWNERREAD) == 0))
+	    if (((modes & C_A_X_OK) != 0 && (stat.Mode & OWNEREXEC) == 0) ||
+		((modes & C_A_W_OK) != 0 && (stat.Mode & OWNERWRITE) == 0) ||
+		((modes & C_A_R_OK) != 0 && (stat.Mode & OWNERREAD) == 0))
 		code = EACCES;
 
 	return(code);

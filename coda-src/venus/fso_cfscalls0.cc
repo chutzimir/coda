@@ -1516,9 +1516,9 @@ int fsobj::SetAttr(struct coda_vattr *vap, vuid_t vuid, RPC2_CountedBS *acl) {
 	      comp, vuid));
 
     if (LogLevel >= 1000) {
-	dprint("\tmode = %#o, uid = %d, gid = %d, fsid = %d, rdev = %d\n",
+	dprint("\tmode = %#o, uid = %d, gid = %d, rdev = %d\n",
 	       vap->va_mode, vap->va_uid, vap->va_gid,
-	       vap->va_fsid, vap->va_rdev);
+	       vap->va_rdev);
 	dprint("\tid = %d, nlink = %d, size = %d, blocksize = %d, storage = %d\n",
 	       VA_ID(vap), vap->va_nlink, vap->va_size,
 	       vap->va_blocksize, VA_STORAGE(vap));

@@ -61,10 +61,10 @@ int pioctl(const char *path, unsigned long com,
 
     /* Must change the size field of the command to match 
        that of the new structure. */
-    unsigned long cmd = (com & ~(IOCPARM_MASK << 16)); /* mask out size  */
-    int	size = ((com >> 16) & IOCPARM_MASK) + sizeof(char *) + sizeof(int);
+    unsigned long cmd = (com & ~(PIOCPARM_MASK << 16)); /* mask out size  */
+    int	size = ((com >> 16) & PIOCPARM_MASK) + sizeof(char *) + sizeof(int);
 
-    cmd	|= (size & IOCPARM_MASK) << 16;  /* or in corrected size */
+    cmd	|= (size & PIOCPARM_MASK) << 16;  /* or in corrected size */
 
     data.path = path;
     data.follow = follow;
