@@ -34,7 +34,7 @@
  * Export of Technical Data.
  */
 
-static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/lib-src/libcs/strarg.c,v 1.2 1997/01/07 18:44:29 rvb Exp";
+static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 /*  strarg  --  parse a string

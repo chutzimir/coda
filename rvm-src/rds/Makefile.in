@@ -41,7 +41,7 @@
 # changes  without  encumbrance.   Such improvements and extensions
 # should be returned to Software.Distribution@cs.cmu.edu.
 #
-# rcsid = /afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/rvm-src/rds/Makefile.in,v 1.4 1997/01/06 21:29:06 rvb Exp
+# rcsid = $Header$
 #
 
 #   	RDS Makefile: depends on csmake.
