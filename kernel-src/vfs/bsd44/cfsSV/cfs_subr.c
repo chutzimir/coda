@@ -29,7 +29,6 @@ Mellon the rights to redistribute these changes without encumbrance.
 
 /* $Header$ */
 
-
 /* 
  * Mach Operating System
  * Copyright (c) 1989 Carnegie-Mellon University
@@ -45,6 +44,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.11  1998/08/28 18:12:18  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.10  1998/08/18 17:05:16  rvb
  * Don't use __RCSID now
  *
@@ -76,7 +81,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Capture current cfs_venus
  * 
  * Revision 1.5.4.6  97/11/18  10:27:16  rvb
- * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c
+ * cfs_nb_foo and cfs_foo are joined
  * 
  * Revision 1.5.4.5  97/11/13  22:03:00  rvb
  * pass2 cfs_NetBSD.h mt
@@ -99,7 +105,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
  * 
  * Revision 1.4  96/12/12  22:10:59  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases. 
+ * There may be more
  * 
  * Revision 1.3  1996/12/05 16:20:15  bnoble
  * Minor debugging aids
@@ -180,8 +187,6 @@ Mellon the rights to redistribute these changes without encumbrance.
  * 
  */ 
 
-/* @(#)cfs_subr.c	1.5 87/09/14 3.2/4.3CFSSRC */
-
 /* NOTES: rvb
  * 1.	Added cfs_unmounting to mark all cnodes as being UNMOUNTING.  This has to
  *	 be done before dounmount is called.  Because some of the routines that
@@ -206,9 +211,6 @@ Mellon the rights to redistribute these changes without encumbrance.
 #include <cfs/cnode.h>
 #include <cfs/cfs_subr.h>
 #include <cfs/cfsnc.h>
-
-
-__RCSID("$Header$");
 
 #if	NVCFS
 

@@ -46,6 +46,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.11  1998/08/28 18:12:23  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.10  1998/08/18 17:05:21  rvb
  * Don't use __RCSID now
  *
@@ -101,7 +107,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Capture current cfs_venus
  * 
  * Revision 1.4.14.6  97/11/18  10:27:19  rvb
- * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c
+ * cfs_nb_foo and cfs_foo are joined
  * 
  * Revision 1.4.14.5  97/11/13  22:03:03  rvb
  * pass2 cfs_NetBSD.h mt
@@ -122,7 +129,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * check for NULL return from cfsnc_lookup before CTOV
  *
  * Revision 1.3  1996/12/12 22:11:02  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases.
+ * There may be more
  *
  * Revision 1.2  1996/01/02 16:57:07  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
@@ -209,7 +217,11 @@ Mellon the rights to redistribute these changes without encumbrance.
 #include <sys/file.h>
 #include <sys/uio.h>
 #include <sys/namei.h>
+#ifdef	__FreeBSD_version
+#include <sys/ioccom.h>
+#else
 #include <sys/ioctl.h>
+#endif
 #include <sys/mount.h>
 #include <sys/proc.h>
 #include <sys/select.h>
@@ -224,6 +236,9 @@ Mellon the rights to redistribute these changes without encumbrance.
 #ifdef	__FreeBSD__
 #include <vm/vm_object.h>
 #include <vm/vm_extern.h>
+#ifdef	__FreeBSD_version
+#include <sys/fcntl.h>
+#endif
 #endif
 
 #include <cfs/coda.h>
@@ -277,56 +292,92 @@ static int cfs_lockdebug = 0;
 
 struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_default_desc, nbsd_vop_error },
-    { &vop_lookup_desc, cfs_lookup },	/* lookup */
-    { &vop_create_desc, cfs_create },	/* create */
+    { &vop_lookup_desc, cfs_lookup },		/* lookup */
+    { &vop_create_desc, cfs_create },		/* create */
     { &vop_mknod_desc, nbsd_vop_error },	/* mknod */
     { &vop_open_desc, cfs_open },		/* open */
     { &vop_close_desc, cfs_close },		/* close */
-    { &vop_access_desc, cfs_access },	/* access */
-    { &vop_getattr_desc, cfs_getattr },	/* getattr */
-    { &vop_setattr_desc, cfs_setattr },	/* setattr */
+    { &vop_access_desc, cfs_access },		/* access */
+    { &vop_getattr_desc, cfs_getattr },		/* getattr */
+    { &vop_setattr_desc, cfs_setattr },		/* setattr */
     { &vop_read_desc, cfs_read },		/* read */
     { &vop_write_desc, cfs_write },		/* write */
     { &vop_ioctl_desc, cfs_ioctl },		/* ioctl */
 /* 1.3    { &vop_select_desc, cfs_select },	select */
     { &vop_mmap_desc, nbsd_vop_error },		/* mmap */
     { &vop_fsync_desc, cfs_fsync },		/* fsync */
-#ifdef	NetBSD1_3
-    { &vop_seek_desc, genfs_seek },		/* seek */
-#else
-    { &vop_seek_desc, nbsd_vop_error },		/* seek */
-#endif
-    { &vop_remove_desc, cfs_remove },	/* remove */
+    { &vop_remove_desc, cfs_remove },		/* remove */
     { &vop_link_desc, cfs_link },		/* link */
-    { &vop_rename_desc, cfs_rename },	/* rename */
+    { &vop_rename_desc, cfs_rename },		/* rename */
     { &vop_mkdir_desc, cfs_mkdir },		/* mkdir */
     { &vop_rmdir_desc, cfs_rmdir },		/* rmdir */
-    { &vop_symlink_desc, cfs_symlink },	/* symlink */
-    { &vop_readdir_desc, cfs_readdir },	/* readdir */
+    { &vop_symlink_desc, cfs_symlink },		/* symlink */
+    { &vop_readdir_desc, cfs_readdir },		/* readdir */
     { &vop_readlink_desc, cfs_readlink },	/* readlink */
-    { &vop_abortop_desc, cfs_abortop },	/* abortop */
+    { &vop_abortop_desc, cfs_abortop },		/* abortop */
     { &vop_inactive_desc, cfs_inactive },	/* inactive */
-    { &vop_reclaim_desc, cfs_reclaim },	/* reclaim */
+    { &vop_reclaim_desc, cfs_reclaim },		/* reclaim */
     { &vop_lock_desc, cfs_lock },		/* lock */
-    { &vop_unlock_desc, cfs_unlock },	/* unlock */
+    { &vop_unlock_desc, cfs_unlock },		/* unlock */
     { &vop_bmap_desc, cfs_bmap },		/* bmap */
     { &vop_strategy_desc, cfs_strategy },	/* strategy */
     { &vop_print_desc, nbsd_vop_error },	/* print */
     { &vop_islocked_desc, cfs_islocked },	/* islocked */
     { &vop_pathconf_desc, nbsd_vop_error },	/* pathconf */
     { &vop_advlock_desc, nbsd_vop_nop },	/* advlock */
+    { &vop_bwrite_desc, nbsd_vop_error },	/* bwrite */
+    { &vop_lease_desc, nbsd_vop_nop },          /* lease */
+
+#ifdef	__FreeBSD_version
+#else	/*  FreeBSD stable & NetBSD both */
     { &vop_blkatoff_desc, nbsd_vop_error },	/* blkatoff */
     { &vop_valloc_desc, nbsd_vop_error },	/* valloc */
     { &vop_vfree_desc, nbsd_vop_error },	/* vfree */
     { &vop_truncate_desc, nbsd_vop_error },	/* truncate */
     { &vop_update_desc, nbsd_vop_error },	/* update */
-    { &vop_bwrite_desc, nbsd_vop_error },	/* bwrite */
-#ifdef	__NetBSD__
-    { &vop_lease_desc, nbsd_vop_nop },          /* lease */
 #endif
+
+    /* NetBSD only */
+#ifdef	__NetBSD__
+#ifdef	NetBSD1_3
+    { &vop_seek_desc, genfs_seek },		/* seek */
+#else
+    { &vop_seek_desc, nbsd_vop_error },		/* seek */
+#endif
+#endif
+
+    /* FreeBSD only */
 #ifdef	__FreeBSD__
+
+#ifdef	__FreeBSD_version
+
+    { &vop_poll_desc,		(vop_t *) vop_stdpoll },
+    { &vop_getpages_desc, (vop_t *) cfs_fbsd_getpages },       /* pager intf.*/
+    { &vop_putpages_desc, (vop_t *) cfs_fbsd_putpages },       /* pager intf.*/
+
+#if	0
+#define UFS_BLKATOFF(aa, bb, cc, dd) VFSTOUFS((aa)->v_mount)->um_blkatoff(aa, bb, cc, dd)
+#define UFS_VALLOC(aa, bb, cc, dd) VFSTOUFS((aa)->v_mount)->um_valloc(aa, bb, cc, dd)
+#define UFS_VFREE(aa, bb, cc) VFSTOUFS((aa)->v_mount)->um_vfree(aa, bb, cc)
+#define UFS_TRUNCATE(aa, bb, cc, dd, ee) VFSTOUFS((aa)->v_mount)->um_truncate(aa, bb, cc, dd, ee)
+#define UFS_UPDATE(aa, bb, cc, dd) VFSTOUFS((aa)->v_mount)->um_update(aa, bb, cc, dd)
+
+    missing
+    { &vop_reallocblks_desc,	(vop_t *) ufs_missingop },
+    { &vop_cachedlookup_desc,	(vop_t *) ufs_lookup },
+    { &vop_whiteout_desc,	(vop_t *) ufs_whiteout },
+#endif
+
+#else	/* FreeBSD stable */
     { &vop_getpages_desc, fbsd_vnotsup },       /* pager intf.*/
     { &vop_putpages_desc, fbsd_vnotsup },       /* pager intf.*/
+    { &vop_seek_desc, nbsd_vop_error },		/* seek */
+    { &vop_blkatoff_desc, nbsd_vop_error },	/* blkatoff */
+    { &vop_valloc_desc, nbsd_vop_error },	/* valloc */
+    { &vop_vfree_desc, nbsd_vop_error },	/* vfree */
+    { &vop_truncate_desc, nbsd_vop_error },	/* truncate */
+    { &vop_update_desc, nbsd_vop_error },	/* update */
+#endif
 #endif
     { (struct vnodeop_desc*)NULL, (int(*)(void *))NULL }
 };
@@ -334,6 +385,8 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
 #ifdef __NetBSD__
 struct vnodeopv_desc cfs_vnodeop_opv_desc = 
         { &cfs_vnodeop_p, cfs_vnodeop_entries };
+
+#define NAMEI_FREE(a) FREE(a, M_NAMEI)
 #endif
 
 #ifdef __FreeBSD__
@@ -350,6 +403,13 @@ fbsd_vnotsup(ap)
     return(EOPNOTSUPP);
 }
 
+#ifdef	__FreeBSD_version
+#include <vm/vm_zone.h>
+
+#define NAMEI_FREE(a) zfree(namei_zone, a);
+#else
+#define NAMEI_FREE(a) FREE(a, M_NAMEI)
+#endif
 #endif
 
 /* Definitions of NetBSD vnodeop interfaces */
@@ -373,8 +433,8 @@ nbsd_vop_nop(void *anon) {
     if (cfsdebug) {
 	myprintf(("Vnode operation %s called, but unsupported\n",
 		  (*desc)->vdesc_name));
-    }
-    return (0);
+    } 
+   return (0);
 }
 
 int
@@ -996,7 +1056,7 @@ cfs_abortop(v)
 /* locals */
 
     if ((ap->a_cnp->cn_flags & (HASBUF | SAVESTART)) == HASBUF)
-	free(ap->a_cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(ap->a_cnp->cn_pnbuf);
     return (0);
 }
 
@@ -1176,8 +1236,8 @@ cfs_inactive(v)
 	    printf("cfs_inactive: cp->ovp != NULL use %d: vp %p, cp %p\n",
 	    	   vp->v_usecount, vp, cp);
 #endif
-#if	defined(__NetBSD__) && defined(NetBSD1_3) && (NetBSD1_3 >= 7)
-	lockmgr(&cp->c_lock, LK_RELEASE, &vp->v_interlock);
+#ifdef	NEW_LOCKMGR
+	NEW_LOCKMGR(&cp->c_lock, LK_RELEASE, &vp->v_interlock);
 #endif
     } else {
 #ifdef DIAGNOSTIC
@@ -1188,8 +1248,8 @@ cfs_inactive(v)
 	    panic("cfs_inactive:  cp->ovp != NULL");
 	}
 #endif
-#if	defined(__NetBSD__) && defined(NetBSD1_3) && (NetBSD1_3 >= 7)
-	VOP_UNLOCK(vp, 0);
+#ifdef	NEW_LOCKMGR
+	VOP_X_UNLOCK(vp, 0);
 #endif
 	vgone(vp);
     }
@@ -1466,7 +1526,14 @@ cfs_create(v)
      * locked; so there is a DIAGNOSTIC check to ensure that this is
      * true.
      */
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vput put in
+     * kern/vfs_vnops.c.c:vn_open()
+     */
+#else
     vput(dvp);
+#endif
     if (!error) {
 	if (cnp->cn_flags & LOCKLEAF) {
 	    if ((error = VOP_X_LOCK(*ap->a_vpp, LK_EXCLUSIVE))) {
@@ -1486,7 +1553,7 @@ cfs_create(v)
      * why it's here, but what the hey...
      */
     if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(cnp->cn_pnbuf);
     }
     return(error);
 }
@@ -1547,6 +1614,13 @@ cfs_remove(v)
     error = venus_remove(vtomi(dvp), &cp->c_fid, nm, len, cred, p);
 
     CFSDEBUG(CFS_REMOVE, myprintf(("in remove result %d\n",error)); )
+
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vrele/vput put in
+     * kern/vfs_syscalls.c:unlink()
+     */
+#else
     /* 
      * Regardless of what happens, we have to unconditionally drop
      * locks/refs on parent and child.  (I hope).  This is based on
@@ -1558,9 +1632,10 @@ cfs_remove(v)
 	vput(ap->a_vp);
     }
     vput(dvp);
+#endif
 
     if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(cnp->cn_pnbuf);
     }
     return(error);
 }
@@ -1622,9 +1697,16 @@ cfs_link(v)
      *       unconditionally unlock it after.
      */
 
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vrele/vput put in
+     * kern/vfs_syscalls.c:link()
+     */
+#else
     if ((ap->a_vp != tdvp) && (error = VOP_X_LOCK(ap->a_vp, LK_EXCLUSIVE))) {
 	goto exit;
     }
+#endif
 	
     error = venus_link(vtomi(vp), &cp->c_fid, &tdcp->c_fid, nm, len, cred, p);
 
@@ -1636,14 +1718,21 @@ cfs_link(v)
 
 exit:
 
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vrele/vput put in
+     * kern/vfs_syscalls.c:link()
+     */
+#else
     if (ap->a_vp != tdvp) {
 	VOP_X_UNLOCK(ap->a_vp, 0);
     }
     vput(tdvp);
+#endif
 
     /* Drop the name buffer if we don't need to SAVESTART */
     if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(cnp->cn_pnbuf);
     }
     return(error);
 }
@@ -1817,12 +1906,20 @@ cfs_mkdir(v)
      * lockleaf isn't set, but someone down the road is going
      * to try to unlock the new directory.
      */
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vrele/vput put in
+     * kern/vfs_syscalls.c:mkdir()
+     */
+#else
     vput(dvp);
     if (!error) {
 	if ((error = VOP_X_LOCK(*ap->a_vpp, LK_EXCLUSIVE))) {
 	    panic("cfs_mkdir: couldn't lock child");
 	}
     }
+#endif
+
     /* Have to free the previously saved name */
     /* 
      * ufs_mkdir doesn't check for SAVESTART before freeing the
@@ -1830,7 +1927,7 @@ cfs_mkdir(v)
      * follow their lead, but this seems like it is probably
      * incorrect.  
      */
-    FREE(cnp->cn_pnbuf, M_NAMEI);
+    NAMEI_FREE(cnp->cn_pnbuf);
     return(error);
 }
 
@@ -1880,6 +1977,12 @@ cfs_rmdir(v)
 
     CFSDEBUG(CFS_RMDIR, myprintf(("in rmdir result %d\n", error)); )
 
+#ifdef	__FreeBSD_version
+    /*
+     * Well, FreeBSD -current does the vrele/vput put in
+     * kern/vfs_syscalls.c:rmdir()
+     */
+#else
     /*
      * regardless of what happens, we need to drop locks/refs on the 
      * parent and child.  I think. 
@@ -1890,9 +1993,10 @@ cfs_rmdir(v)
 	vput(ap->a_vp);
     }
     vput(dvp);
+#endif
 
     if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(cnp->cn_pnbuf);
     }
     return(error);
 }
@@ -1957,10 +2061,13 @@ cfs_symlink(v)
 
     error = venus_symlink(vtomi(tdvp), &tdcp->c_fid, path, plen, nm, len, tva, cred, p);
 
+    /* Invalidate the parent's attr cache, the modification time has changed */
+    tdcp->c_flags &= ~C_VATTR;
+
+#ifdef	__FreeBSD_version
+
+#else
     if (!error)
-/*
-	error = cfs_lookup(tdvp, tname, ap->a_vpp, cred, p);
- */
     {
 	struct nameidata nd;
 	NDINIT(&nd, LOOKUP, FOLLOW|LOCKLEAF, UIO_SYSSPACE, nm, p);
@@ -1975,16 +2082,13 @@ cfs_symlink(v)
 	*ap->a_vpp = nd.ni_vp;
     }
 
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    tdcp->c_flags &= ~C_VATTR;
-
     /* 
      * Okay, now we have to drop locks on dvp.  vpp is unlocked, but
      * ref'd.  It doesn't matter what happens in either symlink or
      * lookup.  Furthermore, there isn't any way for (dvp == *vpp), so
      * we don't bother checking.  
      */
-/*    vput(ap->a_dvp);		released earlier */
+/*  vput(ap->a_dvp);		released earlier */
     if (*ap->a_vpp) {
     	VOP_X_UNLOCK(*ap->a_vpp, 0);	/* this line is new!! It is necessary because lookup() calls
 				   VOP_LOOKUP (cfs_lookup) which returns vpp locked.  cfs_nb_lookup
@@ -1992,12 +2096,13 @@ cfs_symlink(v)
 				   necessary */
     	vrele(*ap->a_vpp);
     }
+#endif
 
     /* 
      * Free the name buffer 
      */
     if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
+	NAMEI_FREE(cnp->cn_pnbuf);
     }
 
  exit:    
@@ -2028,6 +2133,9 @@ cfs_readdir(v)
 #elif	NetBSD1_2
     u_long *cookies = ap->a_cookies;
     int ncookies = ap->a_ncookies;
+#elif	defined(__FreeBSD__) && defined(__FreeBSD_version)
+    u_long **cookies = ap->a_cookies;
+    int *ncookies = ap->a_ncookies;
 #elif	defined(__FreeBSD__)
     u_int **cookies = ap->a_cookies;
     int *ncookies = ap->a_ncookies;
@@ -2148,11 +2256,28 @@ cfs_bmap(v)
     struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
+    int ret = 0;
 
 #ifdef	__FreeBSD__
+#ifdef	__FreeBSD_version
+	struct cnode *cp;
+
+	cp = VTOC(vp);
+	if (cp->c_ovp) {
+		printf("cfs_bmap: container .. ");
+		ret =  VOP_BMAP(cp->c_ovp, bn, vpp, bnp, ap->a_runp, ap->a_runb);
+		printf("VOP_BMAP(cp->c_ovp %p, bn %p, vpp %p, bnp %p, ap->a_runp %p, ap->a_runb %p) = %d\n",
+			cp->c_ovp, bn, vpp, bnp, ap->a_runp, ap->a_runb, ret);
+		return ret;
+	} else {
+		printf("cfs_bmap: no container\n");
+		return(EOPNOTSUPP);
+	}
+#else
         /* Just like nfs_bmap(). Do not touch *vpp, this cause pfault. */
 	return(EOPNOTSUPP);
-#else
+#endif
+#else	/* !FreeBSD */
 	*vpp = (struct vnode *)0;
 	myprintf(("cfs_bmap called!\n"));
 	return(EINVAL);
@@ -2172,14 +2297,16 @@ cfs_strategy(v)
 {
 /* true args */
     struct vop_strategy_args *ap = v;
+    struct vnode *vp __attribute__((unused)) = ap->a_vp;	/* file's vnode */
     register struct buf *bp __attribute__((unused)) = ap->a_bp;
     struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
+    int ret = 0;
 
 #ifdef	__FreeBSD__
-#ifdef	__MAYBE_FreeBSD__
-	struct vnode *vp;
+#ifdef	__FreeBSD_version
+
 	struct cnode *cp;
 	/*
 	 * This needs testing.  execve calls bread and will go thru
@@ -2187,15 +2314,17 @@ cfs_strategy(v)
 	 * in exec.
 	 */
 
-	myprintf(("cfs_strategy called!  "));
-	vp = bp->b_vp;
+	printf("cfs_strategy: Entered!\n");
 	cp = VTOC(vp);
 	if (cp->c_ovp) {
-		printf("redirect thru container\n");
+		printf("cfs_strategy: redirect thru container\n");
 		bp->b_vp = cp->c_ovp;
-		return VOP_STRATEGY(bp);
+		ret = VOP_STRATEGY(cp->c_ovp, bp);
+		printf("VOP_STRATEGY(cp->c_ovp %p, bp %p) = %d\n",
+			cp->c_ovp, bp, ret);
+		return ret; 
 	} else {
-		printf("no container\n");
+		printf("cfs_strategy: no container\n");
 		return(EOPNOTSUPP);
 	}
 #else	/* ! __MAYBE_FreeBSD__ */
@@ -2246,7 +2375,7 @@ cfs_reclaim(v)
     return (0);
 }
 
-#if	defined(__NetBSD__) && defined(NetBSD1_3) && (NetBSD1_3 >= 7)
+#ifdef	NEW_LOCKMGR
 int
 cfs_lock(v)
     void *v;
@@ -2255,7 +2384,9 @@ cfs_lock(v)
     struct vop_lock_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp = VTOC(vp);
-    struct proc  *p __attribute__((unused)) = curproc; /* XXX */
+#ifdef	__FreeBSD_version
+    struct proc  *p = ap->a_p;
+#endif
 /* upcall decl */
 /* locals */
 
@@ -2266,7 +2397,7 @@ cfs_lock(v)
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
     }
 
-    return (lockmgr(&cp->c_lock, ap->a_flags, &vp->v_interlock));
+    return (NEW_LOCKMGR(&cp->c_lock, ap->a_flags, &vp->v_interlock));
 }
 
 int
@@ -2277,6 +2408,9 @@ cfs_unlock(v)
     struct vop_unlock_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp = VTOC(vp);
+#ifdef	__FreeBSD_version
+    struct proc  *p = ap->a_p;
+#endif
 /* upcall decl */
 /* locals */
 
@@ -2286,7 +2420,7 @@ cfs_unlock(v)
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
     }
 
-    return (lockmgr(&cp->c_lock, ap->a_flags | LK_RELEASE, &vp->v_interlock));
+    return (NEW_LOCKMGR(&cp->c_lock, ap->a_flags | LK_RELEASE, &vp->v_interlock));
 }
 
 int
@@ -2514,7 +2648,7 @@ makecfsnode(fid, vfsp, type)
 	struct vnode *vp;
 	
 	cp = cfs_alloc();
-#if	defined(__NetBSD__) && defined(NetBSD1_3) && (NetBSD1_3 >= 7)
+#ifdef	NEW_LOCKMGR
 	lockinit(&cp->c_lock, PINOD, "cnode", 0, 0);
 #endif
 	cp->c_fid = *fid;

@@ -29,7 +29,6 @@ Mellon the rights to redistribute these changes without encumbrance.
 
 /* $Header$ */
 
-
 /* 
  * Mach Operating System
  * Copyright (c) 1990 Carnegie-Mellon University
@@ -46,6 +45,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.11  1998/08/28 18:12:16  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.10  1998/08/18 17:05:14  rvb
  * Don't use __RCSID now
  *
@@ -83,7 +88,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Capture current cfs_venus
  * 
  * Revision 1.5.4.4  97/11/18  10:27:13  rvb
- * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c
+ * cfs_nb_foo and cfs_foo are joined
  * 
  * Revision 1.5.4.3  97/11/13  22:02:57  rvb
  * pass2 cfs_NetBSD.h mt
@@ -100,7 +106,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * not actually replaced.  (cfs_namecache.c, cfsnc.h, cfs_subr.c)
  * 
  * Revision 1.4  96/12/12  22:10:57  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases.
+ * There may be more
  * 
  * Revision 1.3  1996/11/08 18:06:09  bnoble
  * Minor changes in vnode operation signature, VOP_UPDATE signature, and
@@ -214,9 +221,10 @@ Mellon the rights to redistribute these changes without encumbrance.
 #ifdef	__FreeBSD__
 #include <vm/vm.h>
 #include <vm/vm_object.h>
+#ifdef	__FreeBSD_version
+#include <sys/ucred.h>
 #endif
-
-__RCSID("$Header$");
+#endif
 
 /* 
  * Declaration of the name cache data structure.

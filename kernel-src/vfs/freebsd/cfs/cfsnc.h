@@ -45,6 +45,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.8  1998/08/28 18:12:25  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.7  1998/08/18 17:05:24  rvb
  * Don't use __RCSID now
  *
@@ -136,8 +142,13 @@ Mellon the rights to redistribute these changes without encumbrance.
  * 2nd try -- same, except dir fid.vnode instead of cp
  */
 
+#ifdef	oldhash
 #define CFSNC_HASH(name, namelen, cp) \
 	((name[0] + name[namelen-1] + namelen + (int)(cp)) & (cfsnc_hashsize-1))
+#else
+#define CFSNC_HASH(name, namelen, cp) \
+	((name[0] + (name[namelen-1]<<4) + namelen + (((int)cp)>>8)) & (cfsnc_hashsize-1))
+#endif
 
 #define CFS_NAMEMATCH(cp, name, namelen, dcp) \
 	((namelen == cp->namelen) && (dcp == cp->dcp) && \

@@ -29,7 +29,6 @@ Mellon the rights to redistribute these changes without encumbrance.
 
 /* $Header$ */
 
-
 /*
  *
  * Based on cfs.h from Mach, but revamped for increased simplicity.
@@ -143,6 +142,7 @@ typedef struct ViceFid {
 } ViceFid;
 #endif	/* VICEFID */
 
+#ifdef	__linux__
 static inline ino_t coda_f2i(struct ViceFid *fid)
 {
       if ( fid ) {
@@ -151,7 +151,7 @@ static inline ino_t coda_f2i(struct ViceFid *fid)
               return 0;
       }
 }
-
+#endif
 
 #ifndef _VUID_T_
 #define _VUID_T_

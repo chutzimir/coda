@@ -34,7 +34,11 @@ Mellon the rights to redistribute these changes without encumbrance.
 #include <sys/malloc.h>
 #include <sys/proc.h>
 #include <sys/select.h>
+#ifdef	__FreeBSD_version
+#include <sys/ioccom.h>
+#else
 #include <sys/ioctl.h>
+#endif
 /* for CNV_OFLAGS below */
 #include <sys/fcntl.h>
 

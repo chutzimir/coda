@@ -37,9 +37,16 @@ Mellon the rights to redistribute these changes without encumbrance.
  * All rights reserved.  The CMU software License Agreement specifies
  * the terms and conditions for use and redistribution.
  */
+
 /*
  * HISTORY
  * $Log$
+ * Revision 1.7  1998/08/28 18:12:26  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.6  1998/08/18 17:05:26  rvb
  * Don't use __RCSID now
  *

@@ -46,6 +46,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.7  1998/08/28 18:12:24  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.6  1998/08/18 17:05:22  rvb
  * Don't use __RCSID now
  *
@@ -115,6 +121,10 @@ int nbsd_vop_error   __P((void *));
 int nbsd_vop_nop     __P((void *));
 #ifdef __FreeBSD__
 int fbsd_vnotsup  __P((void *ap));
+#ifdef	__FreeBSD_version
+int cfs_fbsd_getpages	__P((void *));
+int cfs_fbsd_putpages	__P((void *));
+#endif
 #endif
 
 int (**cfs_vnodeop_p)(void *);

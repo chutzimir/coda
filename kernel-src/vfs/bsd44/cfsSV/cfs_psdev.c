@@ -30,6 +30,7 @@ Mellon the rights to redistribute these changes without encumbrance.
 /* $Header$ */
 
 #define CTL_C
+
 /* 
  * Mach Operating System
  * Copyright (c) 1989 Carnegie-Mellon University
@@ -56,6 +57,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.9  1998/08/28 18:12:17  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.8  1998/08/18 17:05:15  rvb
  * Don't use __RCSID now
  *
@@ -105,7 +112,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Capture current cfs_venus
  * 
  * Revision 1.4.18.5  97/11/18  10:27:15  rvb
- * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c
+ * cfs_nb_foo and cfs_foo are joined
  * 
  * Revision 1.4.18.4  97/11/13  22:02:59  rvb
  * pass2 cfs_NetBSD.h mt
@@ -120,7 +128,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * >64Meg; venus can be killed!
  *
  * Revision 1.4  1996/12/12 22:10:58  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
+ * Fixed the "downcall invokes venus operation" deadlock in all known cases.
+ * There may be more
  *
  * Revision 1.3  1996/11/13 04:14:20  bnoble
  * Merging BNOBLE_WORK_6_20_96 into main line
@@ -151,11 +160,19 @@ extern int cfsnc_initialized;    /* Set if cache has been initialized */
 #include <sys/proc.h>
 #include <sys/mount.h>
 #include <sys/file.h>
+#ifdef	__FreeBSD_version
+#include <sys/ioccom.h>
+#else
 #include <sys/ioctl.h>
+#endif
 #ifdef	NetBSD1_3
 #include <sys/poll.h>
 #endif
+#ifdef	__FreeBSD_version
+#include <sys/poll.h>
+#else
 #include <sys/select.h>
+#endif
 
 #include <cfs/coda.h>
 #include <cfs/cnode.h>
@@ -177,7 +194,7 @@ int vc_nb_close (dev_t dev, int flag, int mode, struct proc *p);
 int vc_nb_read(dev_t dev, struct uio *uiop, int flag);
 int vc_nb_write(dev_t dev, struct uio *uiop, int flag);
 int vc_nb_ioctl(dev_t dev, int cmd, caddr_t addr, int flag, struct proc *p);
-#ifdef	NetBSD1_3
+#if	defined(NetBSD1_3) || defined(__FreeBSD_version)
 int vc_nb_poll(dev_t dev, int events, struct proc *p);
 #else
 int vc_nb_select(dev_t dev, int flag, struct proc *p);
@@ -272,9 +289,13 @@ vc_nb_close (dev, flag, mode, p)
     if (mi->mi_rootvp) {
 	/* Let unmount know this is for real */
 	VTOC(mi->mi_rootvp)->c_flags |= C_UNMOUNTING;
-#if	defined(__NetBSD__) && defined(NetBSD1_3) && (NetBSD1_3 >= 7)
+#ifdef	NEW_LOCKMGR
+#ifdef	__FreeBSD_version
+	/* dounmount is different ... probably wrong ... */
+#else
 	if (vfs_busy(mi->mi_vfsp, 0, 0))
 	    return (EBUSY);
+#endif
 #endif
 	cfs_unmounting(mi->mi_vfsp);
 	err = dounmount(mi->mi_vfsp, flag, p);
@@ -502,7 +523,7 @@ vc_nb_ioctl(dev, cmd, addr, flag, p)
     }
 }
 
-#ifdef	NetBSD1_3
+#if	defined(NetBSD1_3) || defined(__FreeBSD_version)
 int
 vc_nb_poll(dev, events, p)         
     dev_t         dev;    
@@ -648,7 +669,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	    if (error == 0)
 	    	break;
 	    else if (error == EWOULDBLOCK) {
-		    printf("cfscall: tsleep returns %d TIMEOUT, cnt %d\n", error, i);
+		    printf("cfscall: tsleep TIMEOUT %d sec\n", 2+2*i);
     	    } else if (p->p_siglist == sigmask(SIGIO)) {
 		    p->p_sigmask |= p->p_siglist;
 		    printf("cfscall: tsleep returns %d SIGIO, cnt %d\n", error, i);

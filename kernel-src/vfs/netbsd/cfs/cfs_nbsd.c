@@ -46,6 +46,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.21  1998/08/28 18:12:17  rvb
+ * Now it also works on FreeBSD -current.  This code will be
+ * committed to the FreeBSD -current and NetBSD -current
+ * trees.  It will then be tailored to the particular platform
+ * by flushing conditional code.
+ *
  * Revision 1.20  1998/08/18 17:05:15  rvb
  * Don't use __RCSID now
  *
@@ -65,7 +71,8 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Capture current cfs_venus
  * 
  * Revision 1.16.6.4  97/11/18  10:27:14  rvb
- * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c
+ * cfs_nb_foo and cfs_foo are joined
  * 
  * Revision 1.16.6.3  97/11/13  22:02:58  rvb
  * pass2 cfs_NetBSD.h mt
