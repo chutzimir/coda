@@ -41,9 +41,9 @@ then
 	exit 1
 fi
 
-if [ `cat /.hostname` != `cat /.scm` ]
+if [ `cat /vice/hostname` != `cat /vice/db/scm` ]
 then
-        echo "This must be run from the scm ("`cat /.scm`")"
+        echo "This must be run from the scm ("`cat /vice/db/scm`")"
         exit 1
 fi
 

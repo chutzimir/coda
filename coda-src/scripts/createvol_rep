@@ -41,8 +41,8 @@ if ($#argv != 3 && $#argv != 4) then
 endif
 
 # Ensure that this is the SCM
-if (`cat /.hostname` != `cat /.scm`) then
-	echo This must be run from the scm (`cat /.scm`)
+if (`cat /vice/hostname` != `cat /vice/db/scm`) then
+	echo This must be run from the scm (`cat /vice/db/scm`)
 	exit
 endif
 

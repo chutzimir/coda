@@ -54,7 +54,7 @@ fi
 for server in $SERVERS
 do 
 
-    updfetch -h ${server} -r /vice/vol/VolumeList -l \
+    updatefetch -h ${server} -r /vice/vol/VolumeList -l \
 	${REMOTE}/${server}.list.new
 
     if [ -r ${REMOTE}/${server}.list.new ]; then
