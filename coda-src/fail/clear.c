@@ -61,8 +61,11 @@ int clear(int argc, char **argv)
 
   get_targets(argc, argv, &targets, &num_targets);
 
-  if (num_targets)
+  if (num_targets) {
     clear_targets(targets, num_targets);
-  else
+    return 0;
+  } else {
     printf("usage: %s [-c client1 client2 ...] [-s server1 server2 ...]\n", argv[0]);
+    return -1;
+  }
 }

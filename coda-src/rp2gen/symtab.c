@@ -63,6 +63,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 \* ************************************************************ */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "rp2.h"
 
 extern ENTRY *make_entry();

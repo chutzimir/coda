@@ -264,10 +264,10 @@ int getipaddr(char *hostname, int *ip1, int *ip2, int *ip3, int *ip4)
 
     host = gethostbyname(hostname);
     if (host == NULL) return(-1);
-    *ip1 = ((unsigned char *)host->h_addr)[0];
-    *ip2 = ((unsigned char *)host->h_addr)[1];
-    *ip3 = ((unsigned char *)host->h_addr)[2];
-    *ip4 = ((unsigned char *)host->h_addr)[3];
+    *ip1 = (int)((unsigned char *)host->h_addr)[0];
+    *ip2 = (int)((unsigned char *)host->h_addr)[1];
+    *ip3 = (int)((unsigned char *)host->h_addr)[2];
+    *ip4 = (int)((unsigned char *)host->h_addr)[3];
 }
 
 
@@ -325,8 +325,9 @@ int cmdInsertFilter(int client, char *sidestr, int which, char *hostname, int co
     /* Attempt to insert it */
     if ((rc = /*Fcon_*/InsertFilter(cid, side, which, &filter)) < 0) 
 	return(-1);
-    else 
-        maxFilterID = (rc > maxFilterID)?rc:maxFilterID;
+
+    maxFilterID = (rc > maxFilterID)?rc:maxFilterID;
+    return 0;
 }
 
 int CheckAllFilters(int client, char *hostname) {
@@ -397,6 +398,8 @@ int cmdRemoveFilter(int client, char *sidestr, int which)
     /* Remove the filter */
     if (rc = /*Fcon_*/RemoveFilter(cid, side, which)) 
 	return(-1);
+
+    return 0;
 }
     
 

@@ -87,11 +87,11 @@ extern "C" {
 
 
 int main(int argc, char **argv);
-PRIVATE void parse(char *line, RPC2_EncryptionKey outpw, char **last);
+static void parse(char *line, RPC2_EncryptionKey outpw, char **last);
 
-PRIVATE int DebugLevel = 0;
-PRIVATE int KeyIsValid = FALSE;
-PRIVATE RPC2_EncryptionKey EKey;
+static int DebugLevel = 0;
+static int KeyIsValid = FALSE;
+static RPC2_EncryptionKey EKey;
 
 
 int main(int argc, char **argv)
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     }
 
 
-PRIVATE void parse(char *line, RPC2_EncryptionKey outpw, char **last)
+static void parse(char *line, RPC2_EncryptionKey outpw, char **last)
 /* line:    input: first tab is replaced by null */
 /* outpw:   output: filled with password */
 /* last:    output: points to first character of uninterpreted part */

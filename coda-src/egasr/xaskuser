@@ -75,7 +75,7 @@ proc GetIncResp {{w .f}} {
 
    #frame for announcing what has happened
    message $w.announce -font -Adobe-times-medium-r-normal--*-180* \
-	-relief raised -width [expr $width]c \
+	-relief raised \
 	-text "repairing inconsistent file $oname"
 
    # frame for making the buttons

@@ -761,7 +761,7 @@ static spit_body(proc, in_parms, out_parms, where)
     /* Generate code for END_ELAPSE */
     fprintf(where, "\n");
     fprintf(where, "    /* END_ELAPSE */\n");
-    fprintf(where, "    if (opengate) {\n", proc->op_number);
+    fprintf(where, "    if (opengate) {\n");
     fprintf(where, "        gettimeofday(&_timeend, 0);\n");
 
     fprintf(where, "        _timesec = (%s_CallCount[%d].tusec += (_timeend.tv_sec-_timestart.tv_sec)*1000000+(_timeend.tv_usec-_timestart.tv_usec))/1000000;\n", subsystem.subsystem_name, proc->op_number);
@@ -909,8 +909,9 @@ static print_size(who, parm, prefix, where)
 	default:			printf("RP2GEN [can't happen]: impossible type tag: %d\n",
 					       parm->type->type->tag);
     }
+    free(name);
 }
-
+
 static inc(what, by, where)
     char *what, *by;
     FILE *where;
@@ -939,7 +940,7 @@ static checkbuffer(where, what, size)
 {
 	fprintf(where, "    if ( (char *)%s + %d > _EOB) {\n"
 		 BUFFEROVERFLOW
-		 "    }\n", what,size,what);
+		 "    }\n", what,size);
 }
 
 static set_timeout(proc, where)
@@ -1048,7 +1049,7 @@ static pack(who, parm, prefix, ptr, where)
 	    print_size(who,parm,prefix,where);
 	    fprintf(where, "> _EOB) {\n"        
 		           BUFFEROVERFLOW
-		           "    }\n",ptr);
+		           "    }\n");
 	    fprintf(where, "    *(RPC2_Integer *) %s = htonl(%s%sMaxSeqLen);\n",
 		    ptr, name, select);
 	    fprintf(where, "    *(RPC2_Integer *) (%s+4) = htonl(%s%sSeqLen);\n",
@@ -1101,6 +1102,7 @@ static pack(who, parm, prefix, ptr, where)
     abort();
     }
     free(name);
+    free(suffix);
 }
 
 static unpack(who, parm, prefix, ptr, where)
@@ -1935,6 +1937,8 @@ static declare_LogFunction(head, where)
     fputs(         "        }\n", where);
     fputs(         "    }\n", where);
     fputs(         "}\n", where);
+    free(array);
+    free(work);
 }
 
 static print_stubpredefined(where)

@@ -74,6 +74,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/file.h>
 #include <sys/param.h>
@@ -106,7 +107,7 @@ main(int argc, char *argv[])
     
     
     /* Obtain invocation options */
-    lockfile = (char *)getwd(ebuf);	/* lock the current directory by default */
+    lockfile = (char *)getcwd(ebuf, MAXPATHLEN);	/* lock the current directory by default */
     if (argc < 2) BadArgs();
 
     for (i = 1; i < argc; i++)

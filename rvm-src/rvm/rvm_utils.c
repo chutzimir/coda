@@ -489,7 +489,7 @@ char *make_full_name(dev_str,dev_name,retval)
     if (dev_str[1] != ':')
 #endif
         {
-        if (getwd(wd_name) == 0)
+        if (getcwd(wd_name, sizeof(wd_name)) == 0)
             ASSERT(rvm_false);
         wd_len = strlen(wd_name);
         len += (wd_len+1);              /* one extra for '/' */

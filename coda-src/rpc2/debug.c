@@ -126,8 +126,9 @@ void rpc2_PrintFilter(fPtr, tFile)
 	fPtr->OldOrNew == OLD ? "OLD" : (fPtr->OldOrNew == NEW ? "NEW" : (fPtr->OldOrNew == OLDORNEW ? "OLDORNEW" : "??????")));
     switch(fPtr->FromWhom)
 	{
-	case ONECONN:	fprintf(tFile, "WhichConn = 0x%lx", fPtr->ConnOrSubsys.WhichConn);
-	case ONESUBSYS: fprintf(tFile, "SubsysId = %ld", fPtr->ConnOrSubsys.SubsysId);
+	case ONECONN:	fprintf(tFile, "WhichConn = 0x%lx", fPtr->ConnOrSubsys.WhichConn); break;
+	case ONESUBSYS: fprintf(tFile, "SubsysId = %ld", fPtr->ConnOrSubsys.SubsysId); break;
+	case ANY:	break;
 	}
     fprintf(tFile, "\n");
     (void) fflush(tFile);

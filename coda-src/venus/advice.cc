@@ -458,7 +458,7 @@ void adviceconn::RequestDisconnectedQuestionnaire(ViceFid *fid, char *pathname, 
   return;
 }
 
-#ifdef 0
+#if 0
 void adviceconn::NotifyHoarding(char *volname, VolumeId vid) {
   long rc;
 

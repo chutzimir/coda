@@ -75,4 +75,5 @@ int partition(int argc, char **argv)
     partition_targets(target1, target2);
   else
     printf("usage: %s -[c|s] host1 -[c|s] host2\n", argv[0]);
+  return -1;
 }

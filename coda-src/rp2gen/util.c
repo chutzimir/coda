@@ -269,7 +269,7 @@ char *concat3elem(s1, s2, s3)
     return new;
 }
 
-char *basename(name)
+char *coda_rp2_basename(name)
     char *name;
 {
     register char *p, *l, *r;

@@ -57,7 +57,7 @@ static char *rcsid = "$Header$";
 
 
 int Fcon_LWP();
-PRIVATE PrintRPCError(int, RPC2_Handle); /* forward decl to pacify gcc */
+static PrintRPCError(int, RPC2_Handle); /* forward decl to pacify gcc */
 
 
 int Fcon_Init()
@@ -70,6 +70,7 @@ int Fcon_Init()
     assert(RPC2_Export(&subsysid) == RPC2_SUCCESS);
     LWP_CreateProcess((PFIC) Fcon_LWP, 4096, LWP_NORMAL_PRIORITY,
 		      "Fcon_LWP", NULL, &mypid);
+    return 0;
 }
 
 int Fcon_LWP()
@@ -167,7 +168,7 @@ FailFilterSide side;
     return Fail_PurgeFilters(side);
 }
 
-PRIVATE PrintRPCError(rCode, connId)
+static PrintRPCError(rCode, connId)
 int rCode;
 RPC2_Handle connId;
 {

@@ -134,6 +134,7 @@ int oldpartition(int argc, char ** argv)
     
     RPC2_Unbind(cid1);
     RPC2_Unbind(cid2);
+    return rc;
 }
 
 
@@ -162,5 +163,6 @@ static int PartParseArgs(int argc, char ** argv)
 	    }
 	}
     }
+    return 0;
 }
 		

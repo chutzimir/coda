@@ -155,6 +155,7 @@ int slow(int argc, char** argv)
 
 	RPC2_Unbind(cid1);
 	RPC2_Unbind(cid2);
+	return 0;
 }
 
 

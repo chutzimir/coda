@@ -91,9 +91,9 @@ extern "C" {
 
 
 
-PRIVATE int AvoidCheckSum;
-PRIVATE int InitGlobals();
-PRIVATE  int RecordEntry(IN int WhereIsIt);
+static int AvoidCheckSum;
+static int InitGlobals();
+static  int RecordEntry(IN int WhereIsIt);
 
 
 
@@ -228,13 +228,12 @@ int main(int argc, char *argv[])
 	exit(-1);
 	}
     fclose(yyin);
-
-
+    return 0;
     };
 
 
 
-PRIVATE int InitGlobals()
+static int InitGlobals()
     {
     int i;
     LitPoolSize = HighestUID = HighestGID = 0;
@@ -275,7 +274,7 @@ PRIVATE int InitGlobals()
 
 
 
-PRIVATE  int RecordEntry(IN int WhereIsIt)
+static  int RecordEntry(IN int WhereIsIt)
     /* An user or group entry has been successfully parsed, starting at byte WhereIsIt of
 	the .pdb file; fill its info into .pcf tables.
 	Return 0 on success, -1 and a message on failure */
