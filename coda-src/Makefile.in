@@ -46,7 +46,7 @@ include $(MAKDIR)/Makeconf
   I =  scripts
  II =  kerndep dir 
 III =  rpc2 util
- IV =  libal rp2gen pdbstuff blurb
+ IV =  libal rp2gen portmapper pdbstuff blurb
   V =  fail vicedep partition
 
   VI = auth2 vv login

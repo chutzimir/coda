@@ -83,14 +83,11 @@ typedef enum {	UNSET =	0,		/* uninitialized */
 } rvm_type_t;
 
 typedef struct {
-    rvm_tid_t *tid;
-    jmp_buf abort;
-    intentionList_t list;
-#ifdef	__linux__
-  void (*die)(char *arg, ...);
-#else
-  void (*die)(char * ...);
-#endif
+	rvm_tid_t *tid;
+	jmp_buf abort;
+	intentionList_t list;
+	rvm_tid_t thetid;
+	void (*die)(char *arg, ...);
 } rvm_perthread_t;
 
 

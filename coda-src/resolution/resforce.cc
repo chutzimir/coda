@@ -55,15 +55,14 @@ extern "C" {
 #endif
 #include <rpc2.h>
 #include <inodeops.h>
-
+#include <prs.h>
+#include <al.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <util.h>
-#ifndef CAMELOT
 #include <rvmlib.h>
-#endif CAMELOT 
 #include <olist.h>
 #include <errors.h>
 #include <vcrcommon.h>

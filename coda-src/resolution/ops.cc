@@ -41,10 +41,10 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef	__MACH__
-#include <libc.h>    
-#endif
 #include <strings.h>
+#include <prs.h>
+#include <al.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
