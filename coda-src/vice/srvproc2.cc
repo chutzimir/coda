@@ -191,7 +191,7 @@ long ViceConnectFS(RPC2_Handle RPCid, RPC2_Unsigned ViceVersion, ViceClient *Cli
 	    ViceVersion, ClientId->UserName, ClientId->WorkStationName, ClientId->VenusName);
 
     long errorCode;
-    ClientEntry *client;
+    ClientEntry *client = NULL;
 
     errorCode = RPC2_GetPrivatePointer(RPCid, (char **)&client);
 
@@ -204,9 +204,9 @@ long ViceConnectFS(RPC2_Handle RPCid, RPC2_Unsigned ViceVersion, ViceClient *Cli
 		errorCode = CLIENT_MakeCallBackConn(client);
 	else {
 		errorCode = CallBack(client->VenusId->id, &NullFid);
-		if ( errorCode  == RPC2_NAKED ) {
+		if ( errorCode  != RPC2_SUCCESS ) {
 			/* XXX tear down naked connection */
-		errorCode = CLIENT_MakeCallBackConn(client);
+			errorCode = CLIENT_MakeCallBackConn(client);
 		}
 	}			
     }

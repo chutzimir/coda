@@ -370,7 +370,7 @@ PRIVATE void HandleSLPacket(RPC2_PacketBuffer *pb)
 		if (TestState(ce, CLIENT, (C_AWAITREPLY|C_AWAITINIT2)))
 			HandleNak(pb, ce);
 		else 
-			BOGUS(pb, "HandleSLPacket: state != AWAIT\n");
+			BOGUS(pb, "HandleSLPacket: NAK rcvd, state!=AWAIT\n");
 		break;
 		
 	default: BOGUS(pb, "HandleSLPacket: bogus opcode\n");

@@ -180,7 +180,7 @@ void HandleRequests(lwp)
 			      (char *)numLWPs, "server", &pids[numLWPs]);
 /* ??? */
 #else
-	    i = LWP_CreateProcess(HandleRequests, 8192, LWP_NORMAL_PRIORITY,
+	    i = LWP_CreateProcess(HandleRequests, 16384, LWP_NORMAL_PRIORITY,
 			      numLWPs, "server", &pids[numLWPs]);
 #endif
 	    assert(i == LWP_SUCCESS);

@@ -74,18 +74,17 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/param.h>
+#ifdef __BSD44__
+#include <sys/cdefs.h>
+#endif
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <errno.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
-#include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #ifdef __cplusplus
 }
@@ -152,7 +151,7 @@ main(int argc, char *argv[])
 	else  *srcfile++ = 0;	/* it's ok, call by value! */
 
 	sprintf(cmd, "%s/%s", argv[firstarg], srcfile);	/* stat the source file */
-	if(stat(cmd, &statbuf1) < 0)
+	if(::stat(cmd, &statbuf1) < 0)
 	    {
 	    perror(cmd);
 	    break;

@@ -75,7 +75,7 @@ extern "C" {
 #include "vproc.h"
 
 
-PRIVATE const int VolDaemonStackSize = 45056;
+PRIVATE const int VolDaemonStackSize =  0xc000;
 PRIVATE const int VolDaemonInterval = 5;
 PRIVATE const int VolumeCheckInterval = 120 * 60;
 PRIVATE const int VolGetDownInterval = 5 * 60;
