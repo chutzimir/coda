@@ -17,6 +17,33 @@ enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
 	want to break venus yet.
  */
 
+venus_root(void *mdp,
+	struct ucred *cred, struct proc *p,
+/*out*/	ViceFid *VFid)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    int error = 0;
+    int size;
+
+    CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
+    outp = (struct outputArgs *) inp;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_ROOT, cred);  
+
+    size = sizeof(struct inputArgs);
+    error = cfscall(mdp, VC_IN_NO_DATA, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	*VFid = outp->d.cfs_root.VFid;
+    }
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
+}
 
 venus_open(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p,
@@ -630,5 +657,38 @@ venus_readdir(void *mdp, ViceFid *fid,
     }
 
     CFS_FREE(buf, VC_MAXMSGSIZE);
+    return error;
+}
+
+venus_fhtovp(void *mdp, ViceFid *fid,
+	struct ucred *cred, struct proc *p,
+/*out*/	ViceFid *VFid, int *vtype)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    char *buf = NULL;
+    int error = 0;
+    int size;
+
+    CFS_ALLOC(buf, char *, sizeof(struct inputArgs));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_VGET, cred);
+
+    inp->d.cfs_vget.VFid = *fid;
+    size = VC_INSIZE(cfs_vget_in);
+
+    error = cfscall(mdp, size, &size, (char *)inp);
+
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	*VFid = outp->d.cfs_lookup.VFid;
+	*vtype = outp->d.cfs_lookup.vtype;
+    }
+
+    CFS_FREE(inp, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
     return error;
 }

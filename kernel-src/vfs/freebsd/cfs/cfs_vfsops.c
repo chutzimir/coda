@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.6  1997/11/20 11:46:48  rvb
- * Capture current cfs_venus
+ * Revision 1.5.14.7  1997/11/21 13:22:03  rvb
+ * Catch a few cfscalls in cfs_vfsops.c
  *
+ * Revision 1.5.14.6  97/11/20  11:46:48  rvb
+ * Capture current cfs_venus
+ * 
  * Revision 1.5.14.5  97/11/18  10:27:17  rvb
  * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  * 
@@ -385,10 +388,9 @@ cfs_root(vfsp, vpp)
     struct cfs_mntinfo *mi = vftomi(vfsp);
     struct ody_mntinfo *op;
     struct vnode *rvp, **result;
-    struct inputArgs *inp;
-    struct outputArgs *outp;
-    int error, size;
+    int error;
     struct proc *p = curproc;    /* XXX - bnoble */
+    ViceFid VFid;
 
     ENTRY;
     MARK_ENTRY(CFS_ROOT_STATS);
@@ -419,16 +421,7 @@ cfs_root(vfsp, vpp)
 	return (EINVAL);
     }
     
-    CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
-    outp = (struct outputArgs *) inp;
-
-    /* Didn't find the root, try sending up to a warden for it. */
-    INIT_IN(inp, CFS_ROOT, p->p_cred->pc_ucred);  
-
-    size = sizeof(struct inputArgs);
-    error = cfscall(vftomi(vfsp), VC_IN_NO_DATA, &size, (char *)inp);
-    if (!error)
-	error = outp->result;
+    error = venus_root(vftomi(vfsp), p->p_cred->pc_ucred, p, &VFid);
 
     if (!error) {
 	/*
@@ -436,7 +429,7 @@ cfs_root(vfsp, vpp)
 	 * cnode hash with the new fid key.
 	 */
 	cfs_unsave(VTOC(op->rootvp));
-	VTOC(op->rootvp)->c_fid = outp->d.cfs_root.VFid;
+	VTOC(op->rootvp)->c_fid = VFid;
 	cfs_save(VTOC(op->rootvp));
 
 	*vpp = op->rootvp;
@@ -467,7 +460,6 @@ cfs_root(vfsp, vpp)
 	goto exit;
     }
  exit:
-    CFS_FREE(inp, sizeof(struct inputArgs));
     return(error);
 }
 
@@ -564,10 +556,10 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
 {
     struct cfid *cfid = (struct cfid *)fhp;
     struct cnode *cp = 0;
-    struct inputArgs in;
-    struct outputArgs *out = (struct outputArgs *)&in; /* Reuse space */
-    int error, size;
+    int error;
     struct proc *p = curproc; /* XXX -mach */
+    ViceFid VFid;
+    int vtype;
 
     ENTRY;
     
@@ -580,30 +572,17 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
 	return(0);
     }
     
-    INIT_IN(&in, CFS_VGET, p->p_cred->pc_ucred);
-    in.d.cfs_vget.VFid = cfid->cfid_fid;
-    
-    size = VC_INSIZE(cfs_vget_in);
-    error = cfscall(vftomi(vfsp), size, &size, (char *)&in);
-    
-    if (!error) 
-	error = out->result;
+    error = venus_fhtovp(vftomi(vfsp), &cfid->cfid_fid, p->p_cred->pc_ucred, p, &VFid, &vtype);
     
     if (error) {
 	CFSDEBUG(CFS_VGET, myprintf(("vget error %d\n",error));)
 	    *vpp = (struct vnode *)0;
-    }
-    else {
+    } else {
 	CFSDEBUG(CFS_VGET, 
 		 myprintf(("vget: vol %u vno %d uni %d type %d result %d\n",
-			out->d.cfs_vget.VFid.Volume,
-			out->d.cfs_vget.VFid.Vnode,
-			out->d.cfs_vget.VFid.Unique,
-			out->d.cfs_vget.vtype,
-			out->result)); )
+			VFid.Volume, VFid.Vnode, VFid.Unique, vtype, error)); )
 	    
-	cp = makecfsnode(&out->d.cfs_vget.VFid, vfsp,
-			 out->d.cfs_vget.vtype);
+	cp = makecfsnode(&VFid, vfsp, vtype);
 	*vpp = CTOV(cp);
     }
     return(error);
