@@ -774,7 +774,7 @@ class volent {
     struct Lock CML_lock;		/* for checkpoint/mutator synchronization */
     unsigned AgeLimit;			/* min age of log records in SECONDS */
     unsigned ReintLimit;		/* work limit, in MILLESECONDS */
-    /*T*/Unique_t FidUnique;
+    Unique_t FidUnique;
     RPC2_Unsigned SidUnique;
     /*T*/int OpenAndDirtyCount;
     // The next four are now transient - bnoble
