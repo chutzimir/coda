@@ -55,6 +55,7 @@ static char *rcsid = "$Header$";
 #include <sys/socket.h>
 #include <ci.h>
 #include <del.h>
+#include <netinet/in.h>
 #include "fail.h"
 
 extern void ntohFF(FailFilter *);

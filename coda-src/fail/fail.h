@@ -44,6 +44,7 @@ static char *rcsid = "$Header$";
 
  */
 
+#include <netinet/in.h>
 #include <lwp.h>
 #include <rpc2.h>
 #include "fcon.h"
