@@ -204,7 +204,7 @@ PRIVATE int Statistics;
 PRIVATE int debuglevel = 0;
 PRIVATE int lwps = 6;
 PRIVATE	int buffs = 100;	/* formerly 200 */
-int stack = 64;
+int stack = 96;
 PRIVATE int cbwait = 300;
 PRIVATE int chk = 30;
 /* PRIVATE int ProcSize = 0; */
