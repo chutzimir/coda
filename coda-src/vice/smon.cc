@@ -49,7 +49,9 @@ extern "C" {
 
 #include <sys/types.h>
 #include <sys/time.h>
+#ifdef __MACH__
 #include <sys/dk.h>
+#endif
 #include <netinet/in.h>
 #include <errno.h>
 #include <nlist.h>
@@ -438,6 +440,7 @@ PRIVATE long CheckSmonResult(long code)
 
 PRIVATE int GetRawStatistics(SmonStatistics *stats)
 {
+#ifndef LINUX
     static	int	kmem = 0;
     static      int     hertz = 0;
     int		i;
@@ -494,6 +497,9 @@ PRIVATE int GetRawStatistics(SmonStatistics *stats)
     for (i = 0; i < DK_NDRIVE; i++) {
 	stats->TotalIO += xfer[i];
     }
+#else
+    return 0;
+#endif
 }
 
 
