@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.1  1997/12/06 17:41:20  rvb
- * Sync with peters coda.h
+ * Revision 1.5.2.2  1997/12/10 11:40:24  rvb
+ * No more ody
  *
+ * Revision 1.5.2.1  97/12/06  17:41:20  rvb
+ * Sync with peters coda.h
+ * 
  * Revision 1.5  97/12/05  10:39:16  rvb
  * Read CHANGES
  * 
@@ -150,16 +153,13 @@ vc_nb_open(dev, flag, mode, p)
     if (VC_OPEN(vcp))
 	return(EBUSY);
     
-    /* Make first 4 bytes be zero */
-    cfs_mnttbl[minor(dev)].mi_name = (char *)0;
     bzero(&(vcp->vc_selproc), sizeof (struct selinfo));
     INIT_QUEUE(vcp->vc_requests);
     INIT_QUEUE(vcp->vc_replys);
     MARK_VC_OPEN(vcp);
     
-    cfs_mnttbl[minor(dev)].mi_vfschain.vfsp = NULL;
-    cfs_mnttbl[minor(dev)].mi_vfschain.rootvp = NULL;
-    cfs_mnttbl[minor(dev)].mi_vfschain.next = NULL;
+    cfs_mnttbl[minor(dev)].mi_vfsp = NULL;
+    cfs_mnttbl[minor(dev)].mi_rootvp = NULL;
 
     return(0);
 }
@@ -172,26 +172,21 @@ vc_nb_close (dev, flag, mode, p)
     int          mode;     
     struct proc *p;
 {
-    register struct vcomm *	vcp;
+    register struct vcomm *vcp;
     register struct vmsg *vmp;
-    struct ody_mntinfo *op;
+    struct cfs_mntinfo *mi;
     int                 err;
 	
     ENTRY;
 
     if (minor(dev) >= NVCFS || minor(dev) < 0)
 	return(ENXIO);
-    
-    vcp = &cfs_mnttbl[minor(dev)].mi_vcomm;
+
+    mi = &cfs_mnttbl[minor(dev)];
+    vcp = &(mi->mi_vcomm);
     
     if (!VC_OPEN(vcp))
 	panic("vcclose: not open");
-    
-    if (cfs_mnttbl[minor(dev)].mi_name) {
-	CFS_FREE(cfs_mnttbl[minor(dev)].mi_name,
-		 strlen(cfs_mnttbl[minor(dev)].mi_name));
-	cfs_mnttbl[minor(dev)].mi_name = 0;
-    }
     
     /* prevent future operations on this vfs from succeeding by auto-
      * unmounting any vfs mounted via this device. This frees user or
@@ -199,21 +194,14 @@ vc_nb_close (dev, flag, mode, p)
      * Put this before WAKEUPs to avoid queuing new messages between
      * the WAKEUP and the unmount (which can happen if we're unlucky)
      */
-    for (op = &cfs_mnttbl[minor(dev)].mi_vfschain; op ; op = op->next) {
-	if (op->rootvp) {
-	    /* Let unmount know this is for real */
-	    VTOC(op->rootvp)->c_flags |= C_UNMOUNTING;
-	    cfs_unmounting(op->vfsp);
-	    err = dounmount(op->vfsp, flag, p);
-	    if (err)
-		myprintf(("Error %d unmounting vfs in vcclose(%d)\n", 
-			  err, minor(dev)));
-	} else {
-	    /* Should only be null if no mount has happened. */
-	    if (op != &cfs_mnttbl[minor(dev)].mi_vfschain) 
-		myprintf(("Help! assertion failed in vcwrite\n"));
-	    
-	}
+    if (mi->mi_rootvp) {
+	/* Let unmount know this is for real */
+	VTOC(mi->mi_rootvp)->c_flags |= C_UNMOUNTING;
+	cfs_unmounting(mi->mi_vfsp);
+	err = dounmount(mi->mi_vfsp, flag, p);
+	if (err)
+	    myprintf(("Error %d unmounting vfs in vcclose(%d)\n", 
+		      err, minor(dev)));
     }
     
     /* Wakeup clients so they can return. */
@@ -432,26 +420,7 @@ vc_nb_ioctl(dev, cmd, addr, flag, p)
 	break;
     case ODYBIND:
 	/* Bind a name to our device. Used to allow more than one kind of FS */
-	if (cfs_mnttbl[minor(dev)].mi_name) {
-	    if (cfsdebug)
-		myprintf(("ODYBIND: dev %d already has name %s\n", minor(dev),
-			  cfs_mnttbl[minor(dev)].mi_name));
-	    return(EBUSY);	/* Some name already used. */
-	} else {
-	    struct ody_bind *data = (struct ody_bind *)addr;
-	    char *name;
-	    
-	    CFS_ALLOC(name, char *, (data->size));
-	    copyin(data->name, name, data->size);
-	    
-	    if (cfsdebug)
-		myprintf(("ODYBIND: binding %s to dev %d\n", 
-			  name, minor(dev)));
-	    
-	    cfs_mnttbl[minor(dev)].mi_name = name;
-	    return(0);
-	}
-	break;
+	return(EINVAL);
     default :
 	return(EINVAL);
 	break;

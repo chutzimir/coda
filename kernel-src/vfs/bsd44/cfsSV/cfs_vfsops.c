@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.1  1997/12/06 17:41:24  rvb
- * Sync with peters coda.h
+ * Revision 1.6.2.2  1997/12/10 11:40:25  rvb
+ * No more ody
  *
+ * Revision 1.6.2.1  97/12/06  17:41:24  rvb
+ * Sync with peters coda.h
+ * 
  * Revision 1.6  97/12/05  10:39:21  rvb
  * Read CHANGES
  * 
@@ -265,14 +268,11 @@ cfs_mount(vfsp, path, data, ndp, p)
 	return(ENODEV);
     }
     
-    mi->mi_refct = 0;
-    
     /* No initialization (here) of mi_vcomm! */
     vfsp->mnt_data = (qaddr_t)mi;
     vfsp->mnt_stat.f_fsid.val[0] = 0;
     vfsp->mnt_stat.f_fsid.val[1] = makefstype(MOUNT_CFS);
-    mi->mi_vfschain.vfsp = vfsp;
-    mi->mi_vfschain.next = NULL;
+    mi->mi_vfsp = vfsp;
     
     /*
      * Make a root vnode to placate the Vnode interface, but don't
@@ -287,7 +287,8 @@ cfs_mount(vfsp, path, data, ndp, p)
     rootvp->v_flag |= VROOT;
     
     /* Add vfs and rootvp to chain of vfs hanging off mntinfo */
-    ADD_VFS_TO_MNTINFO(mi, vfsp, rootvp);
+    mi->mi_vfsp = vfsp;
+    mi->mi_rootvp = rootvp;
     
     /* set filesystem block size */
     vfsp->mnt_stat.f_bsize = 8192;	    /* XXX -JJK */
@@ -321,7 +322,6 @@ cfs_unmount(vfsp, mntflags, p)
     struct proc *p;
 {
     struct cfs_mntinfo *mi = vftomi(vfsp);
-    struct ody_mntinfo *op, *pre;
     int active, error = 0;
     
     ENTRY;
@@ -331,59 +331,37 @@ cfs_unmount(vfsp, mntflags, p)
 	return(EINVAL);
     }
     
-    if (mi->mi_refct == 0) {
-	/* Someone already unmounted this device. */
-	myprintf(("Ackk! unmount called on ody-style vfsp!\n"));
-	return EINVAL;
-    }
-    
-    for (pre = NULL, op = &mi->mi_vfschain; op; pre = op, op = op->next) {
-	if (op->vfsp == vfsp) {	/* We found the victim */
-	    if (!IS_UNMOUNTING(VTOC(op->rootvp)))
-		return (EBUSY); 	/* Venus is still running */
-	    
-#ifdef	DEBUG
-	    printf("cfs_unmount: ROOT: vp %x, cp %x\n", op->rootvp, VTOC(op->rootvp));
-#endif
-	    vrele(op->rootvp);
+    if (mi->mi_vfsp == vfsp) {	/* We found the victim */
+	if (!IS_UNMOUNTING(VTOC(mi->mi_rootvp)))
+	    return (EBUSY); 	/* Venus is still running */
 
-	    active = cfs_kill(vfsp, NOT_DOWNCALL);
-		
-	    error = vflush(op->vfsp, NULLVP, FORCECLOSE);
-	    printf("cfs_unmount: active = %d, vflush active %d\n", active, error);
-	    error = 0;
-	    
-	    /* I'm going to take this out to allow lookups to go through. I'm
-	     * not sure it's important anyway. -- DCS 2/2/94
-	     */
-	    /* vfsp->VFS_DATA = NULL; */
-	    
-	    /* Remove the vfs from our list of valid coda-like vfs */
-	    if (pre) {
-		pre->next = op->next;
-		CFS_FREE(op, sizeof(struct ody_mntinfo));
-	    } else
-		if (mi->mi_vfschain.next) {
-		    mi->mi_vfschain.vfsp = (mi->mi_vfschain.next)->vfsp;
-		    mi->mi_vfschain.rootvp = (mi->mi_vfschain.next)->rootvp;
-		    mi->mi_vfschain.next = (mi->mi_vfschain.next)->next;
-		} else {
-			/* No more vfsp's to hold onto */
-		    mi->mi_vfschain.vfsp = NULL;
-		    mi->mi_vfschain.rootvp = NULL;
-		}
-	    
-	    if (error)
-		MARK_INT_FAIL(CFS_UMOUNT_STATS);
-	    else
-		MARK_INT_SAT(CFS_UMOUNT_STATS);
-	    
-	    return(error);
-	}
+#ifdef	DEBUG
+	printf("cfs_unmount: ROOT: vp %x, cp %x\n", mi->mi_rootvp, VTOC(mi->mi_rootvp));
+#endif
+	vrele(mi->mi_rootvp);
+
+	active = cfs_kill(vfsp, NOT_DOWNCALL);
+
+	error = vflush(mi->mi_vfsp, NULLVP, FORCECLOSE);
+	printf("cfs_unmount: active = %d, vflush active %d\n", active, error);
+	error = 0;
+
+	/* I'm going to take this out to allow lookups to go through. I'm
+	 * not sure it's important anyway. -- DCS 2/2/94
+	 */
+	/* vfsp->VFS_DATA = NULL; */
+
+	/* No more vfsp's to hold onto */
+	mi->mi_vfsp = NULL;
+	mi->mi_rootvp = NULL;
+
+	if (error)
+	    MARK_INT_FAIL(CFS_UMOUNT_STATS);
+	else
+	    MARK_INT_SAT(CFS_UMOUNT_STATS);
+
+	return(error);
     }
-    
-    MARK_INT_FAIL(CFS_UMOUNT_STATS);
-    return(EINVAL);
 }
 
 /*
@@ -395,7 +373,6 @@ cfs_root(vfsp, vpp)
 	struct vnode **vpp;
 {
     struct cfs_mntinfo *mi = vftomi(vfsp);
-    struct ody_mntinfo *op;
     struct vnode *rvp, **result;
     int error;
     struct proc *p = curproc;    /* XXX - bnoble */
@@ -405,31 +382,20 @@ cfs_root(vfsp, vpp)
     MARK_ENTRY(CFS_ROOT_STATS);
     result = NULL;
     
-    for (op = &mi->mi_vfschain; op; op = op->next) {
-	/* Look for a match between vfsp and op->vfsp */
-	if (vfsp == op->vfsp) {
-	    if ((VTOC(op->rootvp)->c_fid.Volume != 0) ||
-		(VTOC(op->rootvp)->c_fid.Vnode != 0) ||
-		(VTOC(op->rootvp)->c_fid.Unique != 0))
-		{ /* Found valid root. */
-		    *vpp = op->rootvp;
-		    /* On Mach, this is vref.  On NetBSD, VOP_LOCK */
-		    vref(*vpp);
-		    VOP_LOCK(*vpp);
-		    MARK_INT_SAT(CFS_ROOT_STATS);
-		    return(0);
-		}
-	    else	/* Found the vfs, but the vnode not inited yet. */
-		break;
-	}
+    if (vfsp == mi->mi_vfsp) {
+	if ((VTOC(mi->mi_rootvp)->c_fid.Volume != 0) ||
+	    (VTOC(mi->mi_rootvp)->c_fid.Vnode != 0) ||
+	    (VTOC(mi->mi_rootvp)->c_fid.Unique != 0))
+	    { /* Found valid root. */
+		*vpp = mi->mi_rootvp;
+		/* On Mach, this is vref.  On NetBSD, VOP_LOCK */
+		vref(*vpp);
+		VOP_LOCK(*vpp);
+		MARK_INT_SAT(CFS_ROOT_STATS);
+		return(0);
+	    }
     }
 
-    if (op == NULL) {
-	/* Huh, didn't find the vfsp. Noone called cfs_mount? Should
-           we panic? */
-	return (EINVAL);
-    }
-    
     error = venus_root(vftomi(vfsp), p->p_cred->pc_ucred, p, &VFid);
 
     if (!error) {
@@ -437,11 +403,11 @@ cfs_root(vfsp, vpp)
 	 * Save the new rootfid in the cnode, and rehash the cnode into the
 	 * cnode hash with the new fid key.
 	 */
-	cfs_unsave(VTOC(op->rootvp));
-	VTOC(op->rootvp)->c_fid = VFid;
-	cfs_save(VTOC(op->rootvp));
+	cfs_unsave(VTOC(mi->mi_rootvp));
+	VTOC(mi->mi_rootvp)->c_fid = VFid;
+	cfs_save(VTOC(mi->mi_rootvp));
 
-	*vpp = op->rootvp;
+	*vpp = mi->mi_rootvp;
 	vref(*vpp);
 	VOP_LOCK(*vpp);
 	MARK_INT_SAT(CFS_ROOT_STATS);
@@ -456,7 +422,7 @@ cfs_root(vfsp, vpp)
 	 * successful CFS_ROOT call is done. All vnode operations 
 	 * will fail.
 	 */
-	*vpp = op->rootvp;
+	*vpp = mi->mi_rootvp;
 	vref(*vpp);
 	VOP_LOCK(*vpp);
 	MARK_INT_FAIL(CFS_ROOT_STATS);
@@ -627,16 +593,6 @@ int getNewVnode(vpp)
     
     ENTRY;
 
-    for (op = &mi->mi_vfschain; op; op = op->next) {
-	/* Look for a match between vfsp and op->vfsp */
-	if ((*vpp)->v_mount == op->vfsp) {
-	    break;
-	}
-    }
-
-    if (op)
-	return EINVAL;
-
     cfid.cfid_len = (short)sizeof(ViceFid);
     cfid.cfid_fid = VTOC(*vpp)->c_fid;	/* Structure assignment. */
     /* XXX ? */
@@ -644,9 +600,9 @@ int getNewVnode(vpp)
     /* We're guessing that if set, the 1st element on the list is a
      * valid vnode to use. If not, return ENODEV as venus is dead.
      */
-    if (mi->mi_vfschain.vfsp == NULL)
+    if (mi->mi_vfsp == NULL)
 	return ENODEV;
     
-    return cfs_fhtovp(mi->mi_vfschain.vfsp, (struct fid*)&cfid, NULL, vpp,
+    return cfs_fhtovp(mi->mi_vfsp, (struct fid*)&cfid, NULL, vpp,
 		      NULL, NULL);
 }

@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.2  1997/12/09 16:07:15  rvb
- * Sync with vfs/include/coda.h
+ * Revision 1.5.2.3  1997/12/10 11:40:27  rvb
+ * No more ody
  *
+ * Revision 1.5.2.2  97/12/09  16:07:15  rvb
+ * Sync with vfs/include/coda.h
+ * 
  * Revision 1.5.2.1  97/12/06  17:41:25  rvb
  * Sync with peters coda.h
  * 
@@ -980,8 +983,6 @@ cfs_inactive(v)
     if ((struct cfs_mntinfo *)(vp->v_mount->mnt_data) == NULL) {
 	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
 	panic("badness in cfs_inactive\n");
-    } else {
-	((struct cfs_mntinfo *)(vp->v_mount->mnt_data))->mi_refct--;
     }
 
     if (IS_UNMOUNTING(cp)) {
@@ -2207,9 +2208,6 @@ makecfsnode(fid, vfsp, type)
 	cp->c_vnode = vp;                                         
 	cfs_save(cp);
 	
-	/* Otherwise vfsp is 0 */
-	if (!IS_CTL_FID(fid))
-	    ((struct cfs_mntinfo *)(vfsp->mnt_data))->mi_refct++;
     } else {
 	vref(CTOV(cp));
     }

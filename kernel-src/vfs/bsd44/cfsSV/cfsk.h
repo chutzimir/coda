@@ -148,37 +148,6 @@ do {                                       \
 
 #endif INIT_QUEUE
 
-/*
- * Odyssey can have multiple volumes mounted per device (warden). Need
- * to track both the vfsp *and* the root vnode for that volume. Since
- * there is no way of doing that, I felt trading efficiency for
- * understanding was good and hence this structure, which must be
- * malloc'd on every mount.  But hopefully mounts won't be all that
- * frequent (?). -- DCS 11/29/94 
- */
-
-struct ody_mntinfo {
-        struct vnode 	   *rootvp;
-	struct mount              *vfsp;
-	struct ody_mntinfo *next;
-};
-
-#define ADD_VFS_TO_MNTINFO(MI, VFS, VP)                                   \
-do {                                                                      \
-    if ((MI)->mi_vfschain.next) {                                         \
-	struct ody_mntinfo *op;                                           \
-	                                                                  \
-        CFS_ALLOC(op, struct ody_mntinfo *, sizeof (struct ody_mntinfo)); \
-	op->vfsp = (VFS);                                                 \
-	op->rootvp = (VP);                                                \
-	op->next = (MI)->mi_vfschain.next;                                \
-	(MI)->mi_vfschain.next = op;                                      \
-    } else { /* First entry, add it straight to mnttbl */                 \
-	(MI)->mi_vfschain.vfsp = (VFS);                                   \
-	(MI)->mi_vfschain.rootvp = (VP);                                  \
-    }                                                                     \
-} while (0)
-
 	/* get these to cfs_psdev.c */
 struct vmsg {
     struct queue vm_chain;
@@ -211,10 +180,9 @@ struct vcomm {
  * CFS structure to hold mount/file system information
  */
 struct cfs_mntinfo {
-    int			mi_refct;
-    struct vcomm	mi_vcomm;
-    char		*mi_name;      /* FS-specific name for this device */
-    struct ody_mntinfo	mi_vfschain;   /* List of vfs mounted on this device */
+    struct vnode	*mi_rootvp;
+    struct mount	*mi_vfsp;
+    struct vcomm	 mi_vcomm;
 };
 
 extern struct cfs_mntinfo cfs_mnttbl[]; /* indexed by minor device number */
@@ -237,7 +205,7 @@ extern struct cfs_mntinfo cfs_mnttbl[]; /* indexed by minor device number */
  */
 extern struct vnode *cfs_ctlvp;
 #define	IS_CTL_VP(vp)		((vp) == cfs_ctlvp)
-#define	IS_CTL_NAME(vp, name, l)(((vp) == vtomi((vp))->mi_vfschain.rootvp)    \
+#define	IS_CTL_NAME(vp, name, l)(((vp) == vtomi((vp))->mi_rootvp)    \
 				 && strncmp(name, CFS_CONTROL, l) == 0)
 
 /* 
