@@ -34,7 +34,6 @@ static char *rcsid = "$Header$";
 
 
 
-
 // Advice monitor version information
 #define ADVICE_MONITOR_VERSION 1
 
@@ -46,8 +45,7 @@ static char *rcsid = "$Header$";
 
 /* Definitions:  Pathnames to other executables... */
 #define CODACONSOLEOUT "tixwish"
-#define CODACONSOLE "/usr/lib/coda/CodaConsole"
-#define JUMPSTARTASR "parser"        
+#define JUMPSTARTASR "parser"
 
 #define CFS "cfs"
 
@@ -71,6 +69,7 @@ extern int execute_tcl(char *script, char *args[]);
 enum StoplightStates { SLunknown, SLdisconnect, SLweak, SLstrong, SLoff, SLquit };
 #define VDBFileName "/tmp/advice_vdb.out"
 
+#define TMPDIR "/tmp"
 
 extern void Yield();
 
