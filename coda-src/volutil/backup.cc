@@ -516,6 +516,7 @@ int ParseDumpList(char *VolumeListFile, partitionInfo_t **Parts, volinfo_t **vol
 	    if (getReplica(vol->replicas) == -1) {
 		LogMsg(0, 0, stdout, "Skipping backup for volume %x\n", vol->volId);
 		free(vol);
+		flags = 0;		/* Reset the flags */
 		continue;
 	    }
 	    
