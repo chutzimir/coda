@@ -60,7 +60,9 @@ extern "C" {
 #include <netinet/in.h>
 #include <errno.h>
 #include <struct.h>
+#ifndef DJGPP
 #include <utmp.h>
+#endif
 #include <pwd.h>
 
 #include <rpc2.h>
@@ -192,6 +194,7 @@ int AuthorizedUser(vuid_t thisUser) {
 #define	CONSOLE	    "console"
 vuid_t ConsoleUser() {
     vuid_t vuid = ALL_UIDS;
+#ifndef DJGPP
 #ifdef __linux__
     setutent();
     struct utmp w, *u;
@@ -218,6 +221,7 @@ vuid_t ConsoleUser() {
     }
     if (fclose(fp) == EOF)
 	Choke("ConsoleUser: fclose(%s) failed", UTMP_FILE);
+#endif
 #endif
     return(vuid);
 }
@@ -534,10 +538,10 @@ void userent::print(int afd) {
     char begin_time[13];
     char end_time[13];
     if (tokensvalid) {
-	char *b = ctime(&clear.BeginTimestamp);
+	char *b = ctime((time_t *)&clear.BeginTimestamp);
 	strncpy(begin_time, b + 4, 12);
 	begin_time[12] = '\0';
-	char *e = ctime(&clear.EndTimestamp);
+	char *e = ctime((time_t *)&clear.EndTimestamp);
 	strncpy(end_time, e + 4, 12);
 	end_time[12] = '\0';
     }

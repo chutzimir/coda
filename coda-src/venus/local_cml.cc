@@ -917,8 +917,13 @@ int cmlent::DoRepair(char *msg, int rcode)
 		      LObj->fid.Volume, LObj->fid.Vnode, LObj->fid.Unique));
 
 	    /* copy the local-obj cache file into the global-obj cache */
+#ifndef DJGPP
 	    int gfd = open(GObj->data.file->Name(), O_WRONLY | O_TRUNC, 0);
 	    int lfd = open(LObj->data.file->Name(), O_RDONLY, 0);
+#else
+	    int gfd = open(GObj->data.file->Name(), O_WRONLY | O_TRUNC | O_BINARY, 0);
+	    int lfd = open(LObj->data.file->Name(), O_RDONLY | O_BINARY, 0);
+#endif
 	    OBJ_ASSERT(this, gfd >= 0 && lfd >= 0);
 	    code = filecopy(lfd, gfd);
 	    OBJ_ASSERT(this, code == 0);

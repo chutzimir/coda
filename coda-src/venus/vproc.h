@@ -77,13 +77,13 @@ struct uio {
 #endif
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(DJGPP)
 #include <sys/user.h>
 #include <sys/uio.h>
 #endif
 
 
-#if	defined(__linux__) || defined(__CYGWIN32__)
+#if    ! defined(__BSD44__)
 /* hmm we need this, so let's define it. Where is it in BSD anyway? */
 enum  uio_rw { UIO_READ, UIO_WRITE };
 

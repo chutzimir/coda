@@ -42,7 +42,7 @@ static char *rcsid = "$Header$";
 *
 */
 
-
+#include <errno.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
@@ -89,6 +89,7 @@ static char *rcsid = "$Header$";
 #include "rvm_lwp.h"
 #endif RVM_USELWP
 
+#if 0
 extern int errno;
 #ifdef	__linux__
 #if !defined(__GLIBC__) || __GLIBC__ < 2
@@ -97,6 +98,8 @@ extern char *sys_errlist[]; /* XXX JET MUCKING */
 #else
 extern const char *const sys_errlist[]; /* XXX JET MUCKING */
 #endif
+#endif
+
 extern int sys_nerr;
 
 extern rvm_region_def_t *RegionDefs;    /* hooks to rds */
@@ -1401,9 +1404,13 @@ void set_data_file()
         }
     switch (sbuf.st_mode & S_IFMT)
         {
+#ifdef S_IFSOCK
       case S_IFSOCK:
+#endif
       case S_IFDIR:
+#ifdef S_IFLNK
       case S_IFLNK:
+#endif
 /* LINUX use the same block device for raw control */
 #ifndef __linux__
       case S_IFBLK: 

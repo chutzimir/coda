@@ -55,8 +55,6 @@ extern "C" {
 #include <errno.h>
 #include <sys/param.h>
 
-#include <parser.h>
-
 #ifdef __cplusplus
 }
 #endif __cplusplus

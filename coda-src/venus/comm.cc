@@ -202,7 +202,11 @@ void CommInit() {
 	Choke("CommInit: gethostname failed");
 
     /* Hostid is needed for storeid generation. */
+#ifdef DJGPP
+    myHostId = 0x12345678;
+#else
     myHostId = gethostid();
+#endif
 
     /* Initialize Connections. */
     connent::conntab = new olist;

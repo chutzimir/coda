@@ -202,7 +202,11 @@ long open_dev(dev,flags,mode)
     dev->handle = 0;
 
     /* attempt to open */
-    handle = (long)open(dev->name,flags,mode);
+#ifdef DJGPP
+    handle = (long)open(dev->name,flags | O_BINARY ,mode);
+#else
+    handle = (long)open(dev->name,flags ,mode);
+#endif 
     if (handle < 0)
         {
         rvm_errdev = dev;
@@ -272,14 +276,16 @@ long read_dev(dev,offset,dest,length)
     retval = 0;
     while (length != 0)
         {
-        if (length <= rvm_max_read_len) read_len = length;
-        else read_len = rvm_max_read_len;
-        if ((nbytes=read((int)dev->handle,dest,(int)read_len)) < 0)
-            {
-            rvm_errdev = dev;
-	    rvm_ioerrno = errno;
-            return nbytes;
-            }
+        if (length <= rvm_max_read_len) 
+		read_len = length;
+        else 
+		read_len = rvm_max_read_len;
+	nbytes=read((int)dev->handle,dest,(int)read_len);
+        if (nbytes < 0) {
+		rvm_errdev = dev;
+		rvm_ioerrno = errno;
+		return nbytes;
+	}
         if (nbytes == 0)                /* force a cheap negative test */
             if (rvm_utlsw && dev->raw_io) /* since rarely used */
                 if (!strcmp(dev->name,"/dev/null"))

@@ -111,7 +111,11 @@ PRIVATE void CompleteCVBlock(CVDescriptor *);
 
 /* CVOpen -- open a ``directory'' for writing */
 PRIVATE void CVOpen(char *filename, CVDescriptor *cvd) {
+#ifndef DJGPP
     cvd->dirFD = open(filename, O_WRONLY | O_TRUNC, V_MODE);
+#else
+    cvd->dirFD = open(filename, O_WRONLY | O_TRUNC | O_BINARY, V_MODE);
+#endif
     if (cvd->dirFD < 0) Choke("CVOpen: open failed (%d)", errno);
 
     cvd->dirBytes = 0;
@@ -147,7 +151,7 @@ PRIVATE void CVWriteEntry(char *name, ino_t inode, CVDescriptor *cvd) {
     dir.d_namlen = strlen(name);
 
     dir.d_fileno = inode;
-    dir.d_type = (u_int8_t) (cvd->vType == Directory ? CDT_DIR : 
+    dir.d_type = (cvd->vType == Directory ? CDT_DIR : 
 			     (cvd->vType == File ? CDT_REG : 
 			      (cvd->vType == SymbolicLink ? CDT_LNK : 
 			       CDT_UNKNOWN)));

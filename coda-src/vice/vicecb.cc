@@ -91,6 +91,7 @@ extern "C" {
 #include <callback.h>
 #include <vrdb.h>
 #include <srv.h>
+#include <vice.private.h>
 
 extern const MaxVols;
 
@@ -406,10 +407,11 @@ void BreakCallBack(HostTable *aconnid, ViceFid *afid) {
 
 	for (int i = 0; i < nhosts; i++) {
 	    /* host entry may disappear during yield in CallBack() */
-	    HostTable *he = FindHostEntry(cidlist[i]);
+	    HostTable *he = CLIENT_FindHostEntry(cidlist[i]);
 	    if (he) {
 		/* recursively calls DeleteVenus */
-		if (rclist[i] < RPC2_ELIMIT)  CleanUpHost(he);
+		if (rclist[i] < RPC2_ELIMIT)  
+			CLIENT_CleanUpHost(he);
 
 		/* if a file callback, delete any volume callbacks */
 		if (!aVCB)  DeleteCallBack(he, &vFid);

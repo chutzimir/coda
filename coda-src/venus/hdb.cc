@@ -66,19 +66,17 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <errno.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <struct.h>
 #include <sys/param.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <pwd.h>
+#ifndef DJGPP
 #include <utmp.h>
+#endif
 
 #ifdef __cplusplus
 }
@@ -393,6 +391,7 @@ int hdb::List(hdb_list_msg *m) {
 	return(errno);
     }
 
+#ifndef DJGPP
     /* set ownership of file to actual owner */
 #ifndef __CYGWIN32__
     int err = ::fchown(outfd, m->ruid, (gid_t) -1);
@@ -404,7 +403,7 @@ int hdb::List(hdb_list_msg *m) {
 		m->outfile, m->ruid, errno));
 	return(errno);
     }
-
+#endif
     /* Dump the entries. */
     hdb_iterator next(m->luid);
     hdbent *h;
@@ -1209,6 +1208,7 @@ int hdb::Verify(hdb_verify_msg *m) {
     }
 
     /* set ownership of file to actual owner */
+#ifndef DJGPP
 #ifndef __CYGWIN32__
     int err = ::fchown(outfd, m->ruid, (gid_t) -1);
 #else
@@ -1221,6 +1221,7 @@ int hdb::Verify(hdb_verify_msg *m) {
 	return(errno);
     }
 
+#endif
     /* Print suspicious entries. */
     hdb_iterator next(m->luid);
     hdbent *h;

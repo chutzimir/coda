@@ -114,7 +114,11 @@ rvm_bool_t get_ans(prompt,sense)
     long            i;                  /* loop counters */
     FILE            *F;
 
+#ifdef DJGPP
+    F = fopen(filename,"rb");
+#else
     F = fopen(filename,"r");
+#endif
     if (F == NULL)
         {
         printf("\n? Couldn't open %s\n",filename);

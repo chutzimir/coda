@@ -37,26 +37,21 @@ static char *rcsid = "$Header$";
 
 
 
-extern int BuildClient(RPC2_Handle, char *, RPC2_Integer, ClientEntry **);
-extern void DeleteClient(ClientEntry *);
+extern int CLIENT_Build(RPC2_Handle, char *, RPC2_Integer, ClientEntry **);
+extern void CLIENT_Delete(ClientEntry *);
+extern void CLIENT_CleanUpHost(HostTable *);
+extern void CLIENT_GetWorkStats(int *, int *, unsigned int);
+extern void CLIENT_PrintClients();
+extern void CLIENT_CallBackCheck();
+HostTable *CLIENT_FindHostEntry(RPC2_Handle CBCid);
+int CLIENT_MakeCallBackConn(ClientEntry *Client);
+
 extern void Die (char *);
-extern void CallBackCheck();
-extern void CleanUpHost(HostTable *);
-extern void PrintClients();
-extern void SetUserName(ClientEntry *);
-extern void GetWorkStats(int *, int *, unsigned int);
 extern int GetEtherStats();
-extern void CallBackCheck();
 extern int InitCallBack();
-extern void VCheckVLDB();
-extern void VPrintCacheStats();
-extern void VPrintDiskStats();
-extern void SetDebug();
-extern void ResetDebug();
 extern void ViceLog (int ...);
 extern void DeleteCallBack(HostTable *, ViceFid *);
 extern void BreakCallBack(HostTable *, ViceFid *);
-extern void AddCallBack(HostTable *, ViceFid *);
 extern void DeleteVenus (HostTable *);
 extern void DeleteFile (ViceFid *);
 extern int InitCallBack ();

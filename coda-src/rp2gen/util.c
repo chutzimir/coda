@@ -60,7 +60,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 *	Utility routines for RP2GEN				    *
 * 								    *
 \*******************************************************************/
-
+#include <stdlib.h>
 #include <stdio.h>
 #include "rp2.h"
 

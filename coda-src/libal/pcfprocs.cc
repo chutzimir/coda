@@ -112,7 +112,11 @@ int pcfRead(IN char *pcfile)
     unsigned magic;
     char firstline[PCF_FIRSTLINELEN];
 
+#ifndef DJGPP
 #define	ERROR {flock(pcfFD, LOCK_UN); close(pcfFD); return(-1);}	/* Local to pcfRead */
+#else
+#define ERROR assert(0);
+#endif
 
 		
     dobyteswap = 0; 
@@ -123,12 +127,14 @@ int pcfRead(IN char *pcfile)
 	perror(pcfile);
 	ERROR;
 	}
-	
+
+#ifndef DJGPP	
     if (flock(pcfFD, LOCK_SH) < 0)	
 	{
 	perror("pcfRead");
 	ERROR;
 	}
+#endif
     
     /* Read the fixed length line containing the .pdb checksum and creation timestamp in ASCII */
     if (fullread(pcfFD, (char *) firstline, PCF_FIRSTLINELEN) != PCF_FIRSTLINELEN)
@@ -235,12 +241,13 @@ int pcfRead(IN char *pcfile)
 	ERROR;
 	}
 
-
+#ifndef DJGPP
     if (flock(pcfFD, LOCK_UN) < 0)
 	{
 	perror("pcfRead");
 	return(-1);
 	}
+#endif
     close(pcfFD);
     return(0);
 
@@ -259,7 +266,11 @@ int pcfWrite(IN char *pcfile)
     char firstline[PCF_FIRSTLINELEN];
     struct timeval t;
 
+#ifndef DJGPP
 #define	ERROR {flock(pcfFD, LOCK_UN); close(pcfFD); return(-1);}	/* Local to pcfWrite*/
+#else
+#define ERROR assert(0);
+#endif
 
     dobyteswap = FALSE;
     if (htonl(1) != 1)	dobyteswap = TRUE;
@@ -269,19 +280,21 @@ int pcfWrite(IN char *pcfile)
 	perror(pcfile);
 	ERROR;
 	}
-    
+
+#ifndef DJGPP    
     if (flock(pcfFD, LOCK_EX|LOCK_NB) < 0)
 	{
 	perror("pcfWrite");
 	ERROR;
 	}
+#endif
 
     /* Write out first line in ASCII */
     if (PDBCheckSum != 0)
 	{
 	gettimeofday(&t, 0);
 	bzero(firstline, PCF_FIRSTLINELEN);
-	sprintf(firstline, "%d\t%u\t%s", PCF_MAGIC, PDBCheckSum, ctime((const long int *) &t.tv_sec));
+	sprintf(firstline, "%d\t%u\t%s", PCF_MAGIC, PDBCheckSum, ctime((const time_t*) &t.tv_sec));
 
 	if (fullwrite(pcfFD, (char *) firstline, PCF_FIRSTLINELEN) != PCF_FIRSTLINELEN)
 	    {
@@ -381,12 +394,14 @@ int pcfWrite(IN char *pcfile)
 	ERROR;
 	}
 
+#ifndef DJGPP
     if (flock(pcfFD, LOCK_UN) < 0)
 	{
 	perror("pcfWrite");
 	close(pcfFD);
 	return(-1);
 	}
+#endif
     close(pcfFD);
     return(0);
     }

@@ -48,18 +48,17 @@ static char *rcsid = "$Header$";
 #include <ctype.h>
 #include <stdio.h>                      /* not used for log, segment i/o */
 #include <signal.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include "rvm_private.h"
-
 #ifdef RVM_LOG_TAIL_BUG
 #include <rvmtesting.h>
 #endif RVM_LOG_TAIL_BUG
+
+#ifdef DJGPP
+#include <crt0.h>
+int _crt0_startup_flags = _CRT0_FLAG_NEARPTR;
+#endif
 
 /* global variables */
 

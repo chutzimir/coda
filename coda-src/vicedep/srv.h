@@ -274,17 +274,6 @@ if ((t1).microseconds < (t2).microseconds){	\
 /* ViceErrorMsg.c */
 extern char *ViceErrorMsg(int);
 
-/* clientproc.c */
-extern int BuildClient(RPC2_Handle, char *, RPC2_Integer, ClientEntry **);
-extern int MakeCallBackConn(ClientEntry *);
-extern void DeleteClient(ClientEntry *);
-extern void CallBackCheck();
-extern void CleanUpHost(HostTable *);
-extern void PrintClients();
-extern void SetUserName(ClientEntry *);
-extern void GetWorkStats(int *, int *, unsigned int);
-extern HostTable *FindHostEntry(RPC2_Handle);
-
 /* codaproc.c */
 extern ViceVersionVector NullVV;
 extern long InternalCOP2(RPC2_Handle, ViceStoreId *, ViceVersionVector *);

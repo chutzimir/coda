@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
     Preamble();
 
     gettimeofday(&t, 0);
-    printf("# Created from users file on %s\n", ctime((const long *)&t.tv_sec));
+    printf("# Created from users file on %s\n", ctime((time_t *)&t.tv_sec));
     printf("# Highest UID in use = %d\n", pwarray[pwcount-1].pw_uid);
     printf("# Lowest GID  in use = %d\n\n", garray[gcount-1].g_id);
     

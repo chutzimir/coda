@@ -71,17 +71,14 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
+#ifndef DJGPP
 #include <netdb.h>
+#endif
 #include <netinet/in.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <errno.h>
 #include <lwp.h>
 #include <pioctl.h> 
@@ -310,7 +307,7 @@ PRIVATE void GetVSTAB(char *vstab)
 	return;
     }
     
-    area = malloc(buff.st_size);
+    area = (char *)malloc(buff.st_size);
     if(!area) {
 	perror("No memory!");
 	close(fd);

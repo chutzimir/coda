@@ -57,9 +57,11 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
+ifneq ($(SHORTSYS),djgpp)
 EXECUTABLES = auth2 authmon initpw au oldtokens
 SSBINS      = auth2 authmon initpw 
 CSBINS      = au
+endif
 LIBRARIES   = libauth2.a
 HEADERS     = ${RP2FILES} ${RP2HEADERS}
 

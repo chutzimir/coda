@@ -98,13 +98,8 @@ extern "C" {
 extern "C" {
 #endif __cplusplus
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #ifdef __cplusplus
 }
@@ -267,7 +262,7 @@ void vproc::open(struct venus_vnode **vpp, int flags) {
 
 	/* Do the operation. */
 	u.u_error = f->Open(writep, execp, truncp,
-			    &cp->c_device, &cp->c_inode, CRTORUID(u.u_cred));
+			    cp, CRTORUID(u.u_cred));
 	if (u.u_error) goto FreeLocks;
 
 FreeLocks:

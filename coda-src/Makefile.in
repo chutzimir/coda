@@ -46,25 +46,23 @@ include $(MAKDIR)/Makeconf
   I =  scripts
  II =  kerndep dir 
 III =  rpc2 util
- IV =  libal rp2gen pdbstuff blurb # camstuff
+ IV =  libal rp2gen pdbstuff blurb
   V =  fail vicedep partition
 
-#  The mond data collection module is only intended for the PMax
-#if (`/etc/machine` == PMAX) then
-# set VI = auth2 mond vv login
-#else
   VI = auth2 vv login
-#endif
- VII =  vol resolve
-VIII =  venus advice repair guitools res
+ VII =  vol resolve venus
+VIII =  advice repair guitools res
   IX =  rvmres volutil vtools
    X =  vice
   XI =  update asr egasr norton
 
 # If you add a new module to Coda, add it to the right set above
-
+ifneq ($(SHORTSYS),djgpp)
 SUBDIRS = $(I) $(II) $(III) $(IV) $(V) $(VI) $(VII) $(VIII) $(IX) \
 	  $(X) $(XI)
+else
+SUBDIRS = $(I) $(II) $(III) $(IV) $(V) $(VI) $(VII)
+endif
 
 include $(MAKDIR)/configs/Makerules
 

@@ -477,7 +477,7 @@ void LogInit() {
     struct timeval now;
     gettimeofday(&now, 0);
     LOG(0, ("LOGFILE initialized with LogLevel = %d at %s\n",
-	    LogLevel, ctime((const long int *)&now.tv_sec)));
+	    LogLevel, ctime((time_t *)&now.tv_sec)));
 }
 
 
@@ -877,7 +877,7 @@ void SwapLog() {
     struct timeval now;
     gettimeofday(&now, 0);
     LOG(0, ("Moving %s to %s at %s\n",
-	     LOGFILE, LOGFILE_OLD, ctime((const long int *)&now.tv_sec)));
+	     LOGFILE, LOGFILE_OLD, ctime((time_t *)&now.tv_sec)));
     fflush(logFile);
 
     if (rename(LOGFILE, LOGFILE_OLD) < 0) {
@@ -887,7 +887,7 @@ void SwapLog() {
     }
 
     freopen(LOGFILE, "a+", logFile);
-    LOG(0, ("New LOGFILE started at %s", ctime((const long int *)&now.tv_sec)));
+    LOG(0, ("New LOGFILE started at %s", ctime((time_t *)&now.tv_sec)));
 }
 
 
