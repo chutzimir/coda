@@ -90,8 +90,7 @@ static int CheckForceDirSemantics(olist *, Volume *, Vnode *);
 void UpdateRunts(res_mgrpent *mgrp, ViceVersionVector **VV,
 		 ViceFid *Fid) {
 
-    SLog(9,  "UpdateRunts: Entered for Fid(%x.%x.%x)",
-	    Fid->Volume, Fid->Vnode, Fid->Unique);
+    SLog(9,  "UpdateRunts: Entered for Fid %s", FID_(Fid));
     int runtexists = 0;
     int isrunt[VSG_MEMBERS];
     int nonruntdir;
@@ -584,7 +583,8 @@ static int CheckForceDirSemantics(olist *flist, Volume *volptr, Vnode *dirvptr) 
  * Adds the newly created vnode pointers to the commitvlist.
  */
 int ForceDir(vle *pv, Volume *volptr, VolumeId repvolid, 
-	     olist *forceList, dlist *vlist, int *deltablocks) {
+	     olist *forceList, dlist *vlist, int *deltablocks) 
+{
     SLog(9,  "Entering ForceDir(%x.%x.%x)", 
 	    repvolid, pv->vptr->vnodeNumber, pv->vptr->disk.uniquifier);
     diroplink *p;
@@ -723,7 +723,8 @@ int ForceDir(vle *pv, Volume *volptr, VolumeId repvolid,
  *	nonruntvv contains index of first non runt vv
  */
 int RuntExists(ViceVersionVector **VV, int maxvvs, int *isrunt, 
-		       int *NonRuntIndex) {
+		       int *NonRuntIndex) 
+{
 
     extern int IsRunt(ViceVersionVector *);
     int runtexists = 0;
