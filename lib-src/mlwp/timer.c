@@ -56,6 +56,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 #include <sys/time.h>
+#include <stdlib.h>
 #define _TIMER_IMPL_
 #include "lwp.h"
 #include "lwp.private.h"

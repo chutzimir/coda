@@ -73,7 +73,8 @@ extern "C" {
 #endif
 #include <string.h>
 #include <errno.h>
-
+#include <stdarg.h>
+#include <time.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -54,7 +54,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #endif
-
+#include <sys/fcntl.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -455,13 +455,23 @@ void setowner(char *path, int uid, int gid) {
 
 
 void setlength(char *path, off_t size) {
+#ifdef __CYGWIN32__
+     int fd = open(path, O_RDWR);
+     if ( fd < 0 )
+	    fprintf(stderr, "replay: can't set length on %s: ", path);
+     if ( ftruncate(fd, size) != 0 ) {
+#else
     if (rflag && truncate(path, size) < 0) {
+#endif
 	if (vflag || hflag) {
 	    fprintf(stderr, "replay: can't set length on %s: ", path);
 	    perror("");
 	}
 	if (hflag) exit(-1);
     }
+#ifdef __CYGWIN32__
+    close(fd);
+#endif
 }
 
 

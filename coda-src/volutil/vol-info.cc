@@ -176,7 +176,7 @@ S_VolInfo(RPC2_Handle rpcid, RPC2_String formal_volkey, RPC2_Integer dumpall, SE
     VPutVolume(vp);
 
     /* set up SE_Descriptor for transfer */
-    bzero(&sed, sizeof(sed));
+    bzero((void *)&sed, sizeof(sed));
     sed.Tag = SMARTFTP;
     sed.Value.SmartFTPD.Tag = FILEBYNAME;
     sed.Value.SmartFTPD.TransmissionDirection = SERVERTOCLIENT;

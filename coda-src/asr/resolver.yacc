@@ -46,8 +46,10 @@ extern "C" {
 #else
 #include <libc.h>	
 #endif
-#include <sys/param.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
+#endif
+#include <sys/param.h>
 #include <strings.h>
 #include <vcrcommon.h>
 
@@ -58,6 +60,11 @@ extern int yylex();
 #else
 extern int yylex ( void );
 #endif
+
+#include <sys/types.h>
+#include <cfs/coda.h>
+
+
 #ifdef __cplusplus
 }
 #endif __cplusplus

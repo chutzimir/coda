@@ -68,8 +68,8 @@ extern "C" {
 #include <sys/stat.h>
 #include <stdio.h>
 #include <sys/file.h>
+#ifdef  __BSD44__
 #include <sys/dir.h>
-#ifndef  __linux__
 #include <fstab.h>
 #endif
 #include <netdb.h>

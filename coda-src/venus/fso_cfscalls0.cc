@@ -139,7 +139,7 @@ int fsobj::Fetch(vuid_t vuid) {
 
     /* Status parameters. */
     ViceStatus status;
-    bzero(&status, (int)sizeof(ViceStatus));
+    bzero((void *)&status, (int)sizeof(ViceStatus));
 
     /* COP2 Piggybacking. */
     char PiggyData[COP2SIZE];
@@ -198,7 +198,7 @@ int fsobj::Fetch(vuid_t vuid) {
 		    RVMLIB_REC_OBJECT(data.dir);
 		    data.dir = (VenusDirData *)RVMLIB_REC_MALLOC((int)sizeof(VenusDirData) + (unsigned) stat.Length);
 		    RVMLIB_REC_OBJECT(*data.dir);
-		    bzero(data.dir, (int)sizeof(VenusDirData));
+		    bzero((void *)data.dir, (int)sizeof(VenusDirData));
 		    npages = (int) stat.Length >> LOGPS;
 		    pageptr = (VenusDirPage *)((char *)data.dir + (int)sizeof(VenusDirData));
 		    for (i = 0; i < npages; i++, pageptr++)
@@ -535,7 +535,7 @@ int fsobj::GetAttr(vuid_t vuid, RPC2_BoundedBS *acl) {
 
     /* Status parameters. */
     ViceStatus status;
-    bzero(&status, (int)sizeof(ViceStatus));
+    bzero((void *)(void *)&status, (int)sizeof(ViceStatus));
 
     /* COP2 Piggybacking. */
     char PiggyData[COP2SIZE];

@@ -213,7 +213,7 @@ PRIVATE void Connect()
 
 
     RPC2_BindParms bparms;
-    bzero(&bparms, sizeof(bparms));
+    bzero((void *)&bparms, sizeof(bparms));
     bparms.SecurityLevel = RPC2_OPENKIMONO;
     bparms.SideEffectType = SMARTFTP;
 

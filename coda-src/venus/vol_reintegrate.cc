@@ -289,7 +289,9 @@ CheckResult:
 	    if (locked) CML.UnLockObjs(tid);
 
 	    switch(code) {
+#ifndef __CYGWIN32__
 	    case ESUCCESS:
+#endif
 	    case EALREADY:
 		/* Commit logged mutations upon successful replay at server. */
 		CML.IncCommit(&UpdateSet, tid);
@@ -490,7 +492,9 @@ CheckResult:
      * out from under us.
      */
     switch (code) {
+#ifndef __CYGWIN32__
     case ESUCCESS:
+#endif
     case EALREADY:
 	if (m->DoneSending()) {
 	    /* Commit logged mutations upon successful replay at server. */

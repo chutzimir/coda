@@ -53,7 +53,9 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
+#endif
 #include <strings.h>
 #include <assert.h>
 #include <errno.h>
@@ -117,8 +119,8 @@ int getfid(char *path, ViceFid *outfid /* OUT */,
     /* Easy: no conflicts */
     if (!rc)
     	{
-	bcopy(junk, outfid, (int) sizeof(ViceFid));
-	bcopy(junk+sizeof(ViceFid), outvv, (int)sizeof(ViceVersionVector));
+	bcopy((const void *)junk, (void *)outfid, (int) sizeof(ViceFid));
+	bcopy((const void *)junk+sizeof(ViceFid), (void *)outvv, (int)sizeof(ViceVersionVector));
 	return(0);
 	}
 

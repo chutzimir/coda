@@ -133,6 +133,12 @@ extern int DirDebugLevel;	/* Dir package */
 extern int AL_DebugLevel;	/* ACL package */
 extern int AuthDebugLevel;	/* Auth package */
 
+#ifdef __CYGWIN32__
+#include <stdarg.h>
+int vsnprintf(char *buf, size_t len, char *fmt, va_list ap);
+int snprintf(char *buf, size_t len, const char *fmt, ...);
+long int gethostid(void);
+#endif
 
 #ifdef __cplusplus
 }

@@ -283,7 +283,7 @@ int repair_parseline(char *line, struct repair *rs)
     if (eos - c <= 0) return(-1);  /* premature eof */
     
     
-    bzero(rs, sizeof(struct repair));  /* init all fields to 0 */
+    bzero((void *)rs, sizeof(struct repair));  /* init all fields to 0 */
     c = line; /* start at the beginning */
     eos = line + strlen(line); /* note the end */
 

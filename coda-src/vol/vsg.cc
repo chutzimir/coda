@@ -179,7 +179,7 @@ unsigned long GetVSGAddress(unsigned long *hosts, int nh) {
     while (l = next()) {
 	vsgent *v = strbase(vsgent, l, htabhandle);
 	LogMsg(10, VolDebugLevel, stdout, "GetVSGAddress: Comparing one more entry");
-	if (!bcmp(CanHosts, v->Hosts, sizeof(long) * VSG_MEMBERS) &&
+	if (!bcmp((const void *)CanHosts,  (const void *)v->Hosts, sizeof(long) * VSG_MEMBERS) &&
 	    nh == v->nhosts)
 	    return(v->VSGaddr);
     }

@@ -50,13 +50,15 @@ extern "C" {
 #include <stdlib.h>
 #endif
 #include <sys/param.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
+#endif
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>    
 #include <vcrcommon.h>
-
+#include <cfs/coda.h>
 extern int yylineno;
 extern char yytext[];
 extern int yylex();
@@ -169,8 +171,8 @@ void main(int argc, char **argv) {
     if (debug)
 	fprintf(stderr, "Uid is %u Euid is %u\n", getuid(), geteuid());
 
-    char incfname[MAXNAMLEN];		// the last component of path name of inc file
-    char incdname[MAXPATHLEN];		// abs. path of directory where inc file exists
+    char incfname[CFS_MAXNAMLEN];		// the last component of path name of inc file
+    char incdname[CFS_MAXPATHLEN];		// abs. path of directory where inc file exists
 
 #ifdef TIMING 
     int clockFD = open("/dev/cntr0", O_RDONLY, 0666); 

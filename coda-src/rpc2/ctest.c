@@ -84,7 +84,7 @@ extern long RPC2_DebugLevel;
 #ifndef FAKESOCKETS
 extern long SFTP_DebugLevel;
 #endif FAKESOCKETS
-FILE *ErrorLogFile = stderr;
+FILE *ErrorLogFile;
 static char ShortText[200];
 static char LongText[3000];
 PROCESS mypid;			/* Pid of main process */
@@ -114,7 +114,7 @@ main()
 
     SE_Descriptor sed;
 
-
+    ErrorLogFile = stderr;
     assert(LWP_Init(LWP_VERSION, LWP_MAX_PRIORITY-1, &mypid) == LWP_SUCCESS);
 
 

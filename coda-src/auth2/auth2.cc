@@ -300,7 +300,9 @@ PRIVATE void InitSignals()
     FILE *file;
     (void) signal(SIGHUP, (void (*)(int))ResetDebug);
     (void) signal(SIGTSTP, (void (*)(int))SetDebug);
+#ifndef __CYGWIN32__
     (void) signal(SIGXCPU, (void (*)(int))CheckSignal);
+#endif
     (void) signal(SIGTERM, (void (*)(int))Terminate);
 
     if ((file = fopen("pid","w")) == NULL)

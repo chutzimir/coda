@@ -138,9 +138,7 @@ char *ViceErrorMsg(int errorCode)
 	case ENOTSOCK:		return("Socket operation on a non-socket");
 	case EDESTADDRREQ:	return("Destination address required");
 	case EMSGSIZE:		return("Message too long");
-	case EPROTOTYPE:	return("Bad protocol option");
 	case EPROTONOSUPPORT:	return("Protocol not supported");
-	case EAFNOSUPPORT:	return("Address family not supported");
 	case EADDRINUSE:	return("Address already in use");
 	case EADDRNOTAVAIL:	return("Cannot assign requested address");
 	case ENETDOWN:		return("Network is down");

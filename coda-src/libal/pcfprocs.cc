@@ -74,13 +74,15 @@ extern "C" {
 #else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
+#include <util.h>
 #endif
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include "pcf.h"	/* To ensure that shared global declarations are consistent */
 
 /*------------------------------ Shared Globals ------------------------------------------*/

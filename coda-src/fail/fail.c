@@ -54,6 +54,13 @@ static char *rcsid = "$Header$";
 extern void ntohFF(FailFilter *);
 extern void htonFF(FailFilter *);
 
+#ifdef __CYGWIN32__
+/* XXX MJC: hack -- no random(), srandom() so use rand() (and forget about
+  setting seeds for now */
+#define random rand
+#define srandom
+#endif
+
 #ifdef DEBUG_FAIL
 #define DBG(x) printf x;
 #else

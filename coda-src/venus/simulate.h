@@ -55,11 +55,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#ifndef	__linux__
-#include <tracelib.h>
-#else
 #include "tracelib.h"
-#endif
 
 #ifdef __cplusplus
 }
@@ -143,14 +139,6 @@ extern void SimExit();
 extern void SimReport();
 extern void Simulate();
 
-#if defined(__linux__) || defined(__BSD44__)
-/* (Satya, 8/12/96): these definitions are found in sys/inode.h in Mach.
-   The BSD44 equivalent file (sys/mount.h) has none of these definitions;
-   they are assumed by the dfstrace package and are used in tracelib.h.
-   I've put these definitions here for now, to get on with the BSD port.
-   
-   Porting dfstrace to BSD will involve cleaning this up.
-*/
 
 #define	ITYPE_UFS	0
 #define	ITYPE_NFS	1
@@ -158,7 +146,6 @@ extern void Simulate();
 #define	ITYPE_BDEV	3
 #define	ITYPE_SPEC	4
 #define ITYPE_CFS	5
-#endif /* __linux__ ||__BSD44__ */
 
 
 #endif not _VENUS_SIM_H_

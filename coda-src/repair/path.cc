@@ -55,8 +55,10 @@ extern "C" {
 #include <assert.h>
 #include <setjmp.h>
 #include <sys/types.h>
-#include <sys/dir.h>
 #include <sys/param.h>
+#ifndef __CYGWIN32__
+#include <sys/dir.h>
+#endif
 #include <netinet/in.h>
 #include <strings.h>
 #include <sys/stat.h>
@@ -330,8 +332,8 @@ int repair_getfid(char *path, ViceFid *outfid /* OUT */,
 
     /* Easy: no conflicts */
     if (!rc) {
-	bcopy(junk, outfid, sizeof(ViceFid));
-	bcopy(junk+sizeof(ViceFid), outvv, sizeof(ViceVersionVector));
+	bcopy((const char *)junk, (void *)outfid, sizeof(ViceFid));
+	bcopy((const char *)junk+sizeof(ViceFid), (void *)outvv, sizeof(ViceVersionVector));
 	return(0);
     }
 

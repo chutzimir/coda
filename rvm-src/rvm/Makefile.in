@@ -157,12 +157,12 @@ librvm.a:  $(NEED_CTHREAD) $(OBJ1)
 librvmlwp.a: $(LWPOBJ1)
 	$(RM) $@
 	$(AR) rv $@ $(LWPOBJ1)
-	ranlib $@
+	$(RANLIB) $@
 
 librvmpt.a: $(PTOBJ1)
 	$(RM) $@
 	$(AR) rv $@ $(PTOBJ1)
-	ranlib $@
+	$(RANLIB) $@
 
 rvmutl: $(NEED_CTHREAD) ${OBJ2} librvm.a ${RVMUTL_LIBS}
 	$(CC) $(LIBFLAGS) ${OBJ2} librvm.a ${RVMUTL_LIBS} -o $@

@@ -224,7 +224,7 @@ PRIVATE void BuildTable(dumpstream *dump, vtable *table)
     VnodeDiskObject *vdo = (VnodeDiskObject *)buf;
 
     table->table = (ventry **)malloc(sizeof(ventry) * table->nslots);
-    bzero(table->table, sizeof(ventry) * table->nslots);
+    bzero((void *)table->table, sizeof(ventry) * table->nslots);
     for (int i = 0; i < table->nvnodes; i++) {
 	long offset;
 	int deleted;
@@ -270,7 +270,7 @@ PRIVATE void ModifyTable(dumpstream *dump, VnodeClass vclass, vtable *Table)
 
     if (nslots > Table->nslots) { /* "Grow" Vnode Array */
 	ventry **tmp = (ventry **)malloc(sizeof(ventry) * nslots);
-	bcopy(Table->table, tmp, sizeof(ventry) * Table->nslots);
+	bcopy((const void *)Table->table, (void *)tmp, sizeof(ventry) * Table->nslots);
 	free(Table->table);
 	Table->nslots = nslots;
 	Table->table = tmp;

@@ -75,6 +75,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define NSIG 8*sizeof(sigset_t)
 #endif
 
+
 /* Stack size for IOMGR process and processes instantiated to handle signals */
 #define STACK_SIZE	32768  /* 32K */
 

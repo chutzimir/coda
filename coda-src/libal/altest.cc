@@ -72,12 +72,12 @@ extern "C" {
 #endif
 
 #include <errno.h>
-
+#include <stdarg.h>
+#include <util.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include "prs.h"
 #include "al.h"
 

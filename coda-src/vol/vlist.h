@@ -115,7 +115,7 @@ struct vle : public dlink {
 	vptr = 0;
 
 	/* HC chokes on the correct code (below), so we simply bzero. -JJK */
-	bzero(&u, (int)sizeof(u));
+	bzero((void *)&u, (int)sizeof(u));
 /*
 	if (!ISDIR(fid)) {
 	    f_sid = NullSid;

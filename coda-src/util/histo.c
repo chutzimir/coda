@@ -54,7 +54,7 @@ static char *rcsid = "$Header$";
 #include "histo.h"
 
 /* Math.h doesn't define HUGE appropriately for suns... */
-#ifdef sun
+#ifdef __CYGWIN32__
 #define HUGE 1.701411733192644270e38
 #endif
 

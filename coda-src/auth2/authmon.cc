@@ -153,7 +153,11 @@ int main(int argc, char **argv, char **envp)
 	if (PauseFlag) 
 	    {
 	    LogMsg(-1, 0, stdout, "Auth Monitor pausing\n");
+#ifndef __CYGWIN32__
 	    pause();
+#else
+	    LogMsg(-1, 0, stdout, "WARNING: cannot pause!!!\n");
+#endif
 	    notfirst = 0;
 	    continue;
 	    }

@@ -78,10 +78,13 @@ extern "C" {
 #include <sys/ioctl.h>
 #ifdef __MACH__
 #include <sys/viceioctl.h>
-#endif /* __MACH__ */
-#if defined(__linux__) || defined(__BSD44__)
+#else
+#ifdef __linux__
+#include <sys/time.h> /* for timespec */
+#endif 
+#include <cfs/coda.h>
 #include <pioctl.h>
-#endif /* __linux__ ||__BSD44__ */
+#endif 
 #include <sys/file.h>
 #include <errno.h>
 #include <string.h>
@@ -92,6 +95,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #endif
+
 
 #ifdef __cplusplus
 }

@@ -50,7 +50,9 @@ extern "C" {
 #include <stdlib.h>
 #endif
 #include <sys/param.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
+#endif
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -63,7 +65,6 @@ extern "C" {
 #endif __cplusplus
 
 
-#if defined(__linux__) || defined(__BSD44__)
 
 /* An implementation of path(3) which is a standard function in Mach OS
  * the behaviour is according to man page in Mach OS, which says,
@@ -116,6 +117,5 @@ void path(char *pathname, char *direc, char *file)
   return;
 }
 
-#endif
 
 

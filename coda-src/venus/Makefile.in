@@ -250,7 +250,7 @@ worker.o: worker.cc worker.h venus.private.h comm.h fso.h mariner.h\
 libfaketrace.a:	 faketrace.o
 
 faketrace.o: faketrace.c
-	gcc $(CFLAGS) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 testjmp: testjmp.cc
 	$(CXX) $(CXXFLAGS) -o testjmp testjmp.cc

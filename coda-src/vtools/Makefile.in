@@ -39,6 +39,10 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 EXECUTABLES = cmon codacon cfs hoard spy replay
+ifeq ($(SYS),cygwin32)
+EXECUTABLES = codacon cfs hoard spy replay
+endif
+
 CBINS       = $(EXECUTABLES)
 
 RP2FILES    = $(VICE_RPC2)

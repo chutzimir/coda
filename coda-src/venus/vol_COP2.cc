@@ -283,7 +283,7 @@ void *cop2ent::operator new(size_t len) {
     dlink *d = freecop2ents.get();
     if (d == 0) {
 	c = (cop2ent *)new char[len];
-	bzero(c, (int)len);
+	bzero((void *)c, (int)len);
     }
     else
 	c = (cop2ent *)d;

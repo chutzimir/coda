@@ -260,7 +260,7 @@ PRIVATE int FetchLog(RPC2_Handle RPCid, char **buf, int size) {
     assert(*buf);
     
     SE_Descriptor	sid;
-    bzero(&sid, (int) sizeof(SE_Descriptor));
+    bzero((void *)&sid, (int) sizeof(SE_Descriptor));
     sid.Tag = SMARTFTP;
     sid.Value.SmartFTPD.TransmissionDirection = CLIENTTOSERVER;
     sid.Value.SmartFTPD.SeekOffset = 0;

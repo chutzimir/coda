@@ -128,7 +128,7 @@ long S_VolLock(RPC2_Handle rpcid, VolumeId Vid, ViceVersionVector *VolVV) {
     /* LockQueueMan->add(lqep); */
 
     /* Return the volume's VVV */
-    bcopy(&(V_versionvector(volptr)), VolVV, sizeof(ViceVersionVector));
+    bcopy((const void *)&(V_versionvector(volptr)), (void *)VolVV, sizeof(ViceVersionVector));
     VPutVolume(volptr);
     VDisconnectFS();
     return(0);

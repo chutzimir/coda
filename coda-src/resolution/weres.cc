@@ -97,7 +97,7 @@ int WERes(ViceFid *Fid, ViceVersionVector **VV, ResStatus **rstatusp,
 			  succflags);
 	    GetResStatus(succflags, rstatusp, &vstatus);
 	}
-	else bzero(&vstatus, (int) sizeof(ViceStatus));	// for now send a zeroed vstatus.
+	else bzero((void *)&vstatus, (int) sizeof(ViceStatus));	// for now send a zeroed vstatus.
 	// rpc2 doesn\'t like a NULL being passed as an IN parameter 
 	MRPC_MakeMulti(ForceDirVV_OP, ForceDirVV_PTR, VSG_MEMBERS, 
 		       mgrp->rrcc.handles, mgrp->rrcc.retcodes,

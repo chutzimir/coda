@@ -207,7 +207,7 @@ int coda_init() {
 	/* allocate vnodediskobject structures to fill the large and small */
 	/* vnode free lists, and set freelist pointers */
 	zerovnode = (VnodeDiskObject *)buf1;
-	bzero(zerovnode, sizeof(buf1));
+	bzero((void *)zerovnode, sizeof(buf1));
 	for(i = 0; i < SMALLFREESIZE; i++) {
 	    svnodes[i] = (VnodeDiskObject *)CAMLIB_REC_MALLOC(SIZEOF_SMALLDISKVNODE);
 	    CAMLIB_MODIFY_BYTES(svnodes[i], zerovnode, sizeof(buf1));
@@ -217,7 +217,7 @@ int coda_init() {
 	LogMsg(29, VolDebugLevel, stdout,  "Storing SmallVnodeIndex = %d", CAMLIB_REC(SmallVnodeIndex));
 
 	zerovnode = (VnodeDiskObject *)buf2;
-	bzero(zerovnode, sizeof(buf2));
+	bzero((void *)zerovnode, sizeof(buf2));
 	for(i = 0; i < LARGEFREESIZE; i++) {
 	    lvnodes[i] = (VnodeDiskObject *)CAMLIB_REC_MALLOC(SIZEOF_LARGEDISKVNODE);
 	    CAMLIB_MODIFY_BYTES(lvnodes[i], zerovnode, sizeof(buf2));
@@ -479,7 +479,7 @@ void GrowVnodes(VolumeId volid, int vclass, short newBMsize) {
 	/* THIS IS ONLY TEMPORARY ANYWAY */
 	if (AllowResolution && VolLogPtrs[myind]) {
 	    olist *newrl = new olist[newsize];
-	    bcopy(VolLogPtrs[myind], newrl, sizeof(olist) * (int)cursize);
+	    bcopy((const void *)VolLogPtrs[myind], (void *) newrl, sizeof(olist) * (int)cursize);
 	    /* DO NOT DELETE THIS BECAUSE the destructor deallocates the 
 	       entire list;
 	    delete[cursize] VolLogPtrs[myind];

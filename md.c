@@ -30,11 +30,21 @@
  *	/usr/cs/include).
  *
  * $Log$
- * Revision 4.2  1997/12/20 23:34:10  braam
- * A load of patches for glibc, from Elliot Lee.  They work fine under libc --
- * ironically we need to look into some details for the glibc situation.
+ * Revision 4.3  1998/01/10 18:36:41  braam
+ * This is a big commit: the tree now supports compilation for
+ * Windows NT.
  *
- * Also patches from Jan Harkes to aid compilation under Debian Linux.
+ * To build for NT (cross building under Linux only at the moment)
+ * configure --host=nt
+ * or
+ * configure --host=cygwin32
+ *
+ * Everything compiles with the exception of cmon which uses curses.
+ *
+ * I will make a cross building kit available shortly.
+ *
+ * All changes were minor -- I am hopeful that this stuff will work easily with
+ * the kernel code when I finish that.
  *
  * Revision 4.1  1997/04/29 21:32:51  rvb
  * Initial version for Coda
@@ -190,11 +200,15 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef __CYGWIN32__
 #include <sys/dir.h>
+#endif
 #include <strings.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+
+#ifdef __CYGWIN32__
+#define MAXNAMLEN MAXPATHLEN
+#endif
 
 #define LINESIZE 16000
 #define OUTLINELEN 79
@@ -227,28 +241,18 @@ typedef struct dependency_t {
 #define quit1(ret, fmt, arg1) { fprintf(stderr, fmt, arg1); exit(ret);}
 #define quit2(ret, fmt, arg1, arg2) { fprintf(stderr, fmt, arg1, arg2); exit(ret);}
 
-void usage(void);
-void lexer_set_file(FILE *fp);
-int parse_dependency_line(void);
-void output_stuff(FILE *in, FILE *out);
-void output_dependency(FILE *out, dependency_t dep);
-void skip_white_and_comments(void);
-void skip_spaces(void);
-int get_character(void);
-int get_raw_character(void);
-int lookahead(void);
-
-int
 qsort_strcmp(a, b)
 	generic_pointer_t *a, *b;
 {
+	extern int strcmp();
+
 	return strcmp(*a, *b);
 }
 
-int
 qsort_dep_cmp(a, b)
 	generic_pointer_t *a, *b;
 {
+	extern int strcmp();
 	dependency_t d1, d2;
 
 	d1 = (dependency_t)*a;
@@ -294,13 +298,13 @@ int exclude = 0;		/* ignore /usr/include headers */
 char *program_name;
 #define HASH_SIZE 1000
 dependency_t hash_table[HASH_SIZE];
+char *malloc();
 
-int
 main(argc,argv)
 	int argc;
 	char **argv;
 {
-	int ac;
+	int i, ac;
 	char **av;
 
 	program_name = *argv;
@@ -317,7 +321,7 @@ main(argc,argv)
 		else { 
 			register int flag;
 			
-			for ( ; (flag = *token++) ; ) {
+			for ( ; flag = *token++ ; ) {
 				switch (flag) {
 				case 'd':
 					delete++;
@@ -360,7 +364,7 @@ main(argc,argv)
 					exclude++;
 					break;
        				case 'D':
-					for ( ; (flag = *token++) ; )
+					for ( ; flag = *token++ ; )
 						switch (flag) {
 						case 'c':
 							D_contents++;
@@ -424,7 +428,7 @@ newtoken: ;
 		} else if (D_open)
 			printf("%s: opened outfile \"%s\"\n", 
 			       program_name, outfile);
-	} else if ((mak = find_mak(makefile))) {
+	} else if (mak = find_mak(makefile)) {
 		out = temp_mak();
 	} else if (mak_eof   /* non existent file == mt file */
 		   && (out = temp_mak())) {
@@ -479,8 +483,7 @@ newtoken: ;
 	exit(0);
 }
 
-void
-usage(void)
+usage()
 {
 	fprintf(stderr, "usage: %s -m <makefile> | -o <outputfile> [ -f ] [ -Dcdfmot ] [ -v ] <file1> ... <filen>\n", program_name);
 	exit(1);
@@ -488,7 +491,6 @@ usage(void)
 
 #define LINELEN 78
 
-void
 output_stuff(in, out)
 	FILE *in, *out;
 {
@@ -564,7 +566,6 @@ btree_t btree_alloc(data)
 	return new;
 }
 
-int
 btree_insert(tree, data, cmp)
 	btree_t tree;
 	generic_pointer_t data;
@@ -596,7 +597,6 @@ btree_insert(tree, data, cmp)
 	/*NOTREACHED*/
 }
 
-void
 btree_walk(tree, fun, arg)
 	btree_t tree;
 	int (*fun)();
@@ -612,7 +612,6 @@ btree_walk(tree, fun, arg)
 int xxx_out_column;
 dependency_t xxx_out_dep;
 
-void
 do_output_dependency(s, out)
 	char *s;
 	FILE *out;
@@ -625,7 +624,6 @@ do_output_dependency(s, out)
 	fprintf(out, " %s", s);
 }
 
-void
 output_dependency(out, dep)
 	FILE *out;
 	dependency_t dep;
@@ -653,7 +651,6 @@ FILE *open_file(file)
 
 extern char *get_filename();
 
-void
 hash_init()
 {
 	int i;
@@ -717,8 +714,7 @@ dependency_t dep_lookup_or_alloc(dot_o)
 }
 
 /* return TRUE if a line was successfully parsed */
-int
-parse_dependency_line(void)
+parse_dependency_line()
 {
 	dependency_t	dot_o_list[N_TARGETS_PER_RULE];
 	dependency_t dep;
@@ -787,9 +783,40 @@ again:
 	 *	or a pointer to just after the root slash (absolute name).
 	 */
 
+	/* MJC: for NT, two problems:
+	 * - drive letters: many filenames are of the form "C:/whatever"
+	 *   Not only does md need to handle this, but make gets confused
+	 *   if it sees a line like this:
+	 *       myfile.c: myfile.h c:/library/win32.h
+	 *   It complains that there are two colons--hence two targets!
+	 *   So we need to convert a filename c:/library/win32.h to
+	 *       //c/library/win32.h
+	 *   Sigh!
+	 * - backslashes: sometimes you get forward slashes, sometimes back,
+	 *   sometimes mixed in the same filename!  Convert all to forward
+	 */
+
 	while (((c = lookahead()) != EOF) &&
-	       (strchr("\n\t :", c) == NULL)) {
+	       (strchr("\n\t ", c) == NULL)) {
+                if (c == ':') {
+		        /* end loop if we find a colon and we are NOT 
+			 * on the second character of the first path 
+			 * component */
+		        if ((depth != 0) || (sp - stack[depth] != 1))
+			        break;
+			/* otherwise, screw around to fix up path as above */
+			/* have "c*" want "//c*" where * represents *sp */
+			sp[1] = sp[-1];     /* copy driveletter into place */
+			sp[-1] = sp[0] = '/'; /* put in slashes */
+			sp += 2;            /* move over slash and driveletter */
+			stack[depth] = sp - 1;
+			get_character();
+			continue;
+		}
+			
 		c = get_character();
+		if (c == '\\')
+		        c = '/';
 		*sp++ = c;
 		if (c == '/') {
 			/*
@@ -836,6 +863,12 @@ again:
 	if (exclude && (!strncmp(buf, "/usr/include/", 13))) {
 		goto again;
 	}
+	if (exclude && strstr(buf, "i586-pc-cygwin32")) {
+		goto again;
+	}
+	if (exclude && strstr(buf, "gnuwin32")) {
+		goto again;
+	}
 #ifdef	__MACH__
 	if (exclude && (!strncmp(buf, "/usr/cs/include/", 16))) {
 		goto again;
@@ -853,16 +886,14 @@ again:
 	return buf;
 }
 
-void
-skip_spaces(void)
+skip_spaces()
 {
 	while (strchr("\t ", lookahead()) != NULL)
 	    get_character();
 }
 
 
-void
-skip_white_and_comments(void)
+skip_white_and_comments()
 {
 	int c;
 
@@ -876,57 +907,79 @@ skip_white_and_comments(void)
 	}
 }
 
-int get_character(void)
-{
-	register int c;
-	
-	/* throw away quoted newlines */
-	while (((c = get_raw_character()) == '\\') 
-	       && (lookahead() == '\n'))
-	{
-		get_raw_character(); /* throw newline away */
-		skip_spaces();	/* XXX gcc sometimes inserts spaces here */
-	}
-	return c;
-}
+/* MJC: need two levels of lookahead to handle backslashes properly */
 
 #define LOOKAHEAD_NONE -2
 
 static int saved_lookahead = LOOKAHEAD_NONE;
+static int saved_raw_lookahead = LOOKAHEAD_NONE;
 static FILE *lexer_fp = NULL;
 
-void
-lexer_set_file(fp)
-	FILE *fp;
-{
-	saved_lookahead = LOOKAHEAD_NONE;
-	lexer_fp = fp;
-}
-
-int get_raw_character(void)
+int get_character()
 {
 	register int c;
 
-	if (saved_lookahead ==  LOOKAHEAD_NONE)
-	    c = getc(lexer_fp);
-	else {
-		c = saved_lookahead;
+	if (saved_lookahead != LOOKAHEAD_NONE) {
+	        c = saved_lookahead;
 		saved_lookahead = LOOKAHEAD_NONE;
+		return c;
 	}
-/*	fprintf(stderr, "RAW: '%c'\n", c); */
+	
+	/* throw away quoted newlines */
+	while (((c = get_raw_character()) == '\\') 
+	       && (raw_lookahead() == '\n'))
+	{
+		get_raw_character(); /* throw newline away */
+		while (strchr("\t ", raw_lookahead()) != NULL)
+		         get_raw_character();
+	}
 	return c;
 }
 
 int lookahead()
 {
-	register int c;
+        register int c;
 
-	if (saved_lookahead ==  LOOKAHEAD_NONE)
-	    c = get_character();
+        if (saved_lookahead == LOOKAHEAD_NONE) 
+	        c = get_character();
 	else
-	    c = saved_lookahead;
+                c = saved_lookahead;
 
 	saved_lookahead = c;
+	return c;
+}
+
+lexer_set_file(fp)
+	FILE *fp;
+{
+	saved_lookahead = saved_raw_lookahead = LOOKAHEAD_NONE;
+	lexer_fp = fp;
+}
+
+int get_raw_character()
+{
+	register int c;
+
+	if (saved_raw_lookahead ==  LOOKAHEAD_NONE)
+	    c = getc(lexer_fp);
+	else {
+		c = saved_raw_lookahead;
+		saved_raw_lookahead = LOOKAHEAD_NONE;
+	}
+/*	fprintf(stderr, "RAW: '%c'\n", c); */
+	return c;
+}
+
+int raw_lookahead()
+{
+	register int c;
+
+	if (saved_raw_lookahead ==  LOOKAHEAD_NONE)
+	    c = get_raw_character();
+	else
+	    c = saved_raw_lookahead;
+
+	saved_raw_lookahead = c;
 /*	fprintf(stderr, "LOOKAHEAD: '%c'\n", c); */
 	return c;
 }
@@ -1001,8 +1054,6 @@ FILE *temp_mak()
 	return mak;
 }
 
-
-void
 expunge_mak(makin, makout)
 	register FILE *makin, *makout;
 {

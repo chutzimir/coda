@@ -51,7 +51,9 @@ extern "C" {
 #include <sys/file.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#ifndef __CYGWIN32__
 #include <sys/syscall.h>
+#endif
 #include <sys/mount.h>
 #ifndef __FreeBSD__
 // Since vproc.h knows struct uio.
@@ -229,7 +231,7 @@ void VFSMount() {
     if (Simulating) return;
 
     /* Linux Coda filesystems are mounted by hand through forking since they need venus. XXX eliminate zombie */ 
-#ifndef __linux__
+#ifdef __BSD44__
     /* Silently unmount the root node in case an earlier venus exited without successfully unmounting. */
     syscall(SYS_unmount, venusRoot);
     switch(errno) {
@@ -338,7 +340,7 @@ void VFSUnmount() {
 
     /* Purge the kernel cache so that all cnodes are (hopefully) released. */
     k_Purge();
-#ifndef	__linux__
+#ifdef	__BSD44__
     /* Issue the VFS unmount request. */
     if(syscall(SYS_unmount, venusRoot) < 0) {
 	eprint("vfsunmount(%s) failed (%d)", venusRoot, errno);
@@ -439,7 +441,7 @@ int k_Purge(vuid_t vuid) {
     msg.cfs_purgeuser.oh.opcode = CFS_PURGEUSER;
 
     /* Message data. */
-    bzero(&msg.cfs_purgeuser.cred, (int) sizeof(struct coda_cred));
+    bzero((void *)&msg.cfs_purgeuser.cred, (int) sizeof(struct coda_cred));
     msg.cfs_purgeuser.cred.cr_uid = vuid;
 
     /* Send the message. */

@@ -68,8 +68,8 @@ extern "C" {
 #include <sys/errno.h>
 #include <sys/stat.h>
 #include <sys/file.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
-#ifndef	__linux__
 #include <fstab.h>
 #endif
 #include <netdb.h>
@@ -277,7 +277,7 @@ void VInitVolumePackage(int nLargeVnodes, int nSmallVnodes, int DoSalvage) {
     InitVolTable(HASHTABLESIZE);
 
     /* Initialize the volume hash tables */
-    bzero(VolumeHashTable, sizeof(VolumeHashTable));
+    bzero((void *)VolumeHashTable, sizeof(VolumeHashTable));
     
     VInitVnodes(vLarge, nLargeVnodes);
     VInitVnodes(vSmall, nSmallVnodes);
@@ -465,7 +465,7 @@ void VGetVolumeInfo(Error *ec, char *key, register VolumeInfo *info)
     LogMsg(9, VolDebugLevel, stdout, "Entering VGetVolumeInfo, key = %s", key);
 
     *ec = 0;
-    bzero(info, sizeof(VolumeInfo));
+    bzero((void *)info, sizeof(VolumeInfo));
     vldp = VLDBLookup(key);
     if (vldp == NULL) {
 	*ec = VNOVOL;

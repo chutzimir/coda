@@ -279,7 +279,7 @@ char *recle::DumpToBuf(int *bufsize) {
 	rlep++;
 
     assert((long)(rlep + size) <= (long)lastlong);
-    bcopy(&(vle->vfld[0]), rlep, size);
+    bcopy((const void *)&(vle->vfld[0]), (void *) rlep, size);
     
     *lastlong = DUMP_ENTRY_END_STAMP;
     return(buf);

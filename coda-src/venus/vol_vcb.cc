@@ -53,10 +53,8 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #endif
-#ifdef	__linux__
 #include <netinet/in.h>
-#include <endian.h>
-#else
+#ifdef __BSD44__
 #include <machine/endian.h>
 #endif
 
@@ -613,7 +611,7 @@ vcbdent::vcbdent(VolumeId Vid, char *volname) {
     MagicNumber = VCBDENT_MagicNumber;
     strcpy(name, volname);
     vid = Vid;
-    bzero(&data, (int)sizeof(VCBStatistics));
+    bzero((void *)&data, (int)sizeof(VCBStatistics));
 
     VCBDB->htab.insert(&vid, &handle);
 }

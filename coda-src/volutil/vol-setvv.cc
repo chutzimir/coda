@@ -152,7 +152,7 @@ long S_VolSetVV(RPC2_Handle rpcid, RPC2_Unsigned formal_volid, RPC2_Unsigned vno
 					(int)vnp->disk.dataVersion);
     }
     else 
-	bcopy(vv, &(Vnode_vv(vnp)), sizeof(ViceVersionVector));
+	bcopy((const void *)vv, (void *)&(Vnode_vv(vnp)), sizeof(ViceVersionVector));
 
     /* update volume version vector,  break callbacks */
     vrent *vre = VRDB.find(V_groupId(vp));    /* Look up the VRDB entry. */

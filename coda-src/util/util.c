@@ -172,13 +172,39 @@ extern void LogMsg(int msglevel, int debuglevel, FILE *fout, char *fmt,  ...)
 }
 
 /* Send a message out on a file descriptor. */
+#ifdef __CYGWIN32__
+int vsnprintf(char *buf, size_t len, char *fmt, va_list ap) 
+{
+    return vsprintf(buf, fmt, ap);
+}
+
+int snprintf(char *buf, size_t len, const char *fmt, ...) 
+
+{
+    va_list ap;
+    int rc;
+
+    /* Construct message in buffer and add newline */
+    va_start(ap, fmt);
+    rc = vsnprintf(buf, len, fmt, ap); /* leave 1 char for the "\n" */
+    va_end(ap);
+    return rc;
+}
+
+long int gethostid(void)
+{
+	return 4711;
+}
+
+#endif
+
 void fdprint(long afd, char *fmt, ...) 
 {
     va_list ap;
     char buf[240];
 
     va_start(ap, fmt);
-    vsnprintf(buf, 240, fmt, ap);
+    vsnprintf(buf, 239, fmt, ap);
     va_end(ap);
     write((int) afd, buf, (int) strlen(buf));
 }
@@ -192,7 +218,7 @@ void eprint(char *fmt, ...)
 
     /* Construct message in buffer and add newline */
     va_start(ap, fmt);
-    vsnprintf(cp, 239, fmt, ap); /* leave 1 char for the "\n" */
+    vsnprintf(cp, 239, (const char *)fmt, ap); /* leave 1 char for the "\n" */
     va_end(ap);
     cp += strlen(cp);
     strcat(cp, "\n");

@@ -48,7 +48,7 @@ INCREADLINE   = -I/usr/local/include/readline
 #for rvm
 LIBTHREADS    =
 LIBMACH       = 
-
+LIBTERMCAP    = /usr/lib/libtermcap.a
 #for advice_srv
 LIBKVM        = /usr/lib/libkvm.a
 ifeq ($(REALSYS),"NetBSD 1.3")
@@ -58,12 +58,5 @@ else
 INCGDBM       = -I/usr/local/include
 LIBGDBM       = /usr/local/lib/libgdbm.a
 endif
-LIBTIX        = /coda/misc/tcl/@sys/beta/lib/libtix4.0.a
-INCTIX	      = /coda/misc/tcl/@sys/beta/include
-LIBTK         = /coda/misc/tcl/@sys/beta/lib/libtk4.0.a
-INCTK	      = /coda/misc/tcl/@sys/beta/include
-LIBTCL        = /coda/misc/tcl/@sys/beta/lib/libtcl7.4.a
-INCTCL	      = /coda/misc/tcl/@sys/beta/include
+
 LIBMATH       = -lm
-LIBX11        = /usr/X11R6/lib/libX11.a
-INCX11	      = /usr/X11R6/include

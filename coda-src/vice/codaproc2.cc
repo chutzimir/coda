@@ -55,7 +55,9 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#ifndef __CYGWIN32__
 #include <sys/dir.h>
+#endif
 #include <sys/file.h>
 #include <stdarg.h>
 #if !defined(__GLIBC__)

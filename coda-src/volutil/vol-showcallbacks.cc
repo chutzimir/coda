@@ -85,7 +85,7 @@ long S_ShowCallbacks(RPC2_Handle rpcid, ViceFid *fid, SE_Descriptor *formal_sed)
     fclose(cbfile);
 
     // ship the file back 
-    bzero(&sed, sizeof(sed));
+    bzero((void *)&sed, sizeof(sed));
     sed.Tag = SMARTFTP;
     sed.Value.SmartFTPD.Tag = FILEBYNAME;
     sed.Value.SmartFTPD.TransmissionDirection = SERVERTOCLIENT;

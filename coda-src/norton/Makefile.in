@@ -49,7 +49,7 @@ LIBS =	$(LIBIBERTY) \
 	$(LIBMACH)	\
 	$(LIBCOMPAT)	\
 	$(LIBREADLINE)  \
-	-ltermcap
+	$(LIBTERMCAP)
 
 common_objects = norton-setup.o commands.o norton-volume.o \
 		 norton-recov.o norton-vnode.o norton-dir.o norton-rds.o dummy.o

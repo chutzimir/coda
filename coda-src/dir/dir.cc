@@ -407,9 +407,9 @@ int DirToNetBuf(long *dir, char *sortedbuf, int maxsize, int *size) {
 	    errorcode = 1;
 	    goto cleanup;
 	}
-	bcopy(&(sdep[i]->vnode), &sortedbuf[sortedindex], sizeof(long));
+	bcopy((const void *)&(sdep[i]->vnode), &sortedbuf[sortedindex], sizeof(long));
 	sortedindex += sizeof(long);
-	bcopy(&(sdep[i]->unique), &sortedbuf[sortedindex], sizeof(long));
+	bcopy((const void *)&(sdep[i]->unique), &sortedbuf[sortedindex], sizeof(long));
 	sortedindex += sizeof(long);
 	strcpy(&sortedbuf[sortedindex], sdep[i]->name);
 	sortedindex += strlen(sdep[i]->name) + 1;

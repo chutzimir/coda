@@ -39,7 +39,10 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 EXECUTABLES = parser
-CBINS       = parser
+ifeq ($(SYS),cywin32)
+EXECUTABLES = parser
+endif
+CBINS       = $(EXECUTABLES)
 HEADERS     = asr.h ruletypes.h
 
 YFLAGS += -d
@@ -52,7 +55,7 @@ LIBS=	$(LIBKERNDEP) $(LIBUTIL)
 OBJECTS = y.tab.o lex.yy.o ruletypes.o resolver.o wildmat.o path.o
 
 parser: ${OBJECTS} $(LIBS)
-	$(CC) $(LIBFLAGS) ${OBJECTS} $(LIBS)  -lfl -o parser
+	$(CC) $(LIBFLAGS) ${OBJECTS} $(LIBS) $(LIBFLEX) -o parser
 
 # Dependencies
 y.tab.c: $(srcdir)/resolver.yacc

@@ -87,7 +87,7 @@ void AddPairToCopPendingTable(ViceStoreId *sid, ViceFid *fid) {
 	}
     }
     else {
-	ViceFid fids[MAXFIDS]; bzero(fids, (int) (MAXFIDS * sizeof(ViceFid)));
+	ViceFid fids[MAXFIDS]; bzero((void *)fids, (int) (MAXFIDS * sizeof(ViceFid)));
 	fids[0] = *fid;
 	CopPendingMan->add(new cpent(sid, fids));
     }

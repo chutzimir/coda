@@ -161,7 +161,7 @@ char *FlattenLocalRMTLElist(olist *llist, int *bufsize) {
 	    while ((pl = (pdlink *)nextrlent()) && (i < size)) {
 		rlent *reslogent = strbase(rlent, pl, link);
 		LogMsg(59, SrvDebugLevel, stdout,  "FlattenLocalRMTLElist - getting entry %d", i);
-		bcopy(reslogent, &(buf[i * sizeof(rlent)]), 
+		bcopy((const char *)reslogent, (char *)&(buf[i * sizeof(rlent)]), 
 		      (int) sizeof(rlent));
 		i++;
 	    }

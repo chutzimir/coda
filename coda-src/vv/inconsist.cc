@@ -287,7 +287,7 @@ void InvalidateVV(vv_t *v) {
 void GetMaxVV(vv_t *newvv, vv_t **vvgroup, int domindex)
 {
     int i, j;
-    bzero(newvv, sizeof(ViceVersionVector));
+    bzero((const void *)newvv, sizeof(ViceVersionVector));
     for (i = 0; i < VSG_MEMBERS; i++) {
 	/* compute max of VV[][i] */
 	long max = 0;
@@ -305,14 +305,14 @@ void GetMaxVV(vv_t *newvv, vv_t **vvgroup, int domindex)
 	for (i = 0; i < VSG_MEMBERS; i++) 
 	    if (vvgroup[i]) break;
 	if (i < VSG_MEMBERS) 
-	    bcopy(&(vvgroup[i]->StoreId), &(newvv->StoreId),
+	    bcopy((const void *)&(vvgroup[i]->StoreId), (void *)&(newvv->StoreId),
 		  sizeof(ViceStoreId));
 	break;
     case -2:
 	/* do nothing */
 	break;
     default:
-	bcopy(&(vvgroup[domindex]->StoreId), &(newvv->StoreId),
+	bcopy((const void *)&(vvgroup[domindex]->StoreId), (void *)&(newvv->StoreId),
 	      sizeof(ViceStoreId));
     }
 }

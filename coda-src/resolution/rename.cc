@@ -44,7 +44,9 @@ extern "C" {
 #include <libc.h>
 #endif
 #include <rpc2.h>
+#ifndef __CYGWIN32__
 #include <sys/dir.h>
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus

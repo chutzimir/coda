@@ -155,8 +155,14 @@ void CacheFile::ResetContainer() {
 	Choke("CacheFile::ResetContainer: open failed (%d)", errno);
     if (::fchmod(tfd, V_MODE) < 0)
 	Choke("CacheFile::ResetContainer: fchmod failed (%d)", errno);
+
+#ifndef __CYGWIN32__
     if (::fchown(tfd, (uid_t)V_UID, (gid_t)V_GID) < 0)
 	Choke("CacheFile::ResetContainer: fchown failed (%d)", errno);
+#else
+    if (::chown(name, (uid_t)V_UID, (gid_t)V_GID) < 0)
+	Choke("CacheFile::ResetContainer: fchown failed (%d)", errno);
+#endif
     if (::fstat(tfd, &tstat) < 0)
 	Choke("CacheFile::ResetContainer: fstat failed (%d)", errno);
     if (::close(tfd) < 0)
@@ -198,7 +204,7 @@ void CacheFile::Copy(CacheFile *source) {
 
     int tfd, ffd, n;
     struct stat tstat;
-#ifdef	__linux__
+#ifndef __BSD44__
     char buf[PAGESIZE];
 #else
     char buf[MAXBSIZE];
@@ -208,9 +214,13 @@ void CacheFile::Copy(CacheFile *source) {
 	Choke("CacheFile::Copy: open failed (%d)", errno);
     if (::fchmod(tfd, V_MODE) < 0)
 	Choke("CacheFile::Copy: fchmod failed (%d)", errno);
+#ifndef __CYGWIN32__
     if (::fchown(tfd, (uid_t)V_UID, (gid_t)V_GID) < 0)
 	Choke("CacheFile::Copy: fchown failed (%d)", errno);
-
+#else
+    if (::chown(name, (uid_t)V_UID, (gid_t)V_GID) < 0)
+	Choke("CacheFile::ResetCopy: fchown failed (%d)", errno);
+#endif
     if ((ffd = ::open(source->name, O_RDONLY, V_MODE)) < 0)
 	Choke("CacheFile::Copy: source open failed (%d)", errno);
 
@@ -257,25 +267,30 @@ void CacheFile::Stat(struct stat *tstat) {
 
 /* MUST be called from within transaction! */
 void CacheFile::Truncate(unsigned newlen) {
+    int fd;
     if (Simulating) return;
 
     ASSERT(inode != (ino_t)-1);
 
-#ifdef	__MACH__
-#else
     /*
     if (length < newlen) {
        eprint("Truncate: %d->%d:  -> ::truncate(name %s, length %d)\n",
 		length, newlen, name, newlen);
     }
     */
-#endif
     if (length != newlen) {
 	RVMLIB_REC_OBJECT(*this);
 	length = newlen;
     }
-
+#ifndef __CYGWIN32__
     ASSERT(::truncate(name, length) == 0);
+#else 
+    fd = open(name, O_RDWR);
+    if ( fd < 0 )
+	    ASSERT(0);
+    ASSERT(::ftruncate(fd, length) == 0);
+    close(fd);
+#endif
 }
 
 

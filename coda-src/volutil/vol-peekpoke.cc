@@ -109,7 +109,7 @@ void setmyname(char *s)
 	char	buf[MAXPATHLEN];
 	if (*s == '/')
 		srvname = strdup(s);
-	else if (getwd(buf) != NULL)
+	else if (getcwd(buf, MAXPATHLEN) != NULL)
 		srvname = strdup(strcat(strcat(buf, "/"), s));
 	else	printf("%s: unable to find the current directory\n", s);
 }

@@ -42,7 +42,7 @@ CBINS       = repair
 # TESTS	    = reptest
 
 LIBS = ${LIBRESOLVE} ${LIBVV} ${LIBAUTH2} ${LIBKERNDEP} ${LIBUTIL} \
-       $(LIBREADLINE) -ltermcap
+       $(LIBREADLINE) $(LIBTERMCAP)
 
 OFILES = rvol.o path.o
 

@@ -157,7 +157,7 @@ vvtable::vvtable(FILE *Ancient, VnodeClass vclass, int listsize)
     nlists = listsize;
     assert(nlists > 0);
     vvlist = (vvent **)malloc(sizeof(vvent) * nlists);
-    bzero(vvlist, sizeof(vvent) * nlists);
+    bzero((void *)vvlist, sizeof(vvent) * nlists);
     
     LogMsg(9, VolDebugLevel, stdout, "After malloc of vvlist, entering do loop");
     do {

@@ -79,7 +79,7 @@ int Equal C_ARGS((resdir_entry **deGroup, int nDirEntries))
 {
     int i;
     for (i = 1; i < nDirEntries; i++){
-	if (bcmp(&(deGroup[i]->VV.StoreId), &(deGroup[0]->VV.StoreId), sizeof(ViceStoreId)))
+	if (bcmp((const void *)&(deGroup[i]->VV.StoreId), (const void *)&(deGroup[0]->VV.StoreId), sizeof(ViceStoreId)))
 	    return 0;
 	if (VV_Cmp(&(deGroup[i]->VV), &(deGroup[0]->VV)))
 	    return 0;
@@ -113,7 +113,7 @@ int WeaklyEqual C_ARGS((int nreplicas, resreplica *dirs, resdir_entry **deGroup,
 {
     if (nreplicas != nDirEntries) return 0;
     for(int i = 1; i < nDirEntries; i++)
-	if (bcmp(&((deGroup[i]->VV).StoreId), &((deGroup[0]->VV).StoreId), sizeof(ViceStoreId)))
+	if (bcmp((const void *)&((deGroup[i]->VV).StoreId), (const void *)&((deGroup[0]->VV).StoreId), sizeof(ViceStoreId)))
 	    return 0;
     return 1;
 }

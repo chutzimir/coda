@@ -148,12 +148,12 @@ librds.a: $(NEED_CTHREAD) $(OBJ1)
 librdslwp.a: $(LWPOBJ1)
 	$(RM) $@
 	$(AR) rv $@ $(LWPOBJ1)
-	ranlib $@
+	$(RANLIB) $@
 
 librdspt.a: $(PTOBJ1)
 	$(RM) $@
 	$(AR) rv $@ $(PTOBJ1)
-	ranlib $@
+	$(RANLIB) $@
 
 rdsinit: $(NEED_CTHREAD) $(OBJ2) librds.a $(RDSINIT_LIBS)
 	$(CC) $(LIBSFLAGS) $(OBJ2) librds.a $(RDSINIT_LIBS) -o rdsinit

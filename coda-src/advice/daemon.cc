@@ -112,11 +112,7 @@ void InitOneADay() {
     struct tm *lt = localtime((long *) &curr_time);
     assert(lt != NULL);
     lt->tm_sec = lt->tm_min = lt->tm_hour = 0;       /* midnight today */
-#if defined(__linux__) || defined(__BSD44__)
     unsigned long midnight = mktime(lt) + SECSPERDAY; /* midnight tomorrow */
-#else
-    unsigned long midnight = gtime(lt) + SECSPERDAY; /* midnight tomorrow */
-#endif
     struct TM_Elem *tp = new TM_Elem;
     assert(tp != NULL);
     tp->TotalTime.tv_sec = midnight - curr_time;       /* time until then */

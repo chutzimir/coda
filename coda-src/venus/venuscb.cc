@@ -55,10 +55,8 @@ extern "C" {
 
 #include <stdio.h>
 #include <sys/types.h>
-#ifdef	__linux__
 #include <netinet/in.h>
-#include <endian.h>
-#else
+#ifdef __BSD44__
 #include <machine/endian.h>
 #endif
 

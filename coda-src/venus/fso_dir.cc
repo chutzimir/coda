@@ -64,8 +64,9 @@ extern "C" {
 #endif
 #ifdef	__linux__
 #include <endian.h>
+#endif
 #include <netinet/in.h>
-#else
+#ifdef __BSD44__
 #include <machine/endian.h>
 #endif
 
@@ -324,7 +325,7 @@ void fsobj::dir_MakeDir() {
 
     data.dir = (VenusDirData *)RVMLIB_REC_MALLOC((int)sizeof(VenusDirData));
     RVMLIB_REC_OBJECT(*data.dir);
-    bzero(data.dir, (int)sizeof(VenusDirData));
+    bzero((void *)data.dir, (int)sizeof(VenusDirData));
 
     if (::MakeDir((long *)data.dir, (long *)&fid, (long *)&pfid) != 0)
 	{ print(logFile); Choke("fsobj::dir_MakeDir: MakeDir failed!"); }

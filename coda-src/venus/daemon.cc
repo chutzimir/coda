@@ -125,8 +125,7 @@ void InitOneADay() {
 
 #ifdef __MACH__
 #define MKTIME(tm) gtime(tm)  /* gtime() is CMU home brew */
-#endif /* __MACH__ */
-#if defined(__linux__) || defined(__BSD44__)
+#else
 #define MKTIME(tm) mktime(tm) /* mktime() is part of 4.4 BSD */
 #endif /* __linux__ ||__BSD44__ */
 

@@ -42,7 +42,9 @@ extern "C" {
 #include <assert.h>
 #include <parser.h>
 #include <sys/types.h>
+#ifndef __CYGWIN32__
 #include <sys/dir.h>
+#endif
 #include <sys/file.h>
 #include <sys/param.h>
 #include <netinet/in.h>
@@ -1529,7 +1531,7 @@ PRIVATE void SetDefaultPaths()
 
 PRIVATE int GetReplicaNames(char **names, int maxnames, char
 			     *ReplicatedName) {
-    struct direct *de;
+    struct dirent *de;
     struct stat buf;
     int i;
     DIR *d = opendir(ReplicatedName);

@@ -208,9 +208,9 @@ int vindex_iterator::operator()(VnodeDiskObject *vnode) {
 	    if (vdo->type == vNull)
 		continue;
 	    else if(v_ind->vtype == vSmall)
-		bcopy(vdo, vnode, SIZEOF_SMALLDISKVNODE);
+		bcopy((const void *)vdo, (void *)vnode, SIZEOF_SMALLDISKVNODE);
 	    else if(v_ind->vtype == vLarge)
-		bcopy(vdo, vnode, SIZEOF_LARGEDISKVNODE);
+		bcopy((const void *)vdo, (void *)vnode, SIZEOF_LARGEDISKVNODE);
 	    else
 		LogMsg(0, 0, stdout, "vindex_iterator::operator() bad vnode type %d", v_ind->vtype);
 

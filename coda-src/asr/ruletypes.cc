@@ -51,7 +51,9 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __BSD44__
 #include <sys/dir.h>
+#endif
 #include <sys/wait.h>
 #include <strings.h>
 #include <assert.h>
@@ -59,7 +61,9 @@ extern "C" {
 #include <venusioctl.h>
 #include <vcrcommon.h>
 #include "asr.h" 
-
+#ifndef __BSD44__
+#include <dirent.h>
+#endif
 extern "C" void path(char *, char *, char *);
 extern int wildmat(char *text, char *pattern);
 
@@ -269,7 +273,7 @@ int command_t::execute() {
 	// parent process 
 	union wait cstatus;
 	int cpid = rc;
-#ifdef __BSD44__
+#ifndef __linux__
 	for (rc = wait(&cstatus.w_status); (rc != -1) && (rc != cpid); rc = wait(&cstatus.w_status))
 #else
 	for (rc = wait(&cstatus); (rc != -1) && (rc != cpid); rc = wait(&cstatus))
@@ -411,7 +415,7 @@ int rule_t::GetReplicaNames() {
 	// get the replicas 
 	DIR *dirp = opendir(name);
 	if (dirp) {
-	    struct direct *dp;
+	    struct dirent *dp;
 	    for (dp = readdir(dirp); 
 		 ((dp != NULL) && (nreplicas < VSG_MEMBERS)); 
 		 dp = readdir(dirp)) {
@@ -455,7 +459,7 @@ void rule_t::disablerepair() {
     char name[MAXPATHLEN]; 
     
     sprintf(name, "%s", idname);
-    bzero(&vioc, (int) sizeof(vioc));
+    bzero((void *)&vioc, (int) sizeof(vioc));
     rc = pioctl(name, VIOC_DISABLEREPAIR, &vioc, 0);
     if (rc < 0) 
 	fprintf(stderr, "Error(%d) during disablerepair of %s", errno, name);
