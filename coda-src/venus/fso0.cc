@@ -533,7 +533,7 @@ void VmonUpdateSession(vproc *vp, ViceFid *key, fsobj *f, volent *vol, vuid_t vu
         return;
 
     /* Return if this is for a Local volume */
-    if (key->Volume == LocalFakeVid)
+    if (FID_VolIsFake(key->Volume))
         return;
 
     /* Validate params */
@@ -815,7 +815,7 @@ RestartFind:
 	}
 
 	/* process possible un-cached local objects */
-	if (FID_IsLocal(key)) {
+	if (FID_VolIsLocal(key)) {
 		LOG(0, ("fsdb::Get: Un-cached Local object %s\n",
 			FID_(key)));
 		return ETIMEDOUT;
@@ -857,7 +857,7 @@ RestartFind:
 	VDB->Put(&v);
 
 	/* Transform object into fake mtpt if necessary. */
-	if (FID_IsFake(key)) {
+	if (FID_IsFakeRoot(key)) {
 	    f->PromoteLock();
 	    if (f->Fakeify()) {
 		LOG(0, ("fsdb::Get: can't transform %s (%x.%x.%x) into fake mt pt\n",
@@ -1328,7 +1328,7 @@ int fsdb::TranslateFid(ViceFid *OldFid, ViceFid *NewFid)
 		  FID_2(NewFid)));
 
 	/* cross volume replacements are for local fids */
-	if (OldFid->Volume != NewFid->Volume && !FID_IsLocal(NewFid))
+	if (OldFid->Volume != NewFid->Volume && !FID_VolIsLocal(NewFid))
 		Choke("fsdb::TranslateFid: X-VOLUME, %s --> %s",
 		      FID_(OldFid), FID_2(NewFid));
 

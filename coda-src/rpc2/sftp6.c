@@ -99,13 +99,15 @@ static MC_SendStrategy(), SDescCmp(), MC_ExtractParmsFromPacket();
 	mse->SDesc = NULL;\
 	if (mdesc) free(mdesc);\
 	free(ceaddr);\
-	return;\
+	return -1;\
         }
 
 #define	INIT_SE_DESC(desc)\
+        {\
 	((SE_Descriptor	*)desc)->LocalStatus = SE_SUCCESS;  /* non-execution == success */\
 	((SE_Descriptor	*)desc)->RemoteStatus =	SE_SUCCESS; /* non-execution == success */\
-	((SE_Descriptor *)desc)->Value.SmartFTPD.BytesTransferred = 0;
+	((SE_Descriptor *)desc)->Value.SmartFTPD.BytesTransferred = 0;\
+        }
 
 #define INIT_SE_ENTRY(se, desc, req)\
 	se->SDesc = desc;\
@@ -260,6 +262,7 @@ long SFTP_MultiRPC1(IN HowMany, IN ConnHandleList, IN MCast, INOUT SDescList, IN
 	}
 
     free(ceaddr);
+    return -1;
     }
 
 #undef	HOSTSEOK

@@ -44,6 +44,7 @@ static char *rcsid = "$Header$";
 
 #include <errno.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include <stdio.h>
@@ -777,8 +778,8 @@ rvm_bool_t chk_region(seg_file,region)
         c = getc(seg_file);
         if (c == EOF)
             {
-            printf("\n? EOF encountered while reading segment; ",
-                   "offset = %d\n",reg_pos);
+            printf("\n? EOF encountered while reading segment; "
+                   "offset = %d\n", reg_pos);
             ASSERT(rvm_false);
             }
 #if 0
@@ -1275,8 +1276,13 @@ static char *read_prompt_line(prompt,null_ok)
             if ((null_ok) || (cmd_line[0] != '\0'))
                 return cmd_cur=cmd_line;
             }
+    return NULL;
+
     }
-/* display test parameters */
+
+
+/* display test parameters */
+
 void show_test_parms()
     {
     int             priority;

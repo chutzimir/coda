@@ -670,7 +670,8 @@ dumpstream::copyVnodeData(DumpBuffer_t *dbuf)
 	    }
 	}
 	return filesize;
-    } else return 0;	    
+    } 
+    return 0;	    
 }
 
 void dumpstream::setIndex(VnodeClass vclass)

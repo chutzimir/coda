@@ -317,6 +317,7 @@ int main(int argc, char **argv) {
 	printf("peek, poke, peeks, pokes, peekx, togglemalloc, pokex\n");
 	exit(-1);
     }
+    return 0;
 }
 
 /*

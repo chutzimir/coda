@@ -152,7 +152,7 @@ int CLIENT_Build(RPC2_Handle RPCid, char *User, RPC2_Integer sl,
     (*client)->VenusId->FirstClient = *client;
     ReleaseWriteLock(&((*client)->VenusId->lock));
 
-    /* Further munge the name that gets recorded in the client entry. */
+    /* Get the id and then CPS for this client */
     client_SetUserName(*client);
 
     CurrentConnections++;

@@ -121,6 +121,7 @@ long EstablishedConnection()
     sprintf(msg, "ValidateIndicators\n");
     SendToConsole(msg);
     CheckStack("Post:EstablishedConnection");
+    return 0;
 }
 
 long S_LostConnection(RPC2_Handle _cid)

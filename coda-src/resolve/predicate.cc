@@ -280,7 +280,7 @@ int MaybeSubsetRemove C_ARGS((int nreplicas, resreplica *dirs, resdir_entry **de
 	    return 0;
 	}
 	else {
-	    sprintf(str, "Then should it be RECREATED at all sites?", deGroup[0]->name);
+	    sprintf(str, "Then should %s be RECREATED at all sites?", deGroup[0]->name);
 	    if (Parser_getbool(str, 1))
 		return 1;
 	}

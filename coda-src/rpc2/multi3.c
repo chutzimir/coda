@@ -268,6 +268,7 @@ long RPC2_CreateMgrp(OUT MgroupHandle, IN MulticastHost, IN MulticastPortal, IN 
 	}
 
     /* Get an mgrp entry and initialize it. */
+    /* XXXXXX NULL is bad type here */
     me = rpc2_AllocMgrp(&rpc2_LocalHost, &rpc2_LocalPortal, NULL);
     assert(me != NULL);
     *MgroupHandle = me->MgroupID;

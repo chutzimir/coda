@@ -29,15 +29,13 @@
 
 
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
 # Need to conditionalize this
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 LIBRARIES = libkerndep.a 
 HEADERS   = pioctl.h
@@ -49,4 +47,4 @@ libkerndep.a:  pioctl.o
 pioctl.o: pioctl.c
 	$(CC) $(CFLAGS) -c $<
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules

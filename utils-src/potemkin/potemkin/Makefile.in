@@ -36,23 +36,21 @@
 # Josh Raiff
 
 TOPDIR= @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH = @srcdir@
 TOPOBJ= @TOPOBJ@
 TOPOBJ= @TOPOBJ@
 
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 EXECUTABLES = potemkin
 
 potemkin: potemkin.o
 	$(CC) -o potemkin $? $(LIBDS)
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules
 
 
 

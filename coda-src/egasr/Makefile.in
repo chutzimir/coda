@@ -29,14 +29,12 @@
 
 
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 EXECUTABLES = filerepair removeinc
 SCRIPTS     = xfrepair xaskuser
@@ -50,4 +48,4 @@ removeinc: removeinc.o $(LIBS)
 filerepair: filerepair.o $(LIBS)
 	$(CC) $(LIBFLAGS) $^ ${LIBS} -o filerepair
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules

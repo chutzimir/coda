@@ -553,7 +553,7 @@ void vproc::Begin_VFS(VolumeId vid, int vfsop, int volmode) {
     if (u.u_error) VDB->Put(&u.u_vol);
     vsr *vsr;
 		   
-    if (u.u_vol != 0 && u.u_vol->vid != LocalFakeVid) {
+    if (u.u_vol != 0 && !FID_VolIsFake(u.u_vol->vid)) {
         if (type == VPT_HDBDaemon)
 	    vsr = u.u_vol->GetVSR(HOARD_UID);
 	else
@@ -741,7 +741,8 @@ Exit:
 
 	/* Update VSR statistics too! */
 	vsr *vsr;
-	if (u.u_vol != 0 && (!retryp || *retryp == 0) && (u.u_vol->vid != LocalFakeVid)) {
+	if (u.u_vol != 0 && (!retryp || *retryp == 0) && 
+	    !FID_VolIsFake(u.u_vol->vid)) {
 	    if (type == VPT_HDBDaemon)
 		vsr = u.u_vol->GetVSR(HOARD_UID);
 	    else
@@ -864,7 +865,7 @@ long FidToNodeid(ViceFid *fid)
 
 	/* Other volume root.  We need the relevant mount point's fid,
            but we don't know what that is! */
-	if (fid->Vnode == ROOT_VNODE && fid->Unique == ROOT_UNIQUE) {
+	if ( FID_IsVolRoot(fid) ) {
 		LOG(0, ("FidToNodeid: volume root (%x); returning bogus nodeid\n", 
 		fid->Volume));
 	}
@@ -872,7 +873,7 @@ long FidToNodeid(ViceFid *fid)
 	/* Non volume root. */
 	return(fid->Unique + (fid->Vnode << 10) + (fid->Volume << 20));
 #else
-	if (fid->Vnode == ROOT_VNODE && fid->Unique == ROOT_UNIQUE) {
+	if (FID_IsVolRoot(fid)) {
 		LOG(0, ("FidToNodeid: called for volume root (%x)!!!\n", 
 			fid->Volume));
 	}

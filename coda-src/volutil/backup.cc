@@ -1046,6 +1046,8 @@ int main(int argc, char **argv) {
     LogMsg(0, 0, stdout, "Histogram of DataRates for transfer of dump files\n");
     PrintHisto(stdout, &DataRate);
     LogMsg(0, 0, stdout, "\n");
+
+    return 0;
 }
 
 /* copied from VInitServerList() in vol/volume.c and modified to suit

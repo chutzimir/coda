@@ -275,6 +275,17 @@ inline void rvmlib_free(void *p, char *file, int line)
 	}
 }
 
+inline void rvmlib_check_trans(char *where, char *file)
+
+{
+	if ( ! rvmlib_in_transaction() ) {
+		fprintf(stderr, "Aborting: no transaction in %s (%s)!\n", where, file);
+		fflush(stderr);
+		abort();
+	}
+}
+
+
 int rvmlib_in_transaction(void) 
 {
 	return ((RvmType == RAWIO || RvmType == UFS)

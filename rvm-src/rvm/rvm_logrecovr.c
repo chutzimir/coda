@@ -443,7 +443,7 @@ int find_buf_word(wrd,disp)
     {
     log_buf_t       *log_buf = &default_log->log_buf;
 
-    return find_word(wrd,log_buf->buf,disp,log_buf->r_length);
+    return find_word(wrd, (rvm_length_t *)log_buf->buf,disp,log_buf->r_length);
     }
 /* load log auxillary buffer */
 rvm_return_t load_aux_buf(log,log_offset,length,aux_ptr,

@@ -1345,8 +1345,7 @@ void hdbent::ResetTransient() {
 
     ViceFid cdir;
     cdir.Volume = vid;
-    cdir.Vnode = ROOT_VNODE;
-    cdir.Unique = ROOT_UNIQUE;
+    FID_MakeRoot(&cdir);
     nc = new namectxt(&cdir, path, vuid, priority,
 		       expand_children, expand_descendents);
 }

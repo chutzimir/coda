@@ -50,14 +50,12 @@
 
 
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 EXECUTABLES = pwd2pdb mvdb
 SSBINS      = $(EXECUTABLES)
@@ -73,4 +71,4 @@ pwd2pdb: pwd2pdb.o $(LIBS)
 mvdb:	mvdb.o $(LIBS)
 	$(CC) $(LIBSFLAGS) mvdb.o $(LIBS) -o mvdb
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules

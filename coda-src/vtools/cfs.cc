@@ -1670,7 +1670,7 @@ static void LsMount (int argc, char *argv[], int opslot)
 		/* Check if first char is a '#'; this is a heuristic, but rarely misleads */
 		if (piobuf[0] == '#')
 		    printf("Dangling sym link; looks like a mount point for volume \"%s\"\n", &piobuf[1]);
-		else printf("Not a volume mount point\n", argv[i]);
+		else printf("!! %s is not a volume mount point\n", argv[i]);
 		continue;
 		}
 	    }

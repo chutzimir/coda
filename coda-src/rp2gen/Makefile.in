@@ -52,14 +52,12 @@
 # The REAL Makefile
 # The other Makefiles invoke this after setting: CC CFLAGS LFLAGS
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 CC=$(NATIVECC)
 CFLAGS:=  -I. -I/usr/include -I$(TOPOBJ)/include 
@@ -90,4 +88,4 @@ crout.o: crout.c rp2.h
 
 util.o	: util.c rp2.h
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules

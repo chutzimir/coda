@@ -1465,6 +1465,8 @@ ViceStoreId *GetRemoteRemoveStoreId(olist *AllLogs, unsigned long serverid,
     LogMsg(9, SrvDebugLevel, stdout,  
 	   "GetRemoteRemoveStoreId: Couldnt find remove entry for %s %x.%x",
 	   cname, cFid->Vnode, cFid->Unique);
+    return NULL;
+
 }
 
 // SetPhase3DirStatus

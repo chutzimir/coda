@@ -182,6 +182,7 @@ int heal(int argc, char ** argv)
     }
     RPC2_Unbind(cid1);
     RPC2_Unbind(cid2);
+    return 0;
 }
 
 
@@ -211,5 +212,6 @@ int HealParseArgs(int argc, char ** argv)
 	    }
 	}
     }
+    return 0;
 }
 		

@@ -1158,7 +1158,8 @@ void worker::main(void *parm) {
 			char *slash;
 			char *begin = (char *)(&out->coda_open_by_path.path + 1);
 			out->coda_open_by_path.path = begin - (char *)out;
-			sprintf(begin, "%s/%s", CacheDir, vtarget.c_cfname);
+			sprintf(begin, "%s/%s/%s", CF_PREFIX, CacheDir, 
+				vtarget.c_cfname);
 			LOG(100, ("CODA_OPEN_BY_PATH: returning %s", begin));
 #if defined(DJGPP) || defined(__CYGWIN32__)
 			slash = begin;

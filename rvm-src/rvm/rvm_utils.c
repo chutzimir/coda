@@ -369,7 +369,7 @@ long init_unames()
 
     retval= gettimeofday(&new_uname,(struct timezone *)NULL);
     if ( retval ) {
-	    printf("init_unames: retval %d\n");
+	    printf("init_unames: retval %d\n", retval);
 	    perror("init_names:");
 	    return retval;
     }
@@ -823,7 +823,7 @@ void free_range(range)
 
     range->links.entry.list.name = NULL; /* not really on any list */
     range->links.entry.is_hdr = rvm_false;
-    free_list_entry(&range->links);
+    free_list_entry(&range->links.entry);
     }
 /* internal transaction descriptor allocator/finalizer */
 

@@ -84,6 +84,7 @@ void fsobj::dir_Rebuild()
 		Choke("fsobj::dir_Rebuild: no data"); 
 	}
 
+	assert(DH_DirOK(&data.dir->dh));
 	DH_Convert(&data.dir->dh, data.dir->udcf->Name(), fid.Volume);
 
 	data.dir->udcfvalid = 1;
@@ -247,9 +248,9 @@ void fsobj::dir_TranslateFid(ViceFid *OldFid, ViceFid *NewFid)
 	}
 
 	if ((!FID_VolEQ(&fid, OldFid) && 
-	     !FID_IsLocal(OldFid) && !FID_IsLocal(&fid)) ||
+	     !FID_VolIsLocal(OldFid) && !FID_VolIsLocal(&fid)) ||
 	    (!FID_VolEQ(&fid, NewFid) 
-	     && !FID_IsLocal(NewFid) && !FID_IsLocal(&fid))) {
+	     && !FID_VolIsLocal(NewFid) && !FID_VolIsLocal(&fid))) {
 		print(logFile); 
 		Choke("fsobj::dir_TranslateFid: %s -> %s cross-volume", 
 		      FID_(OldFid), FID_2(NewFid)); 

@@ -70,6 +70,7 @@ int Fcon_Init()
     assert(RPC2_Export(&subsysid) == RPC2_SUCCESS);
     LWP_CreateProcess((PFIC) Fcon_LWP, 4096, LWP_NORMAL_PRIORITY,
 		      "Fcon_LWP", NULL, &mypid);
+    return 0;
 }
 
 int Fcon_LWP()

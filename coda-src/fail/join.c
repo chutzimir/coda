@@ -77,4 +77,5 @@ int join(int argc, char **argv)
     join_targets(targets, num_targets);
   else
     printf("usage: %s [-c client1 client2 ...] [-s server1 server2 ...]\n", argv[0]);
+  return -1;
 }

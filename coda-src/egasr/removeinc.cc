@@ -126,7 +126,7 @@ void main(int argc, char **argv)
     
 	// get fid and make sure it is a file
 	if (ISDIR(fid.Vnode)) {
-		fprintf(stderr, "%s is a directory - must be removed manually\n");
+		fprintf(stderr, "%s is a directory - must be removed manually\n", argv[1]);
 		exit(-1);
 	}
 	

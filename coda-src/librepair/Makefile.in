@@ -29,14 +29,12 @@
 
 
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 LIBRARIES = libresolve.a
 HEADERS   = resolve.h repio.h
@@ -53,4 +51,4 @@ libresolve.a: $(OFILES)
 HFILES = resolve.h predicate.h cure.h repio.h
 $(OFILES): $(HFILES)
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules

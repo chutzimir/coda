@@ -41,9 +41,6 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef	__MACH__
-#include <libc.h>
-#endif
 #include <ctype.h>
 #include <string.h>
 #include <stddef.h>
@@ -60,7 +57,6 @@ extern void add_history(char *);
 #ifdef __cplusplus
 }
 #endif __cplusplus
-
 
 #include "parser.h"
 #define CMD_COMPLETE 0

@@ -340,7 +340,7 @@ void PrintCamVnode(int level, int volindex, int vclass, VnodeId vnodeindex,
     
     rc = ExtractVnode(&ec, volindex, vclass, vnodeindex, unq, vnode);
     if (ec != 0) {
-	printf("Error %d from ExtractVnode; aborting vnode dump\n");
+	printf("Error %d from ExtractVnode; aborting vnode dump\n", ec);
 	return;
     }
     printf("Printing %s vnode %u, (index %d) from volume %u\n",

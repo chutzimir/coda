@@ -68,4 +68,5 @@ int main(int argc, char * argv[]) {
 
     err = rvm_terminate();
     printf("rvm_terminate returns %s\n", rvm_return(err));
+    return 0;
 }

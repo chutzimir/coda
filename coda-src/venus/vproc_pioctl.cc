@@ -323,8 +323,7 @@ void vproc::do_ioctl(ViceFid *fid, unsigned int com, struct ViceIoctl *data) {
 			    bcopy((const void *)data->in, (void *) &backup, (int)sizeof(int));
 			    if (backup) {
 				if (f->fid.Volume == rootfid.Volume ||
-				    f->fid.Vnode != ROOT_VNODE ||
-				    f->fid.Unique != ROOT_UNIQUE ||
+				    (!FID_IsVolRoot(&f->fid)) ||
 				    f->u.mtpoint == 0)
 				    { u.u_error = EINVAL; break; }
 
@@ -793,7 +792,7 @@ V_FreeLocks:
 	    elapsed = SubTimes(u.u_tv2, u.u_tv1);
 #endif      TIMING
  	    /* Hack to include this as an ioctl request in the proper vsr. */
-	    if (v->vid != LocalFakeVid) {
+	    if (!FID_VolIsFake(v->vid)) {
 		vsr *vsr = v->GetVSR(CRTORUID(u.u_cred));
 		vsr->RecordEvent(CODA_IOCTL,  u.u_error, (RPC2_Unsigned) elapsed);
 		v->PutVSR(vsr);

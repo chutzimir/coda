@@ -41,6 +41,7 @@ static char *rcsid = "$Header$";
  *           L. Mummert
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/socket.h>
@@ -91,6 +92,7 @@ int Delay_Init()
     DelayQueues.size = 4;	/* Good number to start with! */
     LWP_CreateProcess((PFIC) Delay_LWP, 4096, LWP_NORMAL_PRIORITY,
 		      "Delay_LWP", NULL, &DelayLWPPid);
+    return 0;
 }
 
 /* 

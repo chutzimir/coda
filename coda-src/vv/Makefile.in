@@ -29,14 +29,12 @@
 
 
 TOPDIR = @top_srcdir@
-ifndef MAKDIR
-MAKDIR = @top_srcdir@
-endif
+
 srcdir = @srcdir@
 VPATH  = @srcdir@
 TOPOBJ = @TOPOBJ@
 
-include $(MAKDIR)/Makeconf
+include $(TOPDIR)/Makeconf
 
 LIBRARIES = libvv.a
 HEADERS   = inconsist.h nettohost.h
@@ -46,5 +44,5 @@ libvv.a:	inconsist.o nettohost.o
 inconsist.o:	inconsist.cc inconsist.h
 nettohost.o:    nettohost.cc inconsist.h nettohost.h
 
-include $(MAKDIR)/configs/Makerules
+include $(TOPDIR)/configs/Makerules
 

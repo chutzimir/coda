@@ -191,6 +191,7 @@ int main(int argc, char *argv[])
 	    }
 
 	}
+    return 0;
     }
 
 static void Op_1()		/* Name-Id Translation */
