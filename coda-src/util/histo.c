@@ -29,7 +29,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
+static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/coda-src/util/histo.c,v 1.2 1997/01/07 18:41:35 rvb Exp";
 #endif /*_BLURB_*/
 
 
@@ -44,7 +44,7 @@ static char *rcsid = "$Header$";
 #ifdef __MACH__
 #include <libc.h>
 #include <sysent.h>
-#endif __MACH__
+#endif /* __MACH__ */
 #ifdef __NetBSD__
 #include <stdlib.h>
 #endif __NetBSD__

@@ -29,7 +29,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
+static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/kernel-src/vfs/mach/cnode.h,v 1.2 1997/01/07 18:44:18 rvb Exp";
 #endif /*_BLURB_*/
 
 
@@ -112,7 +112,7 @@ typedef struct ViceFid {
 } ViceFid;
 #endif	not VICEFID_DEFINED
 #else	KERNEL
-#ifdef MACH
+#ifdef	__MACH__
 #include <cfs/mach_vfs.h>
 #include <cfs/mach_vnode.h>
 #endif

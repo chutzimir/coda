@@ -29,7 +29,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
+static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/coda-src/util/dtcreg.h,v 1.1.1.1 1996/11/22 19:08:08 rvb Exp";
 #endif /*_BLURB_*/
 
 
@@ -44,7 +44,10 @@ static char *rcsid = "$Header$";
  * 23-May-90  David Steere (dcs) at Carnegie-Mellon University
  *	Created for the Coda File System.
  *
- * $Log$
+ * dtcreg.h,v
+ * Revision 1.1.1.1  1996/11/22 19:08:08  rvb
+ *  almost done
+ *
  * Revision 1.1  1996/11/22 19:08:08  braam
  * First Checkin (pre-release)
  *

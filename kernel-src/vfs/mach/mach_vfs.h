@@ -29,7 +29,7 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
+static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/kernel-src/vfs/mach/mach_vfs.h,v 1.1.1.1 1996/12/09 19:17:58 rvb Exp";
 #endif /*_BLURB_*/
 
 
@@ -42,7 +42,10 @@ static char *rcsid = "$Header$";
  */
 /*
  * HISTORY
- * $Log$
+ * mach_vfs.h,v
+ * Revision 1.1.1.1  1996/12/09 19:17:58  rvb
+ *  almost done
+ *
  * Revision 1.2  1996/12/09 19:17:44  braam
  * changes to includes
  *

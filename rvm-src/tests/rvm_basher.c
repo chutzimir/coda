@@ -33,7 +33,7 @@ should be returned to Software.Distribution@cs.cmu.edu.
 
 */
 
-static char *rcsid = "$Header$";
+static char *rcsid = "/afs/cs/project/coda-rvb/cvs/src/coda-4.0.1/rvm-src/tests/rvm_basher.c,v 1.2 1997/01/07 18:44:54 rvb Exp";
 #endif _BLURB_
 
 /*
@@ -82,7 +82,7 @@ static char *rcsid = "$Header$";
 #endif RVM_USELWP
 
 extern int errno;
-#ifdef LINUX
+#ifdef	__linux__
 extern char *sys_errlist[]; /* XXX JET MUCKING */
 #else
 extern const char *const sys_errlist[]; /* XXX JET MUCKING */
