@@ -426,7 +426,7 @@ PRIVATE void CheckWorkTime(PROCESS currentThread, PROCESS nextThread)
 	worktime.tv_usec -= last_context_switch.tv_usec;
 
 	if (IsGreater(&worktime, &cont_sw_threshold)) {
-	    struct tm *lt = localtime(&current.tv_sec);
+	    struct tm *lt = localtime((const time_t *)&current.tv_sec);
 	    fprintf(stderr, "[ %02d:%02d:%02d ] ***LWP %s(0x%x) took too much cpu %d secs %6d usecs\n", 
 		    lt->tm_hour, lt->tm_min, lt->tm_sec, 
 		    currentThread->name, currentThread, worktime.tv_sec, worktime.tv_usec);
@@ -460,7 +460,7 @@ PRIVATE void CheckRunWaitTime(PROCESS thread)
     waittime.tv_usec -= thread->lastReady.tv_usec;
 
     if (timercmp(&waittime, &run_wait_threshold, >)) {
-	struct tm *lt = localtime(&current.tv_sec);
+	struct tm *lt = localtime((const time_t *)&current.tv_sec);
 	fprintf(stderr, "[ %02d:%02d:%02d ] ***LWP %s(0x%x) run-wait too long %d secs %6d usecs\n", 
 		lt->tm_hour, lt->tm_min, lt->tm_sec, 
 		thread->name, thread, waittime.tv_sec, waittime.tv_usec);

@@ -142,7 +142,7 @@ int usepath;
 	sigemptyset(&ignoresig.sif_mask);
 	ignoresig.sif_flags = 0;
 #elif	defined(__linux__)
-	ignoresig.sa_mask = 0;
+	sigemptyset(&ignoresig.sa_mask);
 	ignoresig.sa_flags = 0;
 #else
 	ignoresig.sif_mask = 0;

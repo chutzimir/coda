@@ -859,6 +859,7 @@ long FidToNodeid(ViceFid *fid) {
     if (FID_EQ(*fid, NullFid))
 	Choke("FidToNodeid: null fid");
 
+#ifdef __BSD44__
     /* Venus Root.  Use the mount point's nodeid. */
     if (FID_EQ(rootfid, *fid))
 	return(rootnodeid);
@@ -873,4 +874,9 @@ long FidToNodeid(ViceFid *fid) {
 
     /* Non volume root. */
     return(fid->Unique + (fid->Vnode << 10) + (fid->Volume << 20));
+#endif 
+
+#ifdef __linux__
+    return coda_f2i(fid);
+#endif
 }

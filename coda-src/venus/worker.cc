@@ -1176,7 +1176,7 @@ void worker::main(void *parm) {
 
 		struct iovec aiov;
 		aiov.iov_base = (char *)out + sizeof (struct cfs_readlink_out);
-		aiov.iov_len = MAXPATHLEN;
+		aiov.iov_len = CFS_MAXPATHLEN;
 		struct uio auio;
 		auio.uio_iov = &aiov;
 		auio.uio_iovcnt = 1;
