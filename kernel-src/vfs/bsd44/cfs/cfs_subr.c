@@ -47,10 +47,13 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.2  1997/10/29 16:06:27  rvb
- * Kill DYING
+ * Revision 1.5.4.3  1997/11/06 21:02:38  rvb
+ * first pass at ^c ^z
  *
- * Revision 1.5.4.1  1997/10/28 23:10:16  rvb
+ * Revision 1.5.4.2  97/10/29  16:06:27  rvb
+ * Kill DYING
+ * 
+ * Revision 1.5.4.1  97/10/28 23:10:16  rvb
  * >64Meg; venus can be killed!
  *
  * Revision 1.5  97/08/05  11:08:17  lily
@@ -207,6 +210,7 @@ struct cnode *cfs_cache[CFS_CACHESIZE];
 
 /* If you want this to be interruptible, set this to > PZERO */
 int cfscall_sleep = PZERO - 1;
+int cfs_pcatch = PCATCH;
 
 int
 cfscall(mntinfo, inSize, outSize, buffer) 
@@ -270,7 +274,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 
 	    else if (!(vmp->vm_flags & VM_READ)) { 
 		/* Interrupted before venus read it. */
-		if (cfsdebug)
+		if (cfsdebug||1)
 		    myprintf(("interrupted before read: intr = %x, %x, op = %d.%d, flags = %x\n",
 			   SIGLIST, THECURSIG,
 			   vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));
@@ -285,7 +289,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 		struct inputArgs *dog;
 		struct vmsg *svmp;
 		
-		if (cfsdebug)
+		if (cfsdebug||1)
 		    myprintf(("Sending Venus a signal: intr = %x, %x, op = %d.%d, flags = %x\n",
 			   SIGLIST, THECURSIG,
 			   vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));

@@ -13,7 +13,6 @@
 #include <sys/mount.h>          /* no struct vfs, struct mount instead */
 #include <sys/uio.h>
 #include <sys/vnode.h>          /* vnode.h lives in sys, get via makefile */
-#include <cfs/mach_vioctl.h>    /* No viceioctl.h on NetBSD */
 #include <vcfs.h>               /* Number of minor devices */
 #include <sys/signal.h>
 #include <sys/proc.h>          /* Definition for struct proc */
@@ -271,7 +270,7 @@ typedef char *CONDITION_T;
 #define SELWAKEUP(selproc)    selwakeup(&selproc)
 #define SELRECORD(selinfo)    selrecord(p, &(selinfo))
 #define WAKEUP(cond)          wakeup(cond)
-#define SLEEP(cond, priority) tsleep((cond),(priority),"cfscall",0)
+#define SLEEP(cond, priority) tsleep((cond),((priority)|cfs_pcatch),"cfscall",0)
 
 /*************** allocation. */
 
