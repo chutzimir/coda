@@ -127,6 +127,7 @@ typedef struct proc {
     rp2_bool	new_connection;	/* TRUE if this is the unique new connection procedure */
     char	*op_code;	/* Name of op code for this procedure */
     int		op_number;	/* Opcode number for this proc */
+    int         linenum;        /* Line number where this proc was defined */
 } PROC;
 
 /* Language values are specified for use in array */
@@ -150,3 +151,9 @@ typedef struct stubelem {
  */
 
 extern rp2_bool ansi;
+
+
+/* make line number an externally-accessible variable so it can be
+   set on semantic errors for yyerror() and yywarn() */
+
+extern int line;

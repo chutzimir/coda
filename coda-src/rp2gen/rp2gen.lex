@@ -225,6 +225,8 @@ SPACE		[ \t\014]
 
 "]"				{ RETURN(']'); }
 
+":"				{ RETURN(':'); }
+
 "#"{I}{N}{C}{L}{U}{D}{E}	{ include(); }
 
 "#"{D}{E}{F}{I}{N}{E}		{
@@ -428,8 +430,15 @@ int yywrap()
 yyerror(s)
     char *s;
 {
-    printf("[Line %d]: %s\n", line, s);
+    printf("FATAL ERROR, line %d: %s\n", line, s);
     exit(1);
+}
+
+yywarn(s)
+    char *s;
+{
+    printf("WARNING, line %d: %s\n", line, s);
+    return(0);
 }
 
 init_lex()
