@@ -58,7 +58,8 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 EXECUTABLES = auth2 authmon initpw au oldtokens
-SSBINS      = auth2 authmon initpw au
+SSBINS      = auth2 authmon initpw 
+CSBINS      = au
 LIBRARIES   = libauth2.a
 HEADERS     = ${RP2FILES} ${RP2HEADERS}
 
