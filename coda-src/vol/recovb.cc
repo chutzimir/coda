@@ -341,6 +341,7 @@ int ReplaceVnode(int volindex, int vclass, VnodeId vnodeindex,
     if (volindex < 0 || volindex > maxid || volindex > MAXVOLS) {
 	LogMsg(0, VolDebugLevel, stdout,  "ReplaceVnode: bogus volume index %d", volindex);
 	CAMLIB_ABORT(VFAIL);	// invalid volume index
+	return VNOVOL;
     }
 
     CAMLIB_LOCK(CAMLIB_LOCK_NAME(CAMLIB_REC(VolumeList[volindex])),
@@ -461,8 +462,9 @@ PRIVATE int DeleteVnode(int volindex, int vclass, VnodeId vnodeindex,
 {
     VolumeId maxid = 0;
 
-    LogMsg(9, VolDebugLevel, stdout,  "Entering DeleteVnode(%d, %d, %d, <struct>)", volindex,
-					    vclass, vnodeindex);
+    LogMsg(9, VolDebugLevel, stdout,  
+	   "Entering DeleteVnode(%d, %d, %d, <struct>)", 
+	   volindex, vclass, vnodeindex);
     maxid = (CAMLIB_REC(MaxVolId) & 0x00FFFFFF);
     if (volindex < 0 || volindex > maxid || volindex > MAXVOLS) {
 	LogMsg(0, VolDebugLevel, stdout,  "DeleteVnode: bogus volume index %d", volindex);

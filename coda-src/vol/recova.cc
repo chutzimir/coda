@@ -211,7 +211,7 @@ int VolHeaderByIndex(int myind, struct VolumeHeader *header) {
 
     maxid = (CAMLIB_REC(MaxVolId) & 0x00FFFFFF);
     if ((myind < 0) || (myind >= maxid) || (myind >= MAXVOLS)) {
-	LogMsg(1, VolDebugLevel, stdout,  "VolHeaderByIndex: bogus volume index %d", myind);
+	LogMsg(1, VolDebugLevel, stdout,  "VolHeaderByIndex: bogus volume index %d - maxid %d (ok if volume was purged or deleted)", myind, maxid);
 	return(-1);
     }
     bcopy(&(CAMLIB_REC(VolumeList[myind]).header), header,
