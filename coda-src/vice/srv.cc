@@ -331,6 +331,15 @@ void zombie(int sig, int code, struct sigcontext *scp) {
     LogMsg(0, 0, stdout, "To debug via gdb: attach %d, setcontext OldContext", getpid());
     LogMsg(0, 0, stdout, "Becoming a zombie now ........");
     task_suspend(task_self());
+#else
+    LogMsg(0, 0, stdout, "Becoming a zombie now ........");
+    LogMsg(0, 0, stdout, "You may use gdb to attach to %d", getpid());
+    {
+	int living_dead = 1;
+	while (living_dead) {
+	    sleep(1000000);	/* forever sleep, pending gdb attach */
+	}
+    }
 #endif
     }
 
