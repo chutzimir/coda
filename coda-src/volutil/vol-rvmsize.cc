@@ -56,6 +56,7 @@ extern "C" {
 #include <lock.h>
 #include <util.h>
 #include <rvmlib.h>
+#include <codadir.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -66,17 +67,13 @@ extern "C" {
 #include <vrdb.h>
 #include <vutil.h>
 #include <index.h>
-#include <codadir.h>
 #include <coda_globals.h>
 #include "volutil.h"
 
 
 
-/* This routine */
 /*
-  BEGIN_HTML
-  <a name="S_VolRVMSize"><strong>Returns RVM usage by various components of a Volume</strong></a> 
-  END_HTML
+  S_VolRVMSize: Returns RVM usage by various components of a Volume
 */
 
 long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
@@ -91,7 +88,6 @@ long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
     assert(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
 
     LogMsg(9, VolDebugLevel, stdout, "Entering VolRVMSize()");
-    RVMLIB_BEGIN_TRANSACTION(restore)
     VInitVolUtil(volumeUtility);
 
     XlateVid(&VolID);	/* Translate Volid into Replica Id if necessary */
@@ -102,7 +98,8 @@ long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
 	if (error != VNOVOL) {
 	    VPutVolume(vp);
 	}
-	rvmlib_abort((int)error);
+	VDisconnectFS();
+	return error;
     }
 
     /* Location of the volume's data in RVM */
@@ -153,7 +150,6 @@ long S_VolRVMSize(RPC2_Handle rpcid, VolumeId VolID, RVMSize_data *data) {
     data->VolumeSize = size;
 
     VPutVolume(vp);
-    RVMLIB_END_TRANSACTION(flush, &(status));
     VDisconnectFS();
     if (status)
 	LogMsg(0, VolDebugLevel, stdout, "S_VolRVMSize failed with %d", status);

@@ -116,7 +116,6 @@ long int S_VolLookup(RPC2_Handle rpcid, RPC2_String formal_vol, SE_Descriptor *f
     assert(LWP_GetRock(FSTAG, (char **)&pt) == LWP_SUCCESS);
 
 
-    RVMLIB_BEGIN_TRANSACTION(restore)
     VInitVolUtil(volumeUtility);
 
     infofile = fopen (INFOFILE, "w");
@@ -133,9 +132,8 @@ long int S_VolLookup(RPC2_Handle rpcid, RPC2_String formal_vol, SE_Descriptor *f
     if (error) {
 	LogMsg(0, VolDebugLevel, stdout, "SVolLookup: error code %d returned for volume \"%s\"",
 		    error, vol);
-	rvmlib_abort(error);
-    }
-    else {
+	goto exit;
+    }    else {
         register VolumeId *p;
 	int printed, i;
 	register RPC2_Unsigned *sptr;
@@ -175,16 +173,18 @@ long int S_VolLookup(RPC2_Handle rpcid, RPC2_String formal_vol, SE_Descriptor *f
 
     if ((rc = RPC2_InitSideEffect(rpcid, &sed)) <= RPC2_ELIMIT) {
 	LogMsg(0, VolDebugLevel, stdout, "VolLookup: InitSideEffect failed with %s", RPC2_ErrorMsg(rc));
-	rvmlib_abort(VFAIL);
+	rc = VFAIL;
+	goto exit;
     }
 
     if ((rc = RPC2_CheckSideEffect(rpcid, &sed, SE_AWAITLOCALSTATUS)) <=
 		RPC2_ELIMIT) {
 	LogMsg(0, VolDebugLevel, stdout, "VolLookup: CheckSideEffect failed with %s", RPC2_ErrorMsg(rc));
-	rvmlib_abort(VFAIL);
+	rc = VFAIL;
+	goto exit;
     }
 
-    RVMLIB_END_TRANSACTION(flush, &(status));
+ exit: 
     VDisconnectFS();
 
     if (status)

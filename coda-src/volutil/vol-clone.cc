@@ -413,8 +413,10 @@ static void VUCloneIndex(Error *error, Volume *rwVp, Volume *cloneVp, VnodeClass
 	    }
 
 	    *error = CloneVnode(rwVp, cloneVp, vnodeindex, rvlist, vnode, vclass);
-	    if (*error)
+	    if (*error) {
 		rvmlib_abort(VFAIL);
+		return ;
+	    }
 
 
 	} 
