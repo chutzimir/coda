@@ -70,6 +70,15 @@ extern struct cfs_clstat cfs_clstat;
 	      (in)->cred.cr_gid = -1;                         \
           }                                                   \
 
+#define	CNV_OFLAG(to, from) 				\
+    do { 						\
+	  to = 0;					\
+	  if (from & FREAD)   to |= C_READ; 		\
+	  if (from & FWRITE)  to |= C_WRITE; 		\
+	  if (from & O_TRUNC) to |= C_TRUNC; 		\
+	  if (from & O_EXCL)  to |= C_EXCL; 		\
+    } while (0)
+
 #if	1
 	  /* this is ok for now */
 #define CNV_V2VV_ATTR(top, fromp)	\

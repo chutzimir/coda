@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.3  1997/12/05 10:39:25  rvb
- * Read CHANGES
+ * Revision 1.3.2.1  1997/12/10 14:08:34  rvb
+ * Fix O_ flags; check result in cfscall
  *
+ * Revision 1.3  97/12/05  10:39:25  rvb
+ * Read CHANGES
+ * 
  * Revision 1.2.34.2  97/11/20  11:46:54  rvb
  * Capture current cfs_venus
  * 
@@ -31,9 +34,6 @@
  * Added CFS-specific files
  *
  */
-
-
-enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
 
 
 /* NetBSD interfaces to the vnodeops */

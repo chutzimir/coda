@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.3  1997/12/10 11:40:27  rvb
- * No more ody
+ * Revision 1.5.2.4  1997/12/10 14:08:31  rvb
+ * Fix O_ flags; check result in cfscall
  *
+ * Revision 1.5.2.3  97/12/10  11:40:27  rvb
+ * No more ody
+ * 
  * Revision 1.5.2.2  97/12/09  16:07:15  rvb
  * Sync with vfs/include/coda.h
  * 
@@ -1205,7 +1208,7 @@ cfs_create(v)
     struct vnode *dvp = ap->a_dvp;
     struct cnode *dcp = VTOC(dvp);
     struct vattr *va = ap->a_vap;
-    enum vcexcl exclusive = EXCL;
+    int exclusive = 1;
     int mode = ap->a_vap->va_mode;
     struct vnode **vpp = ap->a_vpp;
     struct componentname  *cnp = ap->a_cnp;
@@ -1238,7 +1241,7 @@ cfs_create(v)
 	/* If this is an exclusive create, panic if the file already exists. */
 	/* Venus should have detected the file and reported EEXIST. */
 
-	if ((exclusive == EXCL) &&
+	if ((exclusive == 1) &&
 	    (cfs_find(&VFid, dvp->v_mount) != NULL))
 	    panic("cnode existed for newly created file!");
 	

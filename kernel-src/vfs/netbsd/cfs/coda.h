@@ -43,6 +43,11 @@ typedef unsigned long  u_quad_t;
 #define CFS_MAXPATHLEN 256
 #define CODA_MAXSYMLINK 10
 
+#define	C_READ	0x001
+#define	C_WRITE 0x002
+#define C_TRUNC 0x010
+#define C_EXCL	0x100
+
 /* types used in kernel and user mode */
 #ifndef _VENUS_DIRENT_T_
 #define _VENUS_DIRENT_T_ 1

@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.2  1997/12/10 11:40:24  rvb
- * No more ody
+ * Revision 1.5.2.3  1997/12/10 14:08:24  rvb
+ * Fix O_ flags; check result in cfscall
  *
+ * Revision 1.5.2.2  97/12/10  11:40:24  rvb
+ * No more ody
+ * 
  * Revision 1.5.2.1  97/12/06  17:41:20  rvb
  * Sync with peters coda.h
  * 
@@ -585,5 +588,8 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	}
 
 	CFS_FREE(vmp, sizeof(struct vmsg));
+
+	if (!error)
+		error = ((struct cfs_out_hdr *)buffer)->result;
 	return(error);
 }

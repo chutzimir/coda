@@ -3,6 +3,8 @@
 #include <sys/proc.h>
 #include <sys/vnode.h>
 #include <sys/ioctl.h>
+/* for CNV_OFLAGS below */
+#include <sys/fcntl.h>
 
 #include <cfs/coda.h>
 #include <cfs/cfsk.h>
@@ -67,8 +69,6 @@ venus_root(void *mdp,
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error)
-    	error = outp->oh.result;
-    if (!error)
 	*VFid = outp->VFid;
 
     CFS_FREE(cfs_root_buf, cfs_root_size);
@@ -79,18 +79,17 @@ venus_open(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p,
 /*out*/	dev_t *dev, ino_t *inode)
 {
+    int cflag;
     DECL(cfs_open);			/* sets Isize & Osize */
     ALLOC(cfs_open);			/* sets inp & outp */
 
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_OPEN, cred);
     inp->VFid = *fid;
-    inp->flags = flag;
+    CNV_OFLAG(cflag, flag);
+    inp->flags = cflag;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	*dev =  outp->dev;
 	*inode = outp->inode;
@@ -103,16 +102,16 @@ venus_open(void *mdp, ViceFid *fid, int flag,
 venus_close(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p)
 {
+    int cflag;
     DECL_NO_OUT(cfs_close);		/* sets Isize & Osize */
     ALLOC(cfs_close);			/* sets inp & outp */
 
     INIT_IN(&inp->ih, CFS_CLOSE, cred);
     inp->VFid = *fid;
+    CNV_OFLAG(cflag, flag);
     inp->flags = flag;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error) 
-	error = outp->result;
 
     CFS_FREE(cfs_close_buf, cfs_close_size);
     return error;
@@ -174,9 +173,6 @@ venus_ioctl(void *mdp, ViceFid *fid,
     Osize = VC_MAXMSGSIZE;
     error = cfscall(mdp, Isize + iap->vidata.in_size, &Osize, (char *)inp);
 
-    if (!error)
-    	error = outp->oh.result;
-
 	/* copy out the out buffer. */
     if (!error) {
 	if (outp->len > iap->vidata.out_size) {
@@ -203,9 +199,6 @@ venus_getattr(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	CNV_VV2V_ATTR(vap, &outp->attr);
     }
@@ -226,8 +219,6 @@ venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
     CNV_V2VV_ATTR(&inp->attr, vap);
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error) 
-	error = outp->result;
 
     CFS_FREE(cfs_setattr_buf, cfs_setattr_size);
     return error;
@@ -245,8 +236,6 @@ venus_access(void *mdp, ViceFid *fid, int mode,
     inp->flags = mode;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error) 
-	error = outp->result;
 
     CFS_FREE(cfs_access_buf, cfs_access_size);
     return error;
@@ -266,9 +255,6 @@ venus_readlink(void *mdp, ViceFid *fid,
 
     Osize += CFS_MAXPATHLEN;
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	    CFS_ALLOC(*str, char *, outp->count);
 	    *len = outp->count;
@@ -290,8 +276,6 @@ venus_fsync(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error) 
-	error = outp->result;
 
     CFS_FREE(cfs_fsync_buf, cfs_fsync_size);
     return error;
@@ -314,8 +298,6 @@ venus_lookup(void *mdp, ViceFid *fid,
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
 	*vtype = outp->vtype;
@@ -326,7 +308,7 @@ venus_lookup(void *mdp, ViceFid *fid,
 }
 
 venus_create(void *mdp, ViceFid *fid,
-    	char *nm, int len, enum vcexcl exclusive, int mode, struct vattr *va,
+    	char *nm, int len, int exclusive, int mode, struct vattr *va,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *attr)
 {
@@ -338,7 +320,7 @@ venus_create(void *mdp, ViceFid *fid,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_CREATE, cred);
     inp->VFid = *fid;
-    inp->excl = exclusive;
+    inp->excl = exclusive ? C_EXCL : 0;
     inp->mode = mode;
     CNV_V2VV_ATTR(&inp->attr, va);
 
@@ -346,8 +328,6 @@ venus_create(void *mdp, ViceFid *fid,
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
 	CNV_VV2V_ATTR(attr, &outp->attr);
@@ -373,8 +353,6 @@ venus_remove(void *mdp, ViceFid *fid,
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->result;
 
     CFS_FREE(cfs_remove_buf, cfs_remove_size);
     return error;
@@ -397,8 +375,6 @@ venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
     STRCPY(tname, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->result;
 
     CFS_FREE(cfs_link_buf, cfs_link_size);
     return error;
@@ -425,9 +401,6 @@ venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
-    if (!error)
-    	error = outp->result;
-
     CFS_FREE(cfs_rename_buf, cfs_rename_size);
     return error;
 }
@@ -451,8 +424,6 @@ venus_mkdir(void *mdp, ViceFid *fid,
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
 	CNV_VV2V_ATTR(ova, &outp->attr);
@@ -478,8 +449,6 @@ venus_rmdir(void *mdp, ViceFid *fid,
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->result;
 
     CFS_FREE(cfs_rmdir_buf, cfs_rmdir_size);
     return error;
@@ -507,9 +476,6 @@ venus_symlink(void *mdp, ViceFid *fid,
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
-    if (!error)
-    	error = outp->result;
-
     CFS_FREE(cfs_symlink_buf, cfs_symlink_size);
     return error;
 }
@@ -531,8 +497,6 @@ venus_readdir(void *mdp, ViceFid *fid,
 
     Osize = VC_MAXMSGSIZE;
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	bcopy((char *)outp + (int)outp->data, buffer, outp->size);
 	*len = outp->size;
@@ -554,9 +518,6 @@ venus_fhtovp(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
-
-    if (!error)
-    	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
 	*vtype = outp->vtype;
