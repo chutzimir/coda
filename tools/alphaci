@@ -121,14 +121,15 @@ if (-e $FREEZE_FILE) then
   exit(1)
 endif
 
-if (!($?MAKEPSD)) then
-  echo "ERROR:  MAKEPSD not set"
-  exit(1)
-endif
+# if (!($?MAKEPSD)) then
+#   echo "ERROR:  MAKEPSD not set"
+#   exit(1)
+# endif
 
 
 # Extract first of possibly many colon-separated pathnames in MAKEPSD
-set CWD = `expr ${MAKEPSD}: : '\([^:]*\):.*'`
+#set CWD = `expr ${MAKEPSD}: : '\([^:]*\):.*'`
+set CWD = $cwd
 
 if (!(-d $CWD)) then
   echo "ERROR:  Can't find directory $CWD"
