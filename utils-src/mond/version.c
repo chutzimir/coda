@@ -97,7 +97,7 @@ void connection_entry::print(int level,FILE *file)
     delete [] conname;
 }
 
-PRIVATE inline int hashfn(RPC2_Handle *cid)
+static inline int hashfn(RPC2_Handle *cid)
 {
     return ((int) *cid);
 }

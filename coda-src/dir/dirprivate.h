@@ -62,7 +62,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define _DIR_PRIVATE_H_ 1
 
 /* use this file to declare objects and routines that are not used outside the dir module */
-/* if changed also change rvmdir.h */
+/* if changed also change dirvnode.h */
 #define	LOGPS 11	/* log page size */
 #define NHASH 128	/* entries in the hash tbl */
 #define EPP 64		/* dir entries per page */

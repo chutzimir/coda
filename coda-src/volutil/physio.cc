@@ -85,7 +85,7 @@ extern "C" {
 #include <vice.h>
 #include <cvnode.h>
 #include <volume.h>
-#include <rvmdir.h>
+#include <dirvnode.h>
 
 #define PAGESIZE 2048
 

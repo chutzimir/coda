@@ -64,7 +64,7 @@ extern "C" {
 #include <vcrcommon.h>
 #include <cvnode.h>
 #include <volume.h>
-#define PAGESIZE 2048	/* This is a problem, but can't inherit rvmdir.h */
+#define PAGESIZE 2048	/* This is a problem, but can't inherit dirvnode.h */
 #include <dump.h>
 #include "dumpstream.h"
 #include <util.h>
