@@ -856,7 +856,10 @@ void DoProbes(int HowMany, unsigned long *Hosts) {
     free(Handles);
 
     /* Clean up before returning. */
+    /* this looks insane; Hosts points to the middle of a msgbuffer */
+#if 0
     free(Hosts);
+#endif
     for (i = 0; i < HowMany; i++)
 	PutConn(&Connections[i]);
     free(Connections);

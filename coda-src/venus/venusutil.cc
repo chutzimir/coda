@@ -862,7 +862,7 @@ void StatsInit() {
 void ProfInit() {
     LOG(0, ("ProfInit(): profiling is broken; fix it!"));
     return;
-#if undef 
+#if 0
     /* This code used to work once upon a time */
     moncontrol(0);
     if (ProfBoot) ToggleProfiling();
@@ -873,7 +873,7 @@ void ProfInit() {
 void ToggleProfiling() {
     LOG(0, ("ToggleProfiling(): profiling is broken; fix it!"));
     return;
-#ifdef undef
+#if 0
     /* This is the code that used to work */
     Profiling = 1 - Profiling;
     moncontrol(Profiling);
