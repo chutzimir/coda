@@ -2661,7 +2661,7 @@ void fsobj::RecordReplacement(int status, int data) {
     LOG(0, ("RecordReplacement(%d,%d)\n", status, data));
 
     assert(vol != NULL);
-    vol->GetMountPath(mountpath, 1);
+    vol->GetMountPath(mountpath, 0);
     GetPath(path, 1);    
 
     if (data)
