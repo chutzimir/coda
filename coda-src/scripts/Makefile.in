@@ -40,9 +40,9 @@ include $(MAKDIR)/Makeconf
 
 VENUS-SCRIPTS = vutil volmunge venus-setup
 
-VOL-SCRIPTS	= createvol createvol_rep purgevol purgevol_rep bldvldb.sh
+VOL-SCRIPTS	= createvol_rep purgevol purgevol_rep bldvldb.sh
 VICE-SCRIPTS	= startserver
-REINIT-SCRIPTS	= partial-reinit.sh recreatevol recreatevol_rep
+REINIT-SCRIPTS	= partial-reinit.sh
 VICE-SETUP      = vice-setup vice-setup-rvm  vice-setup-scm vice-setup-srvdir vice-setup-user vice-killvolumes vice-setup-ports
 
 BACKUP-SCRIPTS	= backup.sh tape.pl
