@@ -1258,12 +1258,9 @@ void fsobj::LocalSetAttr(Date_t Mtime, unsigned long NewLength,
 
 	    if (HAVEDATA(this)) {
 		int delta_blocks = (int) (BLOCKS(this) - NBLOCKS(NewLength));
-#ifdef	__MACH__
-#else
 		if (delta_blocks < 0) {
 			eprint("LocalSetAttr: %d\n", delta_blocks);
 		}
-#endif
 		UpdateCacheStats(&FSDB->FileDataStats, REMOVE, delta_blocks);
 		FSDB->FreeBlocks(delta_blocks);
 		data.file->Truncate((unsigned) NewLength);

@@ -775,7 +775,7 @@ class volent {
     unsigned AgeLimit;			/* min age of log records in SECONDS */
     unsigned ReintLimit;		/* work limit, in MILLESECONDS */
     /*T*/Unique_t FidUnique;
-    /*T*/RPC2_Unsigned SidUnique;
+    RPC2_Unsigned SidUnique;
     /*T*/int OpenAndDirtyCount;
     // The next four are now transient - bnoble
     /*T*/int RecordsCancelled;
@@ -861,7 +861,7 @@ class volent {
     int AllocFid(ViceDataType, ViceFid *, RPC2_Unsigned *, vuid_t, int =0);
     ViceFid GenerateLocalFid(ViceDataType);
     ViceFid GenerateFakeFid();
-    ViceStoreId GenerateStoreId();
+    ViceStoreId GenerateStoreId(int recov = 0);
 
     /* User-visible volume status. */
     int GetVolStat(VolumeStatus *, RPC2_BoundedBS *,

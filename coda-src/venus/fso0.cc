@@ -1688,16 +1688,9 @@ void fsdb::ReclaimBlocks(int priority, int nblocks) {
 
 /* Needn't be called from within transaction. */
 void fsdb::FreeBlocks(int nblocks) {
-#ifdef	__MACH__
     if (nblocks < 0)
-	Choke("fsdb::FreeBlocks: nblocks = %d", nblocks);
-    if (nblocks > 0)
-	ChangeDiskUsage(-nblocks);
-#else
-    if (nblocks < 0)
-	eprint("FreeBlocks: %d\n", nblocks);
+	eprint("fsdb::FreeBlocks: nblocks = %d\n", nblocks);
     ChangeDiskUsage(-nblocks);
-#endif
 }
 
 

@@ -46,13 +46,8 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <struct.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <netinet/in.h>
 #ifdef __BSD44__
 #include <machine/endian.h>

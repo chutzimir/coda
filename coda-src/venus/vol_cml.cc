@@ -634,7 +634,7 @@ cmlent::cmlent(ClientModifyLog *Log, time_t Mtime, vuid_t vuid, int op, int Tid 
     log->list.append(&handle);
 
     volent *vol = strbase(volent, log, CML);
-    sid = vol->GenerateStoreId();
+    sid = vol->GenerateStoreId(1);
     time = Mtime;
     uid = vuid;
 

@@ -353,9 +353,6 @@ void Resolve(volent *v) {
 
     /* Set up context for resolver. */
     r->u.Init();
-#ifdef __MACH__
-    r->u.u_cred.cr_ruid = V_UID;
-#endif /* __MACH__ */
 #ifdef __BSD44__
     r->u.u_cred.cr_uid = V_UID;
 #endif /* __BSD44__ */

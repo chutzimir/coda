@@ -51,13 +51,8 @@ extern "C" {
 #include <stdio.h>
 #include <sys/param.h>
 #include <sys/time.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 
 #ifdef __cplusplus
@@ -123,13 +118,7 @@ void InitOneADay() {
     struct tm *lt = localtime((time_t *) &curr_time);
     lt->tm_sec = lt->tm_min = lt->tm_hour = 0;       /* midnight today */
 
-#ifdef __MACH__
-#define MKTIME(tm) gtime(tm)  /* gtime() is CMU home brew */
-#else
-#define MKTIME(tm) mktime(tm) /* mktime() is part of 4.4 BSD */
-#endif /* __linux__ ||__BSD44__ */
-
-    unsigned long midnight = MKTIME(lt) + SECSPERDAY; /* midnight tomorrow */
+    unsigned long midnight = mktime(lt) + SECSPERDAY; /* midnight tomorrow */
     struct TM_Elem *tp = (struct TM_Elem *) malloc(sizeof(struct TM_Elem));
     tp->TotalTime.tv_sec = midnight - curr_time;       /* time until then */
     tp->TotalTime.tv_usec = 0;

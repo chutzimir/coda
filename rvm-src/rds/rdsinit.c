@@ -51,13 +51,8 @@ static char *rcsid = "$Header$";
 #include <sys/stat.h>
 #include <sys/errno.h>
 #include <stdio.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <rvm.h>
 #include <rvm_segment.h>
 #include <rvm_segment_private.h>

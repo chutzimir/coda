@@ -1196,7 +1196,7 @@ int_tid_t;
 #define TRANS_HDR(x)        ((trans_hdr->flags & (x)) != 0)
 /* functions and structures for managing list of RVM-allocated
      regions of memory (added by tilt, Nov 19 1996) */
-#if ! defined(MACH)
+
 typedef struct rvm_page_entry {
     char                   *start;
     char                   *end;
@@ -1208,7 +1208,6 @@ rvm_bool_t rvm_register_page(char *vmaddr, rvm_length_t length);
 rvm_bool_t rvm_unregister_page(char *vmaddr, rvm_length_t length);
 rvm_bool_t mem_chk(char *vmaddr, rvm_length_t length);
 rvm_page_entry_t *find_page_entry(char *vmaddr);
-#endif /* __linux__ || __BSD44__ || __CYGWIN32__ */
 /* list management functions */
 
 extern

@@ -51,17 +51,8 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-#ifdef	__linux__
-#include <sys/uio.h>
-#endif
 
 #ifdef __cplusplus
 }

@@ -52,10 +52,15 @@ include $(TOPDIR)/Makeconf
 EXECUTABLES = testrvm rvm_basher lwp_basher
 TESTS = testrvm rvm_basher lwp_basher
 
-TESTRVM_LIBS    = $(LIBRVM) $(LIBCOMPAT) $(LIBMACH)
-RVM_BASHER_LIBS = $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBCOMPAT) $(LIBMACH)
+TESTRVM_LIBS    = $(LIBRVM) $(LIBCOMPAT)
+RVM_BASHER_LIBS = $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBCOMPAT)
 LWP_BASHER_LIBS = $(LIBRDSLWP) $(LIBSEG) $(LIBRVMLWP) $(LIBOLDLWP) \
-		  $(LIBMACH) $(LIBCOMPAT)
+		  $(LIBCOMPAT)
+
+# re-install this when libplumber is ready, for mach platform -- clement
+# LWP_BASHER_LIBS = $(LIBRDSLWP) $(LIBSEG) $(LIBRVMLWP) $(LIBOLDLWP) \
+#                  $(LIBPLUMBER)
+# CFLAGS := $(CFLAGS) -DHAS_PLUMBER
 
 
 testrvm: testrvm.o $(TESTRVM_LIBS)

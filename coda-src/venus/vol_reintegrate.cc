@@ -682,9 +682,6 @@ void Reintegrate(volent *v) {
 
     /* Set up context for reintegrator. */
     r->u.Init();
-#ifdef __MACH__
-    r->u.u_cred.cr_ruid = v->CML.Owner();
-#endif /* __MACH__ */
 #ifdef __BSD44__
     r->u.u_cred.cr_uid = v->CML.Owner();
 #endif /* __BSD44__ */
