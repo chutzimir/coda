@@ -78,6 +78,7 @@ extern int rpause(int, int, int);  /* why isn't this in sys/resource.h? */
 #include "simulate.h"
 #include "user.h"
 #include "venus.private.h"
+#include "venus.version.h"
 #include "venuscb.h"
 #include "venusrecov.h"
 #include "venusvm.h"

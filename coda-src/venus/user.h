@@ -121,8 +121,8 @@ class userent {
 
     int GetUid() 
         { return(uid); }
-    PseudoAdvice RequestPseudoAdvice(char *pathname, int pid)
-        { return(admon.RequestPseudoAdvice(pathname, pid)); }
+    ReadDiscAdvice RequestReadDisconnectedCacheMissAdvice(char *pathname, int pid)
+        { return(admon.RequestReadDisconnectedCacheMissAdvice(pathname, pid)); }
     void RequestHoardWalkAdvice(char *input, char *output)
         { admon.RequestHoardWalkAdvice(input, output); }
     void RequestDisconnectedQuestionnaire(char *pathname, int pid, ViceFid *fid, long DiscoTime)
@@ -144,18 +144,12 @@ class userent {
         { admon.RequestReintegratePending(volname, flag); }
     int RequestASRInvokation(char *pathname, vuid_t vuid)
         { return(admon.RequestASRInvokation(pathname, vuid)); }
-    WeaklyAdvice RequestWeaklyConnectedCacheMiss(char *pathname, int pid, int expectedCost)
-        { return(admon.RequestWeaklyConnectedCacheMiss(pathname, pid, expectedCost)); }
+    WeaklyAdvice RequestWeaklyConnectedCacheMissAdvice(char *pathname, int pid, int expectedCost)
+        { return(admon.RequestWeaklyConnectedCacheMissAdvice(pathname, pid, expectedCost)); }
     int NewConnection(char *hostname, int port, int pgrp)
         { return(admon.NewConnection(hostname, port, pgrp)); }
-    int SolicitHoardWalkAdvice(vuid_t vuid)
-        { return(admon.SolicitHoardWalkAdvice(vuid)); }
-    int UnsolicitHoardWalkAdvice()
-        { return(admon.UnsolicitHoardWalkAdvice()); }
-    int BeginStoplightMonitor()
-        { return(admon.BeginStoplightMonitor()); }
-    int EndStoplightMonitor()
-        { return(admon.EndStoplightMonitor()); }
+    int RegisterInterest(vuid_t vuid, long numEvents, InterestValuePair events[])
+        { return(admon.RegisterInterest(vuid, numEvents, events)); }
     void GetStatistics(AdviceCalls *calls, AdviceResults *results, AdviceStatistics *stats)
         { admon.GetStatistics(calls, results, stats); }
 
@@ -200,6 +194,9 @@ extern void PutUser(userent **);
 extern void UserPrint();
 extern void UserPrint(FILE *);
 extern void UserPrint(int);
+extern int AuthorizedUser(vuid_t);
+extern vuid_t ConsoleUser();
+
 
 /* user_daemon.c */
 extern void USERD_Init();

@@ -145,6 +145,35 @@ proc RequestHoardAdvice {} {
 	WaitForCommandFileRemoval
 }
 
+proc RequestDiscoMissQuestionnaires { } {
+	global RequestDiscoMissQs 
+	global UnrequestDiscoMissQs 
+	global DiscoMissQuestionnaires
+
+	if {$DiscoMissQuestionnaires} {
+		CreateCommandFile $RequestDiscoMissQs 
+	} else {
+		CreateCommandFile $UnrequestDiscoMissQs 
+	}
+
+	SignalAdviceMonitor
+	WaitForCommandFileRemoval
+}
+
+proc RequestLongFetchQueries { } {
+	global RequestLongFetchQuery
+	global UnrequestLongFetchQuery
+	global LongFetchQueries
+
+	if {$LongFetchQueries} {
+		CreateCommandFile $RequestLongFetchQuery
+	} else {
+		CreateCommandFile $UnrequestLongFetchQuery
+	}
+	SignalAdviceMonitor
+	WaitForCommandFileRemoval
+}
+
 proc CreateMenuBar {} {
 
 ;	frame .frame -relief flat 
@@ -175,7 +204,12 @@ proc CreateMenuBar {} {
 		-command RequestHoardAdvice
 	.mbar.weakmiss.menu add checkbutton \
 		-label "Long Fetch Queries" \
-		-variable LongFetchQueries
+		-variable LongFetchQueries \
+		-command RequestLongFetchQueries
+	.mbar.weakmiss.menu add checkbutton \
+		-label "Disconnected Cache Miss Questionnaires" \
+		-variable DiscoMissQuestionnaires \
+		-command RequestDiscoMissQuestionnaires
 	.mbar.weakmiss.menu add separator
 	.mbar.weakmiss.menu add command \
 		-label "Request list of cache misses" \
@@ -219,6 +253,9 @@ set RequestMissList c
 set RequestLongFetchQuery d
 set BeginStopLight e
 set EndStopLight f
+set RequestDiscoMissQs g
+set UnrequestDiscoMissQs h
+set UnrequestLongFetchQuery i
 set QuitAdvice q
 # End of global variables which MUST be consistent with those in advice_srv.h
 

@@ -45,7 +45,7 @@ Subsystem  "AdMon";
 #include "vcrcommon.rpc2"
 
 /* IMPORTANT!  Change this anytime this file is changed! */
-#define ADMON_VERSION 7
+#define ADMON_VERSION 8
 
 typedef RPC2_Enum
 {
@@ -92,12 +92,12 @@ typedef RPC2_Struct
 } WeaklyConnectedInformation;
 
 /*
- * PseudoConnectedMiss
+ * ReadDisconnectedMiss
  *
  * Venus uses this call to request advice about whether or 
- * not to service a pseudo-connected cache miss.
+ * not to service a read disconnected cache miss.
  */
-PseudoConnectedMiss 	(IN RPC2_String Pathname, 
+ReadDisconnectedMiss 	(IN RPC2_String Pathname, 
 			 IN RPC2_Integer pid,
 			 OUT RPC2_Integer Advice);
 

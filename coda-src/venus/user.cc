@@ -60,6 +60,8 @@ extern "C" {
 #include <netinet/in.h>
 #include <errno.h>
 #include <struct.h>
+#include <utmp.h>
+#include <pwd.h>
 
 #include <rpc2.h>
 
@@ -157,6 +159,54 @@ void UserPrint(int fd) {
     while (u = next()) u->print(fd);
 
     fdprint(fd, "\n");
+}
+
+/* 
+ *  An authorized user is either:
+ *    logged into the console, or 
+ *    the primary user of this machine (as defined by a run-time switch).
+ */
+int AuthorizedUser(vuid_t thisUser) {
+
+  /* If this user is the primary user of this machine, then this user is authorized */
+  if (PrimaryUser != UNSET_PRIMARYUSER) {
+    if (PrimaryUser == thisUser) {
+       LOG(100, ("AuthorizedUser: User (%d) --> authorized as primary user.\n", thisUser));
+       return(1);
+    }
+  }
+
+  /* If this user is logged into the console, then this user is authorized */
+  if (thisUser == ConsoleUser()) {
+    LOG(100, ("AuthorizedUser: User (%d) --> authorized as console user.\n", thisUser));
+    return(1);
+  }
+
+  /* Otherwise, this user is not authorized */
+  LOG(100, ("AuthorizedUser: User (%d) --> NOT authorized.\n", thisUser));
+  return(0);
+}
+
+#define	UTMP_FILE   "/etc/utmp"
+#define	CONSOLE	    "console"
+vuid_t ConsoleUser() {
+    vuid_t vuid = ALL_UIDS;
+
+    /* Look up console user in utmp. */
+    FILE *fp = fopen(UTMP_FILE, "r");
+    if (fp == NULL) return(vuid);
+    struct utmp u;
+    while (fread((char *)&u, (int)sizeof(struct utmp), 1, fp) == 1) {
+	if (STREQ(u.ut_line, CONSOLE)) {
+	    struct passwd *pw = getpwnam(u.ut_name);
+	    if (pw) vuid = pw->pw_uid;
+	    break;
+	}
+    }
+    if (fclose(fp) == EOF)
+	Choke("ConsoleUser: fclose(%s) failed", UTMP_FILE);
+
+    return(vuid);
 }
 
 

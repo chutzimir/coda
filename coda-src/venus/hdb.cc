@@ -201,53 +201,6 @@ PRIVATE int HDB_HashFN(void *key) {
 }
 
 
-PRIVATE vuid_t ConsoleUser() {
-    vuid_t vuid = ALL_UIDS;
-
-    /* Look up console user in utmp. */
-    FILE *fp = fopen(UTMP_FILE, "r");
-    if (fp == NULL) return(vuid);
-    struct utmp u;
-    while (fread((char *)&u, (int)sizeof(struct utmp), 1, fp) == 1) {
-	if (STREQ(u.ut_line, CONSOLE)) {
-	    struct passwd *pw = getpwnam(u.ut_name);
-	    if (pw) vuid = pw->pw_uid;
-	    break;
-	}
-    }
-    if (fclose(fp) == EOF)
-	Choke("ConsoleUser: fclose(%s) failed", UTMP_FILE);
-
-    return(vuid);
-}
-
-/* 
- *  An authorized user is either:
- *    logged into the console, or 
- *    the primary user of this machine (as defined by a run-time switch).
- */
-PRIVATE int AuthorizedUser(vuid_t thisUser) {
-
-  /* If this user is the primary user of this machine, then this user is authorized */
-  if (PrimaryUser != UNSET_PRIMARYUSER) {
-    if (PrimaryUser == thisUser) {
-       LOG(100, ("AuthorizedUser: User (%d) --> authorized as primary user.\n", thisUser));
-       return(1);
-    }
-  }
-
-  /* If this user is logged into the console, then this user is authorized */
-  if (thisUser == ConsoleUser()) {
-    LOG(100, ("AuthorizedUser: User (%d) --> authorized as console user.\n", thisUser));
-    return(1);
-  }
-
-  /* Otherwise, this user is not authorized */
-  LOG(100, ("AuthorizedUser: User (%d) --> NOT authorized.\n", thisUser));
-  return(0);
-}
-
-
 /* Allocate database from recoverable store. */
 void *hdb::operator new(size_t len){
     hdb *h = 0;
@@ -541,11 +494,19 @@ void hdb::RequestHoardWalkAdvice() {
 
     /* Create the list of fsobjs to be sent to the advice monitor */
     LOG(100, ("RequestHoardWalkAdvice: Creating list\n"));
+  {
+      int invalid = 0;
+      int valid = 0;
+	  int canask = 0;
+	  int cannotask = 0;
+
     while (b = next()) {
         fsobj *f = strbase(fsobj, b, prio_handle);
 	assert(f != NULL);
 
-        if (!HOARDABLE(f) || DATAVALID(f)) continue;
+        if (!HOARDABLE(f) || DATAVALID(f)) { invalid++; continue; }
+
+	valid++;
 
 	estimatedCost = f->EstimatedFetchCost();
         if (estimatedCost == -1)
@@ -559,6 +520,7 @@ void hdb::RequestHoardWalkAdvice() {
         f->GetPath(ObjWithinVolume, 1);
  
 	if (f->IsAskingAllowed()) {
+	    canask++;
     	    switch (f->PredetermineFetchState(estimatedCost, f->HoardPri)) {
   	        case -1:	
 		    /* Determine object should NOT be fetched. */
@@ -586,8 +548,11 @@ void hdb::RequestHoardWalkAdvice() {
              * simply go with whatever FetchAllowed is set to and we don't need to
              * call PredetermineFetchState..
              */
-        }
+        } else { cannotask++; }
     }
+
+    LOG(100, ("RequestHoardWalkAdvice: Statistics: invalid=%d valid=%d (canask=%d, cannotask=%d)\n", invalid, valid, canask, cannotask));
+  }
     fflush(HoardListFILE);
     fclose(HoardListFILE);
 
@@ -1731,6 +1696,7 @@ void namectxt::KillChildren() {
     dlink *d;
     while (d = children->first()) {
 	namectxt *child = strbase(namectxt, d, child_link);
+	assert(child != NULL);
 	child->Kill();
     }
 
@@ -2005,7 +1971,9 @@ void namectxt::MetaExpand() {
     if (d == 0)
 	{ print(logFile); Choke("namectxt::MetaExpand: no bindings"); }
     binding *b = strbase(binding, d, binder_handle);
+    assert(b != NULL);
     fsobj *f = (fsobj *)b->bindee;
+    assert(f != NULL);
 
     /* Clean-up non-directories and return. */
     if (!f->IsDir()) {

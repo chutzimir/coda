@@ -99,6 +99,7 @@ extern "C" {
 #include "simulate.h"
 #include "user.h"
 #include "venus.private.h"
+#include "venus.version.h"
 #include "venuscb.h"
 #include "venusioctl.h"
 #include "venusrecov.h"

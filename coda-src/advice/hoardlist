@@ -1,4 +1,6 @@
 #!/usr/coda/etc/wish -f
+# The next line restarts using wish\
+exec /coda/misc/tcl/@sys/beta/bin/wish  "$0" "$@"
 #ifndef _BLURB_
 #define _BLURB_
 #/*
@@ -399,7 +401,7 @@ proc ProcessInput {canvas} {
     set width [winfo width $f]
     set height [winfo height $f]
     $canvas config -scrollregion "0 0 $width $height"
-    $canvas config -scrollincrement $incr
+    #$canvas config -scrollincrement $incr
     if {$height > 4 * $incr} {
 	set height [expr 4*$incr]
     }

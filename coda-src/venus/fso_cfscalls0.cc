@@ -727,13 +727,14 @@ int fsobj::GetAttr(vuid_t vuid, RPC2_BoundedBS *acl) {
 				nfailed++;	
 				/* 
 				 * If we have data, it is stale and must be discarded,
-				 * unless someone is writing or executing it. In that case 
-				 * we wait and rely on the destructor to discard the data.
+				 * unless someone is writing or executing it, or it is
+				 * a fake directory.  In that case, we wait and rely on
+				 * the destructor to discard the data.
 				 *
 				 * We don't restart from the beginning, since the
 				 * validation of piggybacked fids is a side-effect.
 				 */
-				if (HAVEDATA(pobj) && !WRITING(pobj) && !EXECUTING(pobj)) {
+				if (HAVEDATA(pobj) && !WRITING(pobj) && !EXECUTING(pobj) && !pobj->IsFakeDir()) {
 				    ATOMIC(
 					   UpdateCacheStats((IsDir() ? &FSDB->DirDataStats 
 							     : &FSDB->FileDataStats),

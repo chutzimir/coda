@@ -1767,11 +1767,11 @@ int fsobj::PredetermineFetchState(int estimatedCost, int hoard_priority) {
     acceptableCost = (double)PATIENCE_ALPHA + ((double)PATIENCE_BETA * exp(x));
 
     if (estimatedCost < acceptableCost) {
-        LOG(100, ("fsobj::PredetermineFetchState returns 1\n"));
+        LOG(100, ("fsobj::PredetermineFetchState returns 1 (definitely fetch) \n"));
         return(1);
     }
     else {
-	LOG(100, ("fsobj::PredetermineFetchState returns 0\n"));
+	LOG(100, ("fsobj::PredetermineFetchState returns 0 (ask the user) \n"));
         return(0);
     }
 }

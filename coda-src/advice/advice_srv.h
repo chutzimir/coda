@@ -52,7 +52,7 @@ static char *rcsid = "$Header$";
 #define USERINITIATED "/usr/coda/etc/user_initiated"
 #define REINT_PENDING "/usr/coda/etc/reintegration_pending"
 #define WEAKMISS "/usr/coda/etc/weakmiss"
-#define PSEUDOMISS "/usr/coda/etc/pseudomiss"
+#define READMISS "/usr/coda/etc/readmiss"
 #define STOPLIGHT "/usr/coda/etc/stoplight"
 #define STOPLIGHT_STATECHANGE "/usr/coda/etc/stoplight_statechange"
 
@@ -81,6 +81,9 @@ extern int execute_tcl(char *script, char *args[]);
 #define RequestLongFetchQuery 'd'
 #define BeginStoplight 'e'
 #define EndStoplight 'f'
+#define RequestDiscoMissQs 'g'
+#define UnrequestDiscoMissQs 'h'
+#define UnrequestLongFetchQuery 'i'
 #define QuitAdvice 'q'
 
 
