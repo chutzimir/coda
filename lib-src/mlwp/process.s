@@ -451,17 +451,26 @@ returnto:
 #elif	defined(__BSD44__)
 
 #ifdef __STDC__
+
+#ifdef	__FreeBSD__version
+#include <machine/asm.h>
+#define SYMB(x)	ENTRY(x)
+#define EXT(x)	CNAME(x)
+
+#elif	defined(__FreeBSD__)
+#define SYMB(x) .align 4;  .globl _##x; _##x:
+#define EXT(x) _##x
+
+#else	/* defined(__NetBSD__) */
 #include <machine/asm.h>
 #define SYMB(x)  ENTRY(x)
-#ifdef	__FreeBSD__
-#define EXT(x)	CNAME(x)
-#else
 #define EXT(x)	_C_LABEL(x)
-#endif	/*__FreeBSD__*/
-#else
+#endif	/*__FreeBSD__version*/
+
+#else	/*!__STDC__*/
 #define SYMB(x)  _/**/x:
 #define EXT(x)	_/**/x
-#endif
+#endif	/*__STDC__*/
 
 #else
 
