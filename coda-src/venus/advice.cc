@@ -53,11 +53,13 @@ extern "C" {
 #include <admon.h>
 #include <adsrv.h>
 
+/* from util */
+#include <proc.h>
+
 /* from venus */
 #include "user.h"
 #include "advice.h"
 #include "adviceconn.h"
-#include "commands.h"
 
 #define FALSE 0
 #define TRUE 1

@@ -69,20 +69,25 @@ int execl(char *, char *, ...);
 }
 #endif __cplusplus
 
+/* from util */
 #include <util.h>
+#include <proc.h>
 #include <bstree.h>
 
+/* from vicedep */
 #include "admon.h"
 #include "adsrv.h"
+
+/* from venus */
 #include "advice.h"
 
+/* local */
 #include "advice_srv.h"
 #include "console_handler.h"
 #include "counters.h"
 #include "globals.h"
 #include "helpers.h"
 #include "miss.h"
-#include "portability_problems.h"
 //#include "rpcs.h"
 
 #define DFT_USERTIMEOUT 30

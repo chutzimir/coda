@@ -86,11 +86,19 @@ extern void DispatchDaemons();
 extern void DaemonInit();
 extern void RegisterDaemon(unsigned long, char *);
 
+/* from util */
 #include <util.h>
+#include <proc.h>
 #include <bstree.h>
+
+/* from vicedep */
 #include "admon.h"
 #include "adsrv.h"
+
+/* from venus */
 #include <advice.h>
+
+/* local */
 #include "advice_srv.h"
 #include "console_handler.h"
 #include "counters.h"
@@ -98,7 +106,6 @@ extern void RegisterDaemon(unsigned long, char *);
 #include "globals.h"
 #include "helpers.h"
 #include "miss.h"
-#include "portability_problems.h"
 #include "programspy.h"
 #include "replacementlog.h"
 #include "rpc_setup.h"

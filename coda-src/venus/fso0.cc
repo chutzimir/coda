@@ -72,10 +72,12 @@ extern "C" {
 /* interfaces */
 #include <vcrcommon.h>
 
+/* from util */
+#include <proc.h>
+
 /* from venus */
 #include "advice.h"
 #include "advice_daemon.h"
-#include "commands.h"
 #include "fso.h"
 #include "hdb.h"
 #include "local.h"
