@@ -76,7 +76,7 @@ extern "C" {
 
 #include <prs.h>
 #include <prs_fs.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <errors.h>
 #include <inconsist.h>
 #include <vice.h>

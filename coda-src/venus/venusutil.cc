@@ -170,41 +170,6 @@ PRIVATE char *VFSOpsNameTemplate[NVFSOPS] = {
 
 /* *****  util.c  ***** */
 
-/* Send a message out on a file descriptor. */
-void fdprint(long afd, char *fmt ...) {
-    va_list ap;
-    char buf[240];
-
-    va_start(ap, fmt);
-    vsnprintf(buf, 240, fmt, ap);
-    va_end(ap);
-    write((int) afd, buf, (int) strlen(buf));
-}
-
-
-/* Send an error message to stderr. */
-void eprint(char *fmt ...) {
-    va_list ap;
-    char msg[240];
-    char *cp = msg;
-
-    /* Construct message in buffer and add newline */
-    va_start(ap, fmt);
-    vsnprintf(cp, 239, fmt, ap); /* leave 1 char for the "\n" */
-    va_end(ap);
-    cp += strlen(cp);
-    strcat(cp, "\n");
-
-    /* Write to stderr */
-    PrintTimeStamp(stderr);  /* first put out a timestamp */
-    fprintf(stderr, msg); /* then the message */
-    fflush(stderr);
-
-    /* Put a copy in the log for debugging. */
-    LOG(0, ("%.128s", msg));
-}
-
-
 /* Print a debugging message to the log file. */
 void dprint(char *fmt ...) {
     va_list ap;

@@ -74,9 +74,9 @@ LIBS = 	$(LIBVOLSERV)  \
 	$(LIBRESOLVE) 	\
 	$(LIBVOL)	\
 	$(LIBVV)	\
+	$(LIBPARTITION)	\
 	$(LIBSYSENT)	\
 	$(LIBDIRLIB)	\
-	$(LIBIFS)	\
 	$(LIBUTIL) 	\
 	$(LIBCODARDS)   \
 	$(LIBSEG)  	\
@@ -86,8 +86,7 @@ LIBS = 	$(LIBVOLSERV)  \
 	$(LIBFAIL)	\
 	$(LIBOLDLWP)	\
 	$(LIBMACH)	\
-	$(LIBCOMPAT)	\
-	$(LIBINODEFS)
+	$(LIBCOMPAT)	
 
 headers=$(INCLSPECIAL)/lwp.h	\
 	$(INCLDIR)/al.h		\

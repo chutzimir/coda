@@ -75,7 +75,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "rpc2.private.h"
 #include "se.h"
 #include "sftp.h"
-#include <inodefs.h>
 
 extern int errno;
 

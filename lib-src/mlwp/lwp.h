@@ -55,8 +55,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-#ifndef _LWP_
-#define _LWP_
+#ifndef LWP_INCLUDED
+#define LWP_INCLUDED
 
 #include "cargs.h"
 #include <sys/time.h>
@@ -173,7 +173,7 @@ extern int TM_GetTimeOfDay C_ARGS((struct timeval *tv, struct timezone *tz));
 extern int FT_AGetTimeOfDay C_ARGS((struct timeval *tv, struct timezone *tz));
 extern unsigned int FT_ApproxTime() ;
 
-#endif _LWP_
+#endif /* LWP_INCLUDED */
 
 
 

@@ -84,7 +84,7 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __cplusplus
 }
@@ -92,7 +92,7 @@ extern "C" {
 
 #include <coda_dir.h>
 #include <vice.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <cvnode.h>
 #include <volume.h>
 #include <srv.h>

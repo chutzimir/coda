@@ -58,7 +58,7 @@ extern "C" {
 #include <sys/dir.h>
 #include <lwp.h>
 #include <rpc2.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

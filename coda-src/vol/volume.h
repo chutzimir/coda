@@ -55,8 +55,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-#ifndef _VOLUME_H_
-#define _VOLUME_H_ 1
+#ifndef VOLUME_INCLUDED
+#define VOLUME_INCLUDED 1
 #include <recov_vollog.h>
 #include <vice.h>
 #include "voldefs.h"
@@ -489,4 +489,13 @@ typedef struct DirHandle {
 			   that were generated in days of old */
 } DirHandle;
 
-#endif _VOLUME_H_
+
+/* partition disk usage related routines */
+
+/* exported routines */
+void VAdjustDiskUsage(Error *ec, Volume *vp, int blocks);
+void VCheckDiskUsage(Error *ec, Volume *vp, int blocks);
+void VGetPartitionStatus(Volume *vp, int *totalBlocks, int *freeBlocks);
+
+
+#endif VOLUME_INCLUDED

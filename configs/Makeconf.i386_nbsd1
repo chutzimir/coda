@@ -45,12 +45,6 @@ LIBCURSES     = -lcurses
 LIBCOMPAT     = /usr/lib/libcompat.a
 LIBREADLINE   = /usr/local/lib/libreadline.a
 INCREADLINE   = -I/usr/local/include/readline
-INODEFSNAME   = libuinodefs.a
-INODEFSDIR    = kernel-src/inodefs/common
-# When we are ready use kernel inode ops
-# INODEFSNAME   = libinodefs.a
-# INODEFSDIR    = kernel-src/inodefs/bsd44
-# machine_inodefs   = bsd44
 #for rvm
 LIBTHREADS    =
 LIBMACH       = 

@@ -85,7 +85,7 @@ extern "C" {
 #include <rvmlib.h>
 #include <coda_dir.h>
 #include <vice.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <cvnode.h>
 #include <volume.h>
 #include <errors.h>

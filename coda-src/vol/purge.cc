@@ -84,7 +84,7 @@ extern "C" {
 #include <util.h>
 #include <vice.h>
 #include <rec_smolist.h>
-#include "nfs.h"
+#include "voltypes.h"
 #include "cvnode.h"
 #include "volume.h"
 #include "viceinode.h"

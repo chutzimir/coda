@@ -468,10 +468,12 @@ PRIVATE void create() {
     }
     partition = this_argp[2];
     volumeName = this_argp[3];
+#if 0 /* XXX this needs to go to the server end now */
     if (strncmp(partition, VICE_PARTITION_PREFIX, VICE_PREFIX_SIZE) != 0) {
 	printf("Invalid partition specified, %s\n", (int)partition);
 	exit(1);
     }
+#endif
     /*
       BEGIN_HTML
       <pre>
@@ -974,10 +976,13 @@ PRIVATE void create_rep() {
     }
     partition = this_argp[2];
     volumeName = this_argp[3];
+
+#if 0 /* needs to be checked on the server */
     if (strncmp(partition, VICE_PARTITION_PREFIX, VICE_PREFIX_SIZE) != 0) {
 	printf("Invalid partition specified, %s\n", (int)partition);
 	exit(1);
     }
+#endif
     if (sscanf(this_argp[4], "%X", &groupid) != 1){
 	printf("CreateRep: Bad Group Id %s\n", this_argp[4]);
 	exit(-1);

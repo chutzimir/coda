@@ -75,12 +75,13 @@ LIBS=	${LIBVICEERROR}\
 	${LIBSE}\
 	$(LIBIFS)\
 	${LIBVV}\
+	${LIBPARTITION}\
+	${LIBUTIL}\
 	$(LIBOLDLWP)\
 	${LIBKERNDEP}\
 	$(LIBTHREADS)\
 	$(LIBMACH)\
-	$(LIBCOMPAT)\
-	$(LIBINODEFS)
+	$(LIBCOMPAT)
 
 updatesrv: updatesrv.o update.server.o ${LIBS}
 	$(CXX) $(LIBLAGS) updatesrv.o update.server.o ${LIBS} -o updatesrv

@@ -74,7 +74,7 @@ extern "C" {
 #include <signal.h>
 #include <sysent.h>
 #include <strings.h>
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __MACH__
 #include <sysent.h>
@@ -97,7 +97,7 @@ extern "C" {
 #include <rvmlib.h>
 #include <vmindex.h>
 #include <coda_dir.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <partition.h>
 #include <vicelock.h>
 #include <srv.h>

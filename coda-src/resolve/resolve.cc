@@ -67,7 +67,7 @@ extern "C" {
 #include <errno.h>
 #include <assert.h> 
 extern int getbool(char *, int);
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __cplusplus
 }

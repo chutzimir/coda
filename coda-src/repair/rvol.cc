@@ -70,7 +70,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/dir.h>
 #include <rpc2.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -81,7 +81,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <util.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <voldefs.h>
 #include <vldb.h>
 #include <vice.h>

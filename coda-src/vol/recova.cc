@@ -53,7 +53,7 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 #include <setjmp.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>

@@ -79,7 +79,7 @@ extern "C" {
 
 #include <util.h>
 #include <rvmlib.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <vice.h>
 #include <cvnode.h>
 #include <volume.h>

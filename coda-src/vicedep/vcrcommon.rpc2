@@ -61,11 +61,21 @@ supported by Transarc Corporation, Pittsburgh, PA.
  * Include file common to both callback.rpc2, vice.rpc2 and res.rpc2
  */
 
+%{
+#ifndef VOLTYPES_DEFINED
+#define VOLTYPES_DEFINED
+%}
 
 typedef RPC2_Unsigned   VolumeId;
-typedef VolumeId	VolId;
 typedef RPC2_Unsigned	VnodeId;
+typedef VolumeId        VolId;
 typedef RPC2_Unsigned	Unique_t;
+typedef RPC2_Unsigned	FileVersion;
+
+%{ 
+#endif
+%}
+
 
 %{
 #ifndef _VUID_T_
@@ -77,9 +87,9 @@ typedef unsigned int vgid_t;
 
 typedef RPC2_Struct 
 {
-	VolumeId	Volume;
-	VnodeId		Vnode;
-	Unique_t	Unique;
+	RPC2_Unsigned	Volume;
+	RPC2_Unsigned	Vnode;
+	RPC2_Unsigned	Unique;
 }	ViceFid;
 
 typedef RPC2_Struct
@@ -108,7 +118,6 @@ typedef RPC2_Struct
 }	ViceVersionVector;
 
 typedef RPC2_Unsigned	UserId;
-typedef RPC2_Unsigned	FileVersion;
 typedef RPC2_Unsigned	Date_t;
 typedef RPC2_Integer	Rights;
 

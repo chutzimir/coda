@@ -93,16 +93,17 @@ extern int nlist(const char*, struct nlist[]);
 #endif
 
 #include <lwp.h>
+#include <lock.h>
 #include <rpc2.h>
+#include <util.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <rvmlib.h>
 #include <errors.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <partition.h>
 #include <auth2.h>
 #include <prs.h>

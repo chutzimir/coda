@@ -532,7 +532,8 @@ int IOMGR_Finalize()
 }
 
 /* Check for pending IO, and set corresponding LWPs runnable. */
-/* This is quite similar to the body of IOMGR, but everything MUST be done in polling fashion! */
+/* This is quite similar to the body of IOMGR, but everything MUST be
+   done in polling fashion! */
 /* Return value indicates whether anyone was set runnable by the poll. */
 int IOMGR_Poll() 
 {

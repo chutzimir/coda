@@ -83,20 +83,18 @@ extern "C" {
 
 #include <lock.h>
 #include <lwp.h>
-
+#include <util.h>
+#include <partition.h>
+#include <viceinode.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <vice.h>
 #include "cvnode.h"
 #include "volume.h"
 #include <recov_vollog.h>
-#include "partition.h"
-#include "viceinode.h"
 #include "signal.h"
-#include "volinodes.h"
 #include "vutil.h"
 #include "recov.h"
 

@@ -53,6 +53,7 @@ extern "C" {
 
 #include <ohash.h>
 #include <inconsist.h>
+#include <vcrcommon.h>
 #include <vice.h>
 
 

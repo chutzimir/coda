@@ -65,7 +65,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <util.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <vcrcommon.h>
 #include <cvnode.h>
 #include <volume.h>

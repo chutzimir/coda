@@ -60,7 +60,7 @@ extern "C" {
 #include <netinet/in.h>
 #include <sysent.h>
 #include <struct.h>
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __MACH__
 #include <sysent.h>

@@ -55,51 +55,38 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
+#ifndef VICEINODE_INCLUDED
+#define VICEINODE_INCLUDED 1
+#include <voltypes.h>
 
-#ifndef _PARTITION_H_
-#define _PARTITION_H_ 1
 
-/* All Vice partitions on a server will have the following name prefix */
-#define VICE_PARTITION_PREFIX	"/vicep"
-#define VICE_PREFIX_SIZE	(sizeof(VICE_PARTITION_PREFIX)-1)
-
-struct DiskPartition {
-    struct DiskPartition *next;
-    char	name[32];	/* Mounted partition name */
-    char	devName[32];	/* Device mounted on */
-    Device	device;		/* device number */
-    int		lock_fd;	/* File descriptor of this partition if locked; otherwise -1;
-    				   Not used by the file server */
-    int		free;		/* Total number of blocks (1K) presumed
-				   available on this partition (accounting
-				   for the minfree parameter for the
-				   partition).  This is adjusted
-				   approximately by the sizes of files
-				   and directories read/written, and
-				   periodically the superblock is read and
-				   this is recomputed.  This number can
-				   be negative, if the partition starts
-				   out too full */
-    int		totalUsable;	/* Total number of blocks available on this
-    				   partition, taking into account the minfree
-				   parameter for the partition (see the
-				   4.2bsd command tunefs, but note that the
-				   bug mentioned there--that the superblock
-				   is not reread--does not apply here.  The
-				   superblock is re-read periodically by
-				   VSetPartitionDiskUsage().) */
-    int		minFree;	/* Percentage to be kept free, as last read
-    				   from the superblock */
+/* used by the inode methods */
+struct i_header {
+    long    lnk;
+    VolumeId   volume;
+    VnodeId    vnode;
+    Unique_t   unique;
+    FileVersion dataversion;
+    long    magic;
 };
 
-/* exported variables */
-extern struct DiskPartition *DiskPartitionList;
 
-/* exported routines */
-extern void VInitPartition(char *path, char *devname, Device dev);
-extern void VResetDiskUsage();
-extern struct DiskPartition *VGetPartition(char *name);
-extern void VLockPartition(char *name);
-extern void VUnlockPartition(char *name);
+/* Structure of individual records output by fsck.
+   When VICEMAGIC inodes are created, they are given four parameters;
+   these correspond to the params.fsck array of this record.
+ */
+struct ViceInodeInfo {
+    bit32	InodeNumber;
+    int		ByteCount;
+    int		LinkCount;
+    VolId	VolumeId;
+    VnodeId	VnodeNumber;
+    Unique_t	VnodeUniquifier;
+    FileVersion	InodeDataVersion;
+    long        Magic;
+}; 
 
-#endif _PARTITION_H_
+#define INODESPECIAL 0xffffffff	/* This vnode number will never
+					   be used legitimately */
+
+#endif _VICEINODE_H_

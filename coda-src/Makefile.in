@@ -47,7 +47,7 @@ include $(MAKDIR)/Makeconf
  II =  kerndep dir 
 III =  rpc2 util
  IV =  libal rp2gen pdbstuff blurb # camstuff
-  V =  fail vicedep 
+  V =  fail vicedep partition
 
 #  The mond data collection module is only intended for the PMax
 #if (`/etc/machine` == PMAX) then

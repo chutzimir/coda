@@ -58,7 +58,7 @@ extern "C" {
 
 #include <lwp.h>
 #include <lock.h>
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __cplusplus
 }

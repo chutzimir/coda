@@ -62,7 +62,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <coda_dir.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <partition.h>
 #include <rvmdir.h>
 #include <rvmlib.h>

@@ -87,7 +87,7 @@ extern "C" {
 
 #include <util.h>
 #include <vice.h>
-#include "nfs.h"
+#include "voltypes.h"
 #include "errors.h"
 #include "fssync.h"
 #include "cvnode.h"

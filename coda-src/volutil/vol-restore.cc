@@ -81,14 +81,14 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <util.h>
 #include <rvmlib.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <vldb.h>
 #include <vice.h>
 #include <cvnode.h>

@@ -40,11 +40,7 @@ static char *rcsid = "$Header$";
 
 #ifndef _SIM_OPS_H_
 #define _SIM_OPS_H_ 1
-typedef long   	VolumeId;
-typedef VolumeId VolId;
-typedef	long	VnodeId;
-typedef long	Unique;
-
+#include <voltypes.h>
 typedef struct
 {
 	VolumeId	Volume;

@@ -57,12 +57,11 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif __cplusplus
-
+#include <voltypes.h>
 
 
 /* This is cheating! */
 #define VSG_MEMBERS 8
-typedef u_long VolumeId;
 struct vrent {
     unsigned header : 32;
     unsigned nextptr : 32;

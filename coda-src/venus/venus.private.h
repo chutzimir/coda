@@ -63,7 +63,7 @@ extern "C" {
 
 #include <lock.h>
 #include <rpc2.h>
-
+#include <util.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -320,8 +320,10 @@ struct CacheStats {
 
 /*  *****  Declarations for source files without their own headers.  ***** */
 /* util.c */
+#if 0
 extern void fdprint(long, char * ...);
 extern void eprint(char * ...);
+#endif
 extern void dprint(char * ...);
 extern void Choke(char* ...);  /* used to be Die() but clashes with vicedep/srv.h & dir/dir.private.h */
 extern void rds_printer(char * ...);

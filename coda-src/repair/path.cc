@@ -71,7 +71,7 @@ extern "C" {
 #define MAXSYMLINKS 16
 #endif
 
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

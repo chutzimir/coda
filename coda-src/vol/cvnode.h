@@ -59,7 +59,7 @@ extern "C" {
 
 #include <prs.h>
 #include <al.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <errors.h>
 #include <inconsist.h>
 #include <rec_smolist.h>

@@ -65,7 +65,7 @@ extern "C" {
 
 #include <util.h>
 #include <vice.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <cvnode.h>
 #include <volume.h>
 #include <srv.h>

@@ -64,7 +64,7 @@ extern "C" {
 #include <errno.h>
 extern FILE *_findiop();
 #include <stdarg.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __MACH__
 extern int execvp(const char *, const char **);
 #include <sysent.h>

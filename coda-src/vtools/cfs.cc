@@ -59,13 +59,14 @@ extern "C" {
 #include <netdb.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <sys/types.h>
 #ifdef	__linux__
 #include <sys/dirent.h>
 #else
 #include <sys/dir.h>
 #endif
 
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __cplusplus
 }
@@ -79,7 +80,6 @@ extern "C" {
 
 
 #ifdef	__linux__
-#define DIR dirent
 #define direct dirent
 #define d_namlen d_reclen
 #endif
@@ -92,7 +92,6 @@ NOTE: This is a brand new cfs; it has been written from scratch
 */
 
 
-#define NULL 0
 #define PIOBUFSIZE 2048  /* max size of pioctl buffer */
 
 char piobuf[PIOBUFSIZE];

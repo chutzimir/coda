@@ -56,7 +56,7 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #endif
-#include <inodefs.h>
+#include <inodeops.h>
 #include <rpc2.h>
 #include <signal.h>
 

@@ -62,7 +62,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <util.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <vrdb.h>
 #include <vice.h>
 #include <errors.h>

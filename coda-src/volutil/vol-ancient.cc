@@ -52,7 +52,7 @@ extern "C" {
 }
 #endif __cplusplus
 
-#include <nfs.h>
+#include <voltypes.h>
 #include <vice.h>
 #include <cvnode.h>
 #include <volume.h>

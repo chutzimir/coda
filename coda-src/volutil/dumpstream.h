@@ -44,7 +44,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <lwp.h>		/* Include all files referenced herein */
-#include <nfs.h>
+#include <voltypes.h>
 #include <lock.h>
 
 #ifdef __cplusplus

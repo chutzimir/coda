@@ -54,7 +54,7 @@ extern "C" {
 #include <stdlib.h>
 #endif
 #include <rpc2.h>
-#include <inodefs.h>
+#include <inodeops.h>
 
 #ifdef __cplusplus
 }
