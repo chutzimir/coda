@@ -32,18 +32,19 @@
 # 
 # static char *rcsid = "$Header$";
 
-MACHINE_FLAGS =
+MACHINE_FLAGS = -D__MACH__
 SHORTSYS      = mach
 INCLFLAGS     = -I/usr/cs/include
 GFLAG         = -g
+LEX           = flex
 CPP           = /usr/cs/lib/cpp
 LIBSYS        = /usr/cs/lib/libsys.a
 LIBCURSES     = -lcurses
 LIBCOMPAT     =
 INODEFSNAME   = libinodefs.a
 INODEFSDIR    = kernel-src/inodefs/mach
-LIBREADLINE   = /usr/new/lib/libreadline.a
-INCREADLINE   = -I/usr/new/include/readline
+LIBREADLINE   = /usr/local/lib/libreadline.a
+INCREADLINE   = -I/usr/local/include/readline
 machine_inodefs   = mach
 #for rvm
 LIBTHREADS    = /usr/mach/lib/libthreads.a
