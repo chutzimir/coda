@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5  1997/12/05 10:39:16  rvb
- * Read CHANGES
+ * Revision 1.5.2.1  1997/12/06 17:41:20  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.5  97/12/05  10:39:16  rvb
+ * Read CHANGES
+ * 
  * Revision 1.4.18.9  97/12/05  08:58:07  rvb
  * peter found this one
  * 
@@ -86,7 +89,7 @@ extern int cfsnc_initialized;    /* Set if cache has been initialized */
 #include <sys/ioctl.h>
 #include <sys/select.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfsio.h>

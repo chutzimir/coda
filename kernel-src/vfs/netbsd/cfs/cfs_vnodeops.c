@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5  1997/12/05 10:39:23  rvb
- * Read CHANGES
+ * Revision 1.5.2.1  1997/12/06 17:41:25  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.5  97/12/05  10:39:23  rvb
+ * Read CHANGES
+ * 
  * Revision 1.4.14.10  97/11/25  08:08:48  rvb
  * cfs_venus ... done; until cred/vattr change
  * 
@@ -146,7 +149,7 @@
 #include <sys/user.h>
 #include <vm/vm_kern.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_vnodeops.h>

@@ -1,176 +1,152 @@
-/* 
- * Mach Operating System
- * Copyright (c) 1990 Carnegie-Mellon University
- * Copyright (c) 1989 Carnegie-Mellon University
- * All rights reserved.  The CMU software License Agreement specifies
- * the terms and conditions for use and redistribution.
- */
 
 /*
- * This code was written for the Coda file system at Carnegie Mellon
- * University.  Contributers include David Steere, James Kistler,
- * M. Satyanarayanan, and Brian Noble.  
+ *
+ * Based on cfs.h from Mach, but revamped for increased simplicity.
+ * Linux modifications by Peter Braam, Aug 1996
  */
 
-/* 
- * HISTORY
- * $Log$
- * Revision 1.6  1997/12/05 10:39:10  rvb
- * Read CHANGES
- *
- * Revision 1.5.18.4  97/11/26  15:28:55  rvb
- * Cant make downcall pbuf == union cfs_downcalls yet
- * 
- * Revision 1.5.18.3  97/11/24  15:44:42  rvb
- * Final cfs_venus.c w/o macros, but one locking bug
- * 
- * Revision 1.5.18.2  97/11/13  22:02:55  rvb
- * pass2 cfs_NetBSD.h mt
- * 
- * Revision 1.5.18.1  97/11/12  12:09:32  rvb
- * reorg pass1
- * 
- * Revision 1.5  96/12/12  22:10:54  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
- * 
- * Revision 1.4  1996/12/05 16:20:04  bnoble
- * Minor debugging aids
- *
- * Revision 1.3  1996/11/08 18:06:05  bnoble
- * Minor changes in vnode operation signature, VOP_UPDATE signature, and
- * some newly defined bits in the include files.
- *
- * Revision 1.2  1996/01/02 16:56:31  bnoble
- * Added support for Coda MiniCache and raw inode calls (final commit)
- *
- * Revision 1.1.2.1  1995/12/20 01:56:51  bnoble
- * Added CFS-specific files
- *
- * 
- * Revision 3.1  1995/03/04  19:08:16  bnoble
- * Bump to major revision 3 to prepare for NetBSD port
- *
- * Revision 2.8  1995/02/17  18:21:41  dcs
- * Small change. Assume venus is only interested in specifying the size
- * of things it is writing to kernel (i.e. "out" direction)
- *
- * Revision 2.7  95/02/17  16:25:07  dcs
- * These versions represent several changes:
- * 1. Allow venus to restart even if outstanding references exist.
- * 2. Have only one ctlvp per client, as opposed to one per mounted cfs device.d
- * 3. Allow ody_expand to return many members, not just one.
- * 
- * Revision 2.6  94/11/17  10:13:48  dcs
- * Small incremental changes to cfs_mach.c and cfs.h
- * 
- * Revision 2.5  94/10/18  10:46:26  dcs
- * Satya didn't like the name of 'sets/mach.h'
- * 
- * Revision 2.4  94/10/14  09:57:33  dcs
- * Made changes 'cause sun4s have braindead compilers
- * 
- * Revision 2.3  94/10/12  16:45:57  dcs
- * Cleaned kernel/venus interface by removing XDR junk, plus
- * so cleanup to allow this code to be more easily ported.
- * 
- * Revision 1.3  93/12/17  01:33:41  luqi
- * Changes made for kernel to pass process info to Venus:
- * 
- * (1) in file cfs.h
- * add process id and process group id in most of the cfs argument types.
- * 
- * (2) in file cfs_vnodeops.c
- * add process info passing in most of the cfs vnode operations.
- * 
- * (3) in file cfs_xdr.c
- * expand xdr routines according changes in (1). 
- * add variable pass_process_info to allow venus for kernel version checking.
- * 
- * Revision 1.2  92/10/27  17:58:20  lily
- * merge kernel/latest and alpha/src/cfs
- * 
- * Revision 2.3  92/09/30  14:16:11  mja
- * 	Reorganized procedure declarations, so that "arg" parameters could be 
- * 	fully specified.
- * 	[91/07/23            jjk]
- * 
- * 	Substituted rvb's history blurb so that we agree with Mach 2.5 sources.
- * 	[91/02/09 	     jjk]
- * 
- * 	Added contributors blurb.
- * 	[90/12/13            jjk]
- * 
- * Revision 2.2  90/07/05  11:26:23  mrt
- * 	Changed message size back to 4k. Also changed VC_MAXDATASIZE to reflect
- * 	the xdr implementation of treating shorts (2 bytes) as longs (4 bytes).
- * 	[90/05/23            dcs]
- * 
- * 	Added constants to support READDIR, IOCTL, and RDWR messages 
- * 	in an effort to compensate for the VFS exec bogusity.
- * 	[90/05/23            dcs]
- * 
- * 	Created for the Coda File System.
- * 	[90/05/23            dcs]
- * 
- * Revision 1.6  90/05/31  17:01:05  dcs
- * Prepare for merge with facilities kernel.
- * 
- * 
- */
 #ifndef _CFS_HEADER_
 #define _CFS_HEADER_
 
-/* 
- * Sigh, rp2gen can't deal with #defines, so I can't use this test to
- * define ViceFid here, where it should be defined. Sigh.  This needs
- * to be before the #include of OS-specific headers, 'cause it is used
- * there.
- */
-#include <sys/types.h>
-#include <sys/vnode.h>
-#include <sys/ucred.h>
 
-#define CodaCred ucred
 
-#ifdef _KERNEL
-#ifndef	VICEFID_DEFINED
-#define	VICEFID_DEFINED	1
-typedef u_long VolumeId;
-typedef u_long VnodeId;
-typedef u_long Unique;
-typedef struct ViceFid {
-    VolumeId Volume;
-    VnodeId Vnode;
-    Unique Unique;
-} ViceFid;
-#endif	/* not VICEFID_DEFINED */
-#endif  /* _KERNEL */
-
-/*
- * cfid structure:
- * This overlays the fid structure (see vfs.h)
- */
-struct cfid {
-    u_short	cfid_len;
-    u_short     padding;
-    ViceFid	cfid_fid;
-};
-
+/* Catch new _KERNEL defn for NetBSD */
 #ifdef __NetBSD__
-#include <cfs/cfs_NetBSD.h>
-#endif /* __NetBSD__ */
+#include <sys/types.h>
+#endif 
+
+#if 0
+#ifndef _SCALAR_T_
+#define _SCALAR_T_ 1
+typedef unsigned long  u_int32_t;
+typedef unsigned short u_int16_t;
+typedef unsigned char  u_int8_t;
+#endif 
+#endif 
+
+#ifdef __linux__
+#ifndef _UQUAD_T_
+#define _UQUAD_T_ 1
+typedef unsigned long  u_quad_t;
+#define IOCPARM_MASK 0x0000ffff
+#endif 
+
+#ifdef __KERNEL__
+#define KERNEL
+#endif __KERNEL__
+#endif	/* __linux__ */
 
 /*
  * Cfs constants
  */
 #define CFS_MAXNAMLEN 256
-#define CFS_MAXPATHLEN MAXPATHLEN
-#define CFS_MAXARRAYSIZE 8192
+#define CFS_MAXPATHLEN 256
+#define CODA_MAXSYMLINK 10
+
+/* types used in kernel and user mode */
+#ifndef _VENUS_DIRENT_T_
+#define _VENUS_DIRENT_T_ 1
+struct venus_dirent {
+        unsigned long d_fileno;             /* file number of entry */
+        unsigned short d_reclen;             /* length of this record */
+        char  d_type;               /* file type, see below */
+        char  d_namlen;             /* length of string in d_name */
+        char     d_name[CFS_MAXNAMLEN + 1];/* name must be no longer than this */
+};
+#undef DIRSIZ
+#define DIRSIZ(dp)      ((sizeof (struct venus_dirent) - (CFS_MAXNAMLEN+1)) + \
+                         (((dp)->d_namlen+1 + 3) &~ 3))
 
 /*
-#define CFS_MOUNT	((u_long) 1)
-#define CFS_UNMOUNT	((u_long) 2)
-*/
+ * File types
+ */
+#define	DT_UNKNOWN	 0
+#define	DT_FIFO		 1
+#define	DT_CHR		 2
+#define	DT_DIR		 4
+#define	DT_BLK		 6
+#define	DT_REG		 8
+#define	DT_LNK		10
+#define	DT_SOCK		12
+#define	DT_WHT		14
+
+/*
+ * Convert between stat structure types and directory types.
+ */
+#define	IFTODT(mode)	(((mode) & 0170000) >> 12)
+#define	DTTOIF(dirtype)	((dirtype) << 12)
+
+#endif
+
+#ifndef	_FID_T_
+#define _FID_T_	1
+typedef u_long VolumeId;
+typedef u_long VnodeId;
+typedef u_long Unique_t;
+typedef u_long FileVersion;
+#endif 
+
+#ifndef	_VICEFID_T_
+#define _VICEFID_T_	1
+typedef struct ViceFid {
+    VolumeId Volume;
+    VnodeId Vnode;
+    Unique_t Unique;
+} ViceFid;
+#endif	/* VICEFID */
+
+#ifndef _VUID_T_
+#define _VUID_T_
+typedef u_long vuid_t;
+typedef u_long vgid_t;
+#endif /*_VUID_T_ */
+
+#ifndef _CODACRED_T_
+#define _CODACRED_T_
+#define NCGROUPS 32
+struct coda_cred {
+    vuid_t cr_uid, cr_euid, cr_suid, cr_fsuid; /* Real, efftve, set, fs uid*/
+    vgid_t cr_gid, cr_egid, cr_sgid, cr_fsgid; /* same for groups */
+    vgid_t cr_groups[NCGROUPS];	      /* Group membership for caller */
+};
+#endif 
+
+#ifndef _VENUS_VATTR_T_
+#define _VENUS_VATTR_T_
+/*
+ * Vnode types.  VNON means no type.
+ */
+enum coda_vtype	{ VCNON, VCREG, VCDIR, VCBLK, VCCHR, VCLNK, VCSOCK, VCFIFO, VCBAD };
+
+struct coda_vattr {
+	enum coda_vtype	va_type;	/* vnode type (for create) */
+	u_short		va_mode;	/* files access mode and type */
+	short		va_nlink;	/* number of references to file */
+	vuid_t		va_uid;		/* owner user id */
+	vgid_t		va_gid;		/* owner group id */
+	long		va_fsid;	/* file system id (dev for now) */
+	long		va_fileid;	/* file id */
+	u_quad_t	va_size;	/* file size in bytes */
+	long		va_blocksize;	/* blocksize preferred for i/o */
+	struct timespec	va_atime;	/* time of last access */
+	struct timespec	va_mtime;	/* time of last modification */
+	struct timespec	va_ctime;	/* time file changed */
+	u_long		va_gen;		/* generation number of file */
+	u_long		va_flags;	/* flags defined for file */
+	dev_t		va_rdev;	/* device the special file represents */
+	u_quad_t	va_bytes;	/* bytes of disk space held by file */
+	u_quad_t	va_filerev;	/* file modification number */
+	u_int		va_vaflags;	/* operations flags, see below */
+	long		va_spare;	/* remain quad aligned */
+};
+#define VREAD 00400
+#define VWRITE 00200
+
+#endif 
+
+/*
+ * opcode constants
+ */
 #define CFS_ROOT	((u_long) 2)
 #define CFS_SYNC	((u_long) 3)
 #define CFS_OPEN	((u_long) 4)
@@ -200,20 +176,23 @@ struct cfid {
 #define CFS_ZAPDIR      ((u_long) 28)
 #define CFS_ZAPVNODE    ((u_long) 29)
 #define CFS_PURGEFID    ((u_long) 30)
-#define DOWNCALL(opcode) (opcode >= CFS_REPLACE && opcode <= CFS_PURGEFID)
 #define	CFS_RDWR	((u_long) 31)
-#define ODY_MOUNT	((u_long) 32) /* Don't use DEBUG, it uses these as bits */
+#define ODY_MOUNT	((u_long) 32) 
 #define ODY_LOOKUP	((u_long) 33)
 #define ODY_EXPAND	((u_long) 34)
-/* #define	CFS_INVALIDATE	((u_long) 35) Is this used anywhere? */
-#define CFS_NCALLS 35
 
+#define CFS_NCALLS 35
+#define DOWNCALL(opcode) (opcode >= CFS_REPLACE && opcode <= CFS_PURGEFID)
+
+/*
+ *        Venus <-> Coda  RPC arguments
+ */
 struct cfs_in_hdr {
     unsigned long opcode;
     unsigned long unique;	    /* Keep multiple outstanding msgs distinct */
     u_short pid;		    /* Common to all */
     u_short pgid;		    /* Common to all */
-    struct CodaCred cred;	    /* Common to all */
+    struct coda_cred cred;	    /* Common to all */
 };
 
 union inputArgs {
@@ -244,7 +223,7 @@ union inputArgs {
     struct cfs_setattr_in {
 	struct cfs_in_hdr ih;
 	ViceFid VFid;
-	struct vattr attr;
+	struct coda_vattr attr;
     } cfs_setattr;
     struct cfs_access_in {
 	struct cfs_in_hdr ih;
@@ -259,7 +238,7 @@ union inputArgs {
     struct cfs_create_in {
 	struct cfs_in_hdr ih;
 	ViceFid VFid;
-	struct vattr attr;
+	struct coda_vattr attr;
 	int excl;
 	int mode;
 	char	*name;		/* Place holder for data. */
@@ -285,7 +264,7 @@ union inputArgs {
     struct cfs_mkdir_in {
 	struct cfs_in_hdr ih;
 	ViceFid	VFid;
-	struct vattr attr;
+	struct coda_vattr attr;
 	char	*name;		/* Place holder for data. */
     } cfs_mkdir;
     struct cfs_rmdir_in {
@@ -303,7 +282,7 @@ union inputArgs {
 	struct cfs_in_hdr ih;
 	ViceFid	VFid;          /* Directory to put symlink in */
 	char	*srcname;
-	struct vattr attr;
+	struct coda_vattr attr;
 	char	*tname;
     } cfs_symlink;
     struct cfs_readlink_in {
@@ -349,16 +328,6 @@ union inputArgs {
  */
 #define CFS_NOCACHE          0x80000000
 
-#define INIT_OUT(out, opcode, result) \
-    out->opcode = (opcode); out->result = (result);
-
-/* Used to structure buffer in ody_expand_out */
-/* the link in LinkT is just the 1st 4 characters of the actual link */
-typedef struct linktype {
-    int next;		/* Offset into buffer of next element */
-    char link[sizeof(char *)];	/* Place holder for data */
-} linkT;
-
 /* Really important that opcode and unique are 1st two fields! */
 struct cfs_out_hdr {
     unsigned long opcode;
@@ -385,7 +354,7 @@ union outputArgs {
     } cfs_ioctl;
     struct cfs_getattr_out {
 	struct cfs_out_hdr oh;
-	struct vattr attr;
+	struct coda_vattr attr;
     } cfs_getattr;
     /* Nothing needed for cfs_setattr */
     /* Nothing needed for cfs_access */
@@ -397,7 +366,7 @@ union outputArgs {
     struct cfs_create_out {
 	struct cfs_out_hdr oh;
 	ViceFid VFid;
-	struct vattr attr;
+	struct coda_vattr attr;
     } cfs_create;
     /* Nothing needed for cfs_remove */
     /* Nothing needed for cfs_link */
@@ -405,7 +374,7 @@ union outputArgs {
     struct cfs_mkdir_out {
 	struct cfs_out_hdr oh;
 	ViceFid VFid;
-	struct vattr attr;
+	struct coda_vattr attr;
     } cfs_mkdir;
     /* Nothing needed for cfs_rmdir */
     struct cfs_readdir_out {
@@ -431,7 +400,7 @@ union outputArgs {
     /* CFS_FLUSH is a venus->kernel call */
     struct cfs_purgeuser_out {/* CFS_PURGEUSER is a venus->kernel call */
 	struct cfs_out_hdr oh;
-	struct CodaCred cred;
+	struct coda_cred cred;
     } cfs_purgeuser;
     struct cfs_zapfile_out {  /* CFS_ZAPFILE is a venus->kernel call */
 	struct cfs_out_hdr oh;
@@ -443,7 +412,7 @@ union outputArgs {
     } cfs_zapdir;
     struct cfs_zapvnode_out { /* CFS_ZAPVNODE is a venus->kernel call */
 	struct cfs_out_hdr oh;
-	struct CodaCred cred;
+	struct coda_cred cred;
 	ViceFid VFid;
     } cfs_zapvnode;
     struct cfs_purgefid_out { /* CFS_PURGEFID is a venus->kernel call */	
@@ -589,8 +558,8 @@ union cfs_rdwr {
 };
 
 	/* CFS_REPLACE is a venus->kernel call */	
-
     
+
 /*
  * Kernel <--> Venus communications.
  */
@@ -601,11 +570,10 @@ union cfs_rdwr {
  */
 #define	VC_IN_NO_DATA	    sizeof (struct cfs_in_hdr)
 #define	VC_OUT_NO_DATA	    sizeof (struct cfs_out_hdr)
-
 #define VC_INSIZE(member)   ((int) sizeof (struct member))
 #define VC_OUTSIZE(member)  ((int) sizeof (struct member))
 
-/* This one's for venus, since C++ doesn't know what struct foo means. */
+/* Now for venus. C++ doesn't know what struct foo means. */
 #define VC_SIZE(Thing, Member)   (VC_OUT_NO_DATA                    \
                                   + (int)sizeof((Thing)->d.Member))
 
@@ -617,16 +585,35 @@ union cfs_rdwr {
 #define VC_DATASIZE	    8192
 #define	VC_MAXMSGSIZE	    (VC_DATASIZE + VC_BIGGER_OF_IN_OR_OUT)
 
+/*
+ * Used for identifying usage of "Control" and pioctls
+ */
+struct ViceIoctl {
+        caddr_t in, out;        /* Data to be transferred in, or out */
+        short in_size;          /* Size of input buffer <= 2K */
+        short out_size;         /* Maximum size of output buffer, <= 2K */
+};
+
+struct PioctlData {
+        const char *path;
+        int follow;
+        struct ViceIoctl vi;
+};
+
 
 #define	CFS_CONTROL		".CONTROL"
+#define CFS_CONTROLLEN           8
 #define	CTL_VOL			-1
 #define	CTL_VNO			-1
 #define	CTL_UNI			-1
+#define CTL_INO                 -1
+#define	CTL_FILE    "/coda/.CONTROL"
+
 
 #define	IS_CTL_FID(fidp)	((fidp)->Volume == CTL_VOL &&\
 				 (fidp)->Vnode == CTL_VNO &&\
 				 (fidp)->Unique == CTL_UNI)
-
 #define	ISDIR(fid)		((fid).Vnode & 0x1)
 
-#endif !_CFS_HEADER_
+#endif 
+

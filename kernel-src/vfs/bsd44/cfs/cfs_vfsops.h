@@ -1,3 +1,15 @@
+/*
+ * cfid structure:
+ * This overlays the fid structure (see vfs.h)
+ * Only used below and will probably go away.
+ */
+struct cfid {
+    u_short	cfid_len;
+    u_short     padding;
+    ViceFid	cfid_fid;
+};
+
+
 struct mount;
 
 int cfs_mount(struct mount *, char *, caddr_t, struct nameidata *, 

@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6  1997/12/05 10:39:21  rvb
- * Read CHANGES
+ * Revision 1.6.2.1  1997/12/06 17:41:24  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.6  97/12/05  10:39:21  rvb
+ * Read CHANGES
+ * 
  * Revision 1.5.14.8  97/11/24  15:44:46  rvb
  * Final cfs_venus.c w/o macros, but one locking bug
  * 
@@ -112,7 +115,7 @@
 /* for VN_RDEV */
 #include <miscfs/specfs/specdev.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_vfsops.h>

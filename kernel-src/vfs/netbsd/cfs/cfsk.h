@@ -62,12 +62,57 @@ extern struct cfs_clstat cfs_clstat;
 	  (in)->pid = p ? p->p_pid : -1; \
           (in)->pgid = p ? p->p_pgid : -1; \
           if (ident != NOCRED) {                              \
-	      (in)->cred = *(ident);                          \
+	      (in)->cred.cr_uid = ident->cr_uid;              \
+	      (in)->cred.cr_gid = ident->cr_gid;              \
           } else {                                            \
-	      bzero(&((in)->cred),sizeof(struct CodaCred));   \
+	      bzero(&((in)->cred),sizeof(struct coda_cred));  \
 	      (in)->cred.cr_uid = -1;                         \
 	      (in)->cred.cr_gid = -1;                         \
           }                                                   \
+
+#if	1
+	  /* this is ok for now */
+#define CNV_V2VV_ATTR(top, fromp)	\
+	  *(top) = *((struct coda_vattr *)(fromp))
+
+#define CNV_VV2V_ATTR(top, fromp)	\
+	  *(top) = *((struct vattr *)(fromp))
+#else
+	  /* this is better */
+#define CNV_VV2V_ATTR(top, fromp) \
+	  CNV_ATTR(top, fromp); \
+	  CNV_V_ZERO(top)
+
+#define CNV_V2VV_ATTR(top, fromp) \
+	  CNV_ATTR(top, fromp); \
+	  CNV_VV_ZERO(top)
+
+#define CNV_ATTR(top, fromp)	\
+	do { \
+		top->va_type = fromp->va_type; \
+		top->va_mode = fromp->va_mode; \
+		top->va_nlink = fromp->va_nlink; \
+		top->va_uid = fromp->va_uid; \
+		top->va_gid = fromp->va_gid; \
+		top->va_fsid = fromp->va_fsid; \
+		top->va_fileid = fromp->va_fileid; \
+		top->va_size = fromp->va_size; \
+		top->va_blocksize = fromp->va_blocksize; \
+		top->va_atime = fromp->va_atime; \
+		top->va_mtime = fromp->va_mtime; \
+		top->va_ctime = fromp->va_ctime; \
+		top->va_gen = fromp->va_gen; \
+		top->va_flags = fromp->va_flags; \
+		top->va_rdev = fromp->va_rdev; \
+		top->va_bytes = fromp->va_bytes; \
+		top->va_filerev = fromp->va_filerev; \
+		top->vaflags = fromp->vaflags; \
+		top->va_spare = fromp->va_spare; \
+	} while (0)
+
+#define CNV_V_ZERO(p)
+#define CNV_VV_ZERO(p)
+#endif
 
 /* Macros to manipulate the queue */
 #ifndef INIT_QUEUE
@@ -204,6 +249,7 @@ enum dc_status {
     NOT_DOWNCALL = 7
 };
 
+struct vattr;
 
 /* Prototypes of functions exported within cfs */
 extern int handleDownCal(int opcode, union cfs_downcalls *out);

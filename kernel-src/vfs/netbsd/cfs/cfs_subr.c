@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.6  1997/12/05 10:39:17  rvb
- * Read CHANGES
+ * Revision 1.6.2.1  1997/12/06 17:41:21  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.6  97/12/05  10:39:17  rvb
+ * Read CHANGES
+ * 
  * Revision 1.5.4.8  97/11/26  15:28:58  rvb
  * Cant make downcall pbuf == union cfs_downcalls yet
  * 
@@ -181,7 +184,7 @@ static char *rcsid = "$Header$";
 #include <sys/select.h>
 #include <sys/mount.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 

@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.6  1997/12/05 10:39:13  rvb
- * Read CHANGES
+ * Revision 1.6.2.1  1997/12/06 17:41:18  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.6  97/12/05  10:39:13  rvb
+ * Read CHANGES
+ * 
  * Revision 1.5.4.7  97/11/25  08:08:43  rvb
  * cfs_venus ... done; until cred/vattr change
  * 
@@ -179,7 +182,7 @@ static char *rcsid = "$Header$";
 #include <sys/malloc.h>
 #include <sys/select.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfsnc.h>

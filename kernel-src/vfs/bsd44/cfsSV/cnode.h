@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.4  1997/12/05 10:39:30  rvb
- * Read CHANGES
+ * Revision 1.4.2.1  1997/12/06 17:41:28  rvb
+ * Sync with peters coda.h
  *
+ * Revision 1.4  97/12/05  10:39:30  rvb
+ * Read CHANGES
+ * 
  * Revision 1.3.18.2  97/11/12  12:09:45  rvb
  * reorg pass1
  * 
@@ -75,19 +78,21 @@
 #ifndef	_CNODE_H_
 #define	_CNODE_H_
 
+#include <sys/vnode.h>
+
 struct cnode {
-    struct vnode   *c_vnode;
-    u_short	    c_flags;	/* flags (see below) */
-    ViceFid	    c_fid;	/* file handle */
-    struct vnode   *c_ovp;	/* open vnode pointer */
-    u_short	    c_ocount;	/* count of openers */
-    u_short         c_owrite;	/* count of open for write */
-    struct vattr    c_vattr; 	/* attributes */
-    char           *c_symlink;	/* pointer to symbolic link */
-    u_short         c_symlen;	/* length of symbolic link */
-    dev_t	    c_device;	/* associated vnode device */
-    ino_t	    c_inode;	/* associated vnode inode */
-    struct cnode   *c_next;	/* links if on NetBSD machine */
+    struct vnode	*c_vnode;
+    u_short		 c_flags;	/* flags (see below) */
+    ViceFid		 c_fid;		/* file handle */
+    struct vnode	*c_ovp;		/* open vnode pointer */
+    u_short		 c_ocount;	/* count of openers */
+    u_short		 c_owrite;	/* count of open for write */
+    struct vattr	 c_vattr; 	/* attributes */
+    char		*c_symlink;	/* pointer to symbolic link */
+    u_short		 c_symlen;	/* length of symbolic link */
+    dev_t		 c_device;	/* associated vnode device */
+    ino_t		 c_inode;	/* associated vnode inode */
+    struct cnode	*c_next;	/* links if on NetBSD machine */
 };
 
 /* flags */

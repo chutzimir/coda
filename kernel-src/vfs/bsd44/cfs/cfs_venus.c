@@ -1,9 +1,10 @@
 #include <sys/param.h>
 #include <sys/malloc.h>
 #include <sys/proc.h>
+#include <sys/vnode.h>
 #include <sys/ioctl.h>
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <cfs/cfsk.h>
 #include <cfs/pioctl.h>
 
@@ -205,8 +206,9 @@ venus_getattr(void *mdp, ViceFid *fid,
 
     if (!error)
     	error = outp->oh.result;
-    if (!error)
-	*vap = outp->attr;
+    if (!error) {
+	CNV_VV2V_ATTR(vap, &outp->attr);
+    }
 
     CFS_FREE(cfs_getattr_buf, cfs_getattr_size);
     return error;
@@ -221,7 +223,7 @@ venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_SETATTR, cred);
     inp->VFid = *fid;
-    inp->attr = *vap;
+    CNV_V2VV_ATTR(&inp->attr, vap);
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
     if (!error) 
@@ -328,6 +330,7 @@ venus_create(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *attr)
 {
+    struct coda_vattr vvap;
     DECL(cfs_create);			/* sets Isize & Osize */
     cfs_create_size += len + 1;
     ALLOC(cfs_create);			/* sets inp & outp */
@@ -337,7 +340,7 @@ venus_create(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
     inp->excl = exclusive;
     inp->mode = mode;
-    inp->attr = *va;
+    CNV_V2VV_ATTR(&inp->attr, va);
 
     inp->name = (char *)Isize;
     STRCPY(name, nm, len);		/* increments Isize */
@@ -347,7 +350,7 @@ venus_create(void *mdp, ViceFid *fid,
     	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
-	*attr = outp->attr;
+	CNV_VV2V_ATTR(attr, &outp->attr);
     }
 
     CFS_FREE(cfs_create_buf, cfs_create_size);
@@ -434,6 +437,7 @@ venus_mkdir(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *ova)
 {
+    struct coda_vattr vvap;
     DECL(cfs_mkdir);			/* sets Isize & Osize */
     cfs_mkdir_size += len + 1;
     ALLOC(cfs_mkdir);			/* sets inp & outp */
@@ -441,7 +445,7 @@ venus_mkdir(void *mdp, ViceFid *fid,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_MKDIR, cred);
     inp->VFid = *fid;
-    inp->attr = *va;
+    CNV_V2VV_ATTR(&inp->attr, va);
 
     inp->name = (char *)Isize;
     STRCPY(name, nm, len);		/* increments Isize */
@@ -451,7 +455,7 @@ venus_mkdir(void *mdp, ViceFid *fid,
     	error = outp->oh.result;
     if (!error) {
 	*VFid = outp->VFid;
-	*ova = outp->attr;
+	CNV_VV2V_ATTR(ova, &outp->attr);
     }
 
     CFS_FREE(cfs_mkdir_buf, cfs_mkdir_size);
@@ -485,6 +489,7 @@ venus_symlink(void *mdp, ViceFid *fid,
         char *lnm, int llen, char *nm, int len, struct vattr *va,
 	struct ucred *cred, struct proc *p)
 {
+    struct coda_vattr vvap;
     DECL_NO_OUT(cfs_symlink);		/* sets Isize & Osize */
     cfs_symlink_size += llen + 1 + len + 1;
     ALLOC(cfs_symlink);			/* sets inp & outp */
@@ -492,7 +497,7 @@ venus_symlink(void *mdp, ViceFid *fid,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_SYMLINK, cred);
     inp->VFid = *fid;
-    inp->attr = *va;
+    CNV_V2VV_ATTR(&inp->attr, va);
 
     inp->srcname =(char*)Isize;
     STRCPY(srcname, lnm, llen);		/* increments Isize */
