@@ -138,7 +138,7 @@ int fsobj::Open(int writep, int execp, int truncp, dev_t *devp, ino_t *inop, vui
 	Execers++;
 
     /* Do truncate if necessary. */
-    if (truncp) {
+    if (truncp && writep) {	/* truncp is acted upon only if writep */
 	struct vattr va; va_init(&va);
 	va.va_size = 0;
 	if ((code = SetAttr(&va, vuid)) != 0)
