@@ -497,13 +497,13 @@ SYMB(savecontext)
 	movl	area1(%esp), %eax	/* Load address of savearea. */
 	movl	%esp, topstack(%eax)	/* Store sp in savearea. */
 
-	movl	f(%esp), %ebp		/* Load f */
+	movl	f(%esp), %ebx		/* Load f */
 	movl	newsp(%esp), %ecx	/* Load the new sp value. */
 	cmpl	$0, %ecx
 	je	L1			/* Don't change the stack if newsp is zero. */
 	movl	%ecx, %esp
 
-L1:	call	*%ebp			/* f(); */
+L1:	call	*%ebx			/* f(); */
 
 	call	EXT(abort)			/*  Shouldn't get here anyway. */
 
