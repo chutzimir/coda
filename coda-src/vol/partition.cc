@@ -182,7 +182,7 @@ PRIVATE void VSetPartitionDiskUsage(register struct DiskPartition *dp)
     dp->free = availblks - used; /* May be negative, which is OK */
 #endif
 
-    rc = statfs(dp->devName, &fsbuf);
+    rc = statfs(dp->name, &fsbuf);
     assert( rc == 0 );
     
     reserved_blocks = fsbuf.f_bfree - fsbuf.f_bavail; /* reserved for s-user */
