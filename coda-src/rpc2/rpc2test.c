@@ -431,6 +431,7 @@ PRIVATE long ClientBody(clientName)
     struct timeval t1, t2;
     char myprivatefile[256];
     char myhashmark;
+    RPC2_BindParms bp;
     SE_Descriptor sed;
 
 
@@ -605,10 +606,14 @@ PRIVATE long ClientBody(clientName)
 
 	    case 8:	/* Rebind */
 		{
-		retcode = RPC2_Bind(ConnVector[thisconn].SecurityLevel, RPC2_XOR, &ConnVector[thisconn].RemoteHost,
-	    		&PortalId, &SubsysId, SMARTFTP, 
-			&ConnVector[thisconn].Identity, (RPC2_EncryptionKey *)ConnVector[thisconn].Password,
-			&ConnVector[thisconn].ConnHandle);
+		bp.SecurityLevel = ConnVector[thisconn].SecurityLevel;
+		bp.EncryptionType = RPC2_XOR;
+		bp.SideEffectType = SMARTFTP;
+		bp.ClientIdent = &ConnVector[thisconn].Identity;
+		bp.SharedSecret = (RPC2_EncryptionKey *)ConnVector[thisconn].Password; 
+		retcode = RPC2_NewBinding(&ConnVector[thisconn].RemoteHost,
+					  &PortalId, &SubsysId, &bp, 
+					  &ConnVector[thisconn].ConnHandle); 
 		if (retcode < RPC2_ELIMIT)
 		    {
 		    HandleRPCFailure(thisconn, retcode, ntohl(request->Header.Opcode));
@@ -748,12 +753,17 @@ PRIVATE GetConns()
 PRIVATE DoBindings()
     {
     int i, rc;
+    RPC2_BindParms bp;
 
     for (i = 0; i < CVCount; i++)
 	{
-	rc = RPC2_Bind(ConnVector[i].SecurityLevel, RPC2_XOR, &ConnVector[i].RemoteHost,
-	    &PortalId, &SubsysId, SMARTFTP, &ConnVector[i].Identity,
-	    (RPC2_EncryptionKey *)ConnVector[i].Password, &ConnVector[i].ConnHandle);
+	 bp.SecurityLevel = ConnVector[i].SecurityLevel;
+	 bp.EncryptionType = RPC2_XOR;
+	 bp.SideEffectType = SMARTFTP;
+	 bp.ClientIdent = &ConnVector[i].Identity;
+	 bp.SharedSecret = (RPC2_EncryptionKey *)ConnVector[i].Password;
+	 rc = RPC2_NewBinding(&ConnVector[i].RemoteHost, &PortalId, 
+			      &SubsysId, &bp,&ConnVector[i].ConnHandle); 
 	if (rc < RPC2_ELIMIT)
 	     {
 	     printf("Couldn't bind to %s for %s ---> %s\n", ConnVector[i].RemoteHost.Value.Name,

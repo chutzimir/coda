@@ -514,7 +514,7 @@ PRIVATE char *CallName(x)
 	case SENDRESPONSE:	return("RPC2_SendResponse");
 	case GETREQUEST:	return("RPC2_GetRequest");
 	case MAKERPC:		return("RPC2_MakeRPC");
-	case BIND:		return("RPC2_Bind");
+	case BIND:		return("RPC2_NewBinding");
 	case INITSIDEEFFECT:	return("RPC2_InitSideEffect");
 	case CHECKSIDEEFFECT:	return("RPC2_CheckSideEffect");
 	case UNBIND:		return("RPC2_Unbind");

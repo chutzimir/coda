@@ -98,7 +98,7 @@ static char *server_includes[] = {
 
 static char *h_includes[] = {
 	/* NONE */	"Can't happen",
-	/* C */		"#ifdef __cplusplus\nextern \"C\" {\n#endif __cplusplus\n#include \"rpc2.h\"\n#include \"se.h\"\n#ifdef __cplusplus\n}\n#endif __cplusplus\n",
+	/* C */		"#ifdef __cplusplus\nextern \"C\" {\n#endif __cplusplus\n#include \"rpc2.h\"\n#include \"se.h\"\n#include \"errors.h\"\n#ifdef __cplusplus\n}\n#endif __cplusplus\n",
 	/* PASCAL */	"Can't happen",
 	/* F77 */	"Can't happen"
 };
@@ -113,6 +113,7 @@ static char *multi_includes[] = {
 rp2_bool testing;
 rp2_bool c_plus, cplusplus;
 rp2_bool ansi; 
+rp2_bool neterrors;
 
 char **cpatharray;  /* array of strings indicating search paths for 
                   included files (defined by -I flag) */
@@ -160,6 +161,7 @@ static int GetArgs(argc, argv)
     c_plus = RP2_FALSE;   /* generate C++ compatible code? */
     cplusplus = RP2_FALSE; /* by default generate .c not .cc files */
     ansi = RP2_FALSE;     /* generate ## paste tokens rather than double-comment */
+    neterrors = RP2_FALSE; /* exchange errors in OS independent fashion */
     /* Wire-in client, server and multi languages to be C.
        Should be settable on command line when other languages are
        supported */
@@ -194,6 +196,8 @@ static int GetArgs(argc, argv)
 	    mfile_name = argv[i];
 	    continue;
 	    }
+	if (strcmp(argv[i], "-e") == 0)
+	    {neterrors = RP2_TRUE; continue;}
 	if (strcmp(argv[i], "-n") == 0)
 	    {c_plus = RP2_TRUE; continue;}
 	if (strcmp(argv[i], "-t") == 0)

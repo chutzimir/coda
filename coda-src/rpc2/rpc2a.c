@@ -493,33 +493,6 @@ QuitMRPC:	/* finalrc has been correctly set by now */
     }
     
 
-long RPC2_Bind (IN SecurityLevel, IN EncryptionType, IN Host, IN Portal,
-	IN Subsys, IN SideEffectType, IN ClientIdent, IN SharedSecret, OUT ConnHandle)
-    long SecurityLevel;
-    long EncryptionType;
-    RPC2_HostIdent   *Host;
-    RPC2_PortalIdent *Portal;
-    RPC2_SubsysIdent *Subsys;
-    long SideEffectType;
-    RPC2_CountedBS *ClientIdent;
-    RPC2_EncryptionKey *SharedSecret;
-    RPC2_Handle *ConnHandle;
-    /* WARNING: THIS ROUTINE IS OBSOLETE AND ITS USE IS DEPRECATED.
-       Use RPC2_NewBinding() instead.  This routine is here only
-       temporarily, for upward compatibility
-    */
-    {
-    RPC2_BindParms bp;
-    long rc;
-    
-    bp.SecurityLevel = SecurityLevel;
-    bp.EncryptionType = EncryptionType;
-    bp.SideEffectType = SideEffectType;
-    bp.ClientIdent = ClientIdent;
-    bp.SharedSecret = SharedSecret;
-    rc = RPC2_NewBinding(Host, Portal, Subsys, &bp, ConnHandle);
-    return(rc);
-    }
     
     
 long RPC2_NewBinding(IN Host, IN Portal, IN Subsys, IN Bparms, OUT ConnHandle)
@@ -543,7 +516,7 @@ long RPC2_NewBinding(IN Host, IN Portal, IN Subsys, IN Bparms, OUT ConnHandle)
 	    {rpc2_SetConnError(ce); (void) RPC2_Unbind(*ConnHandle); *ConnHandle = 0;}
 
     rpc2_Enter();
-    say(0, RPC2_DebugLevel, ("In RPC2_Bind()\n"));
+    say(0, RPC2_DebugLevel, ("In RPC2_NewBinding()\n"));
 
 #ifdef RPC2DEBUG
     TR_BIND();
