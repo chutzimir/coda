@@ -1,4 +1,4 @@
-#!/bin/csh -f -b
+#!/bin/csh -f 
 #ifndef _BLURB_
 #define _BLURB_
 #/*
