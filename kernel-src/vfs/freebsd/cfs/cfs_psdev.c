@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.6  1998/01/22 13:11:24  rvb
- * Move makecfsnode ctlfid later so vfsp is known; work on ^c and ^z
+ * Revision 1.5.2.7  1998/01/22 22:22:21  rvb
+ * sync 1.2 and 1.3
  *
+ * Revision 1.5.2.6  98/01/22  13:11:24  rvb
+ * Move makecfsnode ctlfid later so vfsp is known; work on ^c and ^z
+ * 
  * Revision 1.5.2.5  97/12/16  22:01:27  rvb
  * Oops add cfs_subr.h cfs_venus.h; sync with peter
  * 
@@ -532,8 +535,10 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	struct vcomm *vcp;
 	struct vmsg *vmp;
 	int error;
-struct proc *p = curproc;
-int i;
+#if	0
+	struct proc *p = curproc;
+	int i;
+#endif
 	if (mntinfo == NULL) {
 	    /* Unlikely, but could be a race condition with a dying warden */
 	    return ENODEV;

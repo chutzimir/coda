@@ -67,11 +67,11 @@
           (in)->sid = p ? (p->p_session->s_leader->p_pid) : -1; \
           if (ident != NOCRED) {                              \
 	      (in)->cred.cr_uid = ident->cr_uid;              \
-	      (in)->cred.cr_gid = ident->cr_gid;              \
+	      (in)->cred.cr_groupid = ident->cr_gid;          \
           } else {                                            \
 	      bzero(&((in)->cred),sizeof(struct coda_cred));  \
 	      (in)->cred.cr_uid = -1;                         \
-	      (in)->cred.cr_gid = -1;                         \
+	      (in)->cred.cr_groupid = -1;                     \
           }                                                   \
 
 #define	CNV_OFLAG(to, from) 				\
