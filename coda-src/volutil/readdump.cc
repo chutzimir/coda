@@ -55,7 +55,6 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 
-extern void ci(char *, int, int, char *, char *, int);
 
 #ifdef __cplusplus
 }
@@ -429,6 +428,6 @@ void main(int argc, char **argv) {
 	strncpy(DefaultDumpFile, argv[1], sizeof(DefaultDumpFile));
     
     strcpy(DefaultSize, "Large");
-    ci("dump>", 0, 0, (char *)CiList, 0, 0);
+    ci("dump>", 0, 0, (CIENTRY *)CiList, 0, 0);
 }
     
