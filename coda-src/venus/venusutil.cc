@@ -87,7 +87,6 @@ extern "C" {
 #include "hdb.h"
 #include "local.h"
 #include "mariner.h"
-#include "simulate.h"
 #include "user.h"
 #include "venus.private.h"
 #include "venus.version.h"
@@ -219,8 +218,6 @@ void Choke(char *fmt ...) {
 	eprint(msg);
 
 	/* Dump system state to the log. */
-	if (Simulating && recPtr != 0)
-	    Trace_PrintRecord(recPtr);
 	DumpState();
 
 	/* Flush session record to RVM. */
@@ -894,9 +891,6 @@ Exit:
 
 
 long Vtime() {
-    if (Simulating)
-	return(SimTime);
-
     return(::time(0));
 }
 

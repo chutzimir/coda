@@ -87,15 +87,11 @@ CacheFile::CacheFile(int i) {
 
 
 CacheFile::CacheFile() {
-    if (Simulating) return;
-
     ASSERT(inode != (ino_t)-1 && length == 0);
 }
 
 
 CacheFile::~CacheFile() {
-    if (Simulating) return;
-
     ASSERT(inode != (ino_t)-1 && length == 0);
 }
 
@@ -115,8 +111,6 @@ void CacheFile::Reset() {
 
 
 int CacheFile::ValidContainer() {
-    if (Simulating) return(1);
-
     int code = 0;
     struct stat tstat;
     int valid = (code = ::stat(name, &tstat)) == 0 &&
@@ -143,8 +137,6 @@ int CacheFile::ValidContainer() {
 
 /* MUST NOT be called from within transaction! */
 void CacheFile::ResetContainer() {
-    if (Simulating) return;
-
     LOG(10, ("CacheFile::ResetContainer: %s, %d, %d\n",
 	      name, inode, length));
 
@@ -182,8 +174,6 @@ void CacheFile::ResetContainer() {
  * there, created by cache file constructor.
  */  
 void CacheFile::Move(CacheFile *destination) {
-    if (Simulating) return;
-
     LOG(10, ("CacheFile::Move: source: %s, %d, %d, dest: %s\n",
 	      name, inode, length, destination->name));
 
@@ -198,8 +188,6 @@ void CacheFile::Move(CacheFile *destination) {
  * copies a cache file, data and attributes, to a new one.  
  */
 void CacheFile::Copy(CacheFile *source) {
-    if (Simulating) return;
-
     LOG(10, ("CacheFile::Copy: %s, %d, %d\n",
 	      name, inode, length));
 
@@ -255,8 +243,6 @@ void CacheFile::Remove() {
 
 /* N.B. length member is NOT updated as side-effect! */
 void CacheFile::Stat(struct stat *tstat) {
-    if (Simulating) return;
-
     ASSERT(inode != (ino_t)-1);
 
     ASSERT(::stat(name, tstat) == 0);
@@ -269,7 +255,6 @@ void CacheFile::Stat(struct stat *tstat) {
 /* MUST be called from within transaction! */
 void CacheFile::Truncate(unsigned newlen) {
     int fd;
-    if (Simulating) return;
 
     ASSERT(inode != (ino_t)-1);
 

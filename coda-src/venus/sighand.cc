@@ -164,14 +164,12 @@ void SigInit() {
     signal(SIGUSR1, (void (*)(int))USR1);	/* set {COPmode, Mcast, DebugLevel} */
 #endif
 
-    if (!Simulating) {
-	/* Write our pid to a file so scripts can find us easily. */
-	FILE *fp = fopen("pid","w");
-	if (fp == NULL)
-	    Choke("SigInit: can't open file for pid!");
-	fprintf(fp, "%d", getpid());
-	fclose(fp);
-    }
+    /* Write our pid to a file so scripts can find us easily. */
+    FILE *fp = fopen("pid","w");
+    if (fp == NULL)
+	Choke("SigInit: can't open file for pid!");
+    fprintf(fp, "%d", getpid());
+    fclose(fp);
 }
 
 

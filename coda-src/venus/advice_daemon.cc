@@ -61,7 +61,6 @@ extern "C" {
 /* from venus */
 #include "tallyent.h"
 #include "user.h"
-#include "simulate.h"
 #include "advice.h"
 #include "adviceconn.h"
 #include "advice_daemon.h"
@@ -90,7 +89,6 @@ int PATIENCE_GAMMA = UNSET_PATIENCE_GAMMA;
 void AdviceInit() {
   RPC2_SubsysIdent sid;
 
-  if (Simulating) return;
   if (!AdviceEnabled) return;
 
   LOG(100, ("E AdviceInit()\n"));

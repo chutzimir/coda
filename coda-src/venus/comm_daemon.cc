@@ -49,7 +49,6 @@ extern "C" {
 
 /* from venus */
 #include "comm.h"
-#include "simulate.h"
 #include "venus.private.h"
 #include "venusrecov.h"
 #include "vproc.h"
@@ -103,14 +102,12 @@ void ProbeDaemon() {
 	if ((curr_time - LastT1Check >= T1Interval) ||
 	    (curr_time - LastT2Check >= T2Interval)) {
 
-	    if (!Simulating) 
-		ServerProbe(&LastT1Check, &LastT2Check);
+	    ServerProbe(&LastT1Check, &LastT2Check);
 	}
 
 	/* refresh network measurements for each server */
 	if (curr_time - LastCommCheck >= CommCheckInterval) {
-	    if (!Simulating) 
-		CheckServerBW(curr_time);
+	    CheckServerBW(curr_time);
 
 	    LastCommCheck = curr_time;
 	}

@@ -72,7 +72,6 @@ extern "C" {
 
 /* from venus */
 #include "fso.h"
-#include "simulate.h"
 #include "venus.private.h"
 #include "venuscb.h"
 #include "vproc.h"
@@ -90,8 +89,6 @@ int mariner::muxfd;
 int mariner::nmariners;
 
 void MarinerInit() {
-    if (Simulating) return;
-
     MarinerMask = 0;
     mariner::nmariners = 0;
 

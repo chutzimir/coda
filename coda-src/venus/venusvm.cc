@@ -81,7 +81,6 @@ extern int nlist(const char*, struct nlist[]);
 #include "adviceconn.h"
 #include "local.h"
 #include "mariner.h"
-#include "simulate.h"
 #include "user.h"
 #include "venus.private.h"
 #include "venusrecov.h"
@@ -307,11 +306,6 @@ void VmonInit() {
 
     if (!VmonEnabled)
 	return;
-
-    if (Simulating) {
-	VmonEnabled = 0;
-	return;
-    }
 
     struct hostent *h = gethostbyname(VmonHost);
     if (h) VmonAddr = ntohl(*((unsigned long *)h->h_addr));
@@ -955,7 +949,6 @@ void CheckVCB() {
 
 
 static int ValidateVmonHandle() {
-    if (Simulating) return(0);
     if (VmonHandle != 0) return(1);
 
     long curr_time = Vtime();

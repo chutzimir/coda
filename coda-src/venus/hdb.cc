@@ -96,7 +96,6 @@ extern "C" {
 #include "fso.h"
 #include "hdb.h"
 #include "mariner.h"
-#include "simulate.h"
 #include "tallyent.h"
 #include "user.h"
 #include "venus.private.h"
@@ -185,10 +184,8 @@ void HDB_Init() {
 	}
     }
 
-    if (!Simulating) {
-	RecovFlush(1);
-	RecovTruncate(1);
-    }
+    RecovFlush(1);
+    RecovTruncate(1);
 
     /* Fire up the daemon. */
     HDBD_Init();

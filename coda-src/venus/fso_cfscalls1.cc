@@ -922,7 +922,6 @@ void fsobj::LocalMkdir(Date_t Mtime, fsobj *target_fso, char *name,
 	target_fso->stat.Mode = Mode;
 	target_fso->AnyUser = AnyUser;
 	bcopy((const void *)SpecificUser, (void *)target_fso->SpecificUser, (int)(CPSIZE * sizeof(AcRights)));
-	target_fso->flags.created = 1;
 	target_fso->Matriculate();
 	target_fso->SetParent(fid.Vnode, fid.Unique);
 
@@ -1503,7 +1502,6 @@ void fsobj::LocalSymlink(Date_t Mtime, fsobj *target_fso, char *name,
 	target_fso->stat.Date = Mtime;
 	target_fso->stat.Owner = Owner;
 	target_fso->stat.Mode = Mode;
-	target_fso->flags.created = 1;
 	target_fso->Matriculate();
 	target_fso->SetParent(fid.Vnode, fid.Unique);
 

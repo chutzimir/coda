@@ -602,7 +602,7 @@ void *cmlent::operator new(size_t len) {
 
     LOG(1, ("cmlent::operator new()\n"));
 
-    assert(VDB->AllocatedMLEs < VDB->MaxMLEs || Simulating);
+    assert(VDB->AllocatedMLEs < VDB->MaxMLEs);
 
     /* Get entry from free list or heap */
     if (VDB->mlefreelist.count() > 0)
@@ -615,13 +615,6 @@ void *cmlent::operator new(size_t len) {
     RVMLIB_REC_OBJECT(VDB->AllocatedMLEs);
     VDB->AllocatedMLEs++;
 
-    if (VDB->AllocatedMLEs > VDB->MaxMLEs) {
-	ASSERT(Simulating);
-	RVMLIB_REC_OBJECT(VDB->MaxMLEs);
-	VDB->MaxMLEs++;
-	MLEs++;
-    }
-    
     return(c);
 }
 

@@ -1602,7 +1602,6 @@ void fsobj::LocalCreate(Date_t Mtime, fsobj *target_fso, char *name,
 	target_fso->stat.Date = Mtime;
 	target_fso->stat.Owner = Owner;
 	target_fso->stat.Mode = Mode;
-	target_fso->flags.created = 1;
 	target_fso->Matriculate();
 	target_fso->SetParent(fid.Vnode, fid.Unique);
 

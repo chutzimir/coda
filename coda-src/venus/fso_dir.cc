@@ -67,7 +67,6 @@ extern "C" {
 
 #include "fso.h"
 #include "local.h"
-#include "simulate.h"
 #include "venusrecov.h"
 #include "venus.private.h"
 
@@ -121,9 +120,6 @@ int fsobj::dir_Length()
 		print(logFile); 
 		Choke("fsobj::dir_Length: no data"); 
 	}
-
-	if (Simulating)
-		return(DIR_SIZE);
 
 	return(DH_Length(&data.dir->dh));
 }

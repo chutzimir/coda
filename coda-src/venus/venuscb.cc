@@ -96,8 +96,6 @@ int cbbreaks = 0;	/* count of broken callbacks */
 
 
 void CallBackInit() {
-    if (Simulating) return;
-
     if (MaxCBServers == UNSET_MAXCBSERVERS)
 	MaxCBServers = DFLT_MAXCBSERVERS;
 

@@ -140,7 +140,6 @@ enum vproctype {    VPT_Main,
 		    VPT_UserDaemon,
 		    VPT_RecovDaemon,
 		    VPT_VmonDaemon,
-		    VPT_Simulator,
 		    VPT_AdviceDaemon,
 		    VPT_LRDaemon
 };
