@@ -30,6 +30,10 @@
  *	/usr/cs/include).
  *
  * $Log$
+ * Revision 4.5.2.1  1999/01/21 19:43:39  jaharkes
+ * Included some of the Alpha patches, didn't see much point in doing the
+ * printf's in rvm-src, or the heavily changed linux-kernel code.
+ *
  * Revision 4.5  1998/10/07 20:29:37  rvb
  * Flush sys/dir.h where possible; Fix process.s
  *
@@ -415,7 +419,7 @@ newtoken: ;
 
 	if (!expunge && argc < 1) 
 	    usage();
-	if ((int) outfile && (int) makefile)	/* not both */
+	if (outfile && makefile)	/* not both */
 	    usage();
 
 	/*
@@ -431,7 +435,7 @@ newtoken: ;
 	     (strcmp(argv[0], "*.D") == 0)))
 	    exit(0);
 
-	if ((int) outfile) {
+	if (outfile) {
 		if ((out = fopen(outfile, "w")) == NULL) {
 			fprintf(stderr, "%s: outfile = \"%s\" ", 
 				program_name, outfile);
@@ -1008,7 +1012,7 @@ char *file;
 {
 FILE *mak;
 
-	if ((int) file) {
+	if (file) {
 		if ((mak = fopen(file, "r")) != NULL) {
 			real_mak_name = file;
 		} else if (update) {
