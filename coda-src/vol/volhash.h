@@ -69,7 +69,6 @@ extern "C" {
 #include <ohash.h>
 #include <olist.h>
 #include <inconsist.h>
-#include <callback.h>
 
 class vhashtab;
 class vhash_iterator;

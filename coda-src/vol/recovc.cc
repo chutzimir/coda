@@ -74,7 +74,6 @@ extern "C" {
 #include <rvmlib.h>
 
 #include <vice.h>
-#include <callback.h>
 #include <util.h>
 #include <olist.h>
 #include "cvnode.h"

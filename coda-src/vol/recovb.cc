@@ -73,7 +73,6 @@ extern "C" {
 
 #include <rvmlib.h>
 #include <vice.h>
-#include <callback.h>
 #include <rec_smolist.h>
 #include "cvnode.h"
 #include "volume.h"

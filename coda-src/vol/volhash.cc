@@ -63,7 +63,6 @@ extern "C" {
 #endif __cplusplus
 
 #include <inconsist.h>
-#include <callback.h>
 #include <util.h>
 #include "volhash.h"
 
