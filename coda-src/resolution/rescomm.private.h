@@ -47,7 +47,7 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-#ifdef __MACH__
+#if 0
 #include <cthreads.h>
 #else
 #include <dummy_cthreads.h>

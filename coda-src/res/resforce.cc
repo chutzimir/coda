@@ -49,7 +49,7 @@ extern "C" {
 #include <cam/_setjmp.h>
 #endif CAMELOT
 
-#ifndef LINUX
+#if 0
 #include <cthreads.h>
 #endif
 #include <netinet/in.h>
@@ -70,7 +70,7 @@ extern "C" {
 #include <errors.h>
 #include <vcrcommon.h>
 #include <srv.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <vlist.h>
 #include <operations.h>
 #include <dlist.h>

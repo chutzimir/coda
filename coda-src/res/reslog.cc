@@ -51,7 +51,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/time.h>
 
-#ifndef LINUX
+#if 0
 #include <cthreads.h>
 #endif
 #include <sys/types.h>
