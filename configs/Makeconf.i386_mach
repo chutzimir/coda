@@ -32,6 +32,7 @@
 # 
 # static char *rcsid = "$Header$";
 
+SHELL	      = /usr/local/bin/bash
 MACHINE_FLAGS = -D__MACH__
 SHORTSYS      = mach
 INCLFLAGS     = -I/usr/cs/include
