@@ -246,8 +246,8 @@ struct SFTP_Entry		/* per-connection data structure */
     SE_Descriptor *PiggySDesc;	/* malloc()ed copy of SDesc; held on until SendResponse, if piggybacking
 					might take place */
 
-#define SFTP_MINRTT   10         /* min rtt is 10 msec (kernel scheduler)*/
-#define SFTP_MAXRTT   300000     /* max rtt is 300 seconds */
+#define SFTP_MINRTO   100        /* min rto (rtt + variance) is 100 msec */
+#define SFTP_MAXRTO   300000     /* max rto (rtt + variance) is 300 seconds */
 
 /*  Transmission Parameters:
 
