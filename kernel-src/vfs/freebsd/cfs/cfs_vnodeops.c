@@ -46,6 +46,9 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
+ * Revision 1.12  1998/08/28 18:28:00  rvb
+ * NetBSD -current is stricter!
+ *
  * Revision 1.11  1998/08/28 18:12:23  rvb
  * Now it also works on FreeBSD -current.  This code will be
  * committed to the FreeBSD -current and NetBSD -current
@@ -2256,10 +2259,10 @@ cfs_bmap(v)
     struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
-    int ret = 0;
 
 #ifdef	__FreeBSD__
 #ifdef	__FreeBSD_version
+	int ret = 0;
 	struct cnode *cp;
 
 	cp = VTOC(vp);
@@ -2297,36 +2300,15 @@ cfs_strategy(v)
 {
 /* true args */
     struct vop_strategy_args *ap = v;
-    struct vnode *vp __attribute__((unused)) = ap->a_vp;	/* file's vnode */
     register struct buf *bp __attribute__((unused)) = ap->a_bp;
     struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
-    int ret = 0;
 
 #ifdef	__FreeBSD__
 #ifdef	__FreeBSD_version
-
-	struct cnode *cp;
-	/*
-	 * This needs testing.  execve calls bread and will go thru
-	 * this code.  So currently we comment out the "optimization"
-	 * in exec.
-	 */
-
-	printf("cfs_strategy: Entered!\n");
-	cp = VTOC(vp);
-	if (cp->c_ovp) {
-		printf("cfs_strategy: redirect thru container\n");
-		bp->b_vp = cp->c_ovp;
-		ret = VOP_STRATEGY(cp->c_ovp, bp);
-		printf("VOP_STRATEGY(cp->c_ovp %p, bp %p) = %d\n",
-			cp->c_ovp, bp, ret);
-		return ret; 
-	} else {
-		printf("cfs_strategy: no container\n");
-		return(EOPNOTSUPP);
-	}
+	printf("cfs_strategy: called ???\n");
+	return(EOPNOTSUPP);
 #else	/* ! __MAYBE_FreeBSD__ */
 	myprintf(("cfs_strategy called!  "));
 	return(EOPNOTSUPP);
