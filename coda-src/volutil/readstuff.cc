@@ -108,6 +108,7 @@ PRIVATE char *get(DumpBuffer_t *buf, int size, int *error)
 {
     char *retptr;
     unsigned long nbytes;
+    LogMsg(100, VolDebugLevel, stdout, "**get: buf at 0x%x, size %d", buf, size);
 
     if ((buf->offset == 0) || (buf->DumpBufPtr + size > buf->DumpBufEnd)) {
 	if (buf->offset != 0) {		/* Only happens on refill */

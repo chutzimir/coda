@@ -96,15 +96,16 @@ PRIVATE void WriteDumpHeader(DumpBuffer_t *buf, struct DumpHeader *, struct Dump
 
 void main(int argc, char **argv)
 {
-    if (strcmp(argv[1], "-d") == 0) {
-	VolDebugLevel = atoi(argv[2]);
-	argv+=2;
-	argc-=2;
-    }
     
     if (argc < 4) {
 	LogMsg(0, VolDebugLevel, stderr, "Usage: %s <outfile> <full dump> <incremental dump>", argv[0]);
 	exit(-1);
+    }
+
+    if (strcmp(argv[1], "-d") == 0) {
+	VolDebugLevel = atoi(argv[2]);
+	argv+=2;
+	argc-=2;
     }
 
     dumpstream fdump(argv[2]);
