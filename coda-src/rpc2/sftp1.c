@@ -174,9 +174,9 @@ void SFTP_Activate(initPtr)
     size = sizeof(struct SE_Definition)*SE_DefCount;
     if (SE_DefSpecs == NULL)
 	/* The realloc() on the romp dumps core if SE_DefSpecs is NULL */
-	assert((SE_DefSpecs = (struct SE_Definition *)malloc(size)) != NULL)
+	assert((SE_DefSpecs = (struct SE_Definition *)malloc(size)) != NULL);
     else
-	assert((SE_DefSpecs = (struct SE_Definition *)realloc(SE_DefSpecs, size)) != NULL)
+	assert((SE_DefSpecs = (struct SE_Definition *)realloc(SE_DefSpecs, size)) != NULL);
 
     /* Add this side effect's info to last entry in table */
     sed = &SE_DefSpecs[SE_DefCount-1];
