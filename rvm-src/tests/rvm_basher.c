@@ -1930,7 +1930,7 @@ static str_name_entry_t cmd_vec[MAX_CMDS] = /* command codes vector */
     if  (ret != RVM_SUCCESS)
         {
 	printf("? rvm_initialize failed, code: %s\n",rvm_return(ret));
-        ASSERT(rvm_false);
+        exit(-1);
         }
     else
 	printf("rvm_initialize succeeded.\n");
