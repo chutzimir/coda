@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.6  1997/11/18 10:27:16  rvb
- * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * Revision 1.5.4.7  1997/11/20 11:46:42  rvb
+ * Capture current cfs_venus
  *
+ * Revision 1.5.4.6  97/11/18  10:27:16  rvb
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * 
  * Revision 1.5.4.5  97/11/13  22:03:00  rvb
  * pass2 cfs_NetBSD.h mt
  * 

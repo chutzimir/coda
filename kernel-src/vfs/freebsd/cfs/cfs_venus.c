@@ -1,721 +1,138 @@
-/* 
- * Mach Operating System
- * Copyright (c) 1990 Carnegie-Mellon University
- * Copyright (c) 1989 Carnegie-Mellon University
- * All rights reserved.  The CMU software License Agreement specifies
- * the terms and conditions for use and redistribution.
- */
-
-/*
- * This code was written for the Coda file system at Carnegie Mellon
- * University.  Contributers include David Steere, James Kistler, and
- * M. Satyanarayanan.  
- */
-
-/*
- * HISTORY
- * $Log$
- * Revision 1.4.14.6  1997/11/18 10:27:19  rvb
- * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
- *
- * Revision 1.4.14.5  97/11/13  22:03:03  rvb
- * pass2 cfs_NetBSD.h mt
- * 
- * Revision 1.4.14.4  97/11/12  12:09:42  rvb
- * reorg pass1
- * 
- * Revision 1.4.14.3  97/11/06  21:03:28  rvb
- * don't include headers in headers
- * 
- * Revision 1.4.14.2  97/10/29  16:06:30  rvb
- * Kill DYING
- * 
- * Revision 1.4.14.1  1997/10/28 23:10:18  rvb
- * >64Meg; venus can be killed!
- *
- * Revision 1.4  1997/02/20 13:54:50  lily
- * check for NULL return from cfsnc_lookup before CTOV
- *
- * Revision 1.3  1996/12/12 22:11:02  bnoble
- * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
- *
- * Revision 1.2  1996/01/02 16:57:07  bnoble
- * Added support for Coda MiniCache and raw inode calls (final commit)
- *
- * Revision 1.1.2.1  1995/12/20 01:57:34  bnoble
- * Added CFS-specific files
- *
- * Revision 3.1.1.1  1995/03/04  19:08:06  bnoble
- * Branch for NetBSD port revisions
- *
- * Revision 3.1  1995/03/04  19:08:04  bnoble
- * Bump to major revision 3 to prepare for NetBSD port
- *
- * Revision 2.6  1995/02/17  16:25:26  dcs
- * These versions represent several changes:
- * 1. Allow venus to restart even if outstanding references exist.
- * 2. Have only one ctlvp per client, as opposed to one per mounted cfs device.d
- * 3. Allow ody_expand to return many members, not just one.
- *
- * Revision 2.5  94/11/09  20:29:27  dcs
- * Small bug in remove dealing with hard links and link counts was fixed.
- * 
- * Revision 2.4  94/10/14  09:58:42  dcs
- * Made changes 'cause sun4s have braindead compilers
- * 
- * Revision 2.3  94/10/12  16:46:37  dcs
- * Cleaned kernel/venus interface by removing XDR junk, plus
- * so cleanup to allow this code to be more easily ported.
- * 
- * Revision 2.2  94/09/20  14:12:41  dcs
- * Fixed bug in rename when moving a directory.
- * 
- * Revision 2.1  94/07/21  16:25:22  satya
- * Conversion to C++ 3.0; start of Coda Release 2.0
- * 
- * Revision 1.4  93/12/17  01:38:01  luqi
- * Changes made for kernel to pass process info to Venus:
- * 
- * (1) in file cfs.h
- * add process id and process group id in most of the cfs argument types.
- * 
- * (2) in file cfs_vnodeops.c
- * add process info passing in most of the cfs vnode operations.
- * 
- * (3) in file cfs_xdr.c
- * expand xdr routines according changes in (1). 
- * add variable pass_process_info to allow venus for kernel version checking.
- * 
- * Revision 1.3  93/05/28  16:24:33  bnoble
- * *** empty log message ***
- * 
- * Revision 1.2  92/10/27  17:58:25  lily
- * merge kernel/latest and alpha/src/cfs
- * 
- * Revision 2.4  92/09/30  14:16:37  mja
- * 	Redid buffer allocation so that it does kmem_{alloc,free} for all
- * 	architectures.  Zone allocation, previously used on the 386, caused
- * 	panics if it was invoked repeatedly.  Stack allocation, previously
- * 	used on all other architectures, tickled some Mach bug that appeared
- * 	with large stack frames.
- * 	[91/02/09            jjk]
- * 
- * 	Added contributors blurb.
- * 	[90/12/13            jjk]
- * 
- * Revision 2.3  90/07/26  15:50:09  mrt
- * 	    Fixed fix to rename to remove .. from moved directories.
- * 	[90/06/28            dcs]
- * 
- * Revision 1.7  90/06/28  16:24:25  dcs
- * Fixed bug with moving directories, we weren't flushing .. for the moved directory.
- * 
- * Revision 1.6  90/05/31  17:01:47  dcs
- * Prepare for merge with facilities kernel.
- * 
- * 
- */
-
 #include <sys/param.h>
-#include <sys/systm.h>
 #include <sys/malloc.h>
-#include <sys/errno.h>
-#include <sys/acct.h>
-#include <sys/file.h>
-#include <sys/uio.h>
-#include <sys/namei.h>
-#include <sys/ioctl.h>
-#include <sys/mount.h>
 #include <sys/proc.h>
-#include <ufs/ifs/ifs.h>
-#include <sys/user.h>
-#include <vm/vm_kern.h>
+#include <sys/ioctl.h>
 
 #include <cfs/cfs.h>
 #include <cfs/cfsk.h>
-#include <cfs/cnode.h>
-#include <cfs/cfs_vnodeops.h>
-#include <cfs/cfs_opstats.h>
-#include <cfs/pioctl.h>    /* No viceioctl.h on NetBSD */
+#include <cfs/pioctl.h>
 
-struct cnode *makecfsnode();
-struct cnode *cfsnc_lookup();
-struct cnode *cfs_find();
+/* NOTES:
+	cfsk.h should not be here!!!
+	(then proc.h is not necessary ?? maybe)
 
-/* 
- * These flags select various performance enhancements.
- */
-int cfs_intercept_rdwr = 1;    /* Set to handle read/write in the kernel */
-int cfs_attr_cache  = 1;       /* Set to cache attributes in the kernel */
-int cfs_symlink_cache = 1;     /* Set to cache symbolic link information */
-int cfs_access_cache = 1;      /* Set to handle some access checks directly */
-
-/* structure to keep track of vfs calls */
-
-struct cfs_op_stats cfs_vnodeopstats[CFS_VNODEOPS_SIZE];
-
-#define MARK_ENTRY(op) (cfs_vnodeopstats[op].entries++)
-#define MARK_INT_SAT(op) (cfs_vnodeopstats[op].sat_intrn++)
-#define MARK_INT_FAIL(op) (cfs_vnodeopstats[op].unsat_intrn++)
-#define MARK_INT_GEN(op) (cfs_vnodeopstats[op].gen_intrn++)
-
-/* What we are delaying for in printf */
-int cfs_printf_delay = 0;  /* in microseconds */
-int cfs_vnop_print_entry = 0;
-static int cfs_lockdebug = 0;
-extern int cfsdebug;
-
-/* Definition of the vfs operation vector */
-
-/*
- * Some NetBSD details:
- * 
- *   cfs_start is called at the end of the mount syscall.
- *   cfs_init is called at boot time.
+	The biggy, of course, is that I should use codacreds, but I don't
+	want to break venus yet.
  */
 
-#ifdef __GNUC__
-#define ENTRY    \
-   if(cfs_vnop_print_entry) myprintf(("Entered %s\n",__FUNCTION__))
-#else
-#define ENTRY
-#endif 
 
-/* NetBSD interfaces to the vnodeops */
-int cfs_nb_open      __P((void *));
-int cfs_nb_close     __P((void *));
-int cfs_nb_read      __P((void *));
-int cfs_nb_write     __P((void *));
-int cfs_nb_ioctl     __P((void *));
-int cfs_nb_select    __P((void *));
-int cfs_nb_getattr   __P((void *));
-int cfs_nb_setattr   __P((void *));
-int cfs_nb_access    __P((void *));
-int cfs_nb_readlink  __P((void *));
-int cfs_nb_abortop   __P((void *));
-int cfs_nb_fsync     __P((void *));
-int cfs_nb_inactive  __P((void *));
-int cfs_nb_lookup    __P((void *));
-int cfs_nb_create    __P((void *));
-int cfs_nb_remove    __P((void *));
-int cfs_nb_link      __P((void *));
-int cfs_nb_rename    __P((void *));
-int cfs_nb_mkdir     __P((void *));
-int cfs_nb_rmdir     __P((void *));
-int cfs_nb_symlink   __P((void *));
-int cfs_nb_readdir   __P((void *));
-int cfs_nb_bmap      __P((void *));
-int cfs_nb_strategy  __P((void *));
-int cfs_nb_lock      __P((void *));
-int cfs_nb_unlock    __P((void *));
-int cfs_nb_islocked  __P((void *));
-int nbsd_vop_error   __P((void *));
-int nbsd_vop_nop     __P((void *));
-int cfs_nb_reclaim   __P((void *));
-
-/* Definition of the vnode operation vector */
-
-int (**cfs_vnodeop_p)();
-struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
-    { &vop_default_desc, nbsd_vop_error },
-    { &vop_lookup_desc, cfs_nb_lookup },	/* lookup */
-    { &vop_create_desc, cfs_nb_create },	/* create */
-    { &vop_mknod_desc, nbsd_vop_error },	/* mknod */
-    { &vop_open_desc, cfs_nb_open },		/* open */
-    { &vop_close_desc, cfs_nb_close },		/* close */
-    { &vop_access_desc, cfs_nb_access },	/* access */
-    { &vop_getattr_desc, cfs_nb_getattr },	/* getattr */
-    { &vop_setattr_desc, cfs_nb_setattr },	/* setattr */
-    { &vop_read_desc, cfs_nb_read },		/* read */
-    { &vop_write_desc, cfs_nb_write },		/* write */
-    { &vop_lease_desc, nbsd_vop_nop },          /* lease */
-    { &vop_ioctl_desc, cfs_nb_ioctl },		/* ioctl */
-    { &vop_select_desc, cfs_nb_select },	/* select */
-    { &vop_mmap_desc, nbsd_vop_error },		/* mmap */
-    { &vop_fsync_desc, cfs_nb_fsync },		/* fsync */
-    { &vop_seek_desc, nbsd_vop_error },		/* seek */
-    { &vop_remove_desc, cfs_nb_remove },	/* remove */
-    { &vop_link_desc, cfs_nb_link },		/* link */
-    { &vop_rename_desc, cfs_nb_rename },	/* rename */
-    { &vop_mkdir_desc, cfs_nb_mkdir },		/* mkdir */
-    { &vop_rmdir_desc, cfs_nb_rmdir },		/* rmdir */
-    { &vop_symlink_desc, cfs_nb_symlink },	/* symlink */
-    { &vop_readdir_desc, cfs_nb_readdir },	/* readdir */
-    { &vop_readlink_desc, cfs_nb_readlink },	/* readlink */
-    { &vop_abortop_desc, cfs_nb_abortop },	/* abortop */
-    { &vop_inactive_desc, cfs_nb_inactive },	/* inactive */
-    { &vop_reclaim_desc, cfs_nb_reclaim },	/* reclaim */
-    { &vop_lock_desc, cfs_nb_lock },		/* lock */
-    { &vop_unlock_desc, cfs_nb_unlock },	/* unlock */
-    { &vop_bmap_desc, cfs_nb_bmap },		/* bmap */
-    { &vop_strategy_desc, cfs_nb_strategy },	/* strategy */
-    { &vop_print_desc, nbsd_vop_error },	/* print */
-    { &vop_islocked_desc, cfs_nb_islocked },	/* islocked */
-    { &vop_pathconf_desc, nbsd_vop_error },	/* pathconf */
-    { &vop_advlock_desc, nbsd_vop_nop },	/* advlock */
-    { &vop_blkatoff_desc, nbsd_vop_error },	/* blkatoff */
-    { &vop_valloc_desc, nbsd_vop_error },	/* valloc */
-    { &vop_vfree_desc, nbsd_vop_error },	/* vfree */
-    { &vop_truncate_desc, nbsd_vop_error },	/* truncate */
-    { &vop_update_desc, nbsd_vop_error },	/* update */
-    { &vop_bwrite_desc, nbsd_vop_error },	/* bwrite */
-    { (struct vnodeop_desc*)NULL, (int(*)())NULL }
-};
-
-struct vnodeopv_desc cfs_vnodeop_opv_desc = 
-        { &cfs_vnodeop_p, cfs_vnodeop_entries };
-
-
-/* Definitions of NetBSD vnodeop interfaces */
-
-/* A generic panic: we were called with something we didn't define yet */
-int
-nbsd_vop_error(void *anon) {
-    struct vnodeop_desc **desc = (struct vnodeop_desc **)anon;
-
-    myprintf(("Vnode operation %s called, but not defined\n",
-	      (*desc)->vdesc_name));
-    panic("nbsd_vop_error");
-    return 0;
-}
-
-/* A generic do-nothing.  For lease_check, advlock */
-int
-nbsd_vop_nop(void *anon) {
-    struct vnodeop_desc **desc = (struct vnodeop_desc **)anon;
-
-    if (cfsdebug) {
-	myprintf(("Vnode operation %s called, but unsupported\n",
-		  (*desc)->vdesc_name));
-    }
-    return (0);
-}
-
-int
-cfs_vnodeopstats_init()
+venus_open(void *mdp, ViceFid *fid, int flag,
+	struct ucred *cred, struct proc *p,
+/*out*/	dev_t *dev, ino_t *inode)
 {
-	register int i;
-	
-	for(i=0;i<CFS_VNODEOPS_SIZE;i++) {
-		cfs_vnodeopstats[i].opcode = i;
-		cfs_vnodeopstats[i].entries = 0;
-		cfs_vnodeopstats[i].sat_intrn = 0;
-		cfs_vnodeopstats[i].unsat_intrn = 0;
-		cfs_vnodeopstats[i].gen_intrn = 0;
-	}
-	
-	return 0;
-}
-		
-/* 
- * cfs_open calls Venus to return the device, inode pair of the cache
- * file holding the data. Using iget, cfs_open finds the vnode of the
- * cache file, and then opens it.
- */
-int
-cfs_nb_open(v)
-    void *v;
-{
-    /* 
-     * NetBSD can pass the O_EXCL flag in mode, even though the check
-     * has already happened.  Venus defensively assumes that if open
-     * is passed the EXCL, it must be a bug.  We strip the flag here.
-     */
-/* true args */
-    struct vop_open_args *ap = v;
-    register struct vnode **vpp = &(ap->a_vp);
-    struct cnode *cp = VTOC(*vpp);
-    int flag = ap->a_mode & (~O_EXCL);
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error;
     struct inputArgs *inp = NULL;
     struct outputArgs *outp;
     int outSize = sizeof(struct outputArgs);
-/* locals */
-    struct vnode *vp;
-    
-    MARK_ENTRY(CFS_OPEN_STATS);
-    
-    /* Check for open of control file. */
-    if (IS_CTL_VP(*vpp)) {
-	/* XXX */
-	/* if (WRITEABLE(flag)) */ 
-	if (flag & (FWRITE | O_TRUNC | O_CREAT | O_EXCL)) {
-	    MARK_INT_FAIL(CFS_OPEN_STATS);
-	    return(EACCES);
-	}
-	MARK_INT_SAT(CFS_OPEN_STATS);
-	return(0);
-    }
-    
+    int error;
+
     CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
-    outp = (struct outputArgs *)inp;
+    outp = (struct outputArgs *) inp;
+
     /* Send the open to Venus. */
     INIT_IN(inp, CFS_OPEN, cred);
     
-    inp->d.cfs_open.VFid.Volume = cp->c_fid.Volume;
-    inp->d.cfs_open.VFid.Vnode  = cp->c_fid.Vnode;
-    inp->d.cfs_open.VFid.Unique = cp->c_fid.Unique;
+    inp->d.cfs_open.VFid = *fid;
     inp->d.cfs_open.flags = flag;
-    
-    error = cfscall(vtomi((*vpp)), sizeof(struct inputArgs), 
-		    &outSize, (char *)inp);
+
+    error = cfscall(mdp, sizeof(struct inputArgs), &outSize, (char *)inp);
+    if (!error)
+    	error = outp->result;
     if (!error) {
-	error = outp->result;
-	CFSDEBUG( CFS_OPEN,myprintf(("open: dev %d inode %d result %d\n",
-				  outp->d.cfs_open.dev,
-				  outp->d.cfs_open.inode, error)); )
+	*dev =  outp->d.cfs_open.dev,
+	*inode = outp->d.cfs_open.inode;
     }
-    if (error) {
-	goto exit;
-    }
-    
-    /* Translate the <device, inode> pair for the cache file into
-       an inode pointer. */
-    error = cfs_grab_vnode(outp->d.cfs_open.dev, outp->d.cfs_open.inode, &vp);
-    if (error) {
-	goto exit;
-    }
-    /* We get the vnode back locked in both Mach and NetBSD.  Needs unlocked */
-    VOP_UNLOCK(vp);
-    
-    /* Keep a reference until the close comes in. */
-    vref(*vpp);                
-    
-    /* Save the vnode pointer for the cache file. */
-    if (cp->c_ovp == NULL) {
-	cp->c_ovp = vp;
-    }
-    else {
-	if (cp->c_ovp != vp)
-	    panic("cfs_open:  cp->c_ovp != ITOV(ip)");
-    }
-    cp->c_ocount++;
-    
-    /* Flush the attribute cached if writing the file. */
-    if (flag & FWRITE) {
-	cp->c_owrite++;
-	cp->c_flags &= ~C_VATTR;
-    }
-    
-    /* Save the <device, inode> pair for the cache file to speed
-       up subsequent page_read's. */
-    cp->c_device = outp->d.cfs_open.dev;
-    cp->c_inode = outp->d.cfs_open.inode;
-    
-    /* Open the cache file. */
-    error = VOP_OPEN(cp->c_ovp, flag, cred, p); 
- exit:
-    if (inp) CFS_FREE(inp,sizeof(struct inputArgs));
-    return(error);
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
 }
 
-/*
- * Close the cache file used for I/O and notify Venus.
- */
-int
-cfs_nb_close(v)
-    void *v;
+venus_close(void *mdp, ViceFid *fid, int flag,
+	struct ucred *cred, struct proc *p)
 {
-/* true args */
-    struct vop_close_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    int flag = ap->a_fflag;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error;
     struct inputArgs *inp = NULL;
     struct outputArgs *outp;
     int outSize = sizeof(struct outputArgs);
-/* locals */
-    
-    MARK_ENTRY(CFS_CLOSE_STATS);
+    int error;
 
-    /* Check for close of control file. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_SAT(CFS_CLOSE_STATS);
-	return(0);
-    }
-    
-    if (IS_UNMOUNTING(cp)) {
-	if (cp->c_ovp) {
-	    printf("cfs_close: destroying container ref %d, ufs vp %x of vp %x/cp %x\n",
-		    vp->v_usecount, cp->c_ovp, vp, cp);
-	    vgone(cp->c_ovp);
-	} else {
-	    printf("cfs_close: NO container vp %x/cp %x\n", vp, cp);
-	}
-	return ENODEV;
-    } else {
-	VOP_CLOSE(cp->c_ovp, flag, cred, p); /* Do errors matter here? */
-	vrele(cp->c_ovp);
-    }
-
-    if (--cp->c_ocount == 0)
-	cp->c_ovp = NULL;
-    
-    if (flag & FWRITE)                    /* file was opened for write */
-	--cp->c_owrite;
-    
     CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
     outp = (struct outputArgs *) inp;
 
     INIT_IN(inp, CFS_CLOSE, cred);
-    inp->d.cfs_close.VFid.Volume = cp->c_fid.Volume;
-    inp->d.cfs_close.VFid.Vnode  = cp->c_fid.Vnode;
-    inp->d.cfs_close.VFid.Unique = cp->c_fid.Unique;
+
+    inp->d.cfs_close.VFid = *fid;
     inp->d.cfs_close.flags = flag;
     
-    error = cfscall(vtomi(vp), sizeof(struct inputArgs), 
-		    &outSize, (char *)inp);
+
+    error = cfscall(mdp, sizeof(struct inputArgs), &outSize, (char *)inp);
     if (!error) 
 	error = outp->result;
-    
-    vrele(CTOV(cp));
 
-    if (inp) CFS_FREE(inp,sizeof(struct inputArgs));
-    CFSDEBUG(CFS_CLOSE, myprintf(("close: result %d\n",error)); )
-    return(error);
+    CFS_FREE(inp,sizeof(struct inputArgs));
+    return error;
 }
 
-int
-cfs_nb_read(v)
-    void *v;
+/*
+ * These two calls will not exist!!!  The container file is read/written
+ * directly.
+ */
+venus_read()
 {
-    struct vop_read_args *ap = v;
-
-    ENTRY;
-    return(cfs_rdwr(ap->a_vp, ap->a_uio, UIO_READ,
-		    ap->a_ioflag, ap->a_cred, ap->a_uio->uio_procp));
 }
 
-int
-cfs_nb_write(v)
-    void *v;
+venus_write()
 {
-    struct vop_write_args *ap = v;
-
-    ENTRY;
-    return(cfs_rdwr(ap->a_vp, ap->a_uio, UIO_WRITE,
-		    ap->a_ioflag, ap->a_cred, ap->a_uio->uio_procp));
 }
 
-int
-cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
-    struct vnode *vp;
-    struct uio *uiop;
-    enum uio_rw rw;
-    int ioflag;
-    struct ucred *cred;
-    struct proc *p;
-{ 
-/* upcall decl */
-  /* NOTE: container file operation!!! */
-/* locals */
-    struct cnode *cp = VTOC(vp);
-    struct vnode *cfvp = cp->c_ovp;
-    int igot_internally = 0;
-    int opened_internally = 0;
-    int error = 0;
-    
-    MARK_ENTRY(CFS_RDWR_STATS);
-    
-    CFSDEBUG(CFS_RDWR, myprintf(("cfs_rdwr(%d, %x, %d, %d, %d)\n", rw, 
-			      uiop->uio_iov->iov_base, uiop->uio_resid, 
-			      uiop->uio_offset, uiop->uio_segflg)); )
-	
-    /* Check for rdwr of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_RDWR_STATS);
-	return(EINVAL);
-    }
-    
-    /* Redirect the request to UFS. */
-
-    /* 
-     * If file is not already open this must be a page
-     * {read,write} request.  Iget the cache file's inode
-     * pointer if we still have its <device, inode> pair.
-     * Otherwise, we must do an internal open to derive the
-     * pair. 
-     */
-    if (cfvp == NULL) {
-	/* 
-	 * If we're dumping core, do the internal open. Otherwise
-	 * venus won't have the correct size of the core when
-	 * it's completely written.
-	 */
-	if (cp->c_inode != 0 && !(p && (p->p_acflag & ACORE))) { 
-	    igot_internally = 1;
-	    error = cfs_grab_vnode(cp->c_device, cp->c_inode, &cfvp);
-	    if (error) {
-		MARK_INT_FAIL(CFS_RDWR_STATS);
-		return(error);
-	    }
-	    /* 
-	     * We get the vnode back locked in both Mach and
-	     * NetBSD.  Needs unlocked 
-	     */
-	    VOP_UNLOCK(cfvp);
-	}
-	else {
-	    opened_internally = 1;
-	    MARK_INT_GEN(CFS_OPEN_STATS);
-	    error = VOP_OPEN(vp, (rw == UIO_READ ? FREAD : FWRITE), 
-			     cred, p);
-	    if (error) {
-		MARK_INT_FAIL(CFS_RDWR_STATS);
-		return(error);
-	    }
-	    cfvp = cp->c_ovp;
-	}
-    }
-
-    /* Have UFS handle the call. */
-    CFSDEBUG(CFS_RDWR, myprintf(("indirect rdwr: fid = (%x.%x.%x), refcnt = %d\n",
-			      cp->c_fid.Volume, cp->c_fid.Vnode, 
-			      cp->c_fid.Unique, CTOV(cp)->v_usecount)); )
-    if (rw == UIO_READ) {
-	error = VOP_READ(cfvp, uiop, ioflag, cred);
-    } else {
-	error = VOP_WRITE(cfvp, uiop, ioflag, cred);
-    }
-
-    if (error)
-	MARK_INT_FAIL(CFS_RDWR_STATS);
-    else
-	MARK_INT_SAT(CFS_RDWR_STATS);
-
-    /* Do an internal close if necessary. */
-    if (opened_internally) {
-	MARK_INT_GEN(CFS_CLOSE_STATS);
-	(void)VOP_CLOSE(vp, (rw == UIO_READ ? FREAD : FWRITE), cred, p);
-    }
-
-    /* Invalidate cached attributes if writing. */
-    if (rw == UIO_WRITE)
-	cp->c_flags &= ~C_VATTR;
-    return(error);
-}
-
-
-int
-cfs_nb_ioctl(v)
-    void *v;
+/*
+ * This is a bit sad too.  The ioctl's are for the CONTROL file, not for
+ * normal files.
+ */
+venus_ioctl(void *mdp, ViceFid *fid,
+	int com, int flag, caddr_t data,
+	struct ucred *cred, struct proc *p)
 {
-/* true args */
-    struct vop_ioctl_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    int com = ap->a_command;
-    caddr_t data = ap->a_data;
-    int flag = ap->a_fflag;
-    struct ucred *cred = ap->a_cred;
-    struct proc  *p = ap->a_p;
-/* upcall decl */
     int error, size;
     struct inputArgs *in = NULL;
     struct outputArgs *out;
-/* locals */
-    struct vnode *tvp;
+    char *buf;
     register struct a {
 	char *path;
 	struct ViceIoctl vidata;
 	int follow;
     } *iap = (struct a *)data;
-    char *buf;
-    struct nameidata ndp;
-    
-    MARK_ENTRY(CFS_IOCTL_STATS);
-    
-    CFSDEBUG(CFS_IOCTL, myprintf(("in cfs_ioctl on %s\n", iap->path));)
-	
-    /* Don't check for operation on a dying object, for ctlvp it
-       shouldn't matter */
-	
-    /* Must be control object to succeed. */
-    if (!IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_IOCTL_STATS);
-	CFSDEBUG(CFS_IOCTL, myprintf(("cfs_ioctl error: vp != ctlvp"));)
-	    return (EOPNOTSUPP);
-    }
-    /* Look up the pathname. */
-    
-    /* Should we use the name cache here? It would get it from
-       lookupname sooner or later anyway, right? */
-    
-    NDINIT(&ndp, LOOKUP, (iap->follow ? FOLLOW : NOFOLLOW), UIO_USERSPACE, iap->path, p);
-    error = namei(&ndp);
-    tvp = ndp.ni_vp;
 
-    if (error) {
-	MARK_INT_FAIL(CFS_IOCTL_STATS);
-	CFSDEBUG(CFS_IOCTL, myprintf(("cfs_ioctl error: lookup returns %d\n",
-				   error));)
-	return(error);
-    }
-    
-    /* 
-     * Make sure this is a coda style cnode, but it may be a
-     * different vfsp 
-     */
-    /* XXX: this totally violates the comment about vtagtype in vnode.h */
-    if (tvp->v_tag != VT_CFS) {
-	vrele(tvp);
-	MARK_INT_FAIL(CFS_IOCTL_STATS);
-	CFSDEBUG(CFS_IOCTL, 
-		 myprintf(("cfs_ioctl error: %s not a coda object\n", 
-			iap->path));)
-	return(EINVAL);
-    }
-    
-    /* Copy in the IN buffer. */
-    if (iap->vidata.in_size > VC_DATASIZE) {
-	vrele(tvp);
-	return(EINVAL);
-    }
-    
     CFS_ALLOC(buf, char *, VC_MAXMSGSIZE);
-    
     in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;	
+    out = (struct outputArgs *)buf;
+
     INIT_IN(in, CFS_IOCTL, cred);
-    in->d.cfs_ioctl.VFid = (VTOC(tvp))->c_fid;
-    
+    in->d.cfs_ioctl.VFid = *fid;
+
     /* Command was mutated by increasing its size field to reflect the  
      * path and follow args. We need to subtract that out before sending
      * the command to Venus.
      */
-    in->d.cfs_ioctl.cmd = (com & ~(IOCPARM_MASK << 16));	
+    in->d.cfs_ioctl.cmd = (com & ~(IOCPARM_MASK << 16));
     size = ((com >> 16) & IOCPARM_MASK) - sizeof(char *) - sizeof(int);
-    in->d.cfs_ioctl.cmd |= (size & IOCPARM_MASK) <<	16;	
-    
+    in->d.cfs_ioctl.cmd |= (size & IOCPARM_MASK) <<	16;
+
     in->d.cfs_ioctl.rwflag = flag;
     in->d.cfs_ioctl.len = iap->vidata.in_size;
     in->d.cfs_ioctl.data = (char *)(VC_INSIZE(cfs_ioctl_in));
-    
+
     error = copyin(iap->vidata.in, (char*)in + (int)in->d.cfs_ioctl.data, 
 		   iap->vidata.in_size);
     if (error) {
-	vrele(tvp);
 	CFS_FREE(buf, VC_MAXMSGSIZE);
-	MARK_INT_FAIL(CFS_IOCTL_STATS);
 	return(error);
     }
-    
+
     size = VC_MAXMSGSIZE;
-    error = cfscall(vtomi(tvp), 
-		    VC_INSIZE(cfs_ioctl_in) + iap->vidata.in_size, 
-		    &size, buf);
-    
-    if (!error) {
-	error = out->result;
-	CFSDEBUG(CFS_IOCTL, myprintf(("Ioctl returns %d \n", out->result)); )
-    }
-    
+    error = cfscall(mdp, VC_INSIZE(cfs_ioctl_in) + iap->vidata.in_size, &size, buf);
+
+    if (!error)
+    	error = out->result;
+
 	/* Copy out the OUT buffer. */
     if (!error) {
 	if (out->d.cfs_ioctl.len > iap->vidata.out_size) {
@@ -723,2055 +140,187 @@ cfs_nb_ioctl(v)
 				       out->d.cfs_ioctl.len, 
 				       iap->vidata.out_size)); );
 	    error = EINVAL;
-	}
-	else {
+	} else {
 	    error = copyout((char *)out + (int)out->d.cfs_ioctl.data, 
 			    iap->vidata.out, iap->vidata.out_size);
 	}
     }
-    
-    vrele(tvp);
-    if (buf) CFS_FREE(buf, VC_MAXMSGSIZE);
-    return(error);
+
+    CFS_FREE(buf, VC_MAXMSGSIZE);
+    return error;
 }
 
-int
-cfs_nb_select(v)
-    void *v;
+venus_getattr(void *mdp, ViceFid *fid,
+	struct ucred *cred, struct proc *p,
+/*out*/	struct vattr *vap)
 {
-/* true args */
-    struct vop_select_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    int which = ap->a_which;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-/* locals */
-
-	MARK_ENTRY(CFS_SELECT_STATS);
-
-	myprintf(("in cfs_select\n"));
-	MARK_INT_FAIL(CFS_SELECT_STATS);
-	return (EOPNOTSUPP);
-}
-
-/*
- * To reduce the cost of a user-level venus;we cache attributes in
- * the kernel.  Each cnode has storage allocated for an attribute. If
- * c_vattr is valid, return a reference to it. Otherwise, get the
- * attributes from venus and store them in the cnode.  There is some
- * question if this method is a security leak. But I think that in
- * order to make this call, the user must have done a lookup and
- * opened the file, and therefore should already have access.  
- */
-
-int
-cfs_nb_getattr(v)
-    void *v;
-{
-/* true args */
-    struct vop_getattr_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    struct vattr *vap = ap->a_vap;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *inp=NULL;
+    struct inputArgs *inp = NULL;
     struct outputArgs *outp;
-/* locals */
-    struct cnode *scp = NULL;
-    
-    MARK_ENTRY(CFS_GETATTR_STATS);
-    
-#if	0
-    /* Check for operation on a dying object */
-    if (IS_DYING(cp)) {
-	COMPLAIN_BITTERLY(getattr, cp->c_fid);
-	scp = cp;	/* Save old cp */
-	/* If no error, gives a valid vnode with which to work. */
-	error = getNewVnode(&vp);	
-	if (error) {
-	    MARK_INT_FAIL(CFS_GETATTR_STATS);
-	    return(error);	/* Can't contact dead venus */
-	}
-	cp = VTOC(vp);
-    }
-#endif
-    
-    /* Check for getattr of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_GETATTR_STATS);
-	return(ENOENT);
-    }
-    
-    /* Check to see if the attributes have already been cached */
-    if (VALID_VATTR(cp)) { 
-	CFSDEBUG(CFS_GETATTR, { myprintf(("attr cache hit: (%x.%x.%x)\n",
-				       cp->c_fid.Volume,
-				       cp->c_fid.Vnode,
-				       cp->c_fid.Unique));});
-	CFSDEBUG(CFS_GETATTR, if (!(cfsdebug & ~CFS_GETATTR))
-		 print_vattr(&cp->c_vattr); );
-	
-	*vap = cp->c_vattr;
-	MARK_INT_SAT(CFS_GETATTR_STATS);
-	if (scp) vrele(vp);
-	return(0);
-    }
+    int size;
+    int error;
 
     CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
     outp = (struct outputArgs *) inp;
-    
+
+    /* send the open to venus. */
     INIT_IN(inp, CFS_GETATTR, cred);
-    inp->d.cfs_getattr.VFid = cp->c_fid;
+    
+    inp->d.cfs_getattr.VFid = *fid;
     size = VC_OUTSIZE(cfs_getattr_out);
-    error = cfscall(vtomi(vp), VC_INSIZE(cfs_getattr_in),
-		    &size, (char *)inp);
-    
-    if (!error) 
-	error = outp->result;
-    
+
+    error = cfscall(mdp, VC_INSIZE(cfs_getattr_in), &size, (char *)inp);
+    if (!error)
+    	error = outp->result;
     if (!error) {
-	CFSDEBUG(CFS_GETATTR, myprintf(("getattr miss (%x.%x.%x): result %d\n",
-				     cp->c_fid.Volume,
-				     cp->c_fid.Vnode,
-				     cp->c_fid.Unique,
-				     outp->result)); )
-	    
-	CFSDEBUG(CFS_GETATTR, if (!(cfsdebug & ~CFS_GETATTR))
-		 print_vattr(&outp->d.cfs_getattr.attr);	);
-	
-	/* If not open for write, store attributes in cnode */   
-	if ((cp->c_owrite == 0) && (cfs_attr_cache)) {  
-	    cp->c_vattr = outp->d.cfs_getattr.attr; 
-	    cp->c_flags |= C_VATTR; 
-	}
-	
 	*vap = outp->d.cfs_getattr.attr;
     }
-    if (scp) vrele(vp);
-    if (inp) CFS_FREE(inp, sizeof(struct inputArgs));
-    return(error);
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
 }
 
-int
-cfs_nb_setattr(v)
-    void *v;
+venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
+	struct ucred *cred, struct proc *p)
 {
-/* true args */
-    struct vop_setattr_args *ap = v;
-    register struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    register struct vattr *vap = ap->a_vap;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *inp =NULL;
+    struct inputArgs *inp = NULL;
     struct outputArgs *outp;
-/* locals */
-    
-    MARK_ENTRY(CFS_SETATTR_STATS);
+    int size;
+    int error;
 
-    /* Check for setattr of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_SETATTR_STATS);
-	return(ENOENT);
-    }
-    
-    CFS_ALLOC(inp, struct inputArgs *, sizeof (struct inputArgs));
-    outp = (struct outputArgs *)inp;
+    CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
+    outp = (struct outputArgs *) inp;
 
+    /* send the open to venus. */
     INIT_IN(inp, CFS_SETATTR, cred);
-    inp->d.cfs_setattr.VFid = cp->c_fid;
+    
+    inp->d.cfs_setattr.VFid = *fid;
     inp->d.cfs_setattr.attr = *vap;
     size = VC_OUT_NO_DATA;        
 
-    if (cfsdebug & CFSDBGMSK(CFS_SETATTR)) {
-	print_vattr(vap);
-    }
-    error = cfscall(vtomi(vp), VC_INSIZE(cfs_setattr_in),
-		    &size, (char *)inp);
-    
+    error = cfscall(mdp, VC_INSIZE(cfs_setattr_in), &size, (char *)inp);
     if (!error) 
 	error = outp->result;
-    
-    if (!error)
-	cp->c_flags &= ~C_VATTR;
-    
-    if (inp) CFS_FREE(inp,sizeof(struct inputArgs));
-    CFSDEBUG(CFS_SETATTR,	myprintf(("setattr %d\n", error)); )
-    return(error);
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
 }
 
-int
-cfs_nb_access(v)
-    void *v;
+venus_access(void *mdp, ViceFid *fid, int mode,
+	struct ucred *cred, struct proc *p)
 {
-/* true args */
-    struct vop_access_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    int mode = ap->a_mode;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *inp =NULL;
+    struct inputArgs *inp = NULL;
     struct outputArgs *outp;
-/* locals */
-    
-    MARK_ENTRY(CFS_ACCESS_STATS);
-    
-    /* Check for access of control object.  Only read access is
-       allowed on it. */
-    if (IS_CTL_VP(vp)) {
-	/* bogus hack - all will be marked as successes */
-	MARK_INT_SAT(CFS_ACCESS_STATS);
-	return(((mode & VREAD) && !(mode & (VWRITE | VEXEC))) 
-	       ? 0 : EACCES);
-    }
-    
-    /*
-     * if the file is a directory, and we are checking exec (eg lookup) 
-     * access, and the file is in the namecache, then the user must have 
-     * lookup access to it.
-     */
-    if (cfs_access_cache) {
-	if ((vp->v_type == VDIR) && (mode & VEXEC)) {
-	    if (cfsnc_lookup(cp, ".", cred)) {
-		MARK_INT_SAT(CFS_ACCESS_STATS);
-		return(0);                     /* it was in the cache */
-	    }
-	}
-    }
+    int size;
+    int error;
 
     CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
-    outp = (struct outputArgs *)inp;
-    
+    outp = (struct outputArgs *) inp;
+
+    /* send the open to venus. */
     INIT_IN(inp, CFS_ACCESS, cred);
-    inp->d.cfs_access.VFid = cp->c_fid;
+    inp->d.cfs_access.VFid = *fid;
     inp->d.cfs_access.flags = mode;
     size = VC_OUT_NO_DATA;
-    
-    error = cfscall(vtomi(vp), VC_INSIZE(cfs_access_in),
-		    &size, (char *)inp);
-    
-    if (inp) CFS_FREE(inp, sizeof(struct inputArgs));
 
+    error = cfscall(mdp, VC_INSIZE(cfs_access_in), &size, (char *)inp);
     if (!error) 
 	error = outp->result;
-    
-    return(error);
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
 }
 
-/*
- * CFS abort op, called after namei() when a CREATE/DELETE isn't actually
- * done. If a buffer has been saved in anticipation of a cfs_create or
- * a cfs_remove, delete it.
- */
-/* ARGSUSED */
-int
-cfs_nb_abortop(v)
-    void *v;
+venus_readlink(void *mdp, ViceFid *fid,
+	struct ucred *cred, struct proc *p,
+/*out*/	char **str, int *len)
 {
-/* true args */
-    struct vop_abortop_args /* {
-	struct vnode *a_dvp;
-	struct componentname *a_cnp;
-    } */ *ap = v;
-/* upcall decl */
-/* locals */
-
-    if ((ap->a_cnp->cn_flags & (HASBUF | SAVESTART)) == HASBUF)
-	free(ap->a_cnp->cn_pnbuf, M_NAMEI);
-    return (0);
-}
-
-int
-cfs_nb_readlink(v)
-    void *v;
-{
-/* true args */
-    struct vop_readlink_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    struct uio *uiop = ap->a_uio;
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_uio->uio_procp;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    char *buf=NULL; /*[CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in)];*/
-    
-    MARK_ENTRY(CFS_READLINK_STATS);
-    
-    /* Check for readlink of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_READLINK_STATS);
-	return(ENOENT);
-    }
-    
-    if ((cfs_symlink_cache) && (VALID_SYMLINK(cp))) { /* symlink was cached */
-	uiop->uio_rw = UIO_READ;
-	error = uiomove(cp->c_symlink, (int)cp->c_symlen, uiop);
-	if (error)
-	    MARK_INT_FAIL(CFS_READLINK_STATS);
-	else
-	    MARK_INT_SAT(CFS_READLINK_STATS);
-	return(error);
-    }
-    
-    CFS_ALLOC(buf, char*, CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    
-    INIT_IN(in, CFS_READLINK, cred);
-    in->d.cfs_readlink.VFid = cp->c_fid;
-    
-    size = CFS_MAXPATHLEN + VC_OUTSIZE(cfs_readlink_out);
-    error = cfscall(vtomi(vp), VC_INSIZE(cfs_readlink_in),
-		    &size, buf);
-    
-    error = error ? error : out->result;
-    
-    if (!error) {
-	if (cfs_symlink_cache) {
-	    CFS_ALLOC(cp->c_symlink, char *, out->d.cfs_readlink.count);
-	    cp->c_symlen = out->d.cfs_readlink.count;
-	    bcopy((char *)out + (int)out->d.cfs_readlink.data, 
-		  cp->c_symlink, out->d.cfs_readlink.count);
-	    cp->c_flags |= C_SYMLINK;
-	}
-	
-	uiop->uio_rw = UIO_READ;
-	error = uiomove((char *)out + (int)out->d.cfs_readlink.data,
-			out->d.cfs_readlink.count, uiop);
-    }
-    
-    if (buf) CFS_FREE(buf, CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in));
-
-    CFSDEBUG(CFS_READLINK, myprintf(("in readlink result %d\n",error));)
-    return(error);
-}
-
-int
-cfs_nb_fsync(v)
-    void *v;
-{
-/* true args */
-    struct vop_fsync_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    struct ucred *cred = ap->a_cred;
-    struct proc *p = ap->a_p;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *inp=NULL;
+    struct inputArgs *inp;
     struct outputArgs *outp;
-/* locals */
-   
-    MARK_ENTRY(CFS_FSYNC_STATS);
+    char *buf=NULL; /*[CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in)];*/
+    int size;
+    int error;
 
-    /* Check for fsync on an unmounting object */
-    /* The NetBSD kernel, in it's infinite wisdom, can try to fsync
-     * after an unmount has been initiated.  This is a Bad Thing,
-     * which we have to avoid.  Not a legitimate failure for stats.
-     */
-    if (IS_UNMOUNTING(cp)) {
-	return(ENODEV);
-    }
-       
-    /*
-     * We can expect fsync on any vnode at all if venus is pruging it.
-     * Venus can't very well answer the fsync request, now can it?
-     * Hopefully, it won't have to, because hopefully, venus preserves
-     * the (possibly untrue) invariant that it never purges an open
-     * vnode.  Hopefully.
-     */
-    if (cp->c_flags & C_PURGING) {
-	return(0);
+    CFS_ALLOC(buf, char*, CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
+
+    /* send the open to venus. */
+    INIT_IN(inp, CFS_READLINK, cred);
+
+    inp->d.cfs_readlink.VFid = *fid;
+    size = CFS_MAXPATHLEN + VC_OUTSIZE(cfs_readlink_out);
+
+    error = cfscall(mdp, VC_INSIZE(cfs_readlink_in), &size, (char *)inp);
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	    CFS_ALLOC(*str, char *, outp->d.cfs_readlink.count);
+	    *len = outp->d.cfs_readlink.count;
+	    bcopy((char *)outp + (int)outp->d.cfs_readlink.data, *str, *len);
     }
 
-    /* Check for fsync of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_SAT(CFS_FSYNC_STATS);
-	return(0);
-    }
+    CFS_FREE(buf, CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in));
+    return error;
+}
+
+venus_fsync(void *mdp, ViceFid *fid,
+	struct ucred *cred, struct proc *p)
+{
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
+    int size;
+    int error;
 
     CFS_ALLOC(inp, struct inputArgs *, sizeof(struct inputArgs));
-    outp = (struct outputArgs *)inp;
+    outp = (struct outputArgs *) inp;
 
+    /* send the open to venus. */
     INIT_IN(inp, CFS_FSYNC, cred);
-    inp->d.cfs_fsync.VFid = cp->c_fid;
+    inp->d.cfs_access.VFid = *fid;
     size = VC_INSIZE(cfs_fsync_in);
-    
-    error = cfscall(vtomi(vp), size, &size, (char *)inp);
+
+    error = cfscall(mdp, VC_INSIZE(cfs_fsync_in), &size, (char *)inp);
     if (!error) 
 	error = outp->result;
-    
-    CFSDEBUG(CFS_FSYNC, myprintf(("in fsync result %d\n",error)); );
-    
-    if (inp) CFS_FREE(inp, sizeof(struct inputArgs));
-    return(error);
+
+    CFS_FREE(inp, sizeof(struct inputArgs));
+    return error;
 }
 
-int
-cfs_nb_inactive(v)
-    void *v;
+venus_lookup(void *mdp, ViceFid *fid,
+    	char *nm, int len,
+	struct ucred *cred, struct proc *p,
+/*out*/	ViceFid *VFid, int *vtype)
 {
-    /* XXX - at the moment, inactive doesn't look at cred, and doesn't
-       have a proc pointer.  Oops. */
-/* true args */
-    struct vop_inactive_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    struct ucred *cred = NULL;
-    struct proc *p = curproc;
-/* upcall decl */
-/* locals */
-    
-    /* We don't need to send inactive to venus - DCS */
-    MARK_ENTRY(CFS_INACTIVE_STATS);
-    
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_SAT(CFS_INACTIVE_STATS);
-	return 0;
-    }
-    
-    CFSDEBUG(CFS_INACTIVE, myprintf(("in inactive, %x.%x.%x. vfsp %x\n",
-				  cp->c_fid.Volume, cp->c_fid.Vnode, 
-				  cp->c_fid.Unique, vp->v_mount));)
-	
-    /* If an array has been allocated to hold the symlink, deallocate it */
-    if ((cfs_symlink_cache) && (VALID_SYMLINK(cp))) {
-	if (cp->c_symlink == NULL)
-	    panic("cfs_inactive: null symlink pointer in cnode");
-	
-	CFS_FREE(cp->c_symlink, cp->c_symlen);
-	cp->c_flags &= ~C_SYMLINK;
-	cp->c_symlen = 0;
-    }
-    
-    /* Remove it from the table so it can't be found. */
-    cfs_unsave(cp);
-    if ((struct cfs_mntinfo *)(vp->v_mount->mnt_data) == NULL) {
-	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
-	panic("badness in cfs_inactive\n");
-    } else {
-	((struct cfs_mntinfo *)(vp->v_mount->mnt_data))->mi_refct--;
-    }
-
-    if (IS_UNMOUNTING(cp)) {
-#ifdef	DEBUG
-	printf("cfs_inactive: IS_UNMOUNTING use %d: vp %x, cp %x\n", vp->v_usecount, vp, cp);
-	if (cp->c_ovp != NULL)
-	    printf("cfs_inactive: cp->ovp != NULL use %d: vp %x, cp %x\n",
-	    	   vp->v_usecount, vp, cp);
-#endif
-    } else {
-#ifdef DIAGNOSTIC
-	if (CTOV(cp)->v_usecount) {
-	    panic("cfs_inactive: nonzero reference count");
-	}
-	if (cp->c_ovp != NULL) {
-	    panic("cfs_inactive:  cp->ovp != NULL");
-	}
-#endif
-	vgone(vp);
-    }
-
-    MARK_INT_SAT(CFS_INACTIVE_STATS);
-    return(0);
-}
-
-/*
- * Remote file system operations having to do with directory manipulation.
- */
-
-/* 
- * It appears that in NetBSD, lookup is supposed to return the vnode locked
- */
-int
-cfs_nb_lookup(v)
-    void *v;
-{
-/* true args */
-    struct vop_lookup_args *ap = v;
-    struct vnode *dvp = ap->a_dvp;
-    struct cnode *dcp = VTOC(dvp);
-    struct vnode **vpp = ap->a_vpp;
-    /* 
-     * It looks as though ap->a_cnp->ni_cnd->cn_nameptr holds the rest
-     * of the string to xlate, and that we must try to get at least
-     * ap->a_cnp->ni_cnd->cn_namelen of those characters to macth.  I
-     * could be wrong. 
-     */
-    struct componentname  *cnp = ap->a_cnp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error = 0, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    struct cnode *cp;
-    struct cnode *scp = NULL;
+    struct inputArgs *inp = NULL;
+    struct outputArgs *outp;
     char *buf = NULL; /*[VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1];*/
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
-    int s;
-
-    MARK_ENTRY(CFS_LOOKUP_STATS);
-
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup: %s in %d.%d.%d\n",
-				   nm, dcp->c_fid.Volume,
-				   dcp->c_fid.Vnode, dcp->c_fid.Unique)););
-    
-#if	0
-    /* Check for operation on a dying object */
-    if (IS_DYING(dcp)) {
-	COMPLAIN_BITTERLY(lookup, dcp->c_fid);
-	scp = dcp;	/* Save old dcp */
-	/* If no error, gives a valid vnode with which to work. */
-	error = getNewVnode(&dvp);	
-	if (error) {
-	    MARK_INT_FAIL(CFS_LOOKUP_STATS);
-	    return(error);	/* Can't contact dead venus */
-	}
-	dcp = VTOC(dvp);
-    }
-#endif
-
-    /* Check for lookup of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
-	*vpp = cfs_ctlvp;
-	vref(*vpp);
-	MARK_INT_SAT(CFS_LOOKUP_STATS);
-	if (scp) vrele(dvp);
-/*	return(0);*/
-	goto exit;
-    }
-    
-    /* First try to look the file up in the cfs name cache */
-    /* lock the parent vnode? */
-    
-    cp = cfsnc_lookup(dcp, nm, cred);
-    if (cp) {
-	*vpp = CTOV(cp);
-	vref(*vpp);
-	CFSDEBUG(CFS_LOOKUP, 
-		 myprintf(("lookup result %d vpp 0x%x\n",error,*vpp));)
-    } else {
-	
-	/* The name wasn't cached, so we need to contact Venus */
-	CFS_ALLOC(buf, char *, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
-	in = (struct inputArgs *)buf;
-	out = (struct outputArgs *)buf;
-	INIT_IN(in, CFS_LOOKUP, cred);
-	
-	in->d.cfs_lookup.VFid = dcp->c_fid;
-	size = VC_INSIZE(cfs_lookup_in);
-	in->d.cfs_lookup.name = (char *)size;
-	s = strlen(nm) + 1;
-	if (s > CFS_MAXNAMLEN) {
-	    MARK_INT_FAIL(CFS_LOOKUP_STATS);
-	    CFSDEBUG(CFS_LOOKUP, myprintf(("name too long: lookup, %x.%x.%x(%s)\n",
-					dcp->c_fid.Volume, dcp->c_fid.Vnode,
-					dcp->c_fid.Unique, nm)););
-	    *vpp = (struct vnode *)0;
-	    error = EINVAL;
-	    goto exit;
-	}
-	
-	strncpy((char *)in + (int)in->d.cfs_lookup.name, nm, s);
-	size += s;
-	
-	error = cfscall(vtomi(dvp), size, &size, buf);
-	
-	if (!error) 
-	    error = out->result;
-	
-	if (error) {
-	    MARK_INT_FAIL(CFS_LOOKUP_STATS);
-	    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup error on %x.%x.%x(%s)%d\n",
-					dcp->c_fid.Volume, dcp->c_fid.Vnode, dcp->c_fid.Unique, nm, error));)
-	    *vpp = (struct vnode *)0;
-	} else {
-	    MARK_INT_SAT(CFS_LOOKUP_STATS);
-	    CFSDEBUG(CFS_LOOKUP, 
-		     myprintf(("lookup: vol %x vno %x uni %x type %o result %d\n",
-			    out->d.cfs_lookup.VFid.Volume, 
-			    out->d.cfs_lookup.VFid.Vnode,
-			    out->d.cfs_lookup.VFid.Unique,
-			    out->d.cfs_lookup.vtype,
-			    out->result)); )
-		
-	    cp = makecfsnode(&out->d.cfs_lookup.VFid, dvp->v_mount, 
-			      out->d.cfs_lookup.vtype);
-	    *vpp = CTOV(cp);
-	    
-	    /* enter the new vnode in the Name Cache only if the top bit isn't set */
-	    /* And don't enter a new vnode for an invalid one! */
-	    if (!(out->d.cfs_lookup.vtype & CFS_NOCACHE) && scp == 0)
-		cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
-	}
-    }
-
- exit:
-    if (buf) CFS_FREE(buf, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
-    if (scp) vrele(dvp);
-    /* 
-     * If we are creating, and this was the last name to be looked up,
-     * and the error was ENOENT, then there really shouldn't be an
-     * error and we can make the leaf NULL and return success.  Since
-     * this is supposed to work under Mach as well as NetBSD, we're
-     * leaving this fn wrapped.  We also must tell lookup/namei that
-     * we need to save the last component of the name.  (Create will
-     * have to free the name buffer later...lucky us...)
-     */
-    if (((cnp->cn_nameiop == CREATE) || (cnp->cn_nameiop == RENAME))
-	&& (cnp->cn_flags & ISLASTCN)
-	&& (error == ENOENT))
-    {
-	error = EJUSTRETURN;
-	cnp->cn_flags |= SAVENAME;
-	*ap->a_vpp = NULL;
-    }
-
-    /* 
-     * If we are removing, and we are at the last element, and we
-     * found it, then we need to keep the name around so that the
-     * removal will go ahead as planned.  Unfortunately, this will
-     * probably also lock the to-be-removed vnode, which may or may
-     * not be a good idea.  I'll have to look at the bits of
-     * cfs_remove to make sure.  We'll only save the name if we did in
-     * fact find the name, otherwise cfs_nb_remove won't have a chance
-     * to free the pathname.  
-     */
-    if ((cnp->cn_nameiop == DELETE)
-	&& (cnp->cn_flags & ISLASTCN)
-	&& !error)
-    {
-	cnp->cn_flags |= SAVENAME;
-    }
-
-    /* 
-     * If the lookup went well, we need to (potentially?) unlock the
-     * parent, and lock the child.  We are only responsible for
-     * checking to see if the parent is supposed to be unlocked before
-     * we return.  We must always lock the child (provided there is
-     * one, and (the parent isn't locked or it isn't the same as the
-     * parent.)  Simple, huh?  We can never leave the parent locked unless
-     * we are ISLASTCN
-     */
-    if (!error || (error == EJUSTRETURN)) {
-	if (!(cnp->cn_flags & LOCKPARENT) || !(cnp->cn_flags & ISLASTCN)) {
-	    if ((error = VOP_UNLOCK(dvp))) {
-		return error; 
-	    }	    
-	    /* 
-	     * The parent is unlocked.  As long as there is a child,
-	     * lock it without bothering to check anything else. 
-	     */
-	    if (*ap->a_vpp) {
-		if ((error = VOP_LOCK(*ap->a_vpp))) {
-		    printf("cfs_nb_lookup: ");
-		    panic("unlocked parent but couldn't lock child");
-		}
-	    }
-	} else {
-	    /* The parent is locked, and may be the same as the child */
-	    if (*ap->a_vpp && (*ap->a_vpp != dvp)) {
-		/* Different, go ahead and lock it. */
-		if ((error = VOP_LOCK(*ap->a_vpp))) {
-		    printf("cfs_nb_lookup: ");
-		    panic("unlocked parent but couldn't lock child");
-		}
-	    }
-	}
-    } else {
-	/* If the lookup failed, we need to ensure that the leaf is NULL */
-	/* Don't change any locking? */
-	*ap->a_vpp = NULL;
-    }
-    return(error);
-}
-
-/*ARGSUSED*/
-int
-cfs_nb_create(v)
-    void *v;
-{
-/* true args */
-    struct vop_create_args *ap = v;
-    struct vnode *dvp = ap->a_dvp;
-    struct cnode *dcp = VTOC(dvp);
-    struct vattr *va = ap->a_vap;
-    enum vcexcl exclusive = EXCL;
-    int mode = ap->a_vap->va_mode;
-    struct vnode **vpp = ap->a_vpp;
-    struct componentname  *cnp = ap->a_cnp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)];*/
-/* locals */
-    struct cnode *cp;
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
-    int s;
-
-    MARK_ENTRY(CFS_CREATE_STATS);
-    
-    /* All creates are exclusive XXX */
-    /* I'm assuming the 'mode' argument is the file mode bits XXX */
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    /* Check for create of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
-	*vpp = (struct vnode *)0;
-	MARK_INT_FAIL(CFS_CREATE_STATS);
-	return(EACCES);
-    }
-
-    CFS_ALLOC(buf, char *, (CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_CREATE, cred);
-    in->d.cfs_create.VFid = dcp->c_fid;
-    in->d.cfs_create.excl = exclusive;
-    in->d.cfs_create.mode = mode;
-    in->d.cfs_create.attr = *va;
-    
-    size = VC_INSIZE(cfs_create_in);
-    in->d.cfs_create.name = (char *)size;
-    
-    s = strlen(nm) + 1;
-    strncpy((char*)in + (int)in->d.cfs_create.name, nm, s);
-    size += s;
-    
-    error = cfscall(vtomi(dvp), size, &size, buf);
-    
-    if (!error) 
-	error = out->result;
-    
-    if (!error) {
-	
-	/* If this is an exclusive create, panic if the file already exists. */
-	/* Venus should have detected the file and reported EEXIST. */
-
-	if ((exclusive == EXCL) &&
-	    (cfs_find(&out->d.cfs_create.VFid, dvp->v_mount) != NULL))
-	    panic("cnode existed for newly created file!");
-	
-	cp = makecfsnode(&out->d.cfs_create.VFid, dvp->v_mount,
-			((struct vattr *) &(out->d.cfs_create.attr))->va_type);
-	*vpp = CTOV(cp);
-	
-	/* Update va to reflect the new attributes. */
-	(*va) = out->d.cfs_create.attr;
-	
-	/* Update the attribute cache and mark it as valid */
-	if (cfs_attr_cache) {
-	    VTOC(*vpp)->c_vattr = out->d.cfs_create.attr;  
-	    VTOC(*vpp)->c_flags |= C_VATTR;       
-	}
-	
-	/* Invalidate the parent's attr cache, the modification time has changed */
-	VTOC(dvp)->c_flags &= ~C_VATTR;
-	
-	/* enter the new vnode in the Name Cache */
-	cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
-	
-	CFSDEBUG(CFS_CREATE, 
-		 myprintf(("create: (%x.%x.%x), result %d\n",
-			out->d.cfs_create.VFid.Volume,
-			out->d.cfs_create.VFid.Vnode,
-			out->d.cfs_create.VFid.Unique,
-			out->result)); )
-    }
-    else {
-	*vpp = (struct vnode *)0;
-	CFSDEBUG(CFS_CREATE, myprintf(("create error %d\n",error));)
-    }
-
-    if (buf) CFS_FREE(buf, (CFS_MAXNAMLEN + VC_INSIZE(cfs_create_in)));
-    /* Locking strategy. */
-    /*
-     * In NetBSD, all creates must explicitly vput their dvp's.  We'll
-     * go ahead and use the LOCKLEAF flag of the cnp argument.
-     * However, I'm pretty sure that create must return the leaf
-     * locked; so there is a DIAGNOSTIC check to ensure that this is
-     * true.
-     */
-    vput(dvp);
-    if (!error) {
-	if (cnp->cn_flags & LOCKLEAF) {
-	    if ((error = VOP_LOCK(*ap->a_vpp))) {
-		printf("cfs_nb_create: ");
-		panic("unlocked parent but couldn't lock child");
-	    }
-	}
-#ifdef DIAGNOSTIC
-	else {
-	    printf("cfs_nb_create: LOCKLEAF not set!\n");
-	}
-#endif /* DIAGNOSTIC */
-    }
-    /* Have to free the previously saved name */
-    /* 
-     * This condition is stolen from ufs_makeinode.  I have no idea
-     * why it's here, but what the hey...
-     */
-    if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
-    }
-    return(error);
-}
-
-int
-cfs_nb_remove(v)
-    void *v;
-{
-/* true args */
-    struct vop_remove_args *ap = v;
-    struct vnode *dvp = ap->a_dvp;
-    struct cnode *cp = VTOC(dvp);
-    struct componentname  *cnp = ap->a_cnp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, s;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    char *buf=NULL; /*[CFS_MAXNAMLEN + sizeof(struct inputArgs)];*/
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
-    struct cnode *tp;
-    
-    MARK_ENTRY(CFS_REMOVE_STATS);
-    
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    CFSDEBUG(CFS_REMOVE, myprintf(("remove: %s in %d.%d.%d\n",
-				   nm, cp->c_fid.Volume, cp->c_fid.Vnode,
-				   cp->c_fid.Unique)););
-
-    /* Remove the file's entry from the CFS Name Cache */
-    /* We're being conservative here, it might be that this person
-     * doesn't really have sufficient access to delete the file
-     * but we feel zapping the entry won't really hurt anyone -- dcs
-     */
-    /* I'm gonna go out on a limb here. If a file and a hardlink to it
-     * exist, and one is removed, the link count on the other will be
-     * off by 1. We could either invalidate the attrs if cached, or
-     * fix them. I'll try to fix them. DCS 11/8/94
-     */
-    tp = cfsnc_lookup(VTOC(dvp), nm, cred);
-    if (tp) {
-	if (VALID_VATTR(tp)) {	/* If attrs are cached */
-	    if (tp->c_vattr.va_nlink > 1) {	/* If it's a hard link */
-		tp->c_vattr.va_nlink--;
-	    }
-	}
-	
-	cfsnc_zapfile(VTOC(dvp), nm); 
-	/* No need to flush it if it doesn't exist! */
-    }
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    VTOC(dvp)->c_flags &= ~C_VATTR;
-    
-    /* Check for remove of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
-	MARK_INT_FAIL(CFS_REMOVE_STATS);
-	return(ENOENT);
-    }
-
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-    in = (struct inputArgs *) buf;
-    out = (struct outputArgs *) buf;
-    
-    INIT_IN(in, CFS_REMOVE, cred);
-    in->d.cfs_remove.VFid = cp->c_fid;
-    in->d.cfs_remove.name = (char *)(VC_INSIZE(cfs_remove_in));
-    s = strlen(nm) + 1;
-    strncpy((char *)in + (int)in->d.cfs_remove.name, nm, s);
-    s += VC_INSIZE(cfs_remove_in);
-    
-    error = cfscall(vtomi(dvp), s, &s, (char *)in);
-    
-    if (!error) 
-	error = out->result;
-    
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-    CFSDEBUG(CFS_REMOVE, myprintf(("in remove result %d\n",error)); )
-    /* 
-     * Regardless of what happens, we have to unconditionally drop
-     * locks/refs on parent and child.  (I hope).  This is based on
-     * what ufs_remove seems to be doing.
-     */
-    if (dvp == ap->a_vp) {
-	vrele(ap->a_vp);
-    } else {
-	vput(ap->a_vp);
-    }
-    vput(dvp);
-
-    if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
-    }
-    return(error);
-}
-
-int
-cfs_nb_link(v)
-    void *v;
-{
-/* true args */
-    struct vop_link_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    struct vnode *tdvp = ap->a_dvp;
-    struct cnode *tdcp = VTOC(tdvp);
-    struct componentname *cnp = ap->a_cnp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, s;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_link_in)];*/
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *tnm = tname;
-
-    MARK_ENTRY(CFS_LINK_STATS);
-    
-    if (cfsdebug & CFSDBGMSK(CFS_LINK)) {
-	struct cnode *cp;
-	struct cnode *tdcp;
-
-	cp = VTOC(ap->a_vp);
-	tdcp = VTOC(ap->a_dvp);
-	myprintf(("nb_link:   vp fid: (%x.%x.%x)\n",
-		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-	myprintf(("nb_link: tdvp fid: (%x.%x.%x)\n",
-		  tdcp->c_fid.Volume, tdcp->c_fid.Vnode, tdcp->c_fid.Unique));
-	
-    }
-    if (cfsdebug & CFSDBGMSK(CFS_LINK)) {
-	myprintf(("link:   vp fid: (%d.%d.%d)\n",
-		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-	myprintf(("link: tdvp fid: (%d.%d.%d)\n",
-		  tdcp->c_fid.Volume, tdcp->c_fid.Vnode, tdcp->c_fid.Unique));
-
-    }
-
-
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    /* Check for link to/from control object. */
-    if (IS_CTL_NAME(tdvp, tnm) || IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_LINK_STATS);
-	return(EACCES);
-    }
-
-    /*
-     * According to the ufs_link operation here's the locking situation:
-     *     We enter with the thing called "dvp" (the directory) locked.
-     *     We must unconditionally drop locks on "dvp"
-     *
-     *     We enter with the thing called "vp" (the linked-to) unlocked,
-     *       but ref'd (?)
-     *     We seem to need to lock it before calling cfs_link, and
-     *       unconditionally unlock it after.
-     */
-    
-    if ((ap->a_vp != ap->a_dvp) && (error = VOP_LOCK(ap->a_vp))) {
-	goto exit;
-    }
-	
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-    in = (struct inputArgs *) buf;
-    out = (struct outputArgs *) buf;
-
-    INIT_IN(in, CFS_LINK, cred);
-    in->d.cfs_link.sourceFid = cp->c_fid;
-    in->d.cfs_link.destFid = tdcp->c_fid;
-    in->d.cfs_link.tname = (char *)(VC_INSIZE(cfs_link_in));
-    s = strlen(tnm) + 1;
-    strncpy((char *)in + (int)in->d.cfs_link.tname, tnm, s);
-    s += VC_INSIZE(cfs_link_in);
-    
-    error = cfscall(vtomi(vp), s, &s, (char *)in);
-    if (!error) 
-	error = out->result;
-    
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    VTOC(tdvp)->c_flags &= ~C_VATTR;
-    VTOC(vp)->c_flags &= ~C_VATTR;
-    
-    CFSDEBUG(CFS_LINK,	myprintf(("in link result %d\n",error)); )
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + sizeof(struct inputArgs));
-
-exit:
-
-    if (ap->a_vp != ap->a_dvp) {
-	VOP_UNLOCK(ap->a_vp);
-    }
-    vput(ap->a_dvp);
-
-    /* Drop the name buffer if we don't need to SAVESTART */
-    if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
-    }
-    return(error);
-}
-
-int
-cfs_nb_rename(v)
-    void *v;
-{
-/* true args */
-    struct vop_rename_args *ap = v;
-    struct vnode *odvp = ap->a_fdvp;
-    struct cnode *odcp = VTOC(odvp);
-    struct componentname  *fcnp = ap->a_fcnp;
-    struct vnode *ndvp = ap->a_tdvp;
-    struct cnode *ndcp = VTOC(ndvp);
-    struct componentname  *tcnp = ap->a_tcnp;
-    struct ucred *cred = fcnp->cn_cred;
-    struct proc *p = fcnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* true args */
-    char fname[MAXPATHLEN];   /* overkill, but... */
-    char *onm = fname;
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nnm = tname;
-    /* Buffer to hold the basic message, 2 names, and padding to word align them */
-    char *buf=NULL; /*[VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8];*/
-    int s;
-    
-    MARK_ENTRY(CFS_RENAME_STATS);
-    
-    bcopy(fcnp->cn_nameptr, fname,  fcnp->cn_namelen);
-    bcopy(tcnp->cn_nameptr, tname,  tcnp->cn_namelen);
-    fname[fcnp->cn_namelen] = '\0';
-    tname[tcnp->cn_namelen] = '\0';
-
-    /* Hmmm.  The vnodes are already looked up.  Perhaps they are locked?
-       This could be Bad. XXX */
-#ifdef DIAGNOSTIC
-    if ((fcnp->cn_cred != tcnp->cn_cred)
-	|| (fcnp->cn_proc != tcnp->cn_proc))
-    {
-	panic("cfs_nb_rename: component names don't agree");
-    }
-#endif DIAGNOSTIC
-
-    /* Check for rename involving control object. */ 
-    if (IS_CTL_NAME(odvp, onm) || IS_CTL_NAME(ndvp, nnm)) {
-	MARK_INT_FAIL(CFS_RENAME_STATS);
-	return(EACCES);
-    }
-    
-    /* Problem with moving directories -- need to flush entry for .. */
-    if (odvp != ndvp) {
-	struct cnode *ovcp = cfsnc_lookup(VTOC(odvp), onm, cred);
-	if (ovcp) {
-	    struct vnode *ovp = CTOV(ovcp);
-	    if ((ovp) &&
-		(ovp->v_type == VDIR)) /* If it's a directory */
-		cfsnc_zapfile(VTOC(ovp),"..");
-	}
-    }
-    
-    /* Remove the entries for both source and target files */
-    cfsnc_zapfile(VTOC(odvp), onm);
-    cfsnc_zapfile(VTOC(ndvp), nnm);
-    
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    VTOC(odvp)->c_flags &= ~C_VATTR;
-    VTOC(ndvp)->c_flags &= ~C_VATTR;
-    
-    CFS_ALLOC(buf, char *, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-
-    INIT_IN(in, CFS_RENAME, cred);
-    
-    in->d.cfs_rename.sourceFid = odcp->c_fid;
-    in->d.cfs_rename.destFid = ndcp->c_fid;
-    
-    size = VC_INSIZE(cfs_rename_in);	
-    in->d.cfs_rename.srcname = (char*)size;
-    s = (strlen(onm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
-	MARK_INT_FAIL(CFS_RENAME_STATS);
-	error = EINVAL;
-	goto exit;
-    }
-    strncpy((char *)in + (int)in->d.cfs_rename.srcname, onm, s);
-    
-    size += s;
-    in->d.cfs_rename.destname = (char *)size;
-    
-    s = (strlen(nnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
-	MARK_INT_FAIL(CFS_RENAME_STATS);
-	error = EINVAL;
-	goto exit;
-    }
-    strncpy((char *)in + (int)in->d.cfs_rename.destname, nnm, s);
-    
-    size += s;
-    error = cfscall(vtomi(odvp), size, &size, (char *)in);
-    if (!error) 
-	error = out->result;
-    
- exit:
-    if (buf) CFS_FREE(buf, VC_INSIZE(cfs_rename_in) + 2 * CFS_MAXNAMLEN + 8);
-    CFSDEBUG(CFS_RENAME, myprintf(("in rename result %d\n",error));)
-    /* XXX - do we need to call cache pureg on the moved vnode? */
-    cache_purge(ap->a_fvp);
-
-    /* It seems to be incumbent on us to drop locks on all four vnodes */
-    /* From-vnodes are not locked, only ref'd.  To-vnodes are locked. */
-    
-    vrele(ap->a_fvp);
-    vrele(odvp);
-
-    if (ap->a_tvp) {
-	if (ap->a_tvp == ndvp) {
-	    vrele(ap->a_tvp);
-	} else {
-	    vput(ap->a_tvp);
-	}
-    }
-
-    vput(ndvp);
-    return(error);
-}
-
-int
-cfs_nb_mkdir(v)
-    void *v;
-{
-/* true args */
-    struct vop_mkdir_args *ap = v;
-    struct vnode *dvp = ap->a_dvp;
-    struct cnode *dcp = VTOC(dvp);	
-    struct componentname  *cnp = ap->a_cnp;
-    register struct vattr *va = ap->a_vap;
-    struct vnode **vpp = ap->a_vpp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    char tname[MAXPATHLEN];   /* overkill, but... */
-    char *nm = tname;
-    struct cnode *cp;
-    char *buf=NULL; /*[CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in)];*/
-    
-    MARK_ENTRY(CFS_MKDIR_STATS);
-
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-    
-    /* Check for mkdir of target object. */
-    if (IS_CTL_NAME(dvp, nm)) {
-	*vpp = (struct vnode *)0;
-	MARK_INT_FAIL(CFS_MKDIR_STATS);
-	return(EACCES);
-    }
-    
-    size = strlen(nm) + 1;
-    
-    if (size > CFS_MAXNAMLEN) {
-	*vpp = (struct vnode *)0;
-	MARK_INT_FAIL(CFS_MKDIR_STATS);
-	return(EACCES);
-    }
-
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_MKDIR, cred);
-    
-    in->d.cfs_mkdir.VFid = dcp->c_fid;
-    in->d.cfs_mkdir.attr = *va;
-    in->d.cfs_mkdir.name = (char *)(VC_INSIZE(cfs_mkdir_in));
-    strncpy((char *)in + (int)in->d.cfs_mkdir.name, nm, size);
-    
-    size += VC_INSIZE(cfs_mkdir_in);
-    
-    error = cfscall(vtomi(dvp), size, &size, (char *)in);
-    
-    if (!error) 
-	error = out->result;
-    
-    if (!error) {
-	if (cfs_find(&out->d.cfs_mkdir.VFid, dvp->v_mount) != NULL)
-	    panic("cnode existed for newly created directory!");
-	
-	
-	cp =  makecfsnode(&out->d.cfs_mkdir.VFid, 
-			  dvp->v_mount, va->va_type);
-	*vpp = CTOV(cp);
-	
-	/* enter the new vnode in the Name Cache */
-	cfsnc_enter(VTOC(dvp), nm, cred, VTOC(*vpp));
-	
-	/* as a side effect, enter "." and ".." for the directory */
-	cfsnc_enter(VTOC(*vpp), ".", cred, VTOC(*vpp));
-	cfsnc_enter(VTOC(*vpp), "..", cred, VTOC(dvp));
-	
-	if (cfs_attr_cache) {
-	    VTOC(*vpp)->c_vattr = out->d.cfs_mkdir.attr;/* update the attr cache */
-	    VTOC(*vpp)->c_flags |= C_VATTR;   /* Valid attributes in cnode */
-	}
-	
-	/* Invalidate the parent's attr cache, the modification time has changed */
-	VTOC(dvp)->c_flags &= ~C_VATTR;
-	
-	CFSDEBUG( CFS_MKDIR, myprintf(("mkdir: (%x.%x.%x) result %d\n",
-				    out->d.cfs_mkdir.VFid.Volume,
-				    out->d.cfs_mkdir.VFid.Vnode,
-				    out->d.cfs_mkdir.VFid.Unique,
-				    out->result)); )
-    }
-    else {
-	*vpp = (struct vnode *)0;
-	CFSDEBUG(CFS_MKDIR, myprintf(("mkdir error %d\n",error));)
-    }
-    
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_mkdir_in));
-    /*
-     * Currently, all mkdirs explicitly vput their dvp's.
-     * It also appears that we *must* lock the vpp, since
-     * lockleaf isn't set, but someone down the road is going
-     * to try to unlock the new directory.
-     */
-    vput(dvp);
-    if (!error) {
-	if ((error = VOP_LOCK(*ap->a_vpp))) {
-	    panic("cfs_nb_mkdir: couldn't lock child");
-	}
-    }
-    /* Have to free the previously saved name */
-    /* 
-     * ufs_mkdir doesn't check for SAVESTART before freeing the
-     * pathname buffer, but ufs_create does.  For the moment, I'll
-     * follow their lead, but this seems like it is probably
-     * incorrect.  
-     */
-    FREE(cnp->cn_pnbuf, M_NAMEI);
-    return(error);
-}
-
-int
-cfs_nb_rmdir(v)
-    void *v;
-{
-/* true args */
-    struct vop_rmdir_args *ap = v;
-    struct vnode *dvp = ap->a_dvp;
-    struct cnode *dcp = VTOC(dvp);
-    struct componentname  *cnp = ap->a_cnp;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* true args */
-    char tname[MAXPATHLEN];	/* overkill, but... */
-    char *nm = tname;
-    char *buf=NULL;		/*[CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in)];*/
-    struct cnode *cp;
-   
-    MARK_ENTRY(CFS_RMDIR_STATS);
-    
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    /* Check for rmdir of control object. */
-    if (IS_CTL_NAME(dvp, nm)) {
-	MARK_INT_FAIL(CFS_RMDIR_STATS);
-	return(ENOENT);
-    }
-    
-    /* We're being conservative here, it might be that this person
-     * doesn't really have sufficient access to delete the file
-     * but we feel zapping the entry won't really hurt anyone -- dcs
-     */
-    /*
-     * As a side effect of the rmdir, remove any entries for children of
-     * the directory, especially "." and "..".
-     */
-    cp = cfsnc_lookup(dcp, nm, cred);
-    if (cp) cfsnc_zapParentfid(&(cp->c_fid), NOT_DOWNCALL);
-    
-    /* Remove the file's entry from the CFS Name Cache */
-    cfsnc_zapfile(dcp, nm);
-    
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    dcp->c_flags &= ~C_VATTR;
-
-    CFS_ALLOC(buf, char *, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_RMDIR, cred);
-    
-    in->d.cfs_rmdir.VFid = dcp->c_fid;
-    in->d.cfs_rmdir.name = (char *)(VC_INSIZE(cfs_rmdir_in));
-    
-    size = strlen(nm) + 1;
-	
-    strncpy((char *)in + (int)in->d.cfs_rmdir.name, nm, size);
-    size = VC_INSIZE(cfs_rmdir_in) + size;
-    
-    error = cfscall(vtomi(dvp), size, &size, (char *)in);
-    if (!error) 
-	error = out->result;
-    
-    CFSDEBUG(CFS_RMDIR, myprintf(("in rmdir result %d\n",error)); )
-
-    if (buf) CFS_FREE(buf, CFS_MAXNAMLEN + VC_INSIZE(cfs_rmdir_in));
-    /*
-     * regardless of what happens, we need to drop locks/refs on the 
-     * parent and child.  I think. 
-     */
-    if (dvp == ap->a_vp) {
-	vrele(ap->a_vp);
-    } else {
-	vput(ap->a_vp);
-    }
-    vput(dvp);
-
-    if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
-    }
-    return(error);
-}
-
-int
-cfs_nb_symlink(v)
-    void *v;
-{
-/* true args */
-    struct vop_symlink_args *ap = v;
-    struct vnode *tdvp = ap->a_dvp;
-    struct cnode *tdcp = VTOC(tdvp);	
-    struct componentname *cnp = ap->a_cnp;
-    struct vattr *tva = ap->a_vap;
-    char *lnm = ap->a_target;
-    struct ucred *cred = cnp->cn_cred;
-    struct proc *p = cnp->cn_proc;
-/* upcall decl */
-    int error, size;
-    struct inputArgs *in;
-    struct outputArgs *out;
-/* locals */
-    /* 
-     * XXX I'm assuming the following things about cfs_symlink's
-     * arguments: 
-     *       t(foo) is the new name/parent/etc being created.
-     *       lname is the contents of the new symlink. 
-     */
-    char	tname[MAXPATHLEN];   /* overkill, but... */
-    char	*tnm = tname;
-    /* allocate space for regular input, plus 1 path and 1 name, plus padding */
-    char	*buf = NULL; /*[sizeof(struct inputArgs) + CFS_MAXPATHLEN + CFS_MAXNAMLEN + 8];*/
-    int		 s;
-
-    /* XXX What about the vpp argument?  Do we need it? */
-    /* 
-     * Here's the strategy for the moment: perform the symlink, then
-     * do a lookup to grab the resulting vnode.  I know this requires
-     * two communications with Venus for a new sybolic link, but
-     * that's the way the ball bounces.  I don't yet want to change
-     * the way the Mach symlink works.  When Mach support is
-     * deprecated, we should change symlink so that the common case
-     * returns the resultant vnode in a vpp argument.
-     */
-    
-    MARK_ENTRY(CFS_SYMLINK_STATS);
-    
-    bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
-    tname[cnp->cn_namelen] = '\0';
-
-    /* Check for symlink of control object. */
-    if (IS_CTL_NAME(tdvp, tnm)) {
-	MARK_INT_FAIL(CFS_SYMLINK_STATS);
-	return(EACCES);
-    }
-    
-    CFS_ALLOC(buf, char *, sizeof(struct inputArgs) + CFS_MAXPATHLEN 
-	                   + CFS_MAXNAMLEN + 8);
-    in = (struct inputArgs *)buf;
-    out = (struct outputArgs *)buf;
-    INIT_IN(in, CFS_SYMLINK, cred);
-    
-    in->d.cfs_symlink.VFid = tdcp->c_fid;
-    in->d.cfs_symlink.attr = *tva;
-    
-    size = VC_INSIZE(cfs_symlink_in);
-    in->d.cfs_symlink.srcname =(char*)size;
-    
-    s = (strlen(lnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXPATHLEN) {
-	MARK_INT_FAIL(CFS_SYMLINK_STATS);
-	return(EINVAL);
-    }
-    strncpy((char *)in + (int)in->d.cfs_symlink.srcname, lnm, s);
-    
-    size += s;
-    in->d.cfs_symlink.tname = (char *)size;
-    s = (strlen(tnm) & ~0x3) + 4;	/* Round up to word boundary. */
-    if (s > CFS_MAXNAMLEN) {
-	MARK_INT_FAIL(CFS_SYMLINK_STATS);
-	error = EINVAL;
-	goto exit;
-    }
-    strncpy((char *)in + (int)in->d.cfs_symlink.tname, tnm, s);
-    
-    size += s;
-    error = cfscall(vtomi(tdvp), size, &size, (char *)in);
-    if (!error)
-	error = out->result; 
-    if (!error)
-/*
-	error = cfs_lookup(tdvp, tname, ap->a_vpp, cred, p);
- */
-    {
-    	struct componentname cn;
-	cn.cn_nameiop = LOOKUP;
-	cn.cn_flags = 0;
-	cn.cn_proc = p;
-	cn.cn_cred = cred;
-	cn.cn_nameptr = tname;
-	error = VOP_LOOKUP(tdvp, ap->a_vpp, &cn);
-    }
-
-    /* Invalidate the parent's attr cache, the modification time has changed */
-    tdcp->c_flags &= ~C_VATTR;
-    
-    /* 
-     * Okay, now we have to drop locks on dvp.  vpp is unlocked, but
-     * ref'd.  It doesn't matter what happens in either symlink or
-     * lookup.  Furthermore, there isn't any way for (dvp == *vpp), so
-     * we don't bother checking.  
-     */
-    vput(ap->a_dvp);
-    if (*ap->a_vpp) vrele(*ap->a_vpp);
-
-    /* 
-     * Free the name buffer 
-     */
-    if ((cnp->cn_flags & SAVESTART) == 0) {
-	FREE(cnp->cn_pnbuf, M_NAMEI);
-    }
-
- exit:    
-    if (buf) {
-	CFS_FREE(buf, sizeof(struct inputArgs) + CFS_MAXPATHLEN 
-		 + CFS_MAXNAMLEN + 8);
-    }
-    CFSDEBUG(CFS_SYMLINK, myprintf(("in symlink result %d\n",error)); )
-    return(error);
-}
-
-/*
- * Read directory entries.
- */
-int
-cfs_nb_readdir(v)
-    void *v;
-{
-/* true args */
-    struct vop_readdir_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-    register struct uio *uiop = ap->a_uio;
-    struct ucred *cred = ap->a_cred;
-    int *eofflag = ap->a_eofflag;
-    u_long *cookies = ap->a_cookies;
-    int ncookies = ap->a_ncookies;
-    struct proc *p = ap->a_uio->uio_procp;
-/* upcall decl */
-/* locals */
     int error = 0;
-    
-    MARK_ENTRY(CFS_READDIR_STATS);
-    
-    CFSDEBUG(CFS_READDIR, myprintf(("cfs_readdir(%x, %d, %d, %d)\n", uiop->uio_iov->iov_base, uiop->uio_resid, uiop->uio_offset, uiop->uio_segflg)); )
-	
-    /* Check for readdir of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_FAIL(CFS_READDIR_STATS);
-	return(ENOENT);
-    }
-    
-    if (cfs_intercept_rdwr) {
-	/* Redirect the request to UFS. */
-	
-	/* If directory is not already open do an "internal open" on it. */
-	int opened_internally = 0;
-	if (cp->c_ovp == NULL) {
-	    opened_internally = 1;
-	    MARK_INT_GEN(CFS_OPEN_STATS);
-	    error = VOP_OPEN(vp, FREAD, cred, p);
-	    if (error) return(error);
-	}
-	
-	/* Have UFS handle the call. */
-	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%x.%x.%x), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, vp->v_usecount)); )
-	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
-			       ncookies);
-	
-	if (error)
-	    MARK_INT_FAIL(CFS_READDIR_STATS);
-	else
-	    MARK_INT_SAT(CFS_READDIR_STATS);
-	
-	/* Do an "internal close" if necessary. */ 
-	if (opened_internally) {
-	    MARK_INT_GEN(CFS_CLOSE_STATS);
-	    (void)VOP_CLOSE(vp, FREAD, cred, p);
-	}
-    }
-    else {
-	/* Read the block from Venus. */
-	struct inputArgs *in;
-	struct outputArgs *out;
-	struct iovec *iovp = uiop->uio_iov;
-	unsigned count = iovp->iov_len;
-	char *buf=NULL;
-	int size;
-	
-	
-	/* Make the count a multiple of DIRBLKSIZ (borrowed from ufs_readdir). */	
-#define DIRBLKSIZ DEV_BSIZE
-	if ((uiop->uio_iovcnt != 1) || (count < DIRBLKSIZ) ||
-	    (uiop->uio_offset & (DIRBLKSIZ - 1)))
-	    return (EINVAL);
-	count &= ~(DIRBLKSIZ - 1);
-	uiop->uio_resid -= iovp->iov_len - count;
-	iovp->iov_len = count;
-	if (count > VC_DATASIZE)
-	    return(EINVAL);
-	
-	CFS_ALLOC(buf, char *, VC_MAXMSGSIZE);
-	in = (struct inputArgs *)buf;
-	out = (struct outputArgs *)buf;
-	INIT_IN(in, CFS_READDIR, cred);
-	
-	in->d.cfs_readdir.VFid = cp->c_fid;
-	in->d.cfs_readdir.count = count;
-	in->d.cfs_readdir.offset = uiop->uio_offset;
-	
-	size = VC_MAXMSGSIZE;
-	error = cfscall(vtomi(CTOV(cp)), VC_INSIZE(cfs_readdir_in),
-			&size, (char *)in);
-	
-	if (!error) error = out->result;
-	
-	CFSDEBUG(CFS_READDIR,
-		 myprintf(("cfs_readdir(%x, %d, %d, %d) returns (%d, %d)\n",
-			(char *)out + (int)out->d.cfs_readdir.data, in->d.cfs_readdir.count,
-			in->d.cfs_readdir.offset, uiop->uio_segflg, error,
-			out->d.cfs_readdir.size)); )
-	    
-	if (!error) {
-	    bcopy((char *)out + (int)out->d.cfs_readdir.data, iovp->iov_base, out->d.cfs_readdir.size);
-	    iovp->iov_base += out->d.cfs_readdir.size;
-	    iovp->iov_len -= out->d.cfs_readdir.size;
-	    uiop->uio_resid -= out->d.cfs_readdir.size;
-	    uiop->uio_offset += out->d.cfs_readdir.size;
-	}
-	if (buf) CFS_FREE(buf, VC_MAXMSGSIZE);
-	
-    }
-    
-    return(error);
-}
+    int size;
 
-/*
- * Convert from file system blocks to device blocks
- */
-int
-cfs_nb_bmap(v)
-    void *v;
-{
-    /* XXX on the global proc */
-/* true args */
-    struct vop_bmap_args *ap = v;
-    struct vnode *vp = ap->a_vp;	/* file's vnode */
-    daddr_t bn = ap->a_bn;		/* fs block number */
-    struct vnode **vpp = ap->a_vpp;	/* RETURN vp of device */
-    daddr_t *bnp = ap->a_bnp;		/* RETURN device block number */
-    struct proc *p = curproc;
-/* upcall decl */
-/* locals */
+    CFS_ALLOC(buf, char *, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
+    inp = (struct inputArgs *) buf;
+    outp = (struct outputArgs *) buf;
 
-	*vpp = (struct vnode *)0;
-	myprintf(("cfs_bmap called!\n"));
-	return(EINVAL);
-}
+    /* Send the open to Venus. */
+    INIT_IN(inp, CFS_LOOKUP, cred);
 
-/*
- * I don't think the following two things are used anywhere, so I've
- * commented them out 
- * 
- * struct buf *async_bufhead; 
- * int async_daemon_count;
- */
-int
-cfs_nb_strategy(v)
-    void *v;
-{
-/* true args */
-    struct vop_strategy_args *ap = v;
-    register struct buf *bp = ap->a_bp;
-    struct proc *p = curproc;
-/* upcall decl */
-/* locals */
+    inp->d.cfs_lookup.VFid = *fid;
+    size = VC_INSIZE(cfs_lookup_in);
+    inp->d.cfs_lookup.name = (char *)size;
 
-	myprintf(("cfs_strategy called!\n"));
-	return(EINVAL);
-}
+    strncpy((char *)inp + (int)inp->d.cfs_lookup.name, nm, len);
+    size += len;
 
-int
-cfs_nb_reclaim(v) 
-    void *v;
-{
-/* true args */
-    struct vop_reclaim_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp = VTOC(vp);
-/* upcall decl */
-/* locals */
+    error = cfscall(mdp, size, &size, (char *)inp);
 
-/*
- * Forced unmount/flush will let vnodes with non zero use be destroyed!
- */
-    ENTRY;
-
-    if (IS_UNMOUNTING(cp)) {
-#ifdef	DEBUG
-	if (VTOC(vp)->c_ovp) {
-	    if (IS_UNMOUNTING(cp))
-		printf("cfs_nb_reclaim: c_ovp not void: vp %x, cp %x\n", vp, cp);
-	}
-#endif
-    } else {
-#ifdef DIAGNOSTIC
-	if (vp->v_usecount != 0) 
-	    vprint("cfs_nb_reclaim: pushing active", vp);
-	if (VTOC(vp)->c_ovp) {
-	    panic("cfs_nb_reclaim: c_ovp not void");
-    }
-#endif DIAGNOSTIC
-    }	
-    cache_purge(vp);
-    cfs_free(VTOC(vp));
-    VTOC(vp) = NULL;
-    return (0);
-}
-
-int
-cfs_nb_lock(v)
-    void *v;
-{
-/* true args */
-    struct vop_lock_args *ap = v;
-    struct vnode *vp = ap->a_vp;
-    struct cnode *cp;
-    struct proc  *p = curproc; /* XXX */
-/* upcall decl */
-/* locals */
-    
-    ENTRY;
-    cp = VTOC(vp);
-
-    if (cfs_lockdebug) {
-	myprintf(("Attempting lock on %d.%d.%d\n",
-		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-    }
-start:
-    while (vp->v_flag & VXLOCK) {
-	vp->v_flag |= VXWANT;
-	sleep((caddr_t)vp, PINOD);
-    }
-    if (vp->v_tag == VT_NON)
-	return (ENOENT);
-
-    if (cp->c_flags & C_LOCKED) {
-	cp->c_flags |= C_WANTED;
-#ifdef DIAGNOSTIC
-	myprintf(("cfs_nb_lock: lock contention\n"));
-#endif
-	(void) sleep((caddr_t)cp, PINOD);
-#ifdef DIAGNOSTIC
-	myprintf(("cfs_nb_lock: contention resolved\n"));
-#endif
-	goto start;
-    }
-    cp->c_flags |= C_LOCKED;
-    return (0);
-}
-
-int
-cfs_nb_unlock(v)
-    void *v;
-{
-/* true args */
-    struct vop_unlock_args *ap = v;
-    struct cnode *cp = VTOC(ap->a_vp);
-/* upcall decl */
-/* locals */
-
-    ENTRY;
-    if (cfs_lockdebug) {
-	myprintf(("Attempting unlock on %d.%d.%d\n",
-		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-    }
-#ifdef DIAGNOSTIC
-    if ((cp->c_flags & C_LOCKED) == 0) 
-	panic("cfs_unlock: not locked");
-#endif
-    cp->c_flags &= ~C_LOCKED;
-    if (cp->c_flags & C_WANTED) {
-	cp->c_flags &= ~C_WANTED;
-	wakeup((caddr_t)cp);
-    }
-    return (0);
-}
-
-int
-cfs_nb_islocked(v)
-    void *v;
-{
-/* true args */
-    struct vop_islocked_args *ap = v;
-
-    ENTRY;
-    if (VTOC(ap->a_vp)->c_flags & C_LOCKED)
-	return (1);
-    return (0);
-}
-
-/* How one looks up a vnode given a device/inode pair: */
-int
-cfs_grab_vnode(dev_t dev, ino_t ino, struct vnode **vpp)
-{
-    /* This is like VFS_VGET() or igetinode()! */
-    int           error;
-    struct mount *mp;
-
-    if (!(mp = devtomp(dev))) {
-	myprintf(("cfs_grab_vnode: devtomp(%d) returns NULL\n", dev));
-	return(ENXIO);
+    if (!error)
+    	error = outp->result;
+    if (!error) {
+	*VFid = outp->d.cfs_lookup.VFid;
+	*vtype = outp->d.cfs_lookup.vtype;
     }
 
-    /* XXX - ensure that nonzero-return means failure */
-    error = VFS_VGET(mp,ino,vpp);
-    if (error) {
-	myprintf(("cfs_grab_vnode: iget/vget(%d, %d) returns %x, err %d\n", 
-		  dev, ino, *vpp, error));
-	return(ENOENT);
-    }
-    return(0);
+    CFS_FREE(inp, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
+    return error;
 }
-
-void
-print_vattr( attr )
-	struct vattr *attr;
-{
-    char *typestr;
-
-    switch (attr->va_type) {
-    case VNON:
-	typestr = "VNON";
-	break;
-    case VREG:
-	typestr = "VREG";
-	break;
-    case VDIR:
-	typestr = "VDIR";
-	break;
-    case VBLK:
-	typestr = "VBLK";
-	break;
-    case VCHR:
-	typestr = "VCHR";
-	break;
-    case VLNK:
-	typestr = "VLNK";
-	break;
-    case VSOCK:
-	typestr = "VSCK";
-	break;
-    case VFIFO:
-	typestr = "VFFO";
-	break;
-    case VBAD:
-	typestr = "VBAD";
-	break;
-    default:
-	typestr = "????";
-	break;
-    }
-
-
-    myprintf(("attr: type %s mode %d uid %d gid %d fsid %d rdev %d\n",
-	      typestr, (int)attr->va_mode, (int)attr->va_uid,
-	      (int)attr->va_gid, (int)attr->va_fsid, (int)attr->va_rdev));
-    
-    myprintf(("      fileid %d nlink %d size %d blocksize %d bytes %d\n",
-	      (int)attr->va_fileid, (int)attr->va_nlink, 
-	      (int)attr->va_size,
-	      (int)attr->va_blocksize,(int)attr->va_bytes));
-    myprintf(("      gen %ld flags %ld vaflags %d\n",
-	      attr->va_gen, attr->va_flags, attr->va_vaflags));
-    myprintf(("      atime sec %d nsec %d\n",
-	      (int)attr->va_atime.tv_sec, (int)attr->va_atime.tv_nsec));
-    myprintf(("      mtime sec %d nsec %d\n",
-	      (int)attr->va_mtime.tv_sec, (int)attr->va_mtime.tv_nsec));
-    myprintf(("      ctime sec %d nsec %d\n",
-	      (int)attr->va_ctime.tv_sec, (int)attr->va_ctime.tv_nsec));
-}
-
-/* How to print a ucred */
-print_cred(cred)
-	struct ucred *cred;
-{
-
-	int i;
-
-	myprintf(("ref %d\tuid %d\n",cred->cr_ref,cred->cr_uid));
-
-	for (i=0; i < cred->cr_ngroups; i++)
-		myprintf(("\tgroup %d: (%d)\n",i,cred->cr_groups[i]));
-	myprintf(("\n"));
-
-}
-
-/*
-  -----------------------------------------------------------------------------------
- */
-
-struct cnode *cfs_alloc();
-
-/*
- * Return a vnode for the given fid.
- * If no cnode exists for this fid create one and put it
- * in a table hashed by fid.Volume and fid.Vnode.  If the cnode for
- * this fid is already in the table return it (ref count is
- * incremented by cfs_find.  The cnode will be flushed from the
- * table when cfs_inactive calls cfs_unsave.
- */
-struct cnode *
-makecfsnode(fid, vfsp, type)
-     ViceFid *fid; struct mount *vfsp; short type;
-{
-    struct mount foo;
-    struct cnode *cp;
-    int          err;
-    
-    if ((cp = cfs_find(fid)) == NULL) {
-	struct vnode *vp;
-	
-	cp = cfs_alloc();
-	cp->c_fid = *fid;
-	
-	err = getnewvnode(VT_CFS, vfsp, cfs_vnodeop_p, &vp);  
-	if (err) {                                                
-	    panic("cfs: getnewvnode returned error %d\n", err);   
-	}                                                         
-	vp->v_data = cp;                                          
-	vp->v_type = type;                                      
-	cp->c_vnode = vp;                                         
-	cfs_save(cp);
-	
-	/* Otherwise vfsp is 0 */
-	if (!IS_CTL_FID(fid))
-	    ((struct cfs_mntinfo *)(vfsp->mnt_data))->mi_refct++;
-    } else {
-	vref(CTOV(cp));
-    }
-    
-    return cp;
-}
-
-
-
-#ifdef MACH
-/*
- * read a logical block and return it in a buffer */
-int
-cfs_bread(vp, lbn, bpp)
-    struct vnode *vp;
-    daddr_t lbn;
-    struct buf **bpp; 
-{
-    myprintf(("cfs_bread called!\n"));
-    return(EINVAL);
-}
-
-/*
- * release a block returned by cfs_bread
- */
-int
-cfs_brelse(vp, bp)
-    struct vnode *vp;
-    struct buf *bp; 
-{
-
-    myprintf(("cfs_brelse called!\n"));
-    return(EINVAL);
-}
-
-int
-cfs_badop()
-{
-	panic("cfs_badop");
-}
-
-int
-cfs_noop()
-{
-	return (EINVAL);
-}
-
-int
-cfs_fid(vp, fidpp)
-	struct vnode *vp;
-	struct fid **fidpp;
-{
-	struct cfid *cfid;
-
-	cfid = (struct cfid *)kalloc(sizeof(struct cfid));
-	bzero((caddr_t)cfid, sizeof(struct cfid));
-	cfid->cfid_len = sizeof(struct cfid) - (sizeof(struct fid) - MAXFIDSZ);
-	cfid->cfid_fid = VTOC(vp)->c_fid;
-	*fidpp = (struct fid *)cfid;
-	return (0);
-}
-
-int
-cfs_freefid(vp, fidp)
-	struct vnode *vp;
-	struct fid *fidp;
-{
-	kfree((struct cfid *)fidp, sizeof(struct cfid));
-	return (0);
-}
-
-/*
- * Record-locking requests are passed to the local Lock-Manager daemon.
- */
-int
-cfs_lockctl(vp, ld, cmd, cred)
-	struct vnode *vp;
-	struct flock *ld;
-	int cmd;
-	struct ucred *cred;
-{ 
-	myprintf(("cfs_lockctl called!\n"));
-	return(EINVAL);
-}
-
-cfs_page_read(vp, buffer, size, offset, cred)
-	struct vnode	*vp;
-	caddr_t		buffer;
-	int		size;
-	vm_offset_t	offset;
-	struct ucred *cred;
-{ 
-	struct cnode *cp = VTOC(vp);
-	struct uio uio;
-	struct iovec iov;
-	int error = 0;
-
-	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_read(%x, %d, %d), fid = (%x.%x.%x), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
-
-	iov.iov_base = buffer;
-	iov.iov_len = size;
-	uio.uio_iov = &iov;
-	uio.uio_iovcnt = 1;
-	uio.uio_offset = offset;
-	uio.uio_segflg = UIO_SYSSPACE;
-	uio.uio_resid = size;
-	error = cfs_rdwr(vp, &uio, UIO_READ, 0, cred);
-	if (error) {
-	    myprintf(("error %d on pagein (cfs_rdwr)\n", error));
-	    error = EIO;
-	}
-
-/*
-	if (!error && (cp->states & CWired) == 0)
-	    cfs_Wire(cp);
-*/
-
-	return(error);
-}
-
-cfs_page_write(vp, buffer, size, offset, cred, init)
-	struct vnode	*vp;
-	caddr_t buffer;
-	int size;
-	vm_offset_t	offset;
-	struct ucred *cred;
-	boolean_t init;
-{
-	struct cnode *cp = VTOC(vp);
-	struct uio uio;
-	struct iovec iov;
-	int error = 0;
-
-	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_write(%x, %d, %d), fid = (%x.%x.%x), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
-
-	if (init) {
-	    panic("cfs_page_write: called from data_initialize");
-	}
-
-	iov.iov_base = buffer;
-	iov.iov_len = size;
-	uio.uio_iov = &iov;
-	uio.uio_iovcnt = 1;
-	uio.uio_offset = offset;
-	uio.uio_segflg = UIO_SYSSPACE;
-	uio.uio_resid = size;
-	error = cfs_rdwr(vp, &uio, UIO_WRITE, 0, cred);
-	if (error) {
-	    myprintf(("error %d on pageout (cfs_rdwr)\n", error));
-	    error = EIO;
-	}
-
-	return(error);
-}
-
-#endif

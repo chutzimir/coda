@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.5  1997/11/18 10:27:17  rvb
- * cfs_nbsd.c is DEADcvs diff | & more; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * Revision 1.5.14.6  1997/11/20 11:46:48  rvb
+ * Capture current cfs_venus
  *
+ * Revision 1.5.14.5  97/11/18  10:27:17  rvb
+ * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
+ * 
  * Revision 1.5.14.4  97/11/13  22:03:01  rvb
  * pass2 cfs_NetBSD.h mt
  * 
