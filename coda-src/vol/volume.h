@@ -473,22 +473,6 @@ extern void InitLRU(int howmany);
 			   same volume--when a volume is moved from
 			   one partition to another on a single server */
 
-/* moved from vice/file.h to remove circular dependency */
-typedef struct DirHandle {
-    /* device+inode+vid are low level disk addressing + validity check */
-    /* vid+vnode+unique+cacheCheck are to guarantee validity of cached copy */
-    /* ***NOTE*** size of this stucture must not exceed size in buffer
-       package (dir/buffer.cc) */
-    bit16	device;
-    bit16 	cacheCheck;
-    Inode	inode;
-    VolumeId 	volume;
-    Unique_t 	unique;
-    VnodeId	vnode;	/* Not really needed; conservative AND
-			   protects us against non-unique uniquifiers
-			   that were generated in days of old */
-} DirHandle;
-
 
 /* partition disk usage related routines */
 

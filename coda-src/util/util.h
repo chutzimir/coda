@@ -55,26 +55,15 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-
-/*
-    Miscellany of useful things
-    
-*/
-
-#ifdef __MACH__
-#include <sysent.h>
-#else	/* __linux__ || __BSD44__ */
-#include <unistd.h>
-#include <stdlib.h>
-#endif
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
 
-
+#include <unistd.h>
+#include <stdlib.h>
 #include <signal.h>
-#include <assert.h> 
 #include <stdio.h>
+#include <assert.h> 
 
 #ifndef IN  /* rpc2.private.h also defines these */
 /* Parameter usage */
@@ -107,6 +96,11 @@ void fdprint(long afd, char *fmt, ...);
 
 /* Routine for conditionally printing timestamped log messages */
 extern void LogMsg(int msglevel, int debuglevel, FILE *fout, char *fmt,  ...);
+#define VLog(level, format, a...)   LogMsg(level, VolDebugLevel, stdout, format, ## a)
+#define SLog(level, format, a...)   LogMsg(level, SrvDebugLevel, stdout, format, ## a)
+#define DLog(level, format, a...)   LogMsg(level, DirDebugLevel, stdout, format, ## a)
+#define ALog(level, format, a...)   LogMsg(level, VolDebugLevel, stdout, format, ## a)
+#define CLog(level, format, a...)   LogMsg(level, VolDebugLevel, stdout, format, ## a)
 
 /* The routine that prints the timestamp */
 extern void PrintTimeStamp(FILE *fout);
@@ -131,7 +125,7 @@ void UtilDetach();
 
 extern int SrvDebugLevel;	/* Server */
 extern int VolDebugLevel;	/* Vol package */
-extern int SalvageDebugLevel;	/* Salvager */
+
 extern int DirDebugLevel;	/* Dir package */
 extern int AL_DebugLevel;	/* ACL package */
 extern int AuthDebugLevel;	/* Auth package */

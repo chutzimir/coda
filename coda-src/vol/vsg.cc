@@ -43,23 +43,18 @@ extern "C" {
 #include <struct.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <assert.h>
 #include <netdb.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 
+#include <util.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include "vsg.h"
 
 /* vsg.c 
@@ -257,7 +252,7 @@ void CheckVSGDB() {
     InitVSGDB();
 }
 
-#ifdef 0
+#if 0
 /* this is the old vsg.c file 
  * It used to implement the multi cast vsg groups
  * Until somebody who understands this stuff in the kernel

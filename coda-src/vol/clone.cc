@@ -99,8 +99,8 @@ extern "C" {
 #include "index.h"
 
 
-PRIVATE void CloneIndex(Volume *ovp, Volume *cvp, Volume *dvp, VnodeClass vclass);
-PRIVATE void FinalDelete(register Volume *vp);
+static void CloneIndex(Volume *ovp, Volume *cvp, Volume *dvp, VnodeClass vclass);
+static void FinalDelete(register Volume *vp);
 
 void CloneVolume(Error *error, Volume *original, Volume *newv, Volume *old)
 {
@@ -113,7 +113,7 @@ void CloneVolume(Error *error, Volume *original, Volume *newv, Volume *old)
 
 /* Note: routine CopyInode was removed because it was commented out */
 
-PRIVATE void CloneIndex(Volume *ovp, Volume *cvp, Volume *dvp, VnodeClass vclass)
+static void CloneIndex(Volume *ovp, Volume *cvp, Volume *dvp, VnodeClass vclass)
 /*    Volume *ovp,	old volume */
 /*	   *cvp,	new cloned backup volume */
 /*	   *dvp;	old cloned backup which is to be deleted */
@@ -182,7 +182,7 @@ PRIVATE void CloneIndex(Volume *ovp, Volume *cvp, Volume *dvp, VnodeClass vclass
     }
 }
 
-PRIVATE void FinalDelete(register Volume *vp)
+static void FinalDelete(register Volume *vp)
 {
     /* Delete old backup -- it's vnodes are already gone */
     if (vp) {

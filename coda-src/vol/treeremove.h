@@ -82,6 +82,6 @@ class TreeRmBlk {
   }
 };
 
-extern int PerformTreeRemoval(TreeRmBlk *, char *, long, long);
+extern int PerformTreeRemoval(PDirEntry, void *);
 
 #endif _VOL_TREEREMOVE_H_

@@ -125,13 +125,13 @@ extern void Die(char * ...);
 void *rec_bstree::operator new (size_t size) {
     rec_bstree *r = 0;
 
-    r = (rec_bstree *)RVMLIB_REC_MALLOC(size);
+    r = (rec_bstree *)rvmlib_rec_malloc(size);
     assert(r);
     return(r);
 }
 
 void rec_bstree::operator delete(void *deadobj, size_t size){
-    RVMLIB_REC_FREE(deadobj);
+    rvmlib_rec_free(deadobj);
 }
 
 
@@ -162,7 +162,7 @@ void rec_bstree::DeInit() {
 
 /* The compare function is not necessarily recoverable, so don't insist on an enclosing transaction! */
 void rec_bstree::SetCmpFn(RBSTCFN F) {
-    if (RVM_THREAD_DATA->tid != 0)
+    if (rvmlib_thread_data()->tid != 0)
 	RVMLIB_REC_OBJECT(*this);
 
     CmpFn = F;
@@ -457,7 +457,7 @@ rec_bsnode::rec_bsnode() {
 
 
 void rec_bsnode::Init() {
-    RVMLIB_REC_OBJECT(*this)
+    RVMLIB_REC_OBJECT(*this);
     mytree = 0;
     parent = 0;
     leftchild = 0;

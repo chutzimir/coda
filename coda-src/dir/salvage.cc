@@ -139,7 +139,11 @@ int DirOK (long *file){
             }
         }
 
-    /* For all pages, initialize new allocation map with the proper header entries used.  The first page, as it contains the dir header, uses more room than the others.  Also, check that alloMap has the right count for each page.  Also check the magic number in each page header. */
+    /* For all pages, initialize new allocation map with the proper
+       header entries used.  The first page, as it contains the dir
+       header, uses more room than the others.  Also, check that
+       alloMap has the right count for each page.  Also check the
+       magic number in each page header. */
 
     /* First initialize the allocation map. */
     for(i=0; i<eaSize; i++) eaMap[i] = 0;

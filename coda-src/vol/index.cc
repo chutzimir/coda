@@ -67,16 +67,12 @@ extern "C" {
 
 #include <lwp.h>
 #include <lock.h>
-
-#ifdef __MACH__
-#include <mach.h>
-#endif /* __MACH__ */
+#include <util.h>
+#include <rvmlib.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
-#include <rvmlib.h>
 
 #include "vice.h"
 #include "cvnode.h"
@@ -137,9 +133,9 @@ int vindex::IsEmpty(VnodeId offset) {
     bit32 vnodeindex = vnodeIdToBitNumber(offset);
     rec_smolist *l;
     if (vtype == vSmall)
-	l = &(CAMLIB_REC(VolumeList[vol_index]).data.smallVnodeLists[vnodeindex]);
+	l = &(SRV_RVM(VolumeList[vol_index]).data.smallVnodeLists[vnodeindex]);
     else 
-	l = &(CAMLIB_REC(VolumeList[vol_index]).data.largeVnodeLists[vnodeindex]);
+	l = &(SRV_RVM(VolumeList[vol_index]).data.largeVnodeLists[vnodeindex]);
     return(l->IsEmpty());
 }
 /* Get the vnode with the specified id from the vnode array */
@@ -181,9 +177,9 @@ vindex_iterator::vindex_iterator(vindex& myind)
 {
     v_ind = &myind;
     if (v_ind->vtype == vSmall)
-	vlists = CAMLIB_REC(VolumeList[v_ind->vol_index]).data.smallVnodeLists;
+	vlists = SRV_RVM(VolumeList[v_ind->vol_index]).data.smallVnodeLists;
     else
-	vlists = CAMLIB_REC(VolumeList[v_ind->vol_index]).data.largeVnodeLists;
+	vlists = SRV_RVM(VolumeList[v_ind->vol_index]).data.largeVnodeLists;
     clist = 0;
     nlists = v_ind->elts();
     nextlink = new rec_smolist_iterator(vlists[clist]);

@@ -66,7 +66,7 @@ extern "C" {
 
 void *recvarl::operator new(size_t size, int recvsize) {
     recvarl *r = 0;
-    r = (recvarl *)RVMLIB_REC_MALLOC(recvsize + sizeof(recvarl_length_t));
+    r = (recvarl *)rvmlib_rec_malloc(recvsize + sizeof(recvarl_length_t));
     assert(r);
     return(r);
 }
@@ -82,7 +82,7 @@ void recvarl::operator delete(void *deadobj, size_t size) {
 
 
 recvarl::recvarl(int recvarlsize) {
-    RVMLIB_SET_RANGE(this, recvarlsize + sizeof(recvarl_length_t));
+    rvmlib_set_range(this, recvarlsize + sizeof(recvarl_length_t));
     length = recvarlsize;
     char *c = (char *)&(this->vfld[0]);
     bzero(c, recvarlsize);
@@ -107,6 +107,6 @@ void *recvarl::end() {
 /* not sure if this will work */
 void recvarl::destroy() {
     assert(this);
-    RVMLIB_REC_FREE(this);
+    rvmlib_rec_free(this);
 //  this = 0;   Assignment to this no longer allowed; we lose some safety..
 }

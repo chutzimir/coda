@@ -40,21 +40,24 @@ static char *rcsid = "$Header$";
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
-
+#include <sys/types.h>
 #include <stdio.h>
+#include <codadir.h>
+#include <util.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <srv.h>
 #include "vlist.h"
 
-int VLECmp(vle *a, vle *b) {
+int VLECmp(vle *a, vle *b) 
+{
     assert(a->fid.Volume == b->fid.Volume);
 
-    if (a->fid.Vnode == b->fid.Vnode && a->fid.Unique == b->fid.Unique) return(0);
+    if (a->fid.Vnode == b->fid.Vnode && a->fid.Unique == b->fid.Unique) 
+	    return(0);
     if (((unsigned long)a->fid.Vnode) < ((unsigned long)b->fid.Vnode) ||
 	 (a->fid.Vnode == b->fid.Vnode && 
 	    ((unsigned long)a->fid.Unique) < ((unsigned long)b->fid.Unique))) 
@@ -63,16 +66,18 @@ int VLECmp(vle *a, vle *b) {
 }
 
 
-vle *FindVLE(dlist& dl, ViceFid *fid) {
+vle *FindVLE(dlist& dl, ViceFid *fid) 
+{
     dlist_iterator next(dl);
     vle *v;
     while (v = (vle *)next())
-	if (FID_EQ(v->fid, *fid)) return(v);
+	if (FID_EQ(&v->fid, fid)) return(v);
     return(0);
 }
 
 
-vle *AddVLE(dlist& dl, ViceFid *fid) {
+vle *AddVLE(dlist& dl, ViceFid *fid) 
+{
     vle *v = FindVLE(dl, fid);
     if (v == 0)
 	dl.insert((v = new vle(fid)));

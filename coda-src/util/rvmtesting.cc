@@ -110,9 +110,9 @@ int GPR(struct sigcontext *scp, int x) /* Get value of General Purpose Register 
  * be a store.
  */
 
-PRIVATE int DCSDebug = 0;
+static int DCSDebug = 0;
 
-PRIVATE int getNextPc(struct sigcontext *scp)
+static int getNextPc(struct sigcontext *scp)
 {
     union mips_instruction *pc = (union mips_instruction *)scp->sc_pc;
     unsigned int temp = 0, cond = 0;

@@ -62,16 +62,16 @@ include $(MAKDIR)/Makeconf
 LIBRARIES = libvol.a
 HEADERS	  = vldb.h \
 	    fssync.h recov.h vutil.h\
-	    srvsignal.h index.h vicelock.h rvmdir.h treeremove.h \
+	    srvsignal.h index.h vicelock.h treeremove.h \
 	    vlist.h cvnode.h coda_globals.h voldefs.h volume.h camprivate.h \
 	    volres.h volhash.h vrdb.h vsg.h struct.h
 # TESTS	  = testvrdb testvsg # these don't compile
 
 VICEDEPHDRS = $(INCLDIR)/vice.h
 
-LIBVOLOBJS= cvnode.o volume.o vutil.o vldb.o hash.o fssync.o \
+LIBVOLOBJS= dirvnode.o cvnode.o volume.o vutil.o vldb.o hash.o fssync.o \
 	index.o recova.o recovb.o recovc.o volhash.o dumpcamstorage.o \
-	rvmdir.o vrdb.o vsg.o vlist.o
+        vrdb.o vsg.o vlist.o
 
 libvol.a: ${LIBVOLOBJS}
 

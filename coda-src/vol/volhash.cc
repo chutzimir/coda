@@ -69,8 +69,8 @@ extern "C" {
 typedef int (*PFIV)(void *);
 
 
-PRIVATE vhashtab *VolTable;
-PRIVATE int VolIdHash(VolumeId volid);
+static vhashtab *VolTable;
+static int VolIdHash(VolumeId volid);
 
 int VolIdHash(VolumeId volid)
 {

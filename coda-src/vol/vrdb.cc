@@ -55,13 +55,14 @@ extern "C" {
 #include <netinet/in.h>
 #include <sys/file.h>
 #include <struct.h>
+#include <codadir.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <srv.h>
+#include <util.h>
 #include "vsg.h"
 #include "vrdb.h"
 

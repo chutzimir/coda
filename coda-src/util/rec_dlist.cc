@@ -52,16 +52,11 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-
 #include <setjmp.h>
 
+#include <rvmlib.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -78,13 +73,13 @@ extern void Die(char * ...);
 void *rec_dlist::operator new(size_t size) {
     rec_dlist *r = 0;
     
-    r = (rec_dlist *)RVMLIB_REC_MALLOC(size);
+    r = (rec_dlist *)rvmlib_rec_malloc(size);
     assert(r);
     return(r);
 }
 
 void rec_dlist::operator delete(void *deadobj, size_t size) {
-	RVMLIB_REC_FREE(deadobj);
+	rvmlib_rec_free(deadobj);
 }
 
 rec_dlist::rec_dlist(RCFN F){
@@ -109,7 +104,7 @@ void rec_dlist::DeInit() {
 
 /* The compare function is not necessarily recoverable, so don't insist on an enclosing transaction! */
 void rec_dlist::SetCmpFn(RCFN F) {
-    if (RVM_THREAD_DATA->tid != 0)
+    if (rvmlib_thread_data()->tid != 0)
 	RVMLIB_REC_OBJECT(*this);
     CmpFn = F;
 }
@@ -139,7 +134,7 @@ void rec_dlist::insert(rec_dlink *p)
 	if (dl) {
 	    /* insert before dl */
 	    RVMLIB_REC_OBJECT(*dl);
-	    RVMLIB_REC_OBJECT(*(dl->prev))
+	    RVMLIB_REC_OBJECT(*(dl->prev));
 	    p->next = dl;
 	    p->prev = dl->prev;
 	    dl->prev->next = p;

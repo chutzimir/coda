@@ -63,6 +63,7 @@ void Parser_qhelp(int, char **);	/* Quick help routine */
 void Parser_help(int, char **);		/* Detailed help routine */
 void Parser_exit(int, char **);		/* Shuts down command parser */
 int Parser_execarg(int argc, char **argv, argcmd_t cmds[]);
+void execute_line(char * line);
 
 /* Converts a string to an integer */
 int Parser_int(char *, int *);
