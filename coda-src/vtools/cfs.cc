@@ -451,7 +451,7 @@ PRIVATE void CheckServers(int argc, char *argv[], int opslot)
     {
     int rc, i; 
     unsigned long *downsrvarray;
-    char *insrv;
+    char *insrv=0;
     struct ViceIoctl vio;
 
     if (argc < 2 || argc > 10)
@@ -490,7 +490,7 @@ PRIVATE void CheckServers(int argc, char *argv[], int opslot)
     if (rc < 0){fflush(stdout); perror("  VIOCCKSERV"); exit(-1);}
 
     /* See if there are any dead servers */
-    free(insrv);
+    if (insrv) free(insrv); /* free insrv only if it was alloc before */
     downsrvarray = (unsigned long *) piobuf;
     if (downsrvarray[0] == 0) {printf("All servers up\n"); return;}
     
