@@ -41,11 +41,11 @@ include $(MAKDIR)/Makeconf
 
 CFLAGS := -Wall ${CFLAGS}
 HEADERS   = partition.h  vicetab.h viceinode.h ftreeifs.h simpleifs.h
-OBJS = vicetab.o partition.o inodeops.o simpleifs.o  ftreeifs.o makeftree.o inoder.o
-LIBOBS = vicetab.o partition.o inodeops.o simpleifs.o ftreeifs.o
+OBJS = vicetab.o partition.o inodeops.o simpleifs.o  ftreeifs.o makeftree.o inoder.o backupifs.o
+LIBOBS = vicetab.o partition.o inodeops.o simpleifs.o ftreeifs.o backupifs.o
 EXECUTABLES = makeftree inoder
 LIBRARIES = libpartition.a
-LIBS = libpartition.a $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
+LIBS = $(LIBPARTITION) $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
 
 
 libpartition.a: $(LIBOBS)
