@@ -51,13 +51,18 @@ TOPOBJ = @TOPOBJ@
 # Need to conditionalize this
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = testrvm rvm_basher
-TESTS = testrvm rvm_basher
+EXECUTABLES = testrvm rvm_basher lwp_basher
+TESTS = testrvm rvm_basher lwp_basher
 
 TESTRVM_LIBS    = $(LIBRVM) $(LIBCOMPAT) $(LIBMACH)
 RVM_BASHER_LIBS = $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBCOMPAT) $(LIBMACH)
 LWP_BASHER_LIBS = $(LIBRDSLWP) $(LIBSEG) $(LIBRVMLWP) $(LIBOLDLWP) \
-		  $(LIBPLUMBER) $(LIBMACH)
+		  $(LIBMACH)
+
+# re-install this when libplumber is ready, for mach platform -- clement
+# LWP_BASHER_LIBS = $(LIBRDSLWP) $(LIBSEG) $(LIBRVMLWP) $(LIBOLDLWP) \
+#                  $(LIBPLUMBER) $(LIBMACH)
+# CFLAGS := $(CFLAGS) -DHAS_PLUMBER
 
 # CFLAGS = -g3 -O2 -I/afs/cs.cmu.edu/user/tilt/rvm-top/include
 
