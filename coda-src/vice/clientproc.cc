@@ -372,7 +372,11 @@ void PrintClients() {
     struct timeval tp;
     struct timezone tsp;
     TM_GetTimeOfDay(&tp, &tsp);
+#ifdef LINUX
+    LogMsg(1, SrvDebugLevel, stdout,  "List of active users at %s", ctime((const long int *)&tp.tv_sec));
+#else
     LogMsg(1, SrvDebugLevel, stdout,  "List of active users at %s", ctime(&tp.tv_sec));
+#endif
 
     for(int i = 0; i < maxHost; i++) {
 	for(ClientEntry *cp = hostTable[i].FirstClient; cp; cp=cp->NextClient) {
