@@ -75,8 +75,9 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
-
+#ifdef MACH
 #include <mach.h>
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -89,7 +90,7 @@ extern "C" {
 #include <cvnode.h>
 #include <volume.h>
 #include <camprivate.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <errors.h>
 #include <recov.h>
 #include <dump.h>

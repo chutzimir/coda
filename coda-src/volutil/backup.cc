@@ -63,7 +63,9 @@ extern "C" {
 #include <sys/socket.h>
 #include <sys/param.h>
 #include <sys/stat.h>
+#ifdef __MACH__
 #include <sys/fs.h>
+#endif
 #include <netinet/in.h>
 #include <netdb.h>
 #include <libc.h>
@@ -317,6 +319,7 @@ getReplica(repinfo_t *rep) {
 
 void SetPartitionDiskUsage(register partitionInfo_t *dp)
 {
+#ifndef LINUX
     static struct fs sblock;  /*Static because of constraints on lwp proc size*/
     int fd;
     long totalblks, free, used, availblks;
@@ -339,6 +342,9 @@ void SetPartitionDiskUsage(register partitionInfo_t *dp)
     availblks = totalblks * (100 - sblock.fs_minfree) / 100;
 
     dp->free = availblks - used; /* May be negative, which is OK */
+#else
+    dp->free =0;
+#endif
 }
 
 InitPartitionEntry(partitionInfo_t **table, char *name, char *todayName)

@@ -71,15 +71,16 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
-
+#ifdef MACH
 #include <mach.h>
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <util.h>
 #include <rvmlib.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <vice.h>
 #include <nfs.h>
 #include <cvnode.h>
@@ -162,7 +163,7 @@ long S_VolCreate(RPC2_Handle rpcid, RPC2_String formal_partition,
 
     parentId = volumeId;    // we are creating a readwrite (or replicated) volume
 
-    if (repvol && grpId == NULL) {
+    if (repvol && grpId == 0) {
         LogMsg(0, VolDebugLevel, stdout, "S_VolCreate: can't create replicated volume without group id");
 	CAMLIB_ABORT(VFAIL);
     }

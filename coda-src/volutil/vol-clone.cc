@@ -77,14 +77,14 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
-
+#ifdef MACH
 #include <mach.h>
-
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <dir.h>
+#include <coda_dir.h>
 #include <vice.h>
 #include <nfs.h>
 #include <cvnode.h>

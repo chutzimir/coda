@@ -66,8 +66,9 @@ extern "C" {
 #include <timer.h>
 #include <rpc2.h>
 #include <se.h>
-
+#ifdef MACH
 #include <mach.h>
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus

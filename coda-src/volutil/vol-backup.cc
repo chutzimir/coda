@@ -75,8 +75,9 @@ extern "C" {
 #include <lwp.h>
 #include <struct.h>
 #include <lock.h>
-
+#ifdef MACH
 #include <mach.h>
+#endif
 #ifdef __cplusplus
 }
 #endif __cplusplus
