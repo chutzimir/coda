@@ -263,8 +263,7 @@ int recov_vol_log::AllocRecord(int *index, int *seqno) {
     *seqno = -1;
     *index = vm_inuse->GetFreeIndex();
     if (*index == -1) { //no space available 
-	SLog(0,
-	       "AllocRecord: No space left in volume log.\n");
+	SLog(0, "AllocRecord: No space left in volume log.\n");
 	return(ENOSPC);
     }
     
@@ -292,9 +291,8 @@ int recov_vol_log::AllocRecord(int *index, int *seqno) {
 	Increase_rec_max_seqno();	/* transaction executed */
     
     *seqno = ++max_seqno;
-    SLog(10,
-	   "AllocRecord: returning index %d seqno %d\n", 
-	   *index, *seqno);
+    SLog(10, "AllocRecord: returning index %d seqno %d\n", 
+	 *index, *seqno);
     return(0);
 }
 

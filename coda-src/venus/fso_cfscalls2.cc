@@ -499,6 +499,10 @@ static char systype [] = "sparc_linux";
 static char cputype [] = "alpha";
 static char systype [] = "alpha_linux";
 #endif
+#ifdef __powerpc__
+static char cputype [] = "powerpc";
+static char systype [] = "powerpc_linux";
+#endif
 #endif /* __linux__ */
 
 #ifdef __CYGWIN32__

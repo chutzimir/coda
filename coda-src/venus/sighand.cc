@@ -382,13 +382,13 @@ static void FatalSignal(int sig, int code, struct sigcontext *contextPtr)
     {
 	fprintf(logFile, "sig=%d\n", sig);
 	fprintf(logFile, "code=%d\n", code);
-#ifndef	i386
+#if !defined(i386) && !defined(powerpc)
 #if defined(sparc) && defined(__linux__)
 	fprintf(logFile, "sc_pc=0x%x\n", contextPtr->sigc_pc);
 #else
 	fprintf(logFile, "sc_pc=0x%x\n", contextPtr->sc_pc);
 #endif
-#endif	/* !defined(i386) */
+#endif	/* !defined(i386) && !defined(powerpc) */
 
 #ifndef __BSD44__
 	for (int i = 0; i < sizeof(struct sigaction) / sizeof(int); i++)

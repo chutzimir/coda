@@ -1010,7 +1010,7 @@ static int ResolveBindParms(IN whichConn, IN whichHost, IN whichPortal, IN which
 		break;
 
 	case RPC2_PORTALBYNAME:
-	    if ((sentry = getservbyname (whichPortal->Value.Name, NULL)) == NULL)
+	    if ((sentry = getservbyname (whichPortal->Value.Name, "udp")) == NULL)
 		return(RPC2_FAIL);
 	    if (htonl(1) == 1)
 		{

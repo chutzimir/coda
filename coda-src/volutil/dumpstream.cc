@@ -414,7 +414,7 @@ int dumpstream::EndOfDump()
 
 int dumpstream::getVnodeIndex(VnodeClass Type, long *nVnodes, long *listsize)
 {
-    register char tag;
+    register signed char tag;
     /* Skip over whatever garbage exists on the stream (remains of last vnode) */
     skip_vnode_garbage();
 

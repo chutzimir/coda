@@ -102,7 +102,7 @@ extern int DumpTag(DumpBuffer_t *, register byte tag);
 extern int DumpEnd(DumpBuffer_t *);
 
 /* Exported Routines (from readstuff.c) */
-extern char ReadTag(DumpBuffer_t *);
+extern signed char ReadTag(DumpBuffer_t *);
 extern int PutTag(char, DumpBuffer_t *);
 extern int ReadShort(DumpBuffer_t *,  unsigned short *sp); 
 extern int ReadLong(DumpBuffer_t *, unsigned long *lp);

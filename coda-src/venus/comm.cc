@@ -257,7 +257,7 @@ void CommInit() {
 
     /* Portal initialization. */
     /* Multicast requires that (sftp_portal = rpc2_portal + 1). */
-    struct servent *s = getservbyname("venus", 0);
+    struct servent *s = getservbyname("venus", "udp");
     if (s == 0) 
 	Choke("CommInit: getservbyname failed; check /etc/services");
     RPC2_PortalIdent portal1;

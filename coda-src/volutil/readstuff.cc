@@ -202,7 +202,7 @@ static char *put(DumpBuffer_t *buf, int size, int *error)
     return (char *) buf->DumpBufPtr;
 }
 
-char ReadTag(DumpBuffer_t *buf)
+signed char ReadTag(DumpBuffer_t *buf)
 {
     int error = 0;
     register byte *p = (byte *)get(buf, 1, &error);

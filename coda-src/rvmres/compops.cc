@@ -79,7 +79,8 @@ static void PrintArrList(arrlist *, char *);
 static void PrintRemoteLogs(olist **, int );
 static void PrintLogList(olist *);
 
-arrlist *ComputeCompOps(olist *AllLogs, ViceFid *Fid) {
+arrlist *ComputeCompOps(olist *AllLogs, ViceFid *Fid) 
+{
     int nrmtsites = 0;
     arrlist *sllog = NULL;
     olist **rmtlogs = NULL;
@@ -437,7 +438,8 @@ static int IsLater(rsle *a, rsle *b) {
 
 // routines to print out different logs 
 // for debugging
-static void PrintArrList(arrlist *a, char *s) {
+static void PrintArrList(arrlist *a, char *s) 
+{
     printf("*** %s Begin *** \n", s);
     arrlist_iterator next(a);
     rsle *r;

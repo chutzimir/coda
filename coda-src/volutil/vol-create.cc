@@ -293,6 +293,7 @@ static int ViceCreateRoot(Volume *vp)
     vn->volumePtr = vp;
     bcopy((const void *)vnode, (void *)&vn->disk, sizeof(VnodeDiskObject));
     VN_DCommit(vn);   
+    DC_SetDirty(vn->dh, 0);
     VN_PutDirHandle(vn);
 
     bcopy((const void *)&(vn->disk), (void *) vnode, sizeof(VnodeDiskObject));

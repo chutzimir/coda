@@ -165,7 +165,7 @@ long RS_ResPhase3(RPC2_Handle RPCid, ViceFid *Fid, RPC2_Integer size,
 	PROBE(tpinfo, RecovCompOpsEnd);
 	if (!CompOps) {
 	    SLog(0,
-		   "RS_ResPhase3 - Coulnt find common point with all sites\n");
+		   "RS_ResPhase3 - Couldn't find common point with all sites\n");
 	    errorCode = EINCONS;
 
 	    // update res stats

@@ -82,6 +82,7 @@ extern "C" {
 const int MarinerStackSize = 65536;
 const int MaxMariners = 5;
 const char MarinerService[] = "venus";
+const char MarinerProto[] = "tcp";
 int MarinerMask = 0;
 
 
@@ -106,7 +107,7 @@ void MarinerInit() {
 	eprint("MarinerInit: setsockopt failed (%d)", errno);
 #endif
     /* Look up the well-known CODA mariner service. */
-    struct servent *serventp = getservbyname(MarinerService, 0);
+    struct servent *serventp = getservbyname(MarinerService, MarinerProto);
     if (!serventp) {
       eprint("MarinerInit: mariner service lookup failed!");
       return;

@@ -436,7 +436,7 @@ static int ReadLargeVnodeIndex(DumpBuffer_t *buf, Volume *vp)
     rec_smolist *rlist;
     DirInode *dinode = NULL;
     DirInode *camdInode = NULL;
-    register char tag;
+    register signed char tag;
     int volindex = V_volumeindex(vp);
 
     VLog(9, "Restore: Reading in large vnode array.");
@@ -531,7 +531,7 @@ static int ReadSmallVnodeIndex(DumpBuffer_t *buf, Volume *vp)
     int	nvnodes = 0;
     char    vbuf[SIZEOF_SMALLDISKVNODE];
     VnodeDiskObject *vdo = (VnodeDiskObject *)vbuf;
-    register char tag;
+    register signed char tag;
     rec_smolist *rlist;
     int volindex = V_volumeindex(vp);
 
@@ -613,7 +613,7 @@ static int ReadVnodeDiskObject(DumpBuffer_t *buf, VnodeDiskObject *vdop,
 				DirInode **dinode, Volume *vp, 
 				long *vnodeNumber)
 {
-    register char tag;
+    register signed char tag;
     *vnodeNumber = -1;
     tag = ReadTag(buf);
     if (tag == D_NULLVNODE){

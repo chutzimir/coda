@@ -2491,6 +2491,7 @@ static int PerformResOp(rlent *r, dlist *vlist, olist *hvlog,
 	    SLog(9,  "PerformResOP: MakeDir %s(%x.%x)",
 		    name, cFid.Vnode, cFid.Unique);
 	    vle *cv = AddVLE(*vlist, &cFid);
+	    cv->d_inodemod = 1;
 	    assert(!cv->vptr);
 	    /* allocate the vnode */
 	    if (errorCode = AllocVnode(&cv->vptr, volptr, (ViceDataType)vDirectory,
