@@ -76,10 +76,10 @@
 #define	CNV_OFLAG(to, from) 				\
     do { 						\
 	  to = 0;					\
-	  if (from & FREAD)   to |= C_READ; 		\
-	  if (from & FWRITE)  to |= C_WRITE; 		\
-	  if (from & O_TRUNC) to |= C_TRUNC; 		\
-	  if (from & O_EXCL)  to |= C_EXCL; 		\
+	  if (from & FREAD)   to |= C_O_READ; 		\
+	  if (from & FWRITE)  to |= C_O_WRITE; 		\
+	  if (from & O_TRUNC) to |= C_O_TRUNC; 		\
+	  if (from & O_EXCL)  to |= C_O_EXCL; 		\
     } while (0)
 
 #define CNV_VV2V_ATTR(top, fromp) \
@@ -89,7 +89,7 @@
 		(top)->va_nlink = (fromp)->va_nlink; \
 		(top)->va_uid = (fromp)->va_uid; \
 		(top)->va_gid = (fromp)->va_gid; \
-		(top)->va_fsid = (fromp)->va_fsid; \
+		(top)->va_fsid = VNOVAL; \
 		(top)->va_fileid = (fromp)->va_fileid; \
 		(top)->va_size = (fromp)->va_size; \
 		(top)->va_blocksize = (fromp)->va_blocksize; \
@@ -101,8 +101,8 @@
 		(top)->va_rdev = (fromp)->va_rdev; \
 		(top)->va_bytes = (fromp)->va_bytes; \
 		(top)->va_filerev = (fromp)->va_filerev; \
-		(top)->va_vaflags = (fromp)->va_vaflags; \
-		(top)->va_spare = (fromp)->va_spare; \
+		(top)->va_vaflags = VNOVAL; \
+		(top)->va_spare = VNOVAL; \
 	} while (0)
 
 #define CNV_V2VV_ATTR(top, fromp) \
@@ -112,7 +112,6 @@
 		(top)->va_nlink = (fromp)->va_nlink; \
 		(top)->va_uid = (fromp)->va_uid; \
 		(top)->va_gid = (fromp)->va_gid; \
-		(top)->va_fsid = (fromp)->va_fsid; \
 		(top)->va_fileid = (fromp)->va_fileid; \
 		(top)->va_size = (fromp)->va_size; \
 		(top)->va_blocksize = (fromp)->va_blocksize; \
@@ -124,8 +123,6 @@
 		(top)->va_rdev = (fromp)->va_rdev; \
 		(top)->va_bytes = (fromp)->va_bytes; \
 		(top)->va_filerev = (fromp)->va_filerev; \
-		(top)->va_vaflags = (fromp)->va_vaflags; \
-		(top)->va_spare = (fromp)->va_spare; \
 	} while (0)
 
 
@@ -311,9 +308,9 @@ venus_access(void *mdp, ViceFid *fid, int mode,
     INIT_IN(&inp->ih, CFS_ACCESS, cred, p);
     inp->VFid = *fid;
 #ifdef	NetBSD1_3
-    inp->flags = mode<<6;
-#else
     inp->flags = mode;
+#else
+    inp->flags = mode>>6;
 #endif
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -378,7 +375,7 @@ venus_lookup(void *mdp, ViceFid *fid,
     INIT_IN(&inp->ih, CFS_LOOKUP, cred, p);
     inp->VFid = *fid;
 
-    inp->name = (char *)Isize;
+    inp->name = Isize;
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -404,11 +401,15 @@ venus_create(void *mdp, ViceFid *fid,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_CREATE, cred, p);
     inp->VFid = *fid;
-    inp->excl = exclusive ? C_EXCL : 0;
+    inp->excl = exclusive ? C_O_EXCL : 0;
+#ifdef	NetBSD1_3
+    inp->mode = mode<<6;
+#else
     inp->mode = mode;
+#endif
     CNV_V2VV_ATTR(&inp->attr, va);
 
-    inp->name = (char *)Isize;
+    inp->name = Isize;
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -434,7 +435,7 @@ venus_remove(void *mdp, ViceFid *fid,
     INIT_IN(&inp->ih, CFS_REMOVE, cred, p);
     inp->VFid = *fid;
 
-    inp->name = (char *)Isize;
+    inp->name = Isize;
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -457,7 +458,7 @@ venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
     inp->sourceFid = *fid;
     inp->destFid = *tfid;
 
-    inp->tname = (char *)Isize;
+    inp->tname = Isize;
     STRCPY(tname, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -480,10 +481,10 @@ venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
     inp->sourceFid = *fid;
     inp->destFid = *tfid;
 
-    inp->srcname = (char*)Isize;
+    inp->srcname = Isize;
     STRCPY(srcname, nm, len);		/* increments Isize */
 
-    inp->destname = (char *)Isize;
+    inp->destname = Isize;
     STRCPY(destname, tnm, tlen);	/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -507,7 +508,7 @@ venus_mkdir(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
     CNV_V2VV_ATTR(&inp->attr, va);
 
-    inp->name = (char *)Isize;
+    inp->name = Isize;
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -533,7 +534,7 @@ venus_rmdir(void *mdp, ViceFid *fid,
     INIT_IN(&inp->ih, CFS_RMDIR, cred, p);
     inp->VFid = *fid;
 
-    inp->name = (char *)Isize;
+    inp->name = Isize;
     STRCPY(name, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
@@ -556,10 +557,10 @@ venus_symlink(void *mdp, ViceFid *fid,
     inp->VFid = *fid;
     CNV_V2VV_ATTR(&inp->attr, va);
 
-    inp->srcname =(char*)Isize;
+    inp->srcname = Isize;
     STRCPY(srcname, lnm, llen);		/* increments Isize */
 
-    inp->tname = (char *)Isize;
+    inp->tname = Isize;
     STRCPY(tname, nm, len);		/* increments Isize */
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);

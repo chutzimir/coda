@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.5  1997/12/16 12:40:14  rvb
- * Sync with 1.3
+ * Revision 1.5.2.6  1997/12/16 22:01:34  rvb
+ * Oops add cfs_subr.h cfs_venus.h; sync with peter
  *
+ * Revision 1.5.2.5  97/12/16  12:40:14  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.5.2.4  97/12/10  14:08:31  rvb
  * Fix O_ flags; check result in cfscall
  * 
@@ -545,6 +548,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
     CFSDEBUG(CFS_RDWR, myprintf(("indirect rdwr: fid = (%lx.%lx.%lx), refcnt = %d\n",
 			      cp->c_fid.Volume, cp->c_fid.Vnode, 
 			      cp->c_fid.Unique, CTOV(cp)->v_usecount)); )
+
     if (rw == UIO_READ) {
 	error = VOP_READ(cfvp, uiop, ioflag, cred);
     } else {
@@ -629,7 +633,7 @@ cfs_ioctl(v)
 	return(EINVAL);
     }
 
-    if (iap->vi.in_size > VC_DATASIZE) {
+    if (iap->vi.in_size > VC_MAXDATASIZE) {
 	vrele(tvp);
 	return(EINVAL);
     }
@@ -1903,7 +1907,7 @@ cfs_readdir(v)
 	count &= ~(DIRBLKSIZ - 1);
 	uiop->uio_resid -= iovp->iov_len - count;
 	iovp->iov_len = count;
-	if (count > VC_DATASIZE)
+	if (count > VC_MAXDATASIZE)
 	    return(EINVAL);
 	
 	

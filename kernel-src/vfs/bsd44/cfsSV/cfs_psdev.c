@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.4  1997/12/16 12:40:05  rvb
- * Sync with 1.3
+ * Revision 1.5.2.5  1997/12/16 22:01:27  rvb
+ * Oops add cfs_subr.h cfs_venus.h; sync with peter
  *
+ * Revision 1.5.2.4  97/12/16  12:40:05  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.5.2.3  97/12/10  14:08:24  rvb
  * Fix O_ flags; check result in cfscall
  * 
@@ -618,14 +621,14 @@ cfscall(mntinfo, inSize, outSize, buffer)
 		
 		CFS_ALLOC(svmp, struct vmsg *, sizeof (struct vmsg));
 
-		CFS_ALLOC((svmp->vm_data), char *, VC_IN_NO_DATA);
+		CFS_ALLOC((svmp->vm_data), char *, sizeof (struct cfs_in_hdr));
 		dog = (struct cfs_in_hdr *)svmp->vm_data;
 		
 		svmp->vm_flags = 0;
 		dog->opcode = svmp->vm_opcode = CFS_SIGNAL;
 		dog->unique = svmp->vm_unique = vmp->vm_unique;
-		svmp->vm_inSize = VC_IN_NO_DATA;
-		svmp->vm_outSize = VC_IN_NO_DATA;
+		svmp->vm_inSize = sizeof (struct cfs_in_hdr);
+/*??? rvb */	svmp->vm_outSize = sizeof (struct cfs_in_hdr);
 		
 		if (cfsdebug)
 		    myprintf(("cfscall: enqueing signal msg (%d, %d)\n",
