@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.4  1997/11/12 12:09:39  rvb
- * reorg pass1
+ * Revision 1.5.4.5  1997/11/13 22:03:00  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.5.4.4  97/11/12  12:09:39  rvb
+ * reorg pass1
+ * 
  * Revision 1.5.4.3  97/11/06  21:02:38  rvb
  * first pass at ^c ^z
  * 
@@ -172,33 +175,21 @@ static char *rcsid = "$Header$";
 
 #if	NVCFS
 
-struct cnode *cfs_alloc(void);
 struct cnode *cfs_find(ViceFid *fid);
-#ifdef MACH
-extern struct fs *igetfs C_ARGS((dev_t));
-#endif /* MACH */
-
 
 
 /* God this kills me. Isn't there a better way of going about this? - DCS*/
 char pass_process_info;
 
 
-/*
- * Cnode lookup stuff.
- * NOTE: CFS_CACHESIZE must be a power of 2 for cfshash to work!
- */
-struct cnode *cfs_freelist = NULL;
-int cfs_reuse = 0;
-int cfs_new = 0;
 int cfs_active = 0;
 
-#define CFS_CACHESIZE 512
 struct cnode *cfs_cache[CFS_CACHESIZE];
 
 #define cfshash(fid) \
     (((fid)->Volume + (fid)->Vnode) & (CFS_CACHESIZE-1))
 
+#define	CNODE_NEXT(cp)	((cp)->c_next)
 
 #define ODD(vnode)        ((vnode) & 0x1)
 
@@ -271,8 +262,8 @@ int handleDownCall(opcode, out)
 					      cp->c_fid.Volume, 
 					      cp->c_fid.Vnode, 
 					      cp->c_fid.Unique, 
-					      CNODE_COUNT(cp) - 1, error)););
-	      if (CNODE_COUNT(cp) == 1) {
+					      CTOV(cp)->v_usecount - 1, error)););
+	      if (CTOV(cp)->v_usecount == 1) {
 		  cp->c_flags |= C_PURGING;
 	      }
 	      vrele(CTOV(cp));
@@ -298,8 +289,8 @@ int handleDownCall(opcode, out)
                                           refcnt = %d\n",cp->c_fid.Volume, 
 					     cp->c_fid.Vnode, 
 					     cp->c_fid.Unique, 
-					     CNODE_COUNT(cp) - 1)););
-	      if (CNODE_COUNT(cp) == 1) {
+					     CTOV(cp)->v_usecount - 1)););
+	      if (CTOV(cp)->v_usecount == 1) {
 		  cp->c_flags |= C_PURGING;
 	      }
 	      vrele(CTOV(cp));
@@ -343,8 +334,8 @@ int handleDownCall(opcode, out)
 	      CFSDEBUG(CFS_PURGEFID, myprintf(("purgefid: fid = (%x.%x.%x), refcnt = %d, error = %d\n",
                                             cp->c_fid.Volume, cp->c_fid.Vnode,
                                             cp->c_fid.Unique, 
-					    CNODE_COUNT(cp) - 1, error)););
-	      if (CNODE_COUNT(cp) == 1) {
+					    CTOV(cp)->v_usecount - 1, error)););
+	      if (CTOV(cp)->v_usecount == 1) {
 		  cp->c_flags |= C_PURGING;
 	      }
 	      vrele(CTOV(cp));
@@ -379,48 +370,6 @@ int handleDownCall(opcode, out)
     }
 }
 
-
-
-/*
- * Return a vnode for the given fid.
- * If no cnode exists for this fid create one and put it
- * in a table hashed by fid.Volume and fid.Vnode.  If the cnode for
- * this fid is already in the table return it (ref count is
- * incremented by cfs_find.  The cnode will be flushed from the
- * table when cfs_inactive calls cfs_unsave.
- */
-struct cnode *
-makecfsnode(fid, vfsp, type)
-     ViceFid *fid; struct mount *vfsp; short type;
-{
-    struct mount foo;
-    struct cnode *cp;
-    int          err;
-    
-    if ((cp = cfs_find(fid)) == NULL) {
-	struct vnode *vp;
-	
-	cp = cfs_alloc();
-	cp->c_fid = *fid;
-	
-	err = getnewvnode(VT_CFS, vfsp, cfs_vnodeop_p, &vp);  
-	if (err) {                                                
-	    panic("cfs: getnewvnode returned error %d\n", err);   
-	}                                                         
-	vp->v_data = cp;                                          
-	vp->v_type = type;                                      
-	cp->c_vnode = vp;                                         
-	cfs_save(cp);
-	
-	/* Otherwise vfsp is 0 */
-	if (!IS_CTL_FID(fid))
-	    ((struct cfs_mntinfo *)(vfsp->mnt_data))->mi_refct++;
-    } else {
-	vref(CTOV(cp));
-    }
-    
-    return cp;
-}
 
 /*
  *     First, step through all cnodes and mark them unmounting.
@@ -535,7 +484,7 @@ cfs_kill(whoIam, dcstat)
 						   (cp->c_fid).Vnode,
 						   (cp->c_fid).Unique, 
 						   cp->c_flags,
-						   CNODE_COUNT(cp))); );
+						   CTOV(cp)->v_usecount)); );
 			}
 		}
 	}
@@ -582,7 +531,7 @@ cfs_testflush()
 	     cp = CNODE_NEXT(cp)) {  
 	    myprintf(("Live cnode fid %x-%x-%x count %d\n",
 		      (cp->c_fid).Volume,(cp->c_fid).Vnode,
-		      (cp->c_fid).Unique, CNODE_COUNT(cp)));
+		      (cp->c_fid).Unique, CTOV(cp)->v_usecount));
 	}
     }
 }
@@ -624,41 +573,6 @@ cfs_unsave(cp)
 	ptrprev = ptr;
 	ptr = CNODE_NEXT(ptr);
     }	
-}
-
-/*
- * Allocate a cnode.
- */
-struct cnode *
-cfs_alloc()
-{
-    struct cnode *cp;
-
-    if (cfs_freelist) {
-	cp = cfs_freelist;
-	cfs_freelist = CNODE_NEXT(cp);
-	cfs_reuse++;
-    }
-    else {
-	CFS_ALLOC(cp, struct cnode *, sizeof(struct cnode));
-	VNODE_VM_INFO_INIT(CTOV(cp));
-	cfs_new++;
-    }
-    bzero(cp, sizeof (struct cnode));
-
-    return(cp);
-}
-
-/*
- * Deallocate a cnode.
- */
-void
-cfs_free(cp)
-     register struct cnode *cp;
-{
-    
-    CNODE_NEXT(cp) = cfs_freelist;
-    cfs_freelist = cp;
 }
 
 /*

@@ -1,3 +1,8 @@
+/*
+ * Cnode lookup stuff.
+ * NOTE: CFS_CACHESIZE must be a power of 2 for cfshash to work!
+ */
+#define CFS_CACHESIZE 512
 
 /* 
  * getting from one to the other
@@ -5,6 +10,16 @@
 #define	VTOC(vp)	((struct cnode *)(vp)->v_data)
 #define	CTOV(cp)	((struct vnode *)((cp)->c_vnode))
 
+/*************** allocation. */
+#define CFS_ALLOC(ptr, cast, size)                                        \
+do {                                                                      \
+    ptr = (cast)malloc((unsigned long) size, M_CFS, M_WAITOK);            \
+    if (ptr == 0) {                                                       \
+	panic("kernel malloc returns 0 at %s:%d\n", __FILE__, __LINE__);  \
+    }                                                                     \
+} while (0)
+
+#define CFS_FREE(ptr, size)  free((ptr), M_CFS)
 
 /*
  * global cache state control
@@ -37,6 +52,24 @@ struct cfs_clstat {
 	int	reqs[CFS_NCALLS];	/* count of each request */
 };
 extern struct cfs_clstat cfs_clstat;
+
+
+/* WARNING 
+ * These macros assume the presence of a process pointer p!
+ * And, they're wrong to do so.  Phhht.
+ */
+#define INIT_IN(in, op, ident) \
+	  (in)->opcode = (op); \
+	  (in)->pid = p ? p->p_pid : -1; \
+          (in)->pgid = p ? p->p_pgid : -1; \
+          if (ident != NOCRED) {                              \
+	      (in)->cred = *(ident);                          \
+          } else {                                            \
+	      bzero(&((in)->cred),sizeof(struct CodaCred));   \
+	      (in)->cred.cr_uid = -1;                         \
+	      (in)->cred.cr_gid = -1;                         \
+          }                                                   \
+
 /* Macros to manipulate the queue */
 #ifndef INIT_QUEUE
 struct queue {
@@ -111,7 +144,7 @@ struct vmsg {
     u_short	 vm_outSize;
     u_short	 vm_opcode; 	/* copied from data to save ptr lookup */
     int		 vm_unique;
-    CONDITION	 vm_sleep;	/* Not used by Mach. */
+    caddr_t	 vm_sleep;	/* Not used by Mach. */
 };
 
 #define	VM_READ	    1

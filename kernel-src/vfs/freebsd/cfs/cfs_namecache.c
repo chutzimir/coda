@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.2  1997/11/12 12:09:35  rvb
- * reorg pass1
+ * Revision 1.5.4.3  1997/11/13 22:02:57  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.5.4.2  97/11/12  12:09:35  rvb
+ * reorg pass1
+ * 
  * Revision 1.5.4.1  97/10/28  23:10:12  rvb
  * >64Meg; venus can be killed!
  * 
@@ -264,12 +267,12 @@ cfsnc_remove(cncp, dcstat)
   	CFSNC_HSHREM(cncp);
 
 	CFSNC_HSHNUL(cncp);		/* have it be a null chain */
-	if ((dcstat == IS_DOWNCALL) && (CNODE_COUNT(cncp->dcp) == 1)) {
+	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->dcp)->v_usecount == 1)) {
 		cncp->dcp->c_flags |= C_PURGING;
 	}
 	vrele(CTOV(cncp->dcp)); 
 
-	if ((dcstat == IS_DOWNCALL) && (CNODE_COUNT(cncp->cp) == 1)) {
+	if ((dcstat == IS_DOWNCALL) && (CTOV(cncp->cp)->v_usecount == 1)) {
 		cncp->cp->c_flags |= C_PURGING;
 	}
 	vrele(CTOV(cncp->cp)); 
@@ -692,7 +695,7 @@ cfsnc_flush(dcstat)
 			CFSNC_HSHREM(cncp);	/* only zero valid nodes */
 			CFSNC_HSHNUL(cncp);
 			if ((dcstat == IS_DOWNCALL) 
-			    && (CNODE_COUNT(cncp->dcp) == 1))
+			    && (CTOV(cncp->dcp)->v_usecount == 1))
 			{
 				cncp->dcp->c_flags |= C_PURGING;
 			}
@@ -704,7 +707,7 @@ cfsnc_flush(dcstat)
 			}
 
 			if ((dcstat == IS_DOWNCALL) 
-			    && (CNODE_COUNT(cncp->cp) == 1))
+			    && (CTOV(cncp->cp)->v_usecount == 1))
 			{
 				cncp->cp->c_flags |= C_PURGING;
 			}

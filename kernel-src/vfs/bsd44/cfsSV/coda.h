@@ -15,9 +15,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.5.18.1  1997/11/12 12:09:32  rvb
- * reorg pass1
+ * Revision 1.5.18.2  1997/11/13 22:02:55  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.5.18.1  97/11/12  12:09:32  rvb
+ * reorg pass1
+ * 
  * Revision 1.5  96/12/12  22:10:54  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  * 
@@ -118,6 +121,8 @@
 #include <sys/vnode.h>
 #include <sys/ucred.h>
 
+#define CodaCred ucred
+
 #ifdef _KERNEL
 #ifndef	VICEFID_DEFINED
 #define	VICEFID_DEFINED	1
@@ -193,12 +198,6 @@ struct cfid {
 #define ODY_EXPAND	((u_long) 34)
 /* #define	CFS_INVALIDATE	((u_long) 35) Is this used anywhere? */
 #define CFS_NCALLS 35
-
-#define INIT_IN(in, op, ident) \
-	  (in)->opcode = (op); \
-	  (in)->pid = Process_pid; \
-          (in)->pgid = Process_pgid; \
-	  COPY_CRED_TO_CODACRED((in), (ident));
 
 struct inputArgs {
     unsigned long opcode;

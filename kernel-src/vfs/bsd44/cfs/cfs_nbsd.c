@@ -15,9 +15,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.16.6.2  1997/11/12 12:09:37  rvb
- * reorg pass1
+ * Revision 1.16.6.3  1997/11/13 22:02:58  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.16.6.2  97/11/12  12:09:37  rvb
+ * reorg pass1
+ * 
  * Revision 1.16.6.1  97/10/28  23:10:14  rvb
  * >64Meg; venus can be killed!
  * 
@@ -425,7 +428,7 @@ cfs_nb_inactive(v)
     ENTRY;
     /* XXX - at the moment, inactive doesn't look at cred, and doesn't
        have a proc pointer.  Oops. */
-    return (cfs_inactive(ap->a_vp, NULL, GLOBAL_PROC));
+    return (cfs_inactive(ap->a_vp, NULL, curproc));
 }
 
 int
@@ -871,7 +874,7 @@ cfs_nb_bmap(v)
     /* XXX on the global proc */
     ENTRY;
 
-    return (cfs_bmap(ap->a_vp, ap->a_bn, ap->a_vpp, ap->a_bnp, GLOBAL_PROC));
+    return (cfs_bmap(ap->a_vp, ap->a_bn, ap->a_vpp, ap->a_bnp, curproc));
 }
 
 int
@@ -881,8 +884,8 @@ cfs_nb_strategy(v)
     struct vop_strategy_args *ap = v;
 
     ENTRY;
-    /* XXX  for the GLOBAL_PROC */
-    return (cfs_strategy(ap->a_bp, GLOBAL_PROC));
+    /* XXX  for the curproc */
+    return (cfs_strategy(ap->a_bp, curproc));
 }
 
 /***************************** NetBSD-only vnode operations */
@@ -1102,4 +1105,96 @@ void
 vcfsattach(n)
     int n;
 {
+}
+
+/*
+  -----------------------------------------------------------------------------------
+ */
+
+#define	CNODE_NEXT(cp)	((cp)->c_next)
+
+struct cnode *cfs_freelist = NULL;
+int cfs_reuse = 0;
+int cfs_new = 0;
+
+struct cnode *cfs_alloc();
+extern struct cnode *cfs_find(ViceFid *fid);
+
+/*
+ * Return a vnode for the given fid.
+ * If no cnode exists for this fid create one and put it
+ * in a table hashed by fid.Volume and fid.Vnode.  If the cnode for
+ * this fid is already in the table return it (ref count is
+ * incremented by cfs_find.  The cnode will be flushed from the
+ * table when cfs_inactive calls cfs_unsave.
+ */
+struct cnode *
+makecfsnode(fid, vfsp, type)
+     ViceFid *fid; struct mount *vfsp; short type;
+{
+    struct mount foo;
+    struct cnode *cp;
+    int          err;
+    
+    if ((cp = cfs_find(fid)) == NULL) {
+	struct vnode *vp;
+	
+	cp = cfs_alloc();
+	cp->c_fid = *fid;
+	
+	err = getnewvnode(VT_CFS, vfsp, cfs_vnodeop_p, &vp);  
+	if (err) {                                                
+	    panic("cfs: getnewvnode returned error %d\n", err);   
+	}                                                         
+	vp->v_data = cp;                                          
+	vp->v_type = type;                                      
+	cp->c_vnode = vp;                                         
+	cfs_save(cp);
+	
+	/* Otherwise vfsp is 0 */
+	if (!IS_CTL_FID(fid))
+	    ((struct cfs_mntinfo *)(vfsp->mnt_data))->mi_refct++;
+    } else {
+	vref(CTOV(cp));
+    }
+    
+    return cp;
+}
+
+/*
+ * Allocate a cnode.
+ */
+struct cnode *
+cfs_alloc()
+{
+    struct cnode *cp;
+
+    if (cfs_freelist) {
+	cp = cfs_freelist;
+	cfs_freelist = CNODE_NEXT(cp);
+	cfs_reuse++;
+    }
+    else {
+	CFS_ALLOC(cp, struct cnode *, sizeof(struct cnode));
+	/* NetBSD vnodes don't have any Pager info in them ('cause there are
+	   no external pagers, duh!) */
+#define VNODE_VM_INFO_INIT(vp)         /* MT */
+	VNODE_VM_INFO_INIT(CTOV(cp));
+	cfs_new++;
+    }
+    bzero(cp, sizeof (struct cnode));
+
+    return(cp);
+}
+
+/*
+ * Deallocate a cnode.
+ */
+void
+cfs_free(cp)
+     register struct cnode *cp;
+{
+    
+    CNODE_NEXT(cp) = cfs_freelist;
+    cfs_freelist = cp;
 }

@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.18.3  1997/11/12 12:09:38  rvb
- * reorg pass1
+ * Revision 1.4.18.4  1997/11/13 22:02:59  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.4.18.3  97/11/12  12:09:38  rvb
+ * reorg pass1
+ * 
  * Revision 1.4.18.2  97/10/29  16:06:09  rvb
  * Kill DYING
  * 
@@ -59,6 +62,7 @@ extern int cfsnc_initialized;    /* Set if cache has been initialized */
 
 #include <vcfs.h>
 #include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/malloc.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>

@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.3  1997/11/12 12:09:40  rvb
- * reorg pass1
+ * Revision 1.5.14.4  1997/11/13 22:03:01  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.5.14.3  97/11/12  12:09:40  rvb
+ * reorg pass1
+ * 
  * Revision 1.5.14.2  97/10/29  16:06:28  rvb
  * Kill DYING
  * 
@@ -177,8 +180,11 @@ cfs_mount(vfsp, path, data, ndp, p)
     }
     
     /* Validate mount device.  Similar to getmdev(). */
-    DO_LOOKUP(data, UIO_USERSPACE, FOLLOW, NULL,
-	      &dvp, p, ndp, error);
+
+    NDINIT(ndp, LOOKUP, FOLLOW, UIO_USERSPACE, data, p);
+    error = namei(ndp);
+    dvp = ndp->ni_vp;
+
     if (error) {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return (error);
@@ -353,7 +359,7 @@ cfs_root(vfsp, vpp)
     struct inputArgs *inp;
     struct outputArgs *outp;
     int error, size;
-    struct proc *p = GLOBAL_PROC;    /* XXX - bnoble */
+    struct proc *p = curproc;    /* XXX - bnoble */
 
     ENTRY;
     MARK_ENTRY(CFS_ROOT_STATS);
@@ -368,7 +374,8 @@ cfs_root(vfsp, vpp)
 		{ /* Found valid root. */
 		    *vpp = op->rootvp;
 		    /* On Mach, this is vref.  On NetBSD, VOP_LOCK */
-		    CFS_ROOT_REF(*vpp);
+		    vref(*vpp);
+		    VOP_LOCK(*vpp);
 		    MARK_INT_SAT(CFS_ROOT_STATS);
 		    return(0);
 		}
@@ -387,7 +394,7 @@ cfs_root(vfsp, vpp)
     outp = (struct outputArgs *) inp;
 
     /* Didn't find the root, try sending up to a warden for it. */
-    INIT_IN(inp, CFS_ROOT, GLOBAL_CRED);  
+    INIT_IN(inp, CFS_ROOT, p->p_cred->pc_ucred);  
 
     size = sizeof(struct inputArgs);
     error = cfscall(vftomi(vfsp), VC_IN_NO_DATA, &size, (char *)inp);
@@ -404,7 +411,8 @@ cfs_root(vfsp, vpp)
 	cfs_save(VTOC(op->rootvp));
 
 	*vpp = op->rootvp;
-	CFS_ROOT_REF(*vpp);
+	vref(*vpp);
+	VOP_LOCK(*vpp);
 	MARK_INT_SAT(CFS_ROOT_STATS);
 	goto exit;
     } else if (error == ENODEV) {
@@ -418,7 +426,8 @@ cfs_root(vfsp, vpp)
 	 * will fail.
 	 */
 	*vpp = op->rootvp;
-	CFS_ROOT_REF(*vpp);
+	vref(*vpp);
+	VOP_LOCK(*vpp);
 	MARK_INT_FAIL(CFS_ROOT_STATS);
 	error = 0;
 	goto exit;
@@ -492,7 +501,7 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
     struct inputArgs in;
     struct outputArgs *out = (struct outputArgs *)&in; /* Reuse space */
     int error, size;
-    struct proc *p = GLOBAL_PROC; /* XXX -mach */
+    struct proc *p = curproc; /* XXX -mach */
 
     ENTRY;
     
@@ -505,7 +514,7 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
 	return(0);
     }
     
-    INIT_IN(&in, CFS_VGET, GLOBAL_CRED);
+    INIT_IN(&in, CFS_VGET, p->p_cred->pc_ucred);
     in.d.cfs_vget.VFid = cfid->cfid_fid;
     
     size = VC_INSIZE(cfs_vget_in);

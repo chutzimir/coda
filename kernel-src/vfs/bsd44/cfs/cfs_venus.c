@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.4  1997/11/12 12:09:42  rvb
- * reorg pass1
+ * Revision 1.4.14.5  1997/11/13 22:03:03  rvb
+ * pass2 cfs_NetBSD.h mt
  *
+ * Revision 1.4.14.4  97/11/12  12:09:42  rvb
+ * reorg pass1
+ * 
  * Revision 1.4.14.3  97/11/06  21:03:28  rvb
  * don't include headers in headers
  * 
@@ -111,6 +114,7 @@
  */
 
 #include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/malloc.h>
 #include <sys/errno.h>
 #include <sys/acct.h>
@@ -126,6 +130,7 @@
 #include <cfs/cfs.h>
 #include <cfs/cfsk.h>
 #include <cfs/cnode.h>
+#include <cfs/cfs_vnodeops.h>
 #include <cfs/cfs_opstats.h>
 #include <cfs/pioctl.h>    /* No viceioctl.h on NetBSD */
 
@@ -194,7 +199,7 @@ cfs_open(vpp, flag, cred, p)
     if (IS_CTL_VP(*vpp)) {
 	/* XXX */
 	/* if (WRITEABLE(flag)) */ 
-	if (flag & (FWRITE | FTRUNC | FCREAT | FEXCL)) {
+	if (flag & (FWRITE | O_TRUNC | O_CREAT | O_EXCL)) {
 	    MARK_INT_FAIL(CFS_OPEN_STATS);
 	    return(EACCES);
 	}
@@ -373,7 +378,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 	     * venus won't have the correct size of the core when
 	     * it's completely written.
 	     */
-	    if (cp->c_inode != 0 && !DUMPING_CORE) { 
+	    if (cp->c_inode != 0 && !(p && (p->p_acflag & ACORE))) { 
 		igot_internally = 1;
 		error = cfs_grab_vnode(cp->c_device, cp->c_inode, &cfvp);
 		if (error) {
@@ -402,7 +407,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 	/* Have UFS handle the call. */
 	CFSDEBUG(CFS_RDWR, myprintf(("indirect rdwr: fid = (%x.%x.%x), refcnt = %d\n",
 				  cp->c_fid.Volume, cp->c_fid.Vnode, 
-				  cp->c_fid.Unique, CNODE_COUNT(cp))); )
+				  cp->c_fid.Unique, CTOV(cp)->v_usecount)); )
 	if (rw == UIO_READ) {
 	    error = VOP_READ(cfvp, uiop, ioflag, cred);
 	} else {
@@ -417,7 +422,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 	/* Do an internal close if necessary. */
 	if (opened_internally) {
 	    MARK_INT_GEN(CFS_CLOSE_STATS);
-	    (void)cfs_close(vp, (rw == UIO_READ ? FREAD : FWRITE), cred);
+	    (void)cfs_close(vp, (rw == UIO_READ ? FREAD : FWRITE), cred, p);
 	}
     }
     else {
@@ -511,7 +516,7 @@ cfs_ioctl(vp, com, data, flag, cred, p)
 	int follow;
     } *iap = (struct a *)data;
     char *buf;
-    struct nameidata *ndp;
+    struct nameidata ndp;
     
     MARK_ENTRY(CFS_IOCTL_STATS);
     
@@ -531,9 +536,9 @@ cfs_ioctl(vp, com, data, flag, cred, p)
     /* Should we use the name cache here? It would get it from
        lookupname sooner or later anyway, right? */
     
-    DO_LOOKUP(iap->path, UIO_USERSPACE, 
-	      (iap->follow ? FOLLOW : NOFOLLOW),
-	      (struct vnode **)0, &tvp, p, ndp, error);
+    NDINIT(&ndp, LOOKUP, (iap->follow ? FOLLOW : NOFOLLOW), UIO_USERSPACE, iap->path, p);
+    error = namei(&ndp);
+    tvp = ndp.ni_vp;
 
     if (error) {
 	MARK_INT_FAIL(CFS_IOCTL_STATS);
@@ -1003,7 +1008,7 @@ cfs_inactive(vp, cred, p)
 #endif
     } else {
 #ifdef DIAGNOSTIC
-	if (CNODE_COUNT(cp)) {
+	if (CTOV(cp)->v_usecount) {
 	    panic("cfs_inactive: nonzero reference count");
 	}
 	if (cp->c_ovp != NULL) {
@@ -1128,7 +1133,6 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 	    cp = makecfsnode(&out->d.cfs_lookup.VFid, dvp->v_mount, 
 			      out->d.cfs_lookup.vtype);
 	    *vpp = CTOV(cp);
-	    /*LOOKUP_LOCK(*vpp);*/  /* XXX - broken! */
 	    
 	    /* enter the new vnode in the Name Cache only if the top bit isn't set */
 	    /* And don't enter a new vnode for an invalid one! */
@@ -1708,7 +1712,7 @@ cfs_readdir(vp, uiop, cred, eofflag, cookies, ncookies, p)
 	}
 	
 	/* Have UFS handle the call. */
-	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%x.%x.%x), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, CNODE_COUNT(VTOC(vp)))); )
+	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%x.%x.%x), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, vp->v_usecount)); )
 	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
 			       ncookies);
 	
