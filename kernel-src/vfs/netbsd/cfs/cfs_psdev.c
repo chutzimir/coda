@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.18.6  1997/11/20 11:46:41  rvb
- * Capture current cfs_venus
+ * Revision 1.4.18.7  1997/11/25 09:40:49  rvb
+ * Final cfs_venus.c w/o macros, but one locking bug
  *
+ * Revision 1.4.18.6  97/11/20  11:46:41  rvb
+ * Capture current cfs_venus
+ * 
  * Revision 1.4.18.5  97/11/18  10:27:15  rvb
  * cfs_nbsd.c is DEAD!!!; integrated into cfs_vf/vnops.c; cfs_nb_foo and cfs_foo are joined
  * 
@@ -291,7 +294,7 @@ vc_nb_write(dev, uiop, flag)
 {
     register struct vcomm *	vcp;
     register struct vmsg *vmp;
-    struct outputArgs *out;
+    struct cfs_out_hdr *out;
     u_long seq;
     u_long opcode;
     int buf[2];
@@ -319,7 +322,7 @@ vc_nb_write(dev, uiop, flag)
 	myprintf(("vcwrite got a call for %d.%d\n", opcode, seq));
     
     if (DOWNCALL(opcode)) {
-	struct outputArgs pbuf;
+	struct cfs_out_hdr pbuf;
 	
 	/* get the rest of the data. */
 	uiop->uio_rw = UIO_WRITE;
@@ -352,7 +355,7 @@ vc_nb_write(dev, uiop, flag)
     REMQUE(vmp->vm_chain);
     
     /* move data into response buffer. */
-    out = (struct outputArgs *)vmp->vm_data;
+    out = (struct cfs_out_hdr *)vmp->vm_data;
     /* Don't need to copy opcode and uniquifier. */
     
     /* get the rest of the data. */
@@ -504,7 +507,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	vcp = &(mntinfo->mi_vcomm);
 	
 	cfs_clstat.ncalls++;
-	cfs_clstat.reqs[((struct inputArgs *)buffer)->opcode]++;
+	cfs_clstat.reqs[((struct cfs_in_hdr *)buffer)->opcode]++;
 
 	if (!VC_OPEN(vcp))
 	    return(ENODEV);
@@ -516,14 +519,14 @@ cfscall(mntinfo, inSize, outSize, buffer)
 	vmp->vm_inSize = inSize;
 	vmp->vm_outSize 
 	    = *outSize ? *outSize : inSize; /* |buffer| >= inSize */
-	vmp->vm_opcode = ((struct inputArgs *)buffer)->opcode;
+	vmp->vm_opcode = ((struct cfs_in_hdr *)buffer)->opcode;
 	vmp->vm_unique = ++vcp->vc_seq;
 	if (cfsdebug)
 	    myprintf(("Doing a call for %d.%d\n", 
 		      vmp->vm_opcode, vmp->vm_unique));
 	
 	/* Fill in the common input args. */
-	((struct inputArgs *)buffer)->unique = vmp->vm_unique;
+	((struct cfs_in_hdr *)buffer)->unique = vmp->vm_unique;
 
 	/* Append msg to request queue and poke Venus. */
 	INSQUE(vmp->vm_chain, vcp->vc_requests);
@@ -561,7 +564,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 		/* (!(vmp->vm_flags & VM_WRITE)) means interrupted after
                    upcall started */
 		/* Interrupted after start of upcall, send venus a signal */
-		struct inputArgs *dog;
+		struct cfs_in_hdr *dog;
 		struct vmsg *svmp;
 		
 		if (cfsdebug||1)
@@ -574,7 +577,7 @@ cfscall(mntinfo, inSize, outSize, buffer)
 		CFS_ALLOC(svmp, struct vmsg *, sizeof (struct vmsg));
 
 		CFS_ALLOC((svmp->vm_data), char *, VC_IN_NO_DATA);
-		dog = (struct inputArgs *)svmp->vm_data;
+		dog = (struct cfs_in_hdr *)svmp->vm_data;
 		
 		svmp->vm_flags = 0;
 		dog->opcode = svmp->vm_opcode = CFS_SIGNAL;
