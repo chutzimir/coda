@@ -398,7 +398,8 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	/* If the user has valid tokens and he is not root, we specify an authenticated mgrp. */
 	/* Otherwise, we specify an unauthenticated mgrp. */
 	long sl;
-	if (uid != V_UID && tokensvalid) {
+	/* root can now own tokens */
+	if (/* uid != V_UID && */tokensvalid) {
 	    sl = RPC2_AUTHONLY;
 	    *auth = 1;
 	}
@@ -436,7 +437,8 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	RPC2_CountedBS clientident;
 	RPC2_BindParms bparms;
 
-	if (uid != V_UID && tokensvalid) {
+	/* root can now own tokens */
+	if (/* uid != V_UID && */ tokensvalid) {
 	    clientident.SeqLen = sizeof(SecretToken);
 	    clientident.SeqBody = (RPC2_ByteSeq)&secret;
 	    bparms.SecurityLevel = RPC2_AUTHONLY;
