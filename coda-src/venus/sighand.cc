@@ -155,9 +155,11 @@ PRIVATE void TRAP(int sig, int code, struct sigcontext *contextPtr) {
 
 
 PRIVATE void IOT(int sig, int code, struct sigcontext *contextPtr) {
+  /* linux gets this signal when it shouldn't */
+#ifndef __linux__
     if (!Profiling)
 	ToggleProfiling();
-
+#endif
     signal(SIGIOT, (void (*)(int))IOT);
 }
 

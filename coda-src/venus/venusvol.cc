@@ -288,8 +288,8 @@ int GetRootVolume() {
 	code = (int) ViceGetRootVolume(c->connid, &RVN);
 	UNI_END_MESSAGE(ViceGetRootVolume_OP);
 	MarinerLog("store::getrootvolume done\n");
-
 	code = c->CheckResult(code, 0);
+	LOG(10, ("GetRootVolume: received name: %s, code: %d\n", RVN.SeqBody, code));
 	UNI_RECORD_STATS(ViceGetRootVolume_OP);
 
 	PutConn(&c);

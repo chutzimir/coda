@@ -672,7 +672,7 @@ extern struct CommQueueStruct CommQueue;
 	}\
     }\
     CommQueue.count[vp->lwpri]++;\
-    LOG(0, ("CommQueue: insert pri %d count = %d\n", \
+    LOG(10, ("CommQueue: insert pri %d count = %d\n", \
 	    vp->lwpri, CommQueue.count[vp->lwpri]));\
 }
 
@@ -680,7 +680,7 @@ extern struct CommQueueStruct CommQueue;
 {\
     vproc *vp = VprocSelf();\
     CommQueue.count[vp->lwpri]--;\
-    LOG(0, ("CommQueue: remove pri %d count = %d\n", \
+    LOG(10, ("CommQueue: remove pri %d count = %d\n", \
 	    vp->lwpri, CommQueue.count[vp->lwpri]));\
     VprocSignal(&CommQueue.sync);\
 }

@@ -926,6 +926,7 @@ class volent {
     void Resolve();
     void ResSubmit(char **, ViceFid *);
     int ResAwait(char *);
+    int RecResolve(connent *, ViceFid *);
 
     /* Repair routines. */
     int EnableRepair(vuid_t, VolumeId *, vuid_t *, unsigned long *);
