@@ -53,10 +53,10 @@ extern "C" {
 #include <stdlib.h>
 #else
 #include <libc.h>
-#endif
+#include <sysent.h>
+#endif /* __linux__ || __NetBSD__ */
 #include <stdio.h>
-
-
+#include <string.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

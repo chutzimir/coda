@@ -51,7 +51,14 @@ extern "C" {
 #include <netdb.h>
 #include <ctype.h>
 #include <errno.h>
+#if defined(__linux__) || defined(__NetBSD__)
+#include <unistd.h>
+#include <stdlib.h>
+#else
 #include <libc.h>
+#include <sysent.h>
+#endif /* __linux__ || __NetBSD__ */
+#include <string.h>
 
 #ifdef __cplusplus
 }

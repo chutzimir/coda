@@ -46,7 +46,14 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/time.h>
 #include <errno.h>
+#if defined(__linux__) || defined(__NetBSD__)
+#include <unistd.h>
+#include <stdlib.h>
+#else
 #include <libc.h>
+#include <sysent.h>
+#endif /* __linux__ || __NetBSD__ */
+#include <string.h>
 
 #ifdef __cplusplus
 }
@@ -376,10 +383,12 @@ void HandleRecord(hblock& hdr) {
 
 
 int checksum(hblock& hdr) {
-    for (char *cp = hdr.dbuf.chksum; cp < &hdr.dbuf.chksum[sizeof(hdr.dbuf.chksum)]; cp++)
+    int i = 0;
+    char *cp;
+
+    for (cp = hdr.dbuf.chksum; cp < &hdr.dbuf.chksum[sizeof(hdr.dbuf.chksum)]; cp++)
 	*cp = ' ';
 
-    int i = 0;
     for (cp = hdr.dummy; cp < &hdr.dummy[TBLOCK]; cp++)
 	i += *cp;
 
