@@ -161,7 +161,7 @@ static int process(char *s, char ** next, command_t *lookup,
     *prev = s; 
 
     /* non existent */
-    if ( !result ) 
+    if ( ! *result ) 
 	return CMD_NONE;
 
     /* found entry: is it ambigous, i.e. not exact command name and
