@@ -1,6 +1,6 @@
 # TARGETS:
 #	install:
-#		lock.h lwp.h lwp.camelot.h preempt.h timer.h cargs.h ->$(INCLSPECIAL)
+#		lock.h lwp.h preempt.h timer.h cargs.h ->$(INCLSPECIAL)
 #		liboldlwp.a -> $(LIBSPECIAL)
 #		test rw -> $(BINDIR)
 #	 all:
@@ -48,11 +48,10 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-# presto changeo!
-SHOB_LIB_DIR := $(SHOB_LIB_SPECIAL)
+CFLAGS += -Wall 
 
 LIBRARIES = liboldlwp.a
-HEADERS   = lock.h lwp.h lwp.camelot.h preempt.h timer.h cargs.h
+HEADERS   = lock.h lwp.h preempt.h timer.h cargs.h
 TESTS     = test rw  # tdb doesn't work yet
 
 OLD_LIBS = liboldlwp.a $(LIBCOMPAT) 

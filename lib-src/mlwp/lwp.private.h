@@ -138,8 +138,9 @@ extern char PRE_Block;			/* used in preemption control (in preempt.c) */
 
 #ifdef OLDLWP
 /* Routines in process.s */
-extern savecontext (PFV whichroutine, struct lwp_context *context, char *whichstack);
-extern returnto (struct lwp_context *context);
+
+extern int savecontext (PFV whichroutine, struct lwp_context *context, char *whichstack);
+extern int returnto (struct lwp_context *context);
 #endif OLDLWP
 
 /* Debugging macro */

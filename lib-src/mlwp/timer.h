@@ -63,7 +63,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 struct TM_Elem {
     struct TM_Elem	*Next;		/* filled by package */
     struct TM_Elem	*Prev;		/* filled by package */
-    struct timeval	TotalTime;	/* filled in by caller -- modified by package */
+    struct timeval	TotalTime;	/* filled in by caller; 
+					   changed to expiration by package */
     struct timeval	TimeLeft;	/* filled by package */
     char		*BackPointer;	/* filled by caller, not interpreted by package */
 };
