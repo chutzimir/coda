@@ -517,7 +517,8 @@ struct vstab *getvsent() {
 
     /* CacheDirectory */
     for (t = s; *s && *s != ':'; s++) ; *s++ = '\0';
-    v.v_cache = t;
+    if ( strlen(t) != 0 )
+	    v.v_cache = t;
 
     /* CacheBlocks */
     for (t = s; *s && *s != ':'; s++) ; *s++ = '\0';

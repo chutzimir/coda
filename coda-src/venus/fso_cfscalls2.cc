@@ -170,8 +170,10 @@ int fsobj::Open(int writep, int execp, int truncp, venus_cnode *cp, vuid_t vuid)
 		if (tfd < 0) Choke("fsobj::Open: open");
 		if (::fchmod(tfd, V_MODE) < 0)
 		    Choke("fsobj::Open: fchmod");
+#if !defined(DJGPP) && !defined(__CYGWIN32__)
 		if (::fchown(tfd, (uid_t)V_UID, (gid_t)V_GID) < 0)
 		    Choke("fsobj::Open: fchown");
+#endif
 		struct stat tstat;
 		if (::fstat(tfd, &tstat) < 0) Choke("fsobj::Open: fstat");
 		if (::close(tfd) < 0) Choke("fsobj::Open: close");

@@ -103,9 +103,11 @@ extern "C" {
 #define	UNSET_KD 0
 #define	DFLT_FS	""	    /* file servers */
 #define	UNSET_FS 0
-#if defined(DJGPP) || defined(__CYGWIN32__)
+#if defined(DJGPP) 
 #define	DFLT_CD	"C:/usr/coda/venus.cache"    /* Win cache directory */
-#else
+#elif  defined(__CYGWIN32__)
+#define	DFLT_CD	"//??/C:/usr/coda/venus.cache"    /* Win cache directory */
+#else 
 #define	DFLT_CD	"/usr/coda/venus.cache"	    /* cache directory */
 #endif
 #define	UNSET_CD 0
