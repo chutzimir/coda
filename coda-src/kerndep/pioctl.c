@@ -38,6 +38,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <sys/types.h>
+#include <sys/time.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <unistd.h>

@@ -106,6 +106,9 @@ extern "C" {
 #include "venusvol.h"
 #include "vproc.h"
 #include "worker.h"
+#ifdef	__FreeBSD__
+#undef cr_gid
+#endif
 
 
 int HDBEs = UNSET_HDBE;

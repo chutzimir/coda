@@ -79,9 +79,11 @@ libadvice.a: ${AOBJS} ${REALRPCSETUP}
 
 libfakeadvice.a: ${AOBJS} ${FAKERPCSETUP}
 
+replacementlog.o: replacementlog.cc
+	$(CXX) $(CFLAGS) $(INCGDBM) -c $<
+
 fake_rpc_setup.o: rpc_setup.cc
 	$(CXX) $(CFLAGS) -D__FAKE__ -c ${srcdir}/rpc_setup.cc -o fake_rpc_setup.o
-	
 
 advice_srv: $(LIBS) $(OTHERLIBS) libadvice.a advice_srv.o
 	$(CXX) $(LIBFLAGS) advice_srv.o libadvice.a $(LIBS) $(OTHERLIBS) -o advice_srv
