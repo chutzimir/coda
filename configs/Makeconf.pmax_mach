@@ -36,6 +36,7 @@ SHELL	      = /usr/local/bin/bash
 MACHINE_FLAGS =
 SHORTSYS      = mach
 INCLFLAGS     = -I/usr/cs/include
+OPTFLAG	      =
 GFLAG         = -g
 CPP           = /usr/cs/lib/cpp
 LIBSYS        = /usr/cs/lib/libsys.a
