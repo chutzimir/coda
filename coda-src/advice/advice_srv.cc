@@ -49,13 +49,8 @@ static char *rcsid = "$Header$";
 extern "C" {
 #endif __cplusplus
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <stdio.h>
 #include <sys/param.h>
@@ -79,6 +74,10 @@ extern "C" {
 extern int table(int id, int index, char *addr, int nel, int lel);
 extern int ffilecopy(FILE*, FILE*);
 
+/* from vicedep */
+#include "admon.h"
+#include "adsrv.h"
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -93,9 +92,6 @@ extern void RegisterDaemon(unsigned long, char *);
 #include <proc.h>
 #include <bstree.h>
 
-/* from vicedep */
-#include "admon.h"
-#include "adsrv.h"
 
 /* from venus */
 #include <advice.h>
