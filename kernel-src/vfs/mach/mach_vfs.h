@@ -43,6 +43,9 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
+ * Revision 1.2  1996/12/09 19:17:44  braam
+ * changes to includes
+ *
  * Revision 1.1  1996/11/22 19:09:37  braam
  * First Checkin (pre-release)
  *
@@ -137,8 +140,9 @@ extern "C" {
 #define	b_vp		b_ip
 
 /* dir.h */
+#if 0
 #define	d_fileno	d_ino
-
+#endif
 /* file.h */
 #define	f_cred		f_identity
 

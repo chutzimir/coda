@@ -113,8 +113,8 @@ typedef struct ViceFid {
 #endif	not VICEFID_DEFINED
 #else	KERNEL
 #ifdef MACH
-#include <vfs/vfs.h>
-#include <vfs/vnode.h>
+#include <cfs/mach_vfs.h>
+#include <cfs/mach_vnode.h>
 #endif
 #ifdef __NetBSD__
 #include <sys/mount.h>

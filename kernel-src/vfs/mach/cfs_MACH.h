@@ -48,8 +48,8 @@ static char *rcsid = "$Header$";
 
 
 #include <sys/user.h>
-#include <vfs/vfs.h>
-#include <vfs/vnode.h> 
+#include <cfs/mach_vfs.h>
+#include <cfs/mach_vnode.h> 
 
 #ifdef KERNEL
 /* External definitions needed by sets. */
