@@ -39,7 +39,7 @@ REMOTE=/vice/vol/remote
 PATH=/sbin:/usr/sbin:$PATH
 export PATH
 cd /vice/vol/remote
-
+SERVERS=""
 
 # Get the locally generated /vice/vol/VolumeList from 
 #  - all servers (if argc = 1)
@@ -48,8 +48,13 @@ cd /vice/vol/remote
 if [ $#  = 0 ]; then
 	SERVERS=`awk '{ print $1 }' /vice/db/servers`
 else
-	SERVERS=$*
+    for i in $* ; do
+        NEWSERVER=`awk '{ print $1 }' /vice/db/servers | grep $i `
+	SERVERS="$NEWSERVER $SERVERS"
+    done
 fi
+
+echo "Fetching /vice/vol/Volumelist from $SERVERS"
 
 for server in $SERVERS
 do 

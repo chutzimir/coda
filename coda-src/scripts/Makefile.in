@@ -53,8 +53,8 @@ ifeq ($(SYS),linux)
   SINIT-SCRIPTS   = codasrv.init auth2.init update.init
 else
   # use BSD style init scripts
-  CINIT-SCRIPTS   = # venus.rc
-  SINIT-SCRIPTS   = vice.rc
+  CINIT-SCRIPTS   = # rc.venus
+  SINIT-SCRIPTS   = rc.vice
   INITDIR	  = ${prefix}/etc
 endif
 
