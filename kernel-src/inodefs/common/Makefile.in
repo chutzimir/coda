@@ -36,7 +36,10 @@ TOPOBJ = @TOPOBJ@
 
 include $(TOPDIR)/Makeconf
 
-# Nothing to do for now except to install inodefs.h...
 HEADERS   = inodefs.h
+OBJS = inodefsulib.o
+LIBRARIES = libuinodefs.a
+
+libuinodefs.a: inodefsulib.o
 
 include $(TOPDIR)/Makerules
