@@ -122,12 +122,14 @@ long S_VolSetLogParms(RPC2_Handle rpcid, VolumeId Vid, RPC2_Integer OnFlag,
 	    VLog(0, "S_VolSetLogParms: Log Size has to be a multiple of 32");
 	    VPutVolume(volptr);
 	    rvmlib_abort(EINVAL);
+	    goto exit;
 	}
 	if (AllowResolution && V_VMResOn(volptr)) {
 	    if (LogStore[V_volumeindex(volptr)]->maxRecordsAllowed > maxlogsize) {
 		VLog(0, "S_VolSetLogParms: Cant reduce log size");
 		VPutVolume(volptr);
 		rvmlib_abort(EINVAL);
+		goto exit;
 	    }
 	    VLog(0, "S_VolSetLogParms: Changing log size from %d to %d\n", 
 		   LogStore[V_volumeindex(volptr)]->maxRecordsAllowed,
@@ -146,8 +148,10 @@ long S_VolSetLogParms(RPC2_Handle rpcid, VolumeId Vid, RPC2_Integer OnFlag,
 	VLog(0, "S_VolSetLogParms: Error updating volume %x", Vid);
 	VPutVolume(volptr);
 	rvmlib_abort(error);
+	goto exit;
     }
     RVMLIB_END_TRANSACTION(flush, &(status));
+
  exit:
     VPutVolume(volptr);
     VDisconnectFS();

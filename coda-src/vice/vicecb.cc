@@ -341,10 +341,8 @@ CallBackStatus AddCallBack(HostTable *client, ViceFid *afid)
 
 
 /*
-  BEGIN_HTML
-  <a name="BreakCallBack"><strong>Break a callback for <tt>afid</tt> with
-  client connected via <tt>client</tt> </strong> </a>
-  END_HTML 
+  BreakCallBack: Break a callback for afid at all clients except those
+  connected via the "client" parameter
 */
 void BreakCallBack(HostTable *client, ViceFid *afid) {
     struct CallBackEntry *tc;

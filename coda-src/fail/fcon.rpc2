@@ -59,7 +59,7 @@ typedef RPC2_Struct {
 
 typedef RPC2_Enum { sendSide = 0, recvSide = 1, noSide = 2 } FailFilterSide;
 
-1: GetInfo(IN OUT RPC2_BoundedBS name);
+GetInfo(IN OUT RPC2_BoundedBS name);
 
 2: InsertFilter(
 	IN FailFilterSide side,

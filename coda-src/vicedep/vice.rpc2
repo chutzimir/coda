@@ -55,6 +55,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 %}
 
+server prefix "FS";
 
 Subsystem "srv" 1 1;
 

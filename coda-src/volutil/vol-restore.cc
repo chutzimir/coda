@@ -284,6 +284,7 @@ static int RestoreVolume(DumpBuffer_t *buf, char *partition,
 	if (error) {
 	    VLog(0, "Unable to allocate volume id; restore aborted");
 	    rvmlib_abort(VFAIL);
+	    goto error;
 	}
     }
     /* NOTE:  Do NOT set the parentId of restore RO volumes to the ORIGINAL
@@ -306,6 +307,7 @@ static int RestoreVolume(DumpBuffer_t *buf, char *partition,
     }
 
     RVMLIB_END_TRANSACTION(flush, &status)
+	    error:
     if (status == 0)
 	VLog(9, "restore createvol of %#x completed successfully", *volid);
     else {

@@ -44,7 +44,6 @@ RESC_LIBS  = ${LIBKERNDEP} ${LIBRPC2} ${LIBOLDLWP}
 
 RESLIBOBJS = logalloc.o pdlist.o remotelog.o resclient.o lockqueue.o\
              rescoord.o  resforce.o reslock.o reslog.o \
-             rescoord.o  resforce.o reslock.o reslog.o \
              resutil.o rescomm.o timing.o weres.o 
 
 libreslib.a:	${RESLIBOBJS}

@@ -414,13 +414,15 @@ static void VUCloneIndex(Error *error, Volume *rwVp, Volume *cloneVp, VnodeClass
 
 	    *error = CloneVnode(rwVp, cloneVp, vnodeindex, rvlist, vnode, vclass);
 	    if (*error) {
-		rvmlib_abort(VFAIL);
-		return ;
+		    status = error;
+		    rvmlib_abort(VFAIL);
+		    goto error;
 	    }
 
 
 	} 
 	RVMLIB_END_TRANSACTION(flush, &(status));
+    error:
 	if (status != 0) {
 	    LogMsg(0, VolDebugLevel, stdout, "CloneIndex: abort for RW %x RO %x",
 		   V_id(rwVp), V_id(cloneVp));
