@@ -564,7 +564,11 @@ void NotifyUsersOfHoardWalkProgress(int fetched, int total) {
       totalToFetch = total;
     CODA_ASSERT(total == totalToFetch);
 
-    thisPercentage = (int) ((double)totalFetched*(double)100/(double)total);
+    if (total != 0)
+	thisPercentage = (int) ((double)totalFetched*(double)100/(double)total);
+    else
+	thisPercentage = 100;
+
     if (thisPercentage < lastPercentage) {
       LOG(0, ("fetched=%d, totalFetched=%d, totalToFetch=%d, thisPercentage=%d\n", 
 	      fetched, totalFetched, total, thisPercentage));
