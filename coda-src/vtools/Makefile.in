@@ -38,7 +38,8 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = cmon codacon cfs hoard spy replay
+LOGSCRIPTS = logbandwidth logcmls logreintegration
+EXECUTABLES = cmon codacon cfs hoard spy replay $(LOGSCRIPTS)
 ifeq ($(SYS),cygwin32)
 EXECUTABLES = codacon cfs hoard spy replay
 endif
@@ -75,5 +76,20 @@ replay: replay.o
 up: up.o
 	$(CXX) $(LIBFLAGS)  up.o -o up
 
+logbandwidth: logbandwidth.in translate.sed
+	sed -f translate.sed  $< > $@
+
+logcmls: logcmls.in translate.sed
+	sed -f translate.sed  $< > $@
+
+logreintegration: logreintegration.in translate.sed
+	sed -f translate.sed  $< > $@
+
+translate.sed: Makefile
+	echo "s%+TIXWISH+%@TIXWISH@%g" >> $@
+
+# this way translate.sed is cleaned up as well
+TESTS = translate.sed
+				                                           
 
 include $(MAKDIR)/configs/Makerules
