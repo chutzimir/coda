@@ -43,8 +43,8 @@ extern "C" {
 }
 #endif __cplusplus
 
-#include "parser.h"
 #include "norton.h"
+#include "parser.h"
 
 void usage(char * name) {
     fprintf(stderr, "Usage: %s <log_device> <data_device> <length>\n",

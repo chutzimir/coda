@@ -171,8 +171,8 @@ void main(int argc, char **argv) {
     if (debug)
 	fprintf(stderr, "Uid is %u Euid is %u\n", getuid(), geteuid());
 
-    char incfname[CFS_MAXNAMLEN];		// the last component of path name of inc file
-    char incdname[CFS_MAXPATHLEN];		// abs. path of directory where inc file exists
+    char incfname[CODA_MAXNAMLEN];		// the last component of path name of inc file
+    char incdname[CODA_MAXPATHLEN];		// abs. path of directory where inc file exists
 
 #ifdef TIMING 
     int clockFD = open("/dev/cntr0", O_RDONLY, 0666); 
