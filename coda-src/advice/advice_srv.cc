@@ -198,7 +198,6 @@ main(int argc, char *argv[])
   // Inform Venus of the availability of an AdviceMonitor for this user
   InformVenusOfOurExistance(HostName, uid, thisPGID);
 
-  // Setup the default user interests
   assert(LWP_NoYieldSignal(&initialUserSync) == LWP_SUCCESS);
 
   // Set up the request filter:  we only service ADMON subsystem requests.
@@ -217,7 +216,6 @@ main(int argc, char *argv[])
     // Wait for a request
     rc = RPC2_GetRequest(&reqfilter, &cid, &reqbuffer, &DaemonExpiry, NULL, (long)NULL, NULL) ;
     if (rc == RPC2_TIMEOUT) {
-printf("RPC2_GetRequest got a timeout\n");
       // Fire daemons that are ready to run. 
       DispatchDaemons();
 
@@ -507,21 +505,19 @@ void CodaConsoleHandler(char *c) {
 
   assert(LWP_WaitProcess(&initialUserSync) == LWP_SUCCESS);
 
-  sprintf(msg, "source %s\n", CODACONSOLE);
+  sprintf(msg, "\tsource %s\n", CODACONSOLE);
   SendToConsole(msg);
   printf("Sending: %s\n", msg);
   fflush(stdout);
-  Yield();
 
   LogMsg(100,LogLevel,LogFile, "UserEventHandler: Waiting...");
-
 
   while (1) {
     // Wait for and handle user events 
     assert(LWP_GetRock(42, &rock) == LWP_SUCCESS);
-  printf("CodaConsole: Waiting for userSync\n");
+    fprintf(stderr, "\tCodaConsole: Waiting for userSync\n");
     assert(LWP_WaitProcess(&userSync) == LWP_SUCCESS);
-  printf("CodaConsole: Received userSync\n");
+    fprintf(stderr, "\tCodaConsole: Received userSync\n");
 
     // Handle user event
 
