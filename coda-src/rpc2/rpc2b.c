@@ -1038,7 +1038,8 @@ unsigned long rpc2_MakeTimeStamp()
     struct timeval now;
 
     /* use the approximate version b/c gettimeofday is called often */
-    FT_AGetTimeOfDay(&now, (struct timezone *)0);
+    /* but for now we take the safe route */
+    FT_GetTimeOfDay(&now, (struct timezone *)0);
 
     return rpc2_TVTOTS(&now);
 }

@@ -265,8 +265,7 @@ int rpc2_AppendHostLog(struct HEntry *whichHost, RPC2_NetLogEntry *entry)
 
 	whichHost->Log[ix] = *entry;	/* structure assignment */
 	
-	/* stamp it. use the approximate version */
-	FT_AGetTimeOfDay(&(whichHost->Log[ix].TimeStamp),
+	FT_GetTimeOfDay(&(whichHost->Log[ix].TimeStamp),
 			 (struct timezone *)0);
 	whichHost->NumEntries++;
 
