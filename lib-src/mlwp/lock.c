@@ -98,6 +98,7 @@ void Lock_Obtain(register struct Lock *lock, int how)
 			  || lock->readers_reading);
 		lock->num_waiting--;
 		lock->excl_locked = WRITE_LOCK;
+		lock->excl_locker = me;
 		break;
 
 	case SHARED_LOCK:	
@@ -117,6 +118,7 @@ void Lock_Obtain(register struct Lock *lock, int how)
 				} while (lock->readers_reading);
 				lock->num_waiting--;
 				lock->excl_locked = WRITE_LOCK;
+				lock->excl_locker = me;
 				break;
 
 	default:		fprintf(stderr, 
@@ -229,17 +231,17 @@ void  ReleaseReadLock(struct Lock *lock)
 
 void  ReleaseWriteLock(struct Lock *lock)
 {
-    (lock)->excl_locked &= ~WRITE_LOCK;
     if ((lock)->wait_states) 
 	Lock_ReleaseR(lock);
+    (lock)->excl_locked &= ~WRITE_LOCK;
 }
 
 /* can be used on shared or boosted (write) locks */
 void  ReleaseSharedLock(struct Lock *lock)
 {
-    (lock)->excl_locked &= ~(SHARED_LOCK | WRITE_LOCK);
     if ((lock)->wait_states) 
 	Lock_ReleaseR(lock);
+    (lock)->excl_locked &= ~(SHARED_LOCK | WRITE_LOCK);
 }
 
 /* I added this next macro to make sure it is safe to nuke a lock -- Mike K. */
