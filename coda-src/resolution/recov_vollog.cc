@@ -78,6 +78,7 @@ void *recov_vol_log::operator new(size_t len) {
     return(rcvl);
 }
 
+/* this mostly initializes an array of pointers to log entries */
 recov_vol_log::recov_vol_log(VolumeId vid, int adm) :recov_inuse(adm, 1) {
 
     RVMLIB_REC_OBJECT(*this);
@@ -121,10 +122,7 @@ void recov_vol_log::ResetTransients(VolumeId vid) {
 }
 
 recov_vol_log::~recov_vol_log() {
-    /* We assume volume log only allocated on heap; don't EVER try
-       to put it on the stack... */
-
-    if (index) RVMLIB_REC_FREE(index); /* free it only if allocated */
+    if (index) RVMLIB_REC_FREE(index); 
 }
 
 void recov_vol_log::operator delete(void *deadobj, size_t len) {
@@ -267,7 +265,7 @@ int recov_vol_log::AllocRecord(int *index, int *seqno) {
     *index = vm_inuse->GetFreeIndex();
     if (*index == -1) { //no space available 
 	LogMsg(0, SrvDebugLevel, stdout,
-	       "No space left in volume log\n");
+	       "AllocRecord: No space left in volume log.\n");
 	return(ENOSPC);
     }
     
@@ -450,13 +448,15 @@ void recov_vol_log::print(int fd) {
     }
 }
 
-int recov_vol_log::ChooseWrapAroundVnode(Volume *vol, int different) {
-    // different : choose a different vnode from the one already in use 
+
+// different : choose a different vnode from the one already in use 
+int 
+recov_vol_log::ChooseWrapAroundVnode(Volume *vol, int different) 
+{
 
     if ((!different) && (wrapvn != -1) && (wrapun != -1)) {
 	LogMsg(0, SrvDebugLevel, stdout,
-	       "ChooseWrapAroundVnode: returning same vnode 0x%x.%x\n",
-	       wrapvn, wrapun);
+	       "ChooseWrapAroundVnode: returning same vnode 0x%x.%x in vol 0x%x\n", wrapvn, wrapun, V_id(vol));
 	return(0);
     }
 
