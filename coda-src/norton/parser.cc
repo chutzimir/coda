@@ -48,8 +48,9 @@ extern "C" {
 #include <ctype.h>
 #include <string.h>
 
-#include <readline/readline.h>	/* this lives in /usr/misc/.gnu-comp/include */
-/* Keep C++ happy */
+#define	READLINE_LIBRARY
+#include <readline.h>
+
 extern void using_history();
 extern void stifle_history(int);
 extern void add_history(char *);
