@@ -55,8 +55,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-#ifdef RPC2DEBUG
-/* this surrounds the entire file */
 
 
 #include <stdio.h>
@@ -74,6 +72,9 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "se.h"
 #include "trace.h"
 #include "cbuf.h"
+
+#ifdef RPC2DEBUG
+/* this surrounds the entire file */
 
 /*
   Clock tick generator for traces.

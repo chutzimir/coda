@@ -64,6 +64,8 @@ typedef int RPC2_Integer;
 
 typedef unsigned int RPC2_Unsigned;
 
+typedef double RPC2_Double;
+
 typedef unsigned char RPC2_Byte;
 
 typedef char *RPC2_String;

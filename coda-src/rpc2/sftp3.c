@@ -312,10 +312,10 @@ void sftp_UpdateBW(RPC2_Unsigned tStamp, unsigned long bytes,
     entry.Tag = RPC2_MEASURED_NLE;
     entry.Value.Measured.Conn = sEntry->LocalHandle;
     entry.Value.Measured.Bytes = bytes;
-    entry.Value.Measured.ElapsedTime = obs * 10;	/* want ms */
+    entry.Value.Measured.ElapsedTime = obs;
     (void) rpc2_AppendHostLog(sEntry->HostInfo, &entry);
     say(0/*4*/, SFTP_DebugLevel, "sftp_UpdateBW: conn 0x%lx, %ld bytes, %ld ms\n", 
-				  sEntry->LocalHandle, bytes, obs*10);
+				  sEntry->LocalHandle, bytes, obs);
 }
 
 
@@ -822,7 +822,7 @@ PRIVATE CheckWorried(sEntry)
 		then = ntohl(thePacket->Header.TimeStamp);
 		if (now - then > rexmit) {
 			say(4, SFTP_DebugLevel, "Worried packet %ld, sent %lu, (%lu msec ago)\n",
-					 i, then, 10*(now-then));
+					 i, then, (now-then));
 			break;
 		}
 	    }

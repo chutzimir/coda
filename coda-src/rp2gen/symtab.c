@@ -93,7 +93,8 @@ static struct {
  	{ "RPC2_BulkDescriptor",	RPC2_BULKDESCRIPTOR_TAG },
 */
 	{ "SE_Descriptor",		RPC2_BULKDESCRIPTOR_TAG },
-	{ "RPC2_EncryptionKey",		RPC2_ENCRYPTIONKEY_TAG }
+	{ "RPC2_EncryptionKey",		RPC2_ENCRYPTIONKEY_TAG },
+	{ "RPC2_Double",		RPC2_DOUBLE_TAG },
 };
 
 STUBELEM stub_predefined[] = {

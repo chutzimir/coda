@@ -56,16 +56,18 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 
-#ifdef RPC2DEBUG
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <string.h>
 #include "cbuf.h"
+#include <lwp.h>
+#include <timer.h>
+#include "rpc2.h"
+#include "rpc2.private.h"
 
-#ifdef CMUCS
-#include <stdlib.h>
-#endif CMUCS
+#ifdef RPC2DEBUG
 
 struct CBUF_Header *CBUF_Init(elemSize, noofElems, printName)
     long elemSize;

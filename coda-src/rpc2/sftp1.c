@@ -777,6 +777,7 @@ GotData:
 PRIVATE long PutFile(register struct SFTP_Entry *sEntry)
 {
     RPC2_PacketBuffer *pb;
+    struct CEntry     *ce;
     register long i;
 
     sEntry->SDesc->Value.SmartFTPD.BytesTransferred = 0;
@@ -786,7 +787,17 @@ PRIVATE long PutFile(register struct SFTP_Entry *sEntry)
     sEntry->SendMostRecent = sEntry->SendLastContig;	/* Really redundant */
     sEntry->SendWorriedLimit = sEntry->SendLastContig;  /* Really redundant */
     sEntry->SendAckLimit = sEntry->SendLastContig;      /* Really redundant */
-    sEntry->TimeEcho = 0;
+
+    /* Kip: instead of sEntry->TimeEcho = 0, we will go ahead and
+     * use the Timestamp from the first rpc2 packet since the putfile
+     * may not span more than one round-trip, and no RTT update would
+     * occur. */
+    ce = rpc2_GetConn(sEntry->LocalHandle);
+    if (ce == NULL)
+	sEntry->TimeEcho = 0;
+    else
+	sEntry->TimeEcho = ce->TimeStampEcho;
+
     bzero(sEntry->SendTheseBits, sizeof(int)*BITMASKWIDTH);
 
     if (sftp_SendStrategy(sEntry) < 0)
