@@ -29,7 +29,6 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
@@ -95,7 +94,6 @@ long GetKeysFromToken(IN RPC2_Integer AuthenticationType,
 		      INOUT RPC2_CountedBS *cIdent,
                       OUT RPC2_EncryptionKey hKey,
                       OUT RPC2_EncryptionKey sKey);
-
 
 /*  Wrapper function when multiple authentication type support was added;
     fits new calling parameters.  We only allow by-token authentication to
