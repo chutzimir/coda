@@ -253,7 +253,8 @@ delete_name(int volid, int vnum, int unique, char *name, int flag)
     }
 
     // ignore changing the length for now
-    pdi = DI_DhToDi(dc);
+    DI_DhToDi(dc);
+    pdi = DC_DC2DI(dc);
     
     if ( pdi != (PDirInode) vnode->inodeNumber ) {
 	    printf("WARNING: directory inode has changed!\n");
@@ -378,7 +379,8 @@ create_name(int volid, int vnum, int unique, char *name, int cvnum,
     cvnode->vparent = vnum;
     cvnode->uparent = unique;
     
-    pdi = DI_DhToDi(dc);
+    DI_DhToDi(dc);
+    pdi = DC_DC2DI(dc);
     
     if ( pdi != (PDirInode) vnode->inodeNumber ) {
 	    printf("WARNING: directory inode has changed!\n");

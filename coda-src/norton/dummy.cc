@@ -72,7 +72,9 @@ void Die(char *msg) {
 }
 
 int GetFsObj(ViceFid *fid, Volume **volptr, Vnode **vptr,
-	     int lock, int VolumeLock, int ignoreIncon, int ignoreBQ) {
+	     int lock, int VolumeLock, int ignoreIncon, int ignoreBQ,
+	     int getdirhandle)
+{
     assert(0);
     return(0);
 }
