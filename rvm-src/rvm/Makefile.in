@@ -134,7 +134,9 @@ librvm.a:  $(NEED_CTHREAD) $(OBJ1)
 
 .INOBJECTDIR: ${PTSRC1}
 
+# better be "ln -sf", but we don't have it on mach platform 
 %.l.c : %.c
+	-rm $@
 	ln -s $? $@
 
 %.l.o : %.l.c
