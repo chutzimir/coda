@@ -70,6 +70,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <pwd.h>
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
@@ -89,8 +90,6 @@ extern "C" {
 PRIVATE char *myuser;
 PRIVATE char mypasswd[10];
 
-extern char *DefAuthHost;
-
 int main(int argc, char **argv)
 {
 	char *p;
@@ -101,6 +100,10 @@ int main(int argc, char **argv)
 	char newpw[10];
 	char buf[200];
 	int ok, rc;
+	char *DefAuthHost;
+
+	bzero(newpw, sizeof(newpw));
+	bzero(buf, sizeof(buf));
 
 	if (argc > 1) {
 	    if (strcmp(argv[1], "-h") == 0) {
@@ -145,6 +148,7 @@ int main(int argc, char **argv)
 		strcpy(mypasswd, getpass("Your password:"));
 tryagain:
 	sprintf(buf, "New password for %s:", uname);
+	bzero(newpw, sizeof(newpw));
 	strcpy(newpw, getpass(buf));
 	pwlen = strlen(newpw);
 	if (pwlen == 0) {

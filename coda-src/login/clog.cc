@@ -93,14 +93,15 @@ int main(int argc, char **argv)
     ClearToken		    cToken;
     struct passwd	    pwent;
     struct passwd	    *pw = &pwent;
-    static char		    passwd[100] = { '\0' };
+    static char		    passwd[100];
     long		    rc;
 
+    bzero(passwd, sizeof(passwd));
     if (argc < 2) {
 	pw = getpwuid (getuid ());
 	if (pw == NULL) {
 	    fprintf (stderr, "Can't figure out your user id.\n");
-	    fprintf (stderr, "Try \"log user\"\n");
+	    fprintf (stderr, "Try \"clog user\"\n");
 	    exit (1);
 	}
     }
