@@ -1,3 +1,4 @@
+
 #ifndef _BLURB_
 #define _BLURB_
 /*
@@ -79,8 +80,8 @@ typedef bit32	Device;		/* Unix device number */
 typedef bit32	Inode;		/* Unix inode number */
 typedef bit32	Error;		/* Error return code */
 
-#ifndef VOLTYPES_DEFINED
-#define VOLTYPES_DEFINED
+#ifndef _FID_T_
+#define _FID_T_
 typedef unsigned long VolumeId;
 typedef unsigned long VolId;
 typedef unsigned long VnodeId;
