@@ -224,9 +224,11 @@ void eprint(char *fmt, ...)
     strcat(cp, "\n");
 
     /* Write to stderr & stdout*/
+#if 0
     PrintTimeStamp(stdout); 
     fprintf(stdout, msg); 
     fflush(stdout);
+#endif
     PrintTimeStamp(stderr);
     fprintf(stderr, msg);
     fflush(stderr);
