@@ -293,12 +293,12 @@ long FS_ViceCOP2(RPC2_Handle cid, RPC2_CountedBS *PiggyBS)
 
     for (i = 0; i < count ; i++) {
 	ViceStoreId sid;
-	cp += COP2EntrySize;
 	ntohsid((ViceStoreId *)cp, &sid);
 	ViceVersionVector vv;
 	ntohvv((ViceVersionVector *)(cp + sizeof(ViceStoreId)), &vv);
 	
 	(void)InternalCOP2(cid, &sid, &vv);
+	cp += COP2EntrySize;
     }
 
     SLog(1, "FS_ViceCOP2: returning success.");
@@ -2375,7 +2375,7 @@ static void COP2Update(Volume *volptr, Vnode *vptr,
 	for (i = 0; i < VSG_MEMBERS; i++) 
 	    if (((&(checkvv.Versions.Site0))[i]) ^ 
 		((&(UpdateSet->Versions.Site0))[i])) {
-		    SLog(2, "Incomplete host set in COP2.\n");
+		    SLog(0, "Incomplete host set in COP2.\n");
 		    break;
 	    }
 
