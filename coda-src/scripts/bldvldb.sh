@@ -36,19 +36,26 @@
 set path = ( $path /vice/bin )
 cd /vice/vol/remote
 
+set KLIST = /usr/misc/bin/klist
+set KSRVTGT = /usr/local/bin/ksrvtgt
+set THISHOST = `hostname | tr A-Z a-z`
+
 # Get the volume lists from the servers
 
-# Get a temporary token.
-/usr/local/bin/ksrvtgt rcmd `hostname | tr A-Z a-z`
-
 foreach server (`awk '{ print $2 }' /vice/db/hosts`)
+    # Get a ticket-granting-ticket (which is good for 5 mins only) if needed
+    $KLIST -t
+    if ( $status != 0 ) then
+      $KSRVTGT rcmd $THISHOST
+    endif
+
     echo ${server}
 
-    # If your sight dies not have kerberos, use rcp instead.
+    # If your site does not have kerberos, use rcp instead.
     # For some reason I can't get a connection fom Mach to NetBSD machines
     # if I try to encrypt the data, so use -X for now.
-    # Get rid of it once Mach machines go away or if you are at a site wher
-    # its not needed.
+    # Get rid of it once Mach machines go away or if you are at a site where
+    # it's not needed.
     
     krcp -X ${server}:/vice/vol/VolumeList /vice/vol/remote/${server}.list.new
 
