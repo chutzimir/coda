@@ -28,9 +28,8 @@
  * edited for clarity and style only.
  */
 
-#include <sys/types.h>
 #include <string.h>
-#include <coda_md5.h>
+#include <coda_hash.h>
 
 static void MD5Transform(u_int32_t [4], const unsigned char [64]);
 
