@@ -50,9 +50,6 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <strings.h>
 #include <assert.h>
 #include <errno.h>

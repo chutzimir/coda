@@ -55,9 +55,6 @@ extern "C" {
 #include <stdlib.h>
 #endif
 #include <struct.h>
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
 #include <lwp.h>
 #include <rpc2.h>
 #include <inodeops.h>

@@ -42,9 +42,6 @@ extern "C" {
 #include "asr.h"
 #include <stdio.h>
 #include <stdlib.h>	
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <sys/param.h>
 #include <strings.h>
 #include <vcrcommon.h>

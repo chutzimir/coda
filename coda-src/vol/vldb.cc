@@ -69,7 +69,6 @@ extern "C" {
 #include <stdio.h>
 #include <sys/file.h>
 #ifdef  __BSD44__
-#include <sys/dir.h>
 #include <fstab.h>
 #endif
 #include <netdb.h>

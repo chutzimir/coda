@@ -43,9 +43,6 @@ extern "C" {
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #ifdef __MACH__
 #include <sys/fs.h>
 #include <fstab.h>

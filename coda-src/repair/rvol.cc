@@ -60,9 +60,6 @@ extern "C" {
 #include <assert.h>
 #include <setjmp.h>
 #include <sys/types.h>
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
 #include <sys/param.h>
 #include <sys/socket.h>
 #include <netdb.h>

@@ -42,7 +42,7 @@ extern "C" {
 #include <stdio.h>
 #include <rpc2.h>
 #ifndef __CYGWIN32__
-#include <sys/dir.h>
+#include <dirent.h>
 #endif
 #ifdef __cplusplus
 }

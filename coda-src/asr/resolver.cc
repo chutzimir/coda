@@ -50,9 +50,6 @@ extern "C" {
 #include <stdlib.h>
 #endif
 #include <sys/param.h>
-#ifdef __BSD44__
-#include <sys/dir.h>
-#endif
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/stat.h>

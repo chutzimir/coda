@@ -56,12 +56,6 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/param.h>
 
-#if 0
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
-#endif
-
 #include <strings.h>
 #include <unistd.h>
 #include <stdlib.h>

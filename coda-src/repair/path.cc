@@ -56,9 +56,6 @@ extern "C" {
 #include <setjmp.h>
 #include <sys/types.h>
 #include <sys/param.h>
-#ifndef __CYGWIN32__
-#include <sys/dir.h>
-#endif
 #include <netinet/in.h>
 #include <strings.h>
 #include <sys/stat.h>
