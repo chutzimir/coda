@@ -2046,6 +2046,8 @@ int mgrpent::CheckCOP1(int acode, vv_t *UpdateSet, int TranslateEincompatible) {
     int code = 0;
     int i;
 
+    InitVV(UpdateSet);
+
     CheckResult();
     
     /* check for this here because CheckResult may nuke hosts */
@@ -2064,7 +2066,6 @@ int mgrpent::CheckCOP1(int acode, vv_t *UpdateSet, int TranslateEincompatible) {
     }
 
     /* Record successes in the UpdateSet. */
-    InitVV(UpdateSet);
     for (i = 0; i < VSG_MEMBERS; i++) {
 	if (rocc.hosts[i] == 0) continue;
 
