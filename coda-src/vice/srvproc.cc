@@ -2551,12 +2551,15 @@ int ValidateParms(RPC2_Handle RPCid, ClientEntry **client,
     }
 
     /* 3. Translate group to read/write volume id. */
-    GroupVid = *Vidp;
-	    
-    if ( XlateVid(Vidp) )
+    if (ReplicatedOp) {
+	    GroupVid = *Vidp;
+	    if (!XlateVid(Vidp)) {
+		    SLog(1, "ValidateParms: failed to translate VSG %x", 
+			 GroupVid);
+		    return(EINVAL);
+	    }
 	    SLog(10, "ValidateParms: %x --> %x", GroupVid, *Vidp);
-    else 
-	    SLog(10, "ValidateParms: using replica %s", *Vidp);
+     }
 
     return(0);
 }
