@@ -79,46 +79,33 @@ extern "C" {
 
 
 int main(int argc, char *argv[]) {
-    char OutString[160];
-    char *cp = OutString;
     ClearToken clear;
     EncryptedSecretToken secret;
     int rc;
 
     /* Header. */
-    sprintf(cp, "\nTokens held by the Cache Manager:\n\n");
-    cp += strlen(cp);
-
-    /* Get the user id. */
-    sprintf(cp, "UID=%d : ", getuid());
-    cp += strlen(cp);
+    fprintf(stdout, "\nToken held by the Cache Manager:\n\n");
+    fprintf(stdout, "Local uid: %d\n", getuid());
 
     /* Get the tokens.  */
     rc = U_GetLocalTokens(&clear, secret);
     if (rc < 0) {
 	if (errno == ENOTCONN)
-	    sprintf(cp, "Not Authenticated\n");
+            fprintf(stdout, "Not Authenticated\n\n");
 	else
-	    sprintf(cp, "\nGetLocalTokens error (%d)\n", errno);
+	    fprintf(stdout, "\nGetLocalTokens error (%d)\n", errno);
 
-	printf(OutString);
 	exit(-1);
     }
 
-    sprintf(cp, "VID=%lu ", clear.ViceId);
-    cp+=strlen(cp);
+    fprintf(stdout, "Coda user id: %lu\n", clear.ViceId);
 
     /* Check for expiration. */
     if (clear.EndTimestamp <= time(0))
-	sprintf(cp, "[>> Expired <<]\n");
+	fprintf(stdout, "This token has expired.\n");
     else {
-	char *str = ctime((time_t *)&clear.EndTimestamp);
-	str +=	4;
-	str[12] = '\0';
-	sprintf(cp, "[Expires %s]\n", str);
+	fprintf(stdout, "Expiration time: %s\n", ctime((time_t *)&clear.EndTimestamp));
     }
 
-    /* Output the string. */
-    printf(OutString);
-    exit(0);
+    return(0);
 }
