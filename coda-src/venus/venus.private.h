@@ -127,11 +127,14 @@ const int NFDS = 32;	/* IOMGR-enforced limit!  Kernel may allocate fds numbered 
 /* definition of vuid_t that used to be here has been moved to vicedep/vcrcommon.rpc2  (Satya 3/23/92) */
 const vuid_t V_UID = (vuid_t)0;	    /* UID that the venus process runs under. */
 
-#ifdef __BSD44__
+#if defined(__BSD44__) || defined(__linux__)
 /* Group id fields are 32 bits in BSD44 (not 16 bits); the use of a small 
    negative number (-2) means its unsigned long representation is huge
    (4294967294).  This causes the "ar" program to screw up because it
    blindly does a sprintf() of the gid into the ".a" file. (Satya, 1/11/97) */
+/* In linux kernel, gid_t is unsigned short, but in venus vgid_t is
+   unsigned int which is 32-bit, so we also need to hardcode the number
+   here.  (Clement 6/10/97) */
 const vuid_t V_GID = (vuid_t)65534;    /* GID that the venus process runs under. */
 #else
 /* On Mach and other systems with 16-bit gids, the -2 value gives a gid of 65534 */
