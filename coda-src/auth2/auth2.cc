@@ -186,18 +186,20 @@ int main(int argc, char **argv)
 
     while(TRUE) {
 	cid = 0;
-	if ((rc = RPC2_GetRequest(NULL, &cid, &reqbuffer, NULL, 
+	rc = RPC2_GetRequest(NULL, &cid, &reqbuffer, NULL, 
 				  (long (*)())PWGetKeys, RPC2_XOR, 
-				  (long (*)())LogFailures)) 
-	    < RPC2_WLIMIT)
+				  (long (*)())LogFailures);
+	if ( rc  < RPC2_WLIMIT) { 
 		HandleRPCError(rc, cid);
+		break; 
+	} 
 
 	if(stat(PDB, &buff)) {
-	    printf("stat for vice.pdb failed\n");
-	    fflush(stdout);
+		printf("stat for vice.pdb failed\n");
+		fflush(stdout);
 	} else {
-	    if(AuthTime != buff.st_mtime)
-		InitAl();
+		if(AuthTime != buff.st_mtime)
+			InitAl();
 	}
 	if ((rc = auth2_ExecuteRequest(cid, reqbuffer, (SE_Descriptor *)0)) 
 	    < RPC2_WLIMIT)
