@@ -82,6 +82,7 @@ CLIBS =	$(LIBVOLSERV)  \
 	$(LIBFAIL)	\
 	$(LIBOLDLWP)	\
 	$(LIBBASE)	\
+	$(LIBKVM)	\
 	$(LIBMACH)	\
 	$(LIBCOMPAT)	
 
