@@ -13,6 +13,11 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.3  1997/01/13 17:11:02  bnoble
+ * Coda statfs needs to return something other than -1 for blocks avail. and
+ * files available for wabi (and other windowsish) programs to install
+ * there correctly.
+ *
  * Revision 1.2  1996/01/02 16:56:49  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -153,7 +158,15 @@ cfs_statfs_mach(vfsp, sbp)
     register VFS_T *vfsp;
     struct statfs *sbp;
 {
-    reutrn cfs_statfs(vfsp, sbp, GLOBAL_PROC);
+    sbp->f_type = 0;
+    sbp->f_bsize = 8192;	/* XXX -JJK */
+    sbp->f_blocks = -1;
+    sbp->f_bfree = -1;
+    sbp->f_bavail = -1;
+    sbp->f_files = -1;
+    sbp->f_ffree = -1;
+    bcopy((caddr_t)&(VFS_FSID(vfsp)), (caddr_t)&(sbp->f_fsid),
+	  sizeof (fsid_t));
 }
 
 int

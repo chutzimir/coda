@@ -14,6 +14,11 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.5  1997/01/13 17:11:07  bnoble
+ * Coda statfs needs to return something other than -1 for blocks avail. and
+ * files available for wabi (and other windowsish) programs to install
+ * there correctly.
+ *
  * Revision 1.4  1996/12/12 22:11:00  bnoble
  * Fixed the "downcall invokes venus operation" deadlock in all known cases.  There may be more
  *
@@ -533,31 +538,6 @@ cfs_quotactl(vfsp, cmd, uid, arg, p)
     return (EOPNOTSUPP);
 }
     
-
-/*
- * Get file system statistics.
- */
-int
-cfs_statfs(vfsp, sbp, p)
-    register VFS_T *vfsp;
-    struct statfs *sbp;
-    struct proc *p;
-{
-    ENTRY;
-    MARK_ENTRY(CFS_STATFS_STATS);
-    sbp->f_type = 0;
-    sbp->f_bsize = 8192;	/* XXX -JJK */
-    sbp->f_blocks = -1;
-    sbp->f_bfree = -1;
-    sbp->f_bavail = -1;
-    sbp->f_files = -1;
-    sbp->f_ffree = -1;
-    bcopy((caddr_t)&(VFS_FSID(vfsp)), (caddr_t)&(sbp->f_fsid),
-	  sizeof (fsid_t));
-    
-    MARK_INT_SAT(CFS_STATFS_STATS);
-    return(0);
-}
 
 /*
  * Flush any pending I/O.
