@@ -302,7 +302,7 @@ void VInitVolumePackage(int nLargeVnodes, int nSmallVnodes, int DoSalvage) {
     /* Find all partitions named /vicep* */
     setfsent();
     while (fsent = getfsent()) {
-#ifdef LINUX
+#ifdef LINUX 
             char *part = fsent->mnt_dir;
 #else
             char *part = fsent->fs_file;
