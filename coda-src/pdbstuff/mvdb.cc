@@ -135,13 +135,11 @@ main(int argc, char *argv[])
 
 
     pfd = open(lockfile, O_RDONLY, 0);
-#ifndef DJGPP
     if (pfd < 0 || flock(pfd, LOCK_EX) < 0)
 	{
 	perror(lockfile);
 	exit(-1);
 	}
-#endif
 	
     for (i = firstarg+1; i < argc; i++)
 	{
@@ -191,9 +189,7 @@ main(int argc, char *argv[])
 	if (VerboseFlag) fprintf(stderr, "OK\n");
 	}
 
-#ifndef DJGPP
 	flock(pfd, LOCK_UN);	/* ignore error returns */
-#endif
 	close(pfd);
     }
 

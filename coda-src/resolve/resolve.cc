@@ -55,18 +55,20 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/param.h>
-
-#if 0
 #ifndef __CYGWIN32__
 #include <sys/dir.h>
 #endif
-#endif
-
 #include <strings.h>
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
+#endif
 #include <errno.h>
 #include <assert.h> 
+#include <parser.h>
 #include <inodeops.h>
 
 #ifdef __cplusplus

@@ -215,19 +215,11 @@ long S_VolMakeVLDB(RPC2_Handle rpcid, RPC2_String formal_infile) {
 	return(VNOVNODE);
     }
 
-#ifdef __CYGWIN32__
-    AllList = fopen(ALL_TEMP, "w");
-    if (AllList == NULL) {
-	printf("makevldb:  Unable to create %s; aborted\n", ALL_TEMP);
-  	return(VFAIL);
-    }
-#else
     AllList = (FILE *) popen(ALL_COMMAND, "w");
     if (AllList == NULL) {
 	printf("makevldb:  Unable to \"run %s\"; aborted\n", ALL_COMMAND);
   	return(VFAIL);
     }
-#endif
 
     Pass('W');	/* Read-write volumes */
     MaxRW = MaxStride;
@@ -272,11 +264,7 @@ long S_VolMakeVLDB(RPC2_Handle rpcid, RPC2_String formal_infile) {
     }
 
     fprintf(AllList, "# [Last line of unsorted volume list]\n");
-#ifdef __CYGWIN32__
-    fclose(AllList);
-#else
     pclose(AllList);
-#endif
     if (rename(ALL_TEMP, ALL_PATH) == -1) {
 	LogMsg(0, VolDebugLevel, stdout, "Unable to rename %s to %s; new volume list not created", ALL_TEMP, ALL_PATH);
 	err = 1;

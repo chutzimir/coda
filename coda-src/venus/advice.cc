@@ -920,8 +920,8 @@ int adviceconn::NewConnection(char *hostName, int portNumber, int pgrp) {
   }
 
   if (IsAdviceValid((InterestID)-1, 0) == TRUE) {
-    LOG(0, ("adviceconn::NewConnection:  Maybe we should inform old advice server that it has lost its connection\n"));
-    //    InformLostConnection();
+    LOG(0, ("adviceconn::NewConnection:  Inform old advice server that it has lost its connection\n"));
+    InformLostConnection();
   }
 
   strcpy(hostname, hostName);

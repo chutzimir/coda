@@ -155,9 +155,6 @@ int fsobj::Fetch(vuid_t vuid) {
     int i, fd = 0, npages;  
     VenusDirPage *pageptr;
     {
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
 	ATOMIC(
 	    RVMLIB_REC_OBJECT(flags);
 	    flags.fetching = 1;
@@ -179,8 +176,7 @@ int fsobj::Fetch(vuid_t vuid) {
 		     * buffers to avoid overrunning the buffer cache with prefetch data.
 		     */
 		    if ((VprocSelf())->prefetch) {
-			fd = ::open(data.file->Name(), (IPREFETCH|O_WRONLY|O_CREAT|O_TRUNC | O_BINARY ),V_MODE);
-
+			fd = ::open(data.file->Name(), (IPREFETCH|O_WRONLY|O_CREAT|O_TRUNC),V_MODE);
 			if (fd > 0) {
 			    sei->Tag = FILEBYFD;
 			    sei->FileInfo.ByFD.fd = fd;

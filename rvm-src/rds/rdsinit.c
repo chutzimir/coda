@@ -461,11 +461,7 @@ int main(argc, argv)
 	exit(-1);
     }
 
-#ifdef DJGPP
-    fd = open(dataName, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 00644);
-#else
     fd = open(dataName, O_WRONLY | O_CREAT | O_TRUNC, 00644);
-#endif
     if (fd < 0) {
 	printf("?  Couldn't truncate %s.\n", dataName);
 	exit(-1);

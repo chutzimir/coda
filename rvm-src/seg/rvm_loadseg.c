@@ -106,7 +106,7 @@ rvm_load_segment(DevName, DevLength, options, nregions, regions)
 
     /* HACK */ rds_startaddr = hdrp->regions[0].vmaddr; /* HACK */
     for (i = 0; i < hdrp->nregions; i++) 
-	if ((unsigned int)(hdrp->regions[i].vmaddr) >= 0) {
+	if ((int)(hdrp->regions[i].vmaddr) >= 0) {
 	    region->offset = (*regions)[i].offset = hdrp->regions[i].offset;
 	    region->length = (*regions)[i].length = hdrp->regions[i].length;
 	    region->vmaddr = (*regions)[i].vmaddr = hdrp->regions[i].vmaddr;

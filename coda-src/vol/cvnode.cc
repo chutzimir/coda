@@ -63,7 +63,7 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/time.h>
 #include <string.h>
-#include <errno.h>
+#include <sys/errno.h>
 #include <stdio.h>
 #ifdef __MACH__
 #include <sysent.h>
@@ -594,7 +594,7 @@ Vnode *VGetVnode(Error *ec,Volume *vp,VnodeId vnodeNumber,
 	    LogMsg(1, VolDebugLevel, stdout,  "VGetVnode (readlock): vnode %x.%u is write locked!",
 				    V_id(vp), vnodeNumber);
 	    if (locktype == TRY_READ_LOCK) {
-		*ec = CEWOULDBLOCK;
+		*ec = EWOULDBLOCK;
 		return(NULL);
 	    }
 	}
@@ -605,7 +605,7 @@ Vnode *VGetVnode(Error *ec,Volume *vp,VnodeId vnodeNumber,
 	    LogMsg(1, VolDebugLevel, stdout,  "VGetVnode (writelock): vnode %x.%u is not unlocked!",
 				    V_id(vp), vnodeNumber);
 	    if (locktype == TRY_WRITE_LOCK) {
-		*ec = CEWOULDBLOCK;
+		*ec = EWOULDBLOCK;
 		return(NULL);
 	    }
 	}

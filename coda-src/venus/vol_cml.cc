@@ -3758,27 +3758,23 @@ int ClientModifyLog::CheckPoint(char *ckpdir) {
 	eprint("Couldn't open %s for checkpointing", ckpname);
 	return(ENOENT);
     }
-#ifndef DJGPP
 #ifndef __CYGWIN32__
     ::fchown(fileno(dfp), owner, V_GID);
 #else
     ::chown(ckpname, owner, V_GID);
 #endif
     ::fchmod(fileno(dfp), 0600);
-#endif
 
     if ((ofp = fopen(lname, "w+")) == NULL) {
 	eprint("Couldn't open %s for checkpointing", lname);
 	return(ENOENT);
     }
-#ifndef DJGPP
 #ifndef __CYGWIN32__
     ::fchown(fileno(ofp), owner, V_GID);
 #else
     ::chown(lname, owner, V_GID);
 #endif
    ::fchmod(fileno(ofp), 0600);
-#endif
 
     /* 
      * Iterate through the MLEs (in commit order), checkpointing each in turn. 

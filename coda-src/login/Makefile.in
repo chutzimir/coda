@@ -59,11 +59,9 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-ifneq ($(SHORTSYS),djgpp)
 EXECUTABLES = clog cpasswd ctokens cunlog testlog
 CBINS       = clog cpasswd ctokens cunlog
 TESTS       = testlog
-endif
 
 LIBS=	${LIBAUTH2}	\
 	${LIBRPC2}	\

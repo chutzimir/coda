@@ -267,19 +267,15 @@ PRIVATE int IOMGR_CheckDescriptors(PollingCheck)
 	last_context_switch.tv_sec = 0;
 	last_context_switch.tv_usec = 0;
     }
-
     /* Linux adheres to Posix standard for select and sets
        iomgr_timeout to 0; this needs to be reset before we proceed,
-       otherwise SignalTimeout never gets called.  Since Linux
-    select changes the timeout, we must not pass iomgr_timeout. 
-    if we did, the changes the signal handler may make to this
-    variable will always be lost, since select resets the variable upon return. */
-
+       otherwise SignalTimeout never gets called */
     tmp_timeout = iomgr_timeout;
     fds = select(MAX_FDS, (fd_set *)(readfds ? &readfds : 0), 
 		  (fd_set *)(writefds ? &writefds : 0), 
 		  (fd_set *)(exceptfds ? &exceptfds : 0), 
-		  &tmp_timeout);
+		  &iomgr_timeout);
+    iomgr_timeout = tmp_timeout;
 
     if (fds < 0 && errno != EINTR) {
 	for(fds=0;fds<MAX_FDS;fds++) {

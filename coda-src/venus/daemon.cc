@@ -120,7 +120,7 @@ void InitOneADay() {
     unsigned long curr_time = Vtime();
 
     /* figure out when midnight is */
-    struct tm *lt = localtime((time_t *) &curr_time);
+    struct tm *lt = localtime((long *) &curr_time);
     lt->tm_sec = lt->tm_min = lt->tm_hour = 0;       /* midnight today */
 
 #ifdef __MACH__
@@ -157,7 +157,7 @@ void DispatchDaemons() {
 	    if (((struct DaemonInfo *)tp->BackPointer)->sync) 
 		    VprocSignal(((struct DaemonInfo *)tp->BackPointer)->sync);
 	    else {  /* once a day task */
-		    LOG(0, ("At the tone the time will be %s", ctime((time_t *)&curr_time)));
+		    LOG(0, ("At the tone the time will be %s", ctime((long *)&curr_time)));
 		    RusagePrint(fileno(logFile));
 		    MallocPrint(fileno(logFile));
 	    }

@@ -430,7 +430,7 @@ void simulator::main(void *parm) {
 		int execp = 0;
 		int truncp = (r->flags & O_TRUNC) && (r->oldSize	!= -1);	/* truncate explicitly below! */
 		f->PromoteLock();
-		if (f->Open(writep, execp, /*truncp*/0, 0, SIMUID) != 0)
+		if (f->Open(writep, execp, /*truncp*/0, 0, 0, SIMUID) != 0)
 		    Choke("Simulate: fsobj::Open failed");
 
 		/* Truncate if necessary. */
@@ -555,7 +555,7 @@ void simulator::main(void *parm) {
 		int execp = 0;
 		int truncp = (r->oldSize != -1);	    /* truncate explicitly below! */
 		cf->PromoteLock();
-		if (cf->Open(writep, execp, /*truncp*/0, 0, SIMUID) != 0)
+		if (cf->Open(writep, execp, /*truncp*/0, 0, 0, SIMUID) != 0)
 		    Choke("Simulate: fsobj::Open failed");
 
 		/* Truncate if necessary. */

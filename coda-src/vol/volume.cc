@@ -146,6 +146,7 @@ char *VSalvageMessage =	  /* Common message used when the volume goes off line *
 #define VOLUME_HASH(volumeId) (volumeId&(VOLUME_HASH_TABLE_SIZE-1))
 PRIVATE Volume *VolumeHashTable[VOLUME_HASH_TABLE_SIZE];
 
+extern long time(long *tloc);
 extern void dump_storage(int level, char *s);
 extern void VBumpVolumeUsage(Volume *vp);
 extern int VCheckVLDB();
@@ -416,17 +417,6 @@ void VInitServerList() {
 	assert(0);
     }
     gethostname(hostname, sizeof(hostname)-1);
-#ifdef __CYGWIN32__
-    /* HACK --JJK */
-    /* There should be a get_canonical_hostname routine! */
-    {
-	char *cp = hostname;
-	while (*cp) {
-	    *cp = tolower(*cp);
-	    cp++;
-	}
-    }
-#endif
     ThisHost = (char *) malloc((int)strlen(hostname)+1);
     strcpy(ThisHost, hostname);
     while (fgets(line, sizeof(line), file) != NULL) {

@@ -59,13 +59,10 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-ifneq ($(SHORTSYS),djgpp)
-#EXECUTABLES = pcfgen
-#TESTS	    = altest
-endif
-
+EXECUTABLES = pcfgen
 LIBRARIES   = libal.a
 HEADERS	    = al.h prs.h prs_fs.h 
+TESTS	    = altest
 
 SSBINS      = pcfgen
 

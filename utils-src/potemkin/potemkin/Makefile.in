@@ -49,8 +49,8 @@ include $(MAKDIR)/Makeconf
 
 EXECUTABLES = potemkin
 
-potemkin: potemkin.o
-	$(CC) -o potemkin $? $(LIBDS)
+potemkin: potemkin.o $(LIBDS)
+	$(CC) -o potemkin $?
 
 include $(MAKDIR)/configs/Makerules
 

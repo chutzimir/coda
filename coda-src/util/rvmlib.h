@@ -114,12 +114,6 @@ extern void rvmlib_internal_set_thread_data(void *);
 #define CODA_STACK_LENGTH 0x20000	/* 128 K */
 #define LOGTHRESHOLD	50
 
-#ifdef DJGPP
-#define _setjmp setjmp
-#define _longjmp longjmp
-#include <setjmp.h>
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus

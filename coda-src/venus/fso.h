@@ -294,6 +294,7 @@ enum FsoState {	FsoRunt,
 /*    1. Copy of plain file */
 /*    2. Unix-format copy of directory */
 class CacheFile {
+    char name[8];				/* "Vxxxxxx" */
     ino_t inode;				/* for iopen() */
     unsigned length;
 
@@ -301,7 +302,6 @@ class CacheFile {
     void ResetContainer();
 
   public:
-    char name[8];				/* "Vxxxxxx" */
     CacheFile(int);
     CacheFile();
     ~CacheFile();
@@ -693,7 +693,7 @@ class fsobj {
     int SetVV(ViceVersionVector *, vuid_t);
 
     /* The public CFS interface (non-Vice portion). */
-    int Open(int, int, int, venus_cnode *, vuid_t);
+    int Open(int, int, int, dev_t *, ino_t *, vuid_t);
     int Close(int, int, vuid_t);
     int RdWr(char *, enum uio_rw, int, int, int *, vuid_t);
     int Access(long, int, vuid_t);

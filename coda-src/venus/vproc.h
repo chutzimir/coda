@@ -77,13 +77,13 @@ struct uio {
 #endif
 #endif
 
-#if defined(__linux__) || defined(DJGPP)
+#ifdef __linux__
 #include <sys/user.h>
 #include <sys/uio.h>
 #endif
 
 
-#if    ! defined(__BSD44__)
+#if	defined(__linux__) || defined(__CYGWIN32__)
 /* hmm we need this, so let's define it. Where is it in BSD anyway? */
 enum  uio_rw { UIO_READ, UIO_WRITE };
 
@@ -341,14 +341,8 @@ extern long FidToNodeid(ViceFid *);
 
 /* vnodes in BSD44 don't seem to store effective user & group ids.  So just
    coerce everything to uid */
-
-#ifdef __linux__
-#define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
-#define	CRTORUID(cred)	((vuid_t)((cred).cr_fsuid))
-#else
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
 #define	CRTORUID(cred)	((vuid_t)((cred).cr_uid))
-#endif
 
 #define	FTTOVT(ft)	((ft) == (int)File ? C_VREG :\
 			 (ft) == (int)Directory ? C_VDIR :\
