@@ -1208,8 +1208,7 @@ void worker::main(void *parm) {
 			char *slash;
 			char *begin = (char *)(&out->cfs_open_by_path.path + 1);
 			out->cfs_open_by_path.path = begin - (char *)out;
-			/* XXX: HACK! */
-			sprintf(begin, "D:%s/%s", CacheDir, cp->c_cfname);
+			sprintf(begin, "%s/%s", CacheDir, cp->c_cfname);
 			LOG(100, ("CFS_OPEN_BY_PATH: returning %s", begin));
 #if defined(DJGPP) || defined(__CYGWIN32__)
 			slash = begin;
