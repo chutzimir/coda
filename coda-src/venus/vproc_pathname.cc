@@ -150,7 +150,7 @@ int vproc::namev(char *path, int flags, struct venus_vnode **vpp) {
 	SkipSlashes(&pptr, &plen);
 
 	/* Handle ".." out of venus here! */
-	if (FID_EQ(VTOC(pvp)->c_fid, rootfid) && STREQ(comp, "..")) {
+	if (FID_EQ(&(VTOC(pvp)->c_fid), &rootfid) && STREQ(comp, "..")) {
 	    LOG(100, ("vproc::namev: .. out of this venus\n"));
 
 	    u.u_error = ENOENT;

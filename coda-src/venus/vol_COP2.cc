@@ -84,7 +84,7 @@ extern "C" {
 #include "local.h"
 
 
-PRIVATE const int COP2EntrySize = (int)(sizeof(ViceStoreId) + sizeof(ViceVersionVector));
+static const int COP2EntrySize = (int)(sizeof(ViceStoreId) + sizeof(ViceVersionVector));
 
 #ifdef VENUSDEBUG
 int cop2ent::allocs = 0;
@@ -273,8 +273,8 @@ void volent::ClearCOP2(RPC2_CountedBS *BS) {
 }
 
 
-PRIVATE const int MaxFreeCOP2ents = 16;
-PRIVATE dlist freecop2ents;
+static const int MaxFreeCOP2ents = 16;
+static dlist freecop2ents;
 
 void *cop2ent::operator new(size_t len) {
     cop2ent *c = 0;

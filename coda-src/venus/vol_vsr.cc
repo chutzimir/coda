@@ -101,9 +101,9 @@ extern int nlist(const char*, struct nlist[]);
 #include "venusvm.h"
 
 
-/* **** PRIVATE Variable **** */
-PRIVATE int VmonKmem = 0;
-PRIVATE int hertz = 0;
+/* **** static Variable **** */
+static int VmonKmem = 0;
+static int hertz = 0;
 
 #ifdef	__MACH__
 #define VMUNIX "/mach"
@@ -130,13 +130,15 @@ PRIVATE int hertz = 0;
 
 /* Raw Statistic Entry. */
 #ifdef __BSD44__
-PRIVATE struct nlist RawStats[] = 
+static struct nlist RawStats[] = 
 {
 #define CPTIME	0
     {
 	"_cp_time"
     },
+#ifdef __BSD44__
 #define HZ 1
+#endif
     {
 	"_hz"
     },

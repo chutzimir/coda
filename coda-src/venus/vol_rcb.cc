@@ -76,7 +76,7 @@ extern "C" {
 #include "local.h"
 
 
-PRIVATE const int RCBEntrySize = (int) (sizeof(ViceFid) + sizeof(unsigned long));
+static const int RCBEntrySize = (int) (sizeof(ViceFid) + sizeof(unsigned long));
 
 int volent::RCB(mgrpent *m, RPC2_CountedBS *BS) {
     LOG(10, ("volent::RCB: \n"));

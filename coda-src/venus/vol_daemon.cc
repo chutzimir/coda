@@ -75,19 +75,19 @@ extern "C" {
 #include "vproc.h"
 
 
-PRIVATE const int VolDaemonStackSize =  0xffff; /* 64k stack, because of all
+static const int VolDaemonStackSize =  0xffff; /* 64k stack, because of all
 						   the MAXPATHLEN stuff in
 						   vdb::CheckPoint. JH */
-PRIVATE const int VolDaemonInterval = 5;
-PRIVATE const int VolumeCheckInterval = 120 * 60;
-PRIVATE const int VolGetDownInterval = 5 * 60;
-PRIVATE const int COP2CheckInterval = 5;
-PRIVATE const int COP2Window = 10;
-PRIVATE const int VolFlushVSRsInterval = 240 * 60;
-PRIVATE const int VolCheckPointInterval = 10 * 60;
-PRIVATE	const int UserRPMInterval = 15 * 60;  
-PRIVATE const int LocalSubtreeCheckInterval = 10 * 60;
-PRIVATE const int VolTrickleReintegrateInterval = 10;
+static const int VolDaemonInterval = 5;
+static const int VolumeCheckInterval = 120 * 60;
+static const int VolGetDownInterval = 5 * 60;
+static const int COP2CheckInterval = 5;
+static const int COP2Window = 10;
+static const int VolFlushVSRsInterval = 240 * 60;
+static const int VolCheckPointInterval = 10 * 60;
+static	const int UserRPMInterval = 15 * 60;  
+static const int LocalSubtreeCheckInterval = 10 * 60;
+static const int VolTrickleReintegrateInterval = 10;
 
 char vol_sync;
 
@@ -224,9 +224,9 @@ void vdb::GetDown() {
 	    readahead = ((tv = next()) != 0);
 
 	    LOG(10, ("vdb::GetDown: GC'ing (%x, %s)\n", v->vid, v->name));
-	    TRANSACTION(
-		delete v;
-	    )
+	    Recov_BeginTrans();
+	    delete v;
+	    Recov_EndTrans(0);
 
 	    if (readahead) v = tv;
 	}

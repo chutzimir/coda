@@ -219,7 +219,7 @@ long CallBack(RPC2_Handle RPCid, ViceFid *fid) {
 
     /* Notify Codacon. */
     {
-	if (FID_EQ(*fid, NullFid))
+	if (FID_EQ(fid, &NullFid))
 	    MarinerLog("callback::BackProbe %s\n", s->name);
 	else
 	    MarinerLog("callback::Callback %s (%x.%x.%x)\n",

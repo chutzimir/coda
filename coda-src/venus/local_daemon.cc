@@ -57,12 +57,12 @@ extern "C" {
 #include "advice_daemon.h"
 
 /* ***** Private constants ***** */
-PRIVATE const int LRDaemonStackSize = 32768;
-PRIVATE const int LRDaemonInterval = 5;
-PRIVATE const int CheckSubtreeInterval = 5 * 60;
+static const int LRDaemonStackSize = 32768;
+static const int LRDaemonInterval = 5;
+static const int CheckSubtreeInterval = 5 * 60;
 
 /* ***** Private variables ***** */
-PRIVATE char lrdaemon_sync;
+static char lrdaemon_sync;
 
 void LRDBDaemon() 
 {

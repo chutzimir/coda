@@ -169,11 +169,11 @@ void CacheFile::ResetContainer() {
     if (::close(tfd) < 0)
 	Choke("CacheFile::ResetContainer: close failed (%d)", errno);
 
-    ATOMIC(
-	RVMLIB_REC_OBJECT(*this);
-	inode = tstat.st_ino;
-	length = 0;
-    , MAXFP)
+    Recov_BeginTrans();
+    RVMLIB_REC_OBJECT(*this);
+    inode = tstat.st_ino;
+    length = 0;
+    Recov_EndTrans(MAXFP);
 }
 
 
@@ -205,11 +205,7 @@ void CacheFile::Copy(CacheFile *source) {
 
     int tfd, ffd, n;
     struct stat tstat;
-#ifndef __BSD44__
-    char buf[PAGESIZE];
-#else
-    char buf[MAXBSIZE];
-#endif
+    char buf[DIR_PAGESIZE];
 
     if ((tfd = ::open(name, O_RDWR | O_CREAT | O_TRUNC, V_MODE)) < 0)
 	Choke("CacheFile::Copy: open failed (%d)", errno);

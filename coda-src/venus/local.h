@@ -415,9 +415,5 @@ public:
     }\
 }
 
-/* local fid and local volume related stuff */
-const VnodeId LocalFakeVnode = 0xfffffffd;
-const VolumeId LocalFakeVid = 0xffffffff;
-#define IsLocalFid(x) ((x)->Volume == LocalFakeVid)
 
 #endif _LOCAL_H_

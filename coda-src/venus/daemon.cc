@@ -81,7 +81,7 @@ extern "C" {
 #include "venus.private.h"
 
 
-PRIVATE struct TM_Elem *DaemonList;
+static struct TM_Elem *DaemonList;
 
 void InitOneADay();
 

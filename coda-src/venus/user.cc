@@ -577,13 +577,13 @@ userent *user_iterator::operator()() {
 
 /* *****  Private constants  ***** */
 
-PRIVATE const int UserDaemonInterval = 300;
-PRIVATE const int UserDaemonStackSize = 16384;
+static const int UserDaemonInterval = 300;
+static const int UserDaemonStackSize = 16384;
 
 
 /* ***** Private variables  ***** */
 
-PRIVATE char userdaemon_sync;
+static char userdaemon_sync;
 
 void USERD_Init() {
     (void)new vproc("UserDaemon", (PROCBODY)&UserDaemon,

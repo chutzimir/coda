@@ -45,16 +45,12 @@ extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <errno.h>
 #include <sys/param.h>
 
+#include <parser.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -89,7 +85,7 @@ int Equal C_ARGS((resdir_entry **deGroup, int nDirEntries))
     return 1;
 }
 
-PRIVATE void PrintArgs C_ARGS((char *name, resdir_entry **deGroup, int nDirEntries))
+static void PrintArgs C_ARGS((char *name, resdir_entry **deGroup, int nDirEntries))
 {
     printf("Predicate %s : %d entries \n", name, nDirEntries);
     for (int i = 0; i < nDirEntries; i++)

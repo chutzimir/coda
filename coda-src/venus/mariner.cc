@@ -151,8 +151,8 @@ void MarinerMux(int mask) {
     /* Handle any new "Mariner Connect" requests. */
     if (mask & (1 << mariner::muxfd)) {
 	struct sockaddr_in addr;
-	int addrlen = (int)sizeof(struct sockaddr_in);
-	int newfd = accept(mariner::muxfd, (sockaddr *)&addr, &addrlen);
+	unsigned int addrlen = sizeof(struct sockaddr_in);
+	int newfd = ::accept(mariner::muxfd, (sockaddr *)&addr, &addrlen);
 	if (newfd < 0)
 	    eprint("MarinerMux: accept failed (%d)", errno);
 	else if (newfd >= NFDS)
