@@ -23,7 +23,8 @@ listed in the file CREDITS.
 
 /* "helper" routines in shaprocs.cc */
 void ViceSHAtoHex (unsigned char sha[SHA_DIGEST_LENGTH], char *buf, int buflen);
-void ComputeViceSHA(int fd, unsigned char sha[SHA_DIGEST_LENGTH]);
+int CopyAndComputeViceSHA(int infd, int outfd, unsigned char sha[SHA_DIGEST_LENGTH]);
+#define ComputeViceSHA(fd, sha) CopyAndComputeViceSHA(fd, -1, sha)
 int IsZeroSHA(unsigned char sha[SHA_DIGEST_LENGTH]);
 
 /* "core" routines in lka.cc called by venus */

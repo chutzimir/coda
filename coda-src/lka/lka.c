@@ -106,15 +106,23 @@ int LookAsideAndFillContainer (unsigned char sha[SHA_DIGEST_LENGTH], int cfd,
     return(0);
   }
 
+  unsigned char cshabuf[SHA_DIGEST_LENGTH];
   int err, hfd = open(hitpathname, O_RDONLY | O_BINARY);
   /* Copy to container file and validate SHA (just to be safe) */
-  err = copyfile(hfd, cfd);
+  lseek(cfd, 0, SEEK_SET);
+  err = CopyAndComputeViceSHA(hfd, cfd, cshabuf);
   close(hfd);
 
   if (err < 0) {
-    snprintf(emsgbuf, emsgbuflen, "copyfile(%s): %s", 
+    snprintf(emsgbuf, emsgbuflen, "CopyAndComputeViceSHA(%s): %s", 
 	     hitpathname, strerror(errno));
     return(0); /* weird failure during copy */
+  }
+
+  if (memcmp(cshabuf, sha, SHA_DIGEST_LENGTH)) {
+    snprintf(emsgbuf, emsgbuflen, "%s: mismatch on SHA verification", hitpathname);
+    dbp->shafails++;
+    return(0);    
   }
 
   if (expectedlength >= 0) { /* verify length if specified */
@@ -128,17 +136,6 @@ int LookAsideAndFillContainer (unsigned char sha[SHA_DIGEST_LENGTH], int cfd,
 	       cfstat.st_size, expectedlength);
       return(0);
     }
-  }
-
-  unsigned char cshabuf[SHA_DIGEST_LENGTH];
-
-  lseek(cfd, 0, SEEK_SET);
-  ComputeViceSHA(cfd, cshabuf);
-
-  if (memcmp(cshabuf, sha, SHA_DIGEST_LENGTH)) {
-    snprintf(emsgbuf, emsgbuflen, "%s: mismatch on SHA verification", hitpathname);
-    dbp->shafails++;
-    return(0);    
   }
 
   return(1); /* Success! */

@@ -51,13 +51,15 @@ void ViceSHAtoHex (unsigned char sha[SHA_DIGEST_LENGTH],
 }
 
 
-void ComputeViceSHA(int fd, unsigned char sha[SHA_DIGEST_LENGTH])
+int CopyAndComputeViceSHA(int infd, int outfd,
+			   unsigned char sha[SHA_DIGEST_LENGTH])
 {
     /* ComputeViceSHA() takes an open file and returns its SHA value
-       in a Vice SHA structure.
+       in a Vice SHA structure. If outfd is not -1, we copy the while
+       computing the SHA.
        Returns 1 on success, and 0 on any kind of failure  */
 
-    int nbytes = 0;
+    int bytes_out, bytes_in = 0;
     SHA_CTX cx;
 
 #define SHACHUNKSIZE 4096  /* might be better to set to fs block size? */
@@ -65,12 +67,19 @@ void ComputeViceSHA(int fd, unsigned char sha[SHA_DIGEST_LENGTH])
 
     SHA1_Init(&cx);
     while (1) {
-	nbytes = read (fd, shachunk, SHACHUNKSIZE);
-	if (nbytes <= 0)
+	bytes_in = read (infd, shachunk, SHACHUNKSIZE);
+	if (bytes_in <= 0)
 	    break;
-	SHA1_Update(&cx, shachunk, nbytes);
+
+	SHA1_Update(&cx, shachunk, bytes_in);
+
+	if (outfd != -1) {
+	    bytes_out = write(outfd, shachunk, bytes_in);
+	    if (bytes_out < bytes_in) return -1;
+	}
     }
     SHA1_Final(sha, &cx);
+    return (bytes_in < 0 ? -1 : 0);
 }
 
 int IsZeroSHA(unsigned char sha[SHA_DIGEST_LENGTH])
