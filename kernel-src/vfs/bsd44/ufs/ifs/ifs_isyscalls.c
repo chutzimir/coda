@@ -142,10 +142,13 @@ int sys_icreate(p, uap, retval)
      * Make sure inode goes to disk.
      */ 
     tv = time;
+#ifdef	__NetBSD__
     ts.tv_sec = tv.tv_sec;
     ts.tv_nsec = tv.tv_usec * 1000;
     error = VOP_UPDATE(vp, &ts, &ts, 1); 
-
+#elif	defined(__FreeBSD__)
+    error = VOP_UPDATE(vp, &tv, &tv, 1); 
+#endif
     /* ignore writing out the parent vnode (rootvp?) XXX */
     
     *retval = error ? -1 : newip->i_number; 
@@ -173,8 +176,9 @@ sys_iopen(p, uap, retval)
     int indx;
     struct vnode *vp;
     int error; 
+#ifdef	__NetBSD__
     extern struct fileops vnops;
-    
+#endif
     printf("iopen(dev=%d inode=%d usermode=%o) called\n",
 	   uap->dev, uap->inode, uap->usermode);
     /*
@@ -508,9 +512,14 @@ iincdec(p, uap, retval, amount)
     /* write out the inode */ 
     ip->i_flag |= IN_CHANGE;
     tv = time; 
+#ifdef	__NetBSD__
     ts.tv_sec = tv.tv_sec;
     ts.tv_nsec = tv.tv_usec * 1000;
-     if ((error = VOP_UPDATE(vp, &ts, &ts, 1)) != 0) {
+    error = VOP_UPDATE(vp, &ts, &ts, 1);
+#elif	defined(__FreeBSD__)
+    error = VOP_UPDATE(vp, &tv, &tv, 1);
+#endif
+     if (error != 0) {
 	*retval = EIO;
 	return(EIO); 
     }

@@ -14,9 +14,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.4.2.4  1998/01/22 13:03:38  rvb
- * Had Breaken ls .
+ * Revision 1.4.2.5  1998/01/23 11:21:14  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.4.2.4  98/01/22  13:03:38  rvb
+ * Had Breaken ls .
+ * 
  * Revision 1.4.2.3  97/12/19  14:26:09  rvb
  * session id
  * 
@@ -89,6 +92,14 @@
 
 #include <sys/vnode.h>
 
+#ifdef	__FreeBSD__
+
+#define	__DEBUG_FreeBSD__ 1
+
+/* for the prototype of DELAY() */
+#include <machine/clock.h>
+#endif
+
 /*
  * tmp below since we need struct queue
  */
@@ -130,7 +141,7 @@ extern int cfs_vfsop_print_entry;
 #define myprintf(args)          \
 do {                            \
     if (cfs_printf_delay)       \
-	delay(cfs_printf_delay);\
+	DELAY(cfs_printf_delay);\
     printf args ;               \
 } while (0)
 

@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.7  1998/01/22 22:22:21  rvb
- * sync 1.2 and 1.3
+ * Revision 1.5.2.8  1998/01/23 11:21:04  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.5.2.7  98/01/22  22:22:21  rvb
+ * sync 1.2 and 1.3
+ * 
  * Revision 1.5.2.6  98/01/22  13:11:24  rvb
  * Move makecfsnode ctlfid later so vfsp is known; work on ^c and ^z
  * 
@@ -137,7 +140,6 @@ int vc_nb_poll(dev_t dev, int events, struct proc *p);
 #else
 int vc_nb_select(dev_t dev, int flag, struct proc *p);
 #endif
-int cfscall(struct cfs_mntinfo *mntinfo, int inSize, int *outSize, caddr_t buffer);
 
 struct vmsg {
     struct queue vm_chain;

@@ -47,9 +47,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.3  1997/12/16 12:40:03  rvb
- * Sync with 1.3
+ * Revision 1.6.2.4  1998/01/23 11:21:02  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.6.2.3  97/12/16  12:40:03  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.6.2.2  97/12/09  16:07:10  rvb
  * Sync with vfs/include/coda.h
  * 
@@ -191,11 +194,16 @@ Mellon the rights to redistribute these changes without encumbrance.
 #include <cfs/cnode.h>
 #include <cfs/cfsnc.h>
 
-#ifdef __NetBSD__
+#if defined(__NetBSD__) || defined(__FreeBSD__)
 #ifndef insque
 #include <sys/systm.h>
 #endif /* insque */
-#endif /* __NetBSD__ */
+#endif /* __NetBSD__ || defined(__FreeBSD__) */
+
+#ifdef	__FreeBSD__
+#include <vm/vm.h>
+#include <vm/vm_object.h>
+#endif
 
 __RCSID("$Header$");
 
@@ -480,6 +488,11 @@ cfsnc_remove(cncp, dcstat)
 	}
 	vrele(CTOV(cncp->cp)); 
 
+#ifdef	__MAYBE_FreeBSD__
+	if ((CTOV(cncp->cp)->v_object) && 
+	    (OBJ_DEAD == (CTOV(cncp->cp))->v_object->flags))
+	   CTOV(cncp->cp)->v_object = NULL;
+#endif
 	crfree(cncp->cred); 
 	bzero(DATA_PART(cncp),DATA_SIZE);
 

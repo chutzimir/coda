@@ -30,5 +30,9 @@ int cfs_vget(struct mount *, ino_t, struct vnode **);
 int cfs_fhtovp(struct mount *, struct fid *, struct mbuf *, struct vnode **,
 		       int *, struct ucred **);
 int cfs_vptofh(struct vnode *, struct fid *);
+#ifdef	__NetBSD__
 void cfs_init(void);
+#elif defined(__FreeBSD__)
+int cfs_init(void);
+#endif
 int getNewVnode(struct vnode **vpp);

@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.7  1997/12/19 14:26:08  rvb
- * session id
+ * Revision 1.5.2.8  1998/01/23 11:21:11  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.5.2.7  97/12/19  14:26:08  rvb
+ * session id
+ * 
  * Revision 1.5.2.6  97/12/16  22:01:34  rvb
  * Oops add cfs_subr.h cfs_venus.h; sync with peter
  * 
@@ -165,10 +168,17 @@
 #include <sys/proc.h>
 #include <sys/select.h>
 #include <ufs/ifs/ifs.h>
+#ifdef	__NetBSD__
 #include <sys/user.h>
+#endif
 #include <vm/vm.h>
 #ifdef	NetBSD1_3
 #include <miscfs/genfs/genfs.h>
+#endif
+
+#ifdef	__FreeBSD__
+#include <vm/vm_object.h>
+#include <vm/vm_extern.h>
 #endif
 
 #include <cfs/coda.h>
@@ -201,7 +211,6 @@ struct cfs_op_stats cfs_vnodeopstats[CFS_VNODEOPS_SIZE];
 int cfs_printf_delay = 0;  /* in microseconds */
 int cfs_vnop_print_entry = 0;
 static int cfs_lockdebug = 0;
-extern int cfsdebug;
 
 /* Definition of the vfs operation vector */
 
@@ -221,7 +230,6 @@ extern int cfsdebug;
 
 /* Definition of the vnode operation vector */
 
-int (**cfs_vnodeop_p)(void *);
 struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_default_desc, nbsd_vop_error },
     { &vop_lookup_desc, cfs_lookup },	/* lookup */
@@ -234,7 +242,6 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_setattr_desc, cfs_setattr },	/* setattr */
     { &vop_read_desc, cfs_read },		/* read */
     { &vop_write_desc, cfs_write },		/* write */
-    { &vop_lease_desc, nbsd_vop_nop },          /* lease */
     { &vop_ioctl_desc, cfs_ioctl },		/* ioctl */
 /* 1.3    { &vop_select_desc, cfs_select },	select */
     { &vop_mmap_desc, nbsd_vop_error },		/* mmap */
@@ -269,12 +276,36 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_truncate_desc, nbsd_vop_error },	/* truncate */
     { &vop_update_desc, nbsd_vop_error },	/* update */
     { &vop_bwrite_desc, nbsd_vop_error },	/* bwrite */
+#ifdef	__NetBSD__
+    { &vop_lease_desc, nbsd_vop_nop },          /* lease */
+#endif
+#ifdef	__FreeBSD__
+    { &vop_getpages_desc, fbsd_vnotsup },       /* pager intf.*/
+    { &vop_putpages_desc, fbsd_vnotsup },       /* pager intf.*/
+#endif
     { (struct vnodeop_desc*)NULL, (int(*)(void *))NULL }
 };
 
+#ifdef __NetBSD__
 struct vnodeopv_desc cfs_vnodeop_opv_desc = 
         { &cfs_vnodeop_p, cfs_vnodeop_entries };
+#endif
 
+#ifdef __FreeBSD__
+static struct vnodeopv_desc cfs_vnodeop_opv_desc =
+		{ &cfs_vnodeop_p, cfs_vnodeop_entries };
+
+#include <sys/kernel.h>
+VNODEOP_SET(cfs_vnodeop_opv_desc);
+
+int
+fbsd_vnotsup(ap)
+    void *ap;
+{
+    return(EOPNOTSUPP);
+}
+
+#endif
 
 /* Definitions of NetBSD vnodeop interfaces */
 
@@ -556,6 +587,22 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 	error = VOP_READ(cfvp, uiop, ioflag, cred);
     } else {
 	error = VOP_WRITE(cfvp, uiop, ioflag, cred);
+#ifdef __MAYBE_FreeBSD__
+	    {
+	      struct vattr cfattr;
+	      int cf_error = 0;
+	      cf_error = VOP_GETATTR(cfvp, &cfattr, cred, p);
+	      if (!cf_error) 
+		vnode_pager_setsize(cfvp, cfattr.va_size);
+#ifdef	__DEBUG_FreeBSD__
+		printf("vnode_pager_setsize(vp %x, cfvp %x, size %d)\n",
+			vp, cfvp, cfattr.va_size);
+#endif
+	      /* else
+		printf("RDWR: can not getattr!\n");
+		*/
+	    }
+#endif
     }
 
     if (error)
@@ -751,6 +798,15 @@ cfs_getattr(v)
 	if ((cp->c_owrite == 0) && (cfs_attr_cache)) {  
 	    cp->c_vattr = *vap;
 	    cp->c_flags |= C_VATTR; 
+
+	    /* XXX inamura */
+#ifdef	__MAYBE_FreeBSD__
+	    if (cp->c_vattr.va_size > 0) {
+	      vnode_pager_setsize(CTOV(cp), cp->c_vattr.va_size);
+	    } else 
+	      CFSDEBUG(CFS_GETATTR,
+		       myprintf(("vnode size is suspicious.\n")); );
+#endif	    		 
 	}
 	
     }
@@ -922,6 +978,7 @@ cfs_fsync(v)
     struct ucred *cred = ap->a_cred;
     struct proc *p = ap->a_p;
 /* locals */
+    struct vnode *convp = cp->c_ovp;
     int error;
    
     MARK_ENTRY(CFS_FSYNC_STATS);
@@ -934,7 +991,27 @@ cfs_fsync(v)
     if (IS_UNMOUNTING(cp)) {
 	return(ENODEV);
     }
-       
+
+    /* Check for fsync of control object. */
+    if (IS_CTL_VP(vp)) {
+	MARK_INT_SAT(CFS_FSYNC_STATS);
+	return(0);
+    }
+
+    if (convp)
+    	VOP_FSYNC(convp, cred, MNT_WAIT, p);
+
+#ifdef	__DEBUG_FreeBSD__
+    /* IMPORTANT TEST */
+/*    if (!vp->v_usecount) */ {
+    	printf("cfs_fsync on vnode %p with %d usecount.  c_flags = %x (%x)\n",
+		vp, vp->v_usecount, cp->c_flags, cp->c_flags&C_PURGING);
+	if (vp->v_usecount)
+		cfsnc_name(cp);
+    }
+    /* IMPORTANT TEST */
+#endif
+
     /*
      * We can expect fsync on any vnode at all if venus is pruging it.
      * Venus can't very well answer the fsync request, now can it?
@@ -946,14 +1023,28 @@ cfs_fsync(v)
 	return(0);
     }
 
-    /* Check for fsync of control object. */
-    if (IS_CTL_VP(vp)) {
-	MARK_INT_SAT(CFS_FSYNC_STATS);
-	return(0);
+#ifdef	__MAYBE_FreeBSD__
+    if (convp && convp->v_object &&
+	  (convp->v_object->flags & OBJ_MIGHTBEDIRTY)) {
+	vm_object_page_clean(convp->v_object, 0, 0, TRUE, TRUE);
     }
-
+    if (vp->v_object &&
+	(vp->v_object->flags & OBJ_MIGHTBEDIRTY)) {
+       vm_object_page_clean(vp->v_object, 0, 0, TRUE, TRUE);
+    }
+#endif
+#ifdef	__DEBUG_FreeBSD__
+    return (0);
+#endif
+#ifdef	__FreeBSD__
+    return 0;
+#endif
     error = venus_fsync(vtomi(vp), &cp->c_fid, cred, p);
 
+#ifdef	__MAYBE_FreeBSD__
+    if (((vp)->v_object) && (OBJ_DEAD == (vp)->v_object->flags))
+    	(vp)->v_object = NULL;
+#endif
     CFSDEBUG(CFS_FSYNC, myprintf(("in fsync result %d\n",error)); );
     return(error);
 }
@@ -984,7 +1075,12 @@ cfs_inactive(v)
     CFSDEBUG(CFS_INACTIVE, myprintf(("in inactive, %lx.%lx.%lx. vfsp %p\n",
 				  cp->c_fid.Volume, cp->c_fid.Vnode, 
 				  cp->c_fid.Unique, vp->v_mount));)
-	
+
+#ifdef	__DEBUG_FreeBSD__
+    if (vp->v_flag & VXLOCK)
+	printf ("Inactive: Vnode is Locked\n");
+#endif
+
     /* If an array has been allocated to hold the symlink, deallocate it */
     if ((cfs_symlink_cache) && (VALID_SYMLINK(cp))) {
 	if (cp->c_symlink == NULL)
@@ -1400,7 +1496,11 @@ cfs_link(v)
     struct vop_link_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp = VTOC(vp);
+#ifdef	__NetBSD__
     struct vnode *tdvp = ap->a_dvp;
+#elif	defined(__FreeBSD__)
+    struct vnode *tdvp = ap->a_tdvp;
+#endif
     struct cnode *tdcp = VTOC(tdvp);
     struct componentname *cnp = ap->a_cnp;
     struct ucred *cred = cnp->cn_cred;
@@ -1413,11 +1513,7 @@ cfs_link(v)
     MARK_ENTRY(CFS_LINK_STATS);
 
     if (cfsdebug & CFSDBGMSK(CFS_LINK)) {
-	struct cnode *cp;
-	struct cnode *tdcp;
 
-	cp = VTOC(ap->a_vp);
-	tdcp = VTOC(ap->a_dvp);
 	myprintf(("nb_link:   vp fid: (%lx.%lx.%lx)\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
 	myprintf(("nb_link: tdvp fid: (%lx.%lx.%lx)\n",
@@ -1449,7 +1545,7 @@ cfs_link(v)
      *       unconditionally unlock it after.
      */
 
-    if ((ap->a_vp != ap->a_dvp) && (error = VOP_LOCK(ap->a_vp))) {
+    if ((ap->a_vp != tdvp) && (error = VOP_LOCK(ap->a_vp))) {
 	goto exit;
     }
 	
@@ -1463,10 +1559,10 @@ cfs_link(v)
 
 exit:
 
-    if (ap->a_vp != ap->a_dvp) {
+    if (ap->a_vp != tdvp) {
 	VOP_UNLOCK(ap->a_vp);
     }
-    vput(ap->a_dvp);
+    vput(tdvp);
 
     /* Drop the name buffer if we don't need to SAVESTART */
     if ((cnp->cn_flags & SAVESTART) == 0) {
@@ -1848,10 +1944,14 @@ cfs_readdir(v)
     int *eofflag = ap->a_eofflag;
 #ifdef	NetBSD1_3
     off_t *cookies = ap->a_cookies;
-#else
-    u_long *cookies = ap->a_cookies;
-#endif
     int ncookies = ap->a_ncookies;
+#elif	NetBSD1_2
+    u_long *cookies = ap->a_cookies;
+    int ncookies = ap->a_ncookies;
+#elif	defined(__FreeBSD__)
+    u_int **cookies = ap->a_cookies;
+    int *ncookies = ap->a_ncookies;
+#endif
     struct proc *p = ap->a_uio->uio_procp;
 /* upcall decl */
 /* locals */
@@ -1881,8 +1981,13 @@ cfs_readdir(v)
 	
 	/* Have UFS handle the call. */
 	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%lx.%lx.%lx), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, vp->v_usecount)); )
+#ifdef	__NetBSD__
 	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
 			       ncookies);
+#elif	defined(__FreeBSD__)
+	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, ncookies,
+			       cookies);
+#endif
 	
 	if (error)
 	    MARK_INT_FAIL(CFS_READDIR_STATS);
@@ -1950,9 +2055,14 @@ cfs_bmap(v)
 /* upcall decl */
 /* locals */
 
+#ifdef	__FreeBSD__
+        /* Just like nfs_bmap(). Do not touch *vpp, this cause pfault. */
+	return(EOPNOTSUPP);
+#else
 	*vpp = (struct vnode *)0;
 	myprintf(("cfs_bmap called!\n"));
 	return(EINVAL);
+#endif
 }
 
 /*
@@ -1973,8 +2083,30 @@ cfs_strategy(v)
 /* upcall decl */
 /* locals */
 
-	myprintf(("cfs_strategy called!\n"));
+#ifdef	__FreeBSD__
+#ifdef	__MAYBE_FreeBSD__
+	struct vnode *vp;
+	struct cnode *cp;
+
+	myprintf(("cfs_strategy called!  "));
+	vp = bp->b_vp;
+	cp = VTOC(vp);
+	if (cp->c_ovp) {
+		printf("redirect thru container\n");
+		bp->b_vp = cp->c_ovp;
+		return VOP_STRATEGY(bp);
+	} else {
+		printf("no container\n");
+		return(EOPNOTSUPP);
+	}
+#else	/* ! __MAYBE_FreeBSD__ */
+	myprintf(("cfs_strategy called!  "));
+	return(EOPNOTSUPP);
+#endif	/* __MAYBE_FreeBSD__ */
+#else	/* ! __FreeBSD__ */
+	myprintf(("cfs_strategy called!  "));
 	return(EINVAL);
+#endif	/* __FreeBSD__ */
 }
 
 int
@@ -2037,7 +2169,11 @@ cfs_lock(v)
 start:
     while (vp->v_flag & VXLOCK) {
 	vp->v_flag |= VXWANT;
-	sleep((caddr_t)vp, PINOD);
+#ifdef	__NetBSD__
+	(void) sleep((caddr_t)vp, PINOD);
+#elif	defined(__FreeBSD__)
+	(void) tsleep((caddr_t)vp, PINOD, "cfs_lock1", 0);
+#endif
     }
     if (vp->v_tag == VT_NON)
 	return (ENOENT);
@@ -2049,7 +2185,11 @@ start:
 	cfsnc_name(cp);
 	myprintf(("\n"));
 #endif
+#ifdef	__NetBSD__
 	(void) sleep((caddr_t)cp, PINOD);
+#elif	defined(__FreeBSD__)
+	(void) tsleep((caddr_t)cp, PINOD, "cfs_lock2", 0);
+#endif
 #ifdef DIAGNOSTIC
 	myprintf(("cfs_lock: contention resolved\n"));
 #endif

@@ -46,9 +46,12 @@ Mellon the rights to redistribute these changes without encumbrance.
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.2  1997/12/16 12:40:06  rvb
- * Sync with 1.3
+ * Revision 1.6.2.3  1998/01/23 11:21:05  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.6.2.2  97/12/16  12:40:06  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.6.2.1  97/12/06  17:41:21  rvb
  * Sync with peters coda.h
  * 
@@ -244,7 +247,7 @@ void
 cfs_free(cp)
      register struct cnode *cp;
 {
-    
+
     CNODE_NEXT(cp) = cfs_freelist;
     cfs_freelist = cp;
 }
@@ -507,7 +510,10 @@ int handleDownCall(opcode, out)
      int opcode; union outputArgs *out;
 {
     int error;
-    
+
+#ifdef	__DEBUG_FreeBSD__
+    printf("into handleDownCall(%d)\n", opcode);
+#endif
     /* Handle invalidate requests. */
     switch (opcode) {
       case CFS_FLUSH : {
@@ -541,7 +547,6 @@ int handleDownCall(opcode, out)
 	      cp->c_flags &= ~C_VATTR;
 	      if (CTOV(cp)->v_flag & VTEXT)
 		  error = cfs_vmflush(cp);
-	      
 	      CFSDEBUG(CFS_ZAPFILE, myprintf(("zapfile: fid = (%lx.%lx.%lx), 
                                               refcnt = %d, error = %d\n",
 					      cp->c_fid.Volume, 
@@ -559,7 +564,7 @@ int handleDownCall(opcode, out)
 	
       case CFS_ZAPDIR : {
 	  struct cnode *cp;
-	  
+
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPDIR]++;
 	  
@@ -602,20 +607,31 @@ int handleDownCall(opcode, out)
 	
       case CFS_PURGEFID : {
 	  struct cnode *cp;
+#ifdef	__DEBUG_FreeBSD__
+	  printf("into CFS_PURGEFID\n");
+#endif
 
 	  error = 0;
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_PURGEFID]++;
-	  
+
 	  cp = cfs_find(&out->cfs_purgefid.CodaFid);
 	  if (cp != NULL) {
+#ifdef	__DEBUG_FreeBSD__
+	  printf("purgefid: fid = (%lx.%lx.%lx)  ",
+	  	 cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique);
+	  {  struct vnode *vp = CTOV(cp);
+	     printf("cp %p vp %p\n", cp, vp);
+	  }
+#endif
 	      vref(CTOV(cp));
-	      
+#ifdef	__DEBUG_FreeBSD__
+	      printf("after vref\n");
+#endif
 	      if (ODD(out->cfs_purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
 		  cfsnc_zapParentfid(&out->cfs_purgefid.CodaFid,
 				     IS_DOWNCALL);     
 	      }
-	      
 	      cp->c_flags &= ~C_VATTR;
 	      cfsnc_zapfid(&out->cfs_purgefid.CodaFid, IS_DOWNCALL);
 	      if (!(ODD(out->cfs_purgefid.CodaFid.Vnode)) 
@@ -632,6 +648,9 @@ int handleDownCall(opcode, out)
 	      }
 	      vrele(CTOV(cp));
 	  }
+#ifdef	__DEBUG_FreeBSD__
+	  printf("outt CFS_PURGEFID\n");
+#endif
 	  return(error);
       }
 
@@ -671,16 +690,17 @@ int
 cfs_vmflush(cp)
      struct cnode *cp;
 {
-#ifndef __NetBSD__
+#if	0
+  /* old code */
     /* Unset <device, inode> so that page_read doesn't try to use
        (possibly) invalid cache file. */
     cp->c_device = 0;
     cp->c_inode = 0;
 
     return(inode_uncache_try(VTOI(CTOV(cp))) ? 0 : ETXTBSY);
-#else /* __NetBSD__ */
+#else /* __NetBSD__ || __FreeBSD__ */
     return 0;
-#endif /* __NetBSD__ */
+#endif /* __NetBSD__ || __FreeBSD__ */
 }
 
 

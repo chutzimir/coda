@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.3.2.2  1997/12/16 12:40:20  rvb
- * Sync with 1.3
+ * Revision 1.3.2.3  1998/01/23 11:21:13  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.3.2.2  97/12/16  12:40:20  rvb
+ * Sync with 1.3
+ * 
  * Revision 1.3.2.1  97/12/10  14:08:34  rvb
  * Fix O_ flags; check result in cfscall
  * 
@@ -70,6 +73,9 @@ int cfs_unlock    __P((void *));
 int cfs_islocked  __P((void *));
 int nbsd_vop_error   __P((void *));
 int nbsd_vop_nop     __P((void *));
+#ifdef __FreeBSD__
+int fbsd_vnotsup  __P((void *ap));
+#endif
 
 int (**cfs_vnodeop_p)(void *);
 int cfs_rdwr(struct vnode *vp, struct uio *uiop, enum uio_rw rw,

@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.5  1998/01/22 13:05:33  rvb
- * Move makecfsnode ctlfid later so vfsp is known
+ * Revision 1.6.2.6  1998/01/23 11:21:07  rvb
+ * Sync with 2.2.5
  *
+ * Revision 1.6.2.5  98/01/22  13:05:33  rvb
+ * Move makecfsnode ctlfid later so vfsp is known
+ * 
  * Revision 1.6.2.4  97/12/19  14:26:05  rvb
  * session id
  * 
@@ -125,8 +128,6 @@
 #include <sys/mount.h>
 #include <sys/proc.h>
 #include <sys/select.h>
-/* for VN_RDEV */
-#include <miscfs/specfs/specdev.h>
 
 #include <cfs/coda.h>
 #include <cfs/cnode.h>
@@ -134,6 +135,8 @@
 #include <cfs/cfs_venus.h>
 #include <cfs/cfs_subr.h>
 #include <cfs/coda_opstats.h>
+/* for VN_RDEV */
+#include <miscfs/specfs/specdev.h>
 
 int cfsdebug = 0;
 
@@ -160,11 +163,12 @@ struct cfs_op_stats cfs_vfsopstats[CFS_VFSOPS_SIZE];
 
 extern int cfsnc_initialized;     /* Set if cache has been initialized */
 extern int vc_nb_open __P((dev_t, int, int, struct proc *));
+#ifdef	__NetBSD__
 extern struct cdevsw cdevsw[];    /* For sanity check in cfs_mount */
-
-
+#endif
 /* NetBSD interface to statfs */
 
+#ifdef	__NetBSD__
 struct vfsops cfs_vfsops = {
     MOUNT_CFS,
     cfs_mount,
@@ -185,6 +189,26 @@ struct vfsops cfs_vfsops = {
 #endif
     0
 };
+#elif	defined(__FreeBSD__)
+struct vfsops cfs_vfsops = {
+    cfs_mount,
+    cfs_start,
+    cfs_unmount,
+    cfs_root,
+    cfs_quotactl,
+    cfs_nb_statfs,
+    cfs_sync,
+    cfs_vget,
+    (int (*) (struct mount *, struct fid *, struct mbuf *, struct vnode **,
+	      int *, struct ucred **))
+	eopnotsupp,
+    (int (*) (struct vnode *, struct fid *)) eopnotsupp,
+    cfs_init,
+};
+
+#include <sys/kernel.h>
+VFS_SET(cfs_vfsops, cfs, MOUNT_CFS, VFCF_NETWORK);
+#endif
 
 int
 cfs_vfsopstats_init(void)
@@ -262,11 +286,16 @@ cfs_mount(vfsp, path, data, ndp, p)
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return(ENXIO);
     }
-    
+
     /*
      * See if the device table matches our expectations.
      */
-    if (cdevsw[major(dev)].d_open != vc_nb_open) {
+#ifdef	__NetBSD__
+    if (cdevsw[major(dev)].d_open != vc_nb_open)
+#elif	defined(__FreeBSD__)
+    if (cdevsw[major(dev)]->d_open != vc_nb_open)
+#endif
+    {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return(ENXIO);
     }
@@ -288,8 +317,15 @@ cfs_mount(vfsp, path, data, ndp, p)
     
     /* No initialization (here) of mi_vcomm! */
     vfsp->mnt_data = (qaddr_t)mi;
+#ifdef	__NetBSD__
     vfsp->mnt_stat.f_fsid.val[0] = 0;
     vfsp->mnt_stat.f_fsid.val[1] = makefstype(MOUNT_CFS);
+#elif	defined(__FreeBSD__)
+    /* Seems a bit overkill, since usualy /coda is the only mount point
+     * for cfs.
+     */
+    getnewfsid (vfsp, MOUNT_CFS);
+#endif
     mi->mi_vfsp = vfsp;
     
     /*
@@ -316,7 +352,14 @@ cfs_mount(vfsp, path, data, ndp, p)
     
     /* set filesystem block size */
     vfsp->mnt_stat.f_bsize = 8192;	    /* XXX -JJK */
-    
+#ifdef	 __FreeBSD__
+    /* Set f_iosize.  XXX -- inamura@isl.ntt.co.jp. 
+       For vnode_pager_haspage() references. The value should be obtained 
+       from underlying UFS. */
+    /* Checked UFS. iosize is set as 8192 */
+    vfsp->mnt_stat.f_iosize = 8192;
+#endif
+
     /* error is currently guaranteed to be zero, but in case some
        code changes... */
     CFSDEBUG(1,
@@ -507,7 +550,11 @@ cfs_nb_statfs(vfsp, sbp, p)
     	#define NB_SFS_SIZ 0x895440
      */
     /* Note: Normal fs's have a bsize of 0x400 == 1024 */
+#ifdef	__NetBSD__
     sbp->f_type = 0;
+#elif	defined(__FreeBSD__)
+    sbp->f_type = MOUNT_CFS;
+#endif
     sbp->f_bsize = 8192; /* XXX */
     sbp->f_iosize = 8192; /* XXX */
 #define NB_SFS_SIZ 0x8AB75D
@@ -517,7 +564,9 @@ cfs_nb_statfs(vfsp, sbp, p)
     sbp->f_files = NB_SFS_SIZ;
     sbp->f_ffree = NB_SFS_SIZ;
     bcopy((caddr_t)&(vfsp->mnt_stat.f_fsid), (caddr_t)&(sbp->f_fsid), sizeof (fsid_t));
+#ifdef	__NetBSD__
     strncpy(sbp->f_fstypename, MOUNT_CFS, MFSNAMELEN-1);
+#endif
     strcpy(sbp->f_mntonname, "/coda");
     strcpy(sbp->f_mntfromname, "CFS");
 /*  MARK_INT_SAT(CFS_STATFS_STATS); */
@@ -606,12 +655,21 @@ cfs_vptofh(vnp, fidp)
     ENTRY;
     return (EOPNOTSUPP);
 }
- 
+
+#ifdef	__NetBSD__ 
 void
 cfs_init(void)
 {
     ENTRY;
 }
+#elif	defined(__FreeBSD__)
+int
+cfs_init(void)
+{
+    ENTRY;
+    return 0;
+}
+#endif
 
 /*
  * To allow for greater ease of use, some vnodes may be orphaned when
