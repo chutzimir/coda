@@ -93,7 +93,11 @@ SYSCALL(setpag)
 #define SYSCALL(x)	ENTRY(x)
 #define LCL(x)		x
 #else	__NetBSD__
-#define SYSCALL(x)	ENTRY(x); movl	$SYS_/**/x, %eax; SVC; jb LCL(cerror)
+#ifdef __STDC__
+#define SYSCALL(x)	ENTRY(x); movl	$SYS_ ## x, %eax; SVC; jb LCL(cerror)
+#else
+#define SYSCALL(x)	ENTRY(x); movl	$(SYS_/**/x), %eax; SVC; jb LCL(cerror)
+#endif
 #endif	__NetBSD__
 
 	.globl	LCL(cerror)
