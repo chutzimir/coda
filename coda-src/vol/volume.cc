@@ -83,6 +83,9 @@ extern "C" {
 #include <unistd.h>
 #include <stdlib.h>
 #endif __NetBSD__
+#ifdef LINUX
+#include <dirent.h>
+#endif
 
 #include <lwp.h>
 #include <lock.h>
