@@ -49,11 +49,18 @@ extern "C" {
 #include <strings.h>
 #include <sys/stat.h>
 #include <setjmp.h>
+#ifdef __MACH__
 #include <libc.h>
+#else
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 #include <rpc2.h>
 #include <signal.h>
 
+#if 0  /* included in ci.h, why repeat with a conflicting type ?? */
 extern void ci(char *, struct _iobuf *, int, struct CIENTRY *, char *, char *);
+#endif
 extern int getbool(char *, int);
 
 #ifdef __cplusplus
