@@ -72,13 +72,13 @@ extern "C" {
 #include <se.h>
 
 extern void rpc2_PrintSEDesc(SE_Descriptor *, FILE *);
+/* interfaces */
+#include <callback.h>
+#include <vice.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
-/* interfaces */
-#include <callback.h>
-#include <vice.h>
 
 /* from venus */
 #include "comm.h"
@@ -103,8 +103,8 @@ void CallBackInit() {
 
     /* Export the service. */
     RPC2_SubsysIdent server;
-    server.Tag = RPC2_SUBSYSBYNAME;
-    strcpy(server.Value.Name, CBSubsys);
+    server.Tag = RPC2_SUBSYSBYID;
+    server.Value.SubsysId = SUBSYS_CB;
     if (RPC2_Export(&server) != RPC2_SUCCESS)
 	Choke("CallBackInit: RPC2_Export failed");
 
@@ -120,7 +120,7 @@ callbackserver::callbackserver() :
 
     filter.FromWhom = ONESUBSYS;
     filter.OldOrNew = OLDORNEW;
-    filter.ConnOrSubsys.SubsysId = getsubsysbyname((char *)CBSubsys);
+    filter.ConnOrSubsys.SubsysId = SUBSYS_CB;
     handle = 0;
     packet = 0;
 

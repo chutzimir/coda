@@ -51,20 +51,15 @@ extern "C" {
 #include <stdio.h>
 #include <struct.h>
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
+/* interfaces */
+#include <vice.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>
 
 /* from util */
 #include <olist.h>

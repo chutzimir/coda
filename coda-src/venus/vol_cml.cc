@@ -74,13 +74,13 @@ extern int get_len(ARG **, PARM **, MODE);
 extern int struct_len(ARG **, PARM **);
 extern void pack(ARG *, PARM **, PARM **);
 extern void pack_struct(ARG *, PARM **, PARM **);
+/* interfaces */
+#include <vice.h>	
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>	
 
 /* from dir */
 #include <coda_dir.h>

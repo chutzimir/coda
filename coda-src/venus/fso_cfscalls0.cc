@@ -56,22 +56,18 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/file.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
+
 #include <rpc2.h>
 #include <se.h>
+/* interfaces */
+#include <vice.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>
 
 /* from venus */
 #include "comm.h"

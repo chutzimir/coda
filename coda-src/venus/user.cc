@@ -66,14 +66,14 @@ extern "C" {
 #include <pwd.h>
 
 #include <rpc2.h>
+/* interfaces */
+#include <auth2.h>
+#include <vice.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <auth2.h>
-#include <vice.h>
 
 #include "comm.h"
 #include "hdb.h"
@@ -416,8 +416,8 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	pid.Tag = RPC2_PORTALBYNAME;
 	strcpy(pid.Value.Name, "coda_filesrv");
 	RPC2_SubsysIdent ssid;
-	ssid.Tag = RPC2_SUBSYSBYNAME;
-	strcpy(ssid.Value.Name, "Vice2-FileServer");
+	ssid.Tag = RPC2_SUBSYSBYID;
+	ssid.Value.SubsysId = SUBSYS_SRV;
 	LOG(1, ("userent::Connect: RPC2_CreateMgrp(%x)\n", host));
 	code = (int) RPC2_CreateMgrp(cid, &mcid, &pid, &ssid, sl,
 			       clear.HandShakeKey, RPC2_XOR, SMARTFTP);
@@ -457,8 +457,8 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	pid.Tag = RPC2_PORTALBYNAME;
 	strcpy(pid.Value.Name, "coda_filesrv");
 	RPC2_SubsysIdent ssid;
-	ssid.Tag = RPC2_SUBSYSBYNAME;
-	strcpy(ssid.Value.Name, "Vice2-FileServer");
+	ssid.Tag = RPC2_SUBSYSBYID;
+	ssid.Value.SubsysId = SUBSYS_SRV;
 	bparms.EncryptionType = RPC2_XOR;
 	bparms.SideEffectType = SMARTFTP;
 	bparms.ClientIdent = &clientident;

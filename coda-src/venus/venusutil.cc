@@ -59,24 +59,18 @@ extern "C" {
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#include <mach.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <rpc2.h>
+/* interfaces */
+#include <vice.h>
 
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>
 
 /* from plumber (include-special) */
 #include <newplumb.h>

@@ -41,13 +41,14 @@ extern "C" {
 #endif __cplusplus
 
 #include <struct.h>
+/* interfaces */
+#include <vcrcommon.h>
+#include <vice.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vcrcommon.h>
 
 /* from dir */
 #include <coda_dir.h>

@@ -45,15 +45,15 @@ extern "C" {
 #include <unistd.h>
 #include <netinet/in.h>
 
-#ifdef __cplusplus
-}
-#endif __cplusplus
-
 /* interfaces */
 #include <admon.h>
 #include <adsrv.h>
 
-/* from util */
+#ifdef __cplusplus
+}
+#endif __cplusplus
+
+
 #include <proc.h>
 
 /* from venus */

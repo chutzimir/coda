@@ -58,13 +58,13 @@ extern "C" {
 #include <sys/file.h>
 
 #include <rpc2.h>
+/* interfaces */
+#include <vice.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>
 
 #include "comm.h"
 #include "fso.h"

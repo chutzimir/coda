@@ -49,13 +49,8 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <string.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 #include <fcntl.h>
 
 #include <netinet/in.h>
@@ -80,13 +75,13 @@ extern int nlist(const char*, struct nlist[]);
 #include <rds.h>
 #include <rvm.h>
 #include <cfs/coda_opstats.h>
-
+/* interfaces */
+#include <vice.h>
+#include <mond.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <vice.h>
 
 /* from util */
 #include <olist.h>

@@ -48,14 +48,15 @@ extern "C" {
 /* from rvm */
 #include <rds.h>
 
+/* interfaces */
+#include <adsrv.h>
+#include <admon.h>
+
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-/* interfaces */
-#include <adsrv.h>
-#include <admon.h>
 
 /* from venus */
 #include "tallyent.h"
