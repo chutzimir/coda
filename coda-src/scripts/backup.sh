@@ -209,9 +209,9 @@ echo " " >>${OUTFILE}
 echo " " >>${OUTFILE}
 cat ${LOGFILE} >>${OUTFILE}
 
-mail -s "backup for $dir" raiff@cs dcs@cs <${OUTFILE}
+mail -s "backup for $dir" raiff@cs ambyrne@cs <${OUTFILE}
+mail -s "backup for $dir" backuplogs@coda.cs.cmu.edu <${OUTFILE}
 
-post - -subject "backup for ${dir}" cmu.cs.proj.coda.backuplogs <${OUTFILE}
 
 mt -f $TAPE rewoffl
 
