@@ -197,7 +197,7 @@ int main(int argc, char **argv)
     for (i = 0; i < lwps; i++) {
 	sprintf(sname, "ServerLWP-%d", i);
 	assert(LWP_CreateProcess((PFIC)ServerLWP, 
-				 8 * 1024, LWP_MAX_PRIORITY - 1,
+				 16 * 1024, LWP_MAX_PRIORITY - 1,
 				 (char *)&i, sname, &serverPid) 
 	       == LWP_SUCCESS);
     }
