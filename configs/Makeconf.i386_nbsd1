@@ -41,7 +41,7 @@ CPP 	      = gcc -E -x c-header
 LIBCURSES     = -lcurses
 LIBCOMPAT     = /usr/lib/libcompat.a
 IFSNAME       = libifs.a
-IFSDIR	      = kern-src/ifs/netbsd
+IFSDIR	      = kernel-src/ifs/netbsd
 LIBTRACE      = ../venus/libfaketrace.a
 machine_ifs   = ifs
 #for rvm
