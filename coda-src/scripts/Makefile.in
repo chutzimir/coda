@@ -67,7 +67,7 @@ VICE-SCRIPTS	= cleanlog startserver restartserver startfromboot
 MAKE-SCRIPTS	= makebeta bbpost c++2html
 REINIT-SCRIPTS	= reinit.sh recreatevol recreatevol_rep
 VENUS-SETUP     = venus-setup
-VICE-SETUP      = vice-rvmsetup vice-killvolumes vice-makerootvol vice-server-setup vice-srvdirsetup vice-user-setup
+VICE-SETUP      = vice-configs vice-rvmsetup vice-killvolumes vice-makerootvol vice-server-setup vice-srvdirsetup vice-user-setup
 
 SCRIPTS := $(UPDATE-SCRIPTS) $(VOL-SCRIPTS) $(SUP-SCRIPTS)\
 	   $(VENUS-SCRIPTS) $(INIT-SCRIPTS) $(BACKUP-SCRIPTS)\
