@@ -58,6 +58,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 Subsystem "srv" 1 1;
 
+#define SUBSYS_SRV 1001
+
 %{
 extern char *ViceErrorMsg(int errorCode);
 %}

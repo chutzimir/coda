@@ -57,6 +57,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 Subsystem "cb" 1 1;
 
+#define SUBSYS_CB 127823
+
 #include "vcrcommon.rpc2"
 
 CallBackConnect (IN RPC2_Integer SideEffectType,
