@@ -65,7 +65,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -83,6 +82,7 @@ extern "C" {
 #include <stdarg.h>
 #include <stdlib.h>
 
+#include <ports.h>
 #include <lwp.h>
 #include <timer.h>
 #include <rpc2.h>
@@ -471,10 +471,10 @@ main(int argc, char *argv[])
 #ifdef __CYGWIN32__
 	/* XXX -JJK */
 	portal1.Tag = RPC2_PORTALBYINETNUMBER;
-	portal1.Value.InetPortNumber = htons(1361);
+	portal1.Value.InetPortNumber = htons(PORT_codasrv);
 #else
     portal1.Tag = RPC2_PORTALBYNAME;
-    strcpy(portal1.Value.Name, "coda_filesrv");
+    strcpy(portal1.Value.Name, "codasrv");
 #endif
     portallist[0] = &portal1;
 
@@ -484,7 +484,7 @@ main(int argc, char *argv[])
     sei.AckPoint = sei.SendAhead = SrvSendAhead;
     sei.EnforceQuota = 1;
     sei.Portal.Tag = RPC2_PORTALBYINETNUMBER;
-    sei.Portal.Value.InetPortNumber = htons(1362);	/* XXX -JJK */
+    sei.Portal.Value.InetPortNumber = htons(PORT_codasrvse);
     SFTP_Activate(&sei);
     struct timeval to;
     to.tv_sec = timeout;

@@ -81,7 +81,7 @@ extern "C" {
 
 
 long RS_NewConnection(RPC2_Handle RPCid, RPC2_Integer set, 
-		       RPC2_Integer sl, RPC2_Integer et,
+		       RPC2_Integer sl, RPC2_Integer et, RPC2_Integer at,
 		       RPC2_CountedBS *cid){
 /*RPC2_Handle  RPCid;		RPC Id		*/
 /*RPC2_Integer set;		Side Effect Type	*/

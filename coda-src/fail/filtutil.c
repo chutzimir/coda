@@ -37,6 +37,7 @@ static char *rcsid = "$Header$";
 #include <sys/socket.h>
 #include <netdb.h>
 #include <assert.h>
+#include <ports.h>
 #include "filtutil.h"
 
 
@@ -408,7 +409,7 @@ int open_connection(target_t target)
     sident.Tag = RPC2_SUBSYSBYID;
 
     pident.Tag = RPC2_PORTALBYINETNUMBER;
-    pident.Value.InetPortNumber = htons(target.server ? 1361 : 1363);
+    pident.Value.InetPortNumber = htons(target.server ? PORT_codasrv : PORT_venus);
 
     bparms.SecurityLevel = RPC2_OPENKIMONO;
     bparms.SharedSecret = NULL;

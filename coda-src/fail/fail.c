@@ -208,7 +208,8 @@ FailFilter *filter;
 	theQueues[(int)side][which] = myq;	
     }
 TEMPDEBUG("InsertFilter!\n")
-    return (filter->id);
+	/* return (filter->id); */
+	return 0;
 }
 
 

@@ -463,7 +463,7 @@ int srvent::Connect(RPC2_Handle *cidp, int Force) {
 	hid.Value.InetAddress = htonl(host);
 	RPC2_PortalIdent pid;
 	pid.Tag = RPC2_PORTALBYNAME;
-	strcpy(pid.Value.Name, "coda_filesrv");
+	strcpy(pid.Value.Name, "codasrv");
 	RPC2_SubsysIdent ssid;
 	ssid.Tag = RPC2_SUBSYSBYID;
 	ssid.Value.SubsysId = RESOLUTIONSUBSYSID;

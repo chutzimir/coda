@@ -504,8 +504,8 @@ void cmdInsertFilter(int argc, char **argv)
 	return;
     }
     else {
-        printf("Filter inserted with ID number %d\n", rc);
-        maxFilterID = (rc > maxFilterID)?rc:maxFilterID;
+        printf("Filter inserted with ID number %d\n", filter.id);
+        maxFilterID = (filter.id > maxFilterID)?filter.id:maxFilterID;
     }
     return;
 }

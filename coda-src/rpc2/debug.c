@@ -71,6 +71,26 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 /*----- Routines to aid in debugging -----*/
 
+char *rpc2_timestring()
+{
+	struct timeval t;
+	static char mytime[9];
+	int rc;
+
+	rc = gettimeofday(&t, NULL);
+
+	if ( rc ) {
+		return "BADTIME";
+	} else {
+		strftime(mytime, sizeof(mytime), "%H:%M:%S", 
+			 localtime(&t.tv_sec));
+		mytime[8] = 0;
+		return mytime;
+	}
+}
+		
+	
+
 PRIVATE char *WhichMagic(x)
     {
     PRIVATE char buf[20];

@@ -88,7 +88,7 @@ int slow(int argc, char** argv)
 		PrintError("Can't bind", rc);
 		exit(-1);
 	}
-	printf("Bind Succeded \n");
+	printf("Bind Succeeded \n");
 	RPC2_SetColor(cid1, FAIL_IMMUNECOLOR);
 
 	printf("Trying to bind to %s on port %d...\n", host2, port2);
@@ -97,7 +97,7 @@ int slow(int argc, char** argv)
 		PrintError("Can't bind", rc);
 		exit(-1);
 	}
-	printf("Bind Succeded \n");
+	printf("Bind Succeeded \n");
 	RPC2_SetColor(cid2, FAIL_IMMUNECOLOR);
 
 	he1 = gethostbyname(host1);

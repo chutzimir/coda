@@ -91,7 +91,7 @@ extern "C" {
 
 const int MarinerStackSize = 65536;
 const int MaxMariners = 5;
-const char MarinerService[] = "codacon";
+const char MarinerService[] = "venus";
 int MarinerMask = 0;
 
 

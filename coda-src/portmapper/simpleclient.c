@@ -22,6 +22,7 @@
 #include <rpc2.h>
 #include <se.h>
 
+#include <ports.h>
 #include "portmapper.h"
 
 void main(void)
@@ -46,7 +47,7 @@ void main(void)
 	strcpy(hident.Value.Name, "localhost");
 
 	pident.Tag = RPC2_PORTALBYINETNUMBER;
-	pident.Value.InetPortNumber = ntohs(PORTMAPPER_PORT);
+	pident.Value.InetPortNumber = ntohs(PORT_rpc2portmap);
 
 	sident.Tag = RPC2_SUBSYSBYID;
 	sident.Value.SubsysId = htonl(PORTMAPPER_SUBSYSID);

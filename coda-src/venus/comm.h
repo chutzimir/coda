@@ -259,7 +259,7 @@ class srvent {
   friend int GetAdmConn(connent **);
   friend long CallBack(RPC2_Handle, ViceFid *);
   friend long CallBackFetch(RPC2_Handle, ViceFid *, SE_Descriptor *);
-  friend long CallBackConnect(RPC2_Handle, RPC2_Integer, RPC2_Integer, RPC2_Integer, RPC2_CountedBS *);
+  friend long CallBackConnect(RPC2_Handle, RPC2_Integer, RPC2_Integer, RPC2_Integer, RPC2_Integer, RPC2_CountedBS *);
   friend int FailDisconnect(int, unsigned long *);
   friend int FailReconnect(int, unsigned long *);
   friend int FailSlow(unsigned *);

@@ -332,8 +332,9 @@ GetLost:
 
 /* CallBackNEWCONNECTION() */
 long CallBackConnect(RPC2_Handle RPCid, RPC2_Integer SideEffectType,
-		      RPC2_Integer SecurityLevel, RPC2_Integer EncryptionType,
-		      RPC2_CountedBS *ClientIdent) {
+		     RPC2_Integer SecurityLevel, RPC2_Integer EncryptionType,
+		     RPC2_Integer AuthType, RPC2_CountedBS *ClientIdent) 
+{
     /* Get the {host,portal} pair for this call. */
     RPC2_PeerInfo thePeer;
     RPC2_GetPeerInfo(RPCid, &thePeer);

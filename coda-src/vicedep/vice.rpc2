@@ -358,6 +358,7 @@ ViceSetRootVolume (IN RPC2_String Volume);
 ViceNewConnection (IN RPC2_Integer SideEffectType,
 		   IN RPC2_Integer SecurityLevel,
 		   IN RPC2_Integer EncryptionType,
+   		   IN RPC2_Integer AuthType,
 		   IN RPC2_CountedBS ClientIdent)
 		   NEW_CONNECTION;
 

@@ -266,13 +266,17 @@ void CommInit() {
 
 	/* Portal initialization. */
 	/* Multicast requires that (sftp_portal = rpc2_portal + 1). */
-	struct servent *s = getservbyname("coda_venus", 0);
-	if (s == 0) Choke("CommInit: getservbyname failed");
+	struct servent *s = getservbyname("venus", 0);
+	if (s == 0) 
+		Choke("CommInit: getservbyname failed; check /etc/services");
 	RPC2_PortalIdent portal1;
 	portal1.Tag = RPC2_PORTALBYINETNUMBER;
-	portal1.Value.InetPortNumber = htons(ntohs(s->s_port));
+	portal1.Value.InetPortNumber = s->s_port;
 
 	/* SFTP initialization. */
+	s = getservbyname("venus-se", 0);
+	if (s == 0) 
+		Choke("CommInit: getservbyname failed; check /etc/services");
 	SFTP_Initializer sei;
 	SFTP_SetDefaults(&sei);
 	sei.WindowSize = sftp_windowsize;
@@ -281,7 +285,7 @@ void CommInit() {
 	sei.PacketSize = sftp_packetsize;
 	sei.EnforceQuota = 1;
 	sei.Portal.Tag = RPC2_PORTALBYINETNUMBER;
-	sei.Portal.Value.InetPortNumber = htons(ntohs(s->s_port) + 1);
+	sei.Portal.Value.InetPortNumber = s->s_port;
 
 	SFTP_Activate(&sei);
 

@@ -60,6 +60,7 @@ extern "C" {
 
 #include <vice.h>
 #include <auth2.h>
+#include <avenus.h>
 
 #ifdef __cplusplus
 }

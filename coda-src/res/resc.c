@@ -58,6 +58,7 @@ static char *rcsid = "$Header$";
 #include "vice.h"
 #include "callback.h"
 #include "voldefs.h"
+#include <ports.h>
 
 #define MAXSRV 8
 #define VSG_MEMBERS 8
@@ -137,7 +138,7 @@ void main(int argc, char **argv)
 	hi.Tag = RPC2_HOSTBYNAME;
 	strcpy(hi.Value.Name, mcname);
 	pi.Tag = RPC2_PORTALBYINETNUMBER;
-	pi.Value.InetPortNumber = htons(1361); 
+	pi.Value.InetPortNumber = htons(PORT_codasrv); 
 	si.Tag = RPC2_SUBSYSBYID;
 	si.Value.Id = SUBSYS_SRV;
 	rc = RPC2_Bind(RPC2_OPENKIMONO, NULL, &hi, &pi, &si, 

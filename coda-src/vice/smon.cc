@@ -236,7 +236,7 @@ PRIVATE struct nlist RawStats[] =
 
 /* ***** Private variables  ***** */
 
-PRIVATE int SmonEnabled = 1;
+PRIVATE int SmonEnabled = 0;
 PRIVATE int SmonInited = 0;
 PRIVATE smoe SOE;
 PRIVATE olist *RVMResList = 0;

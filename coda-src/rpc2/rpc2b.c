@@ -123,6 +123,9 @@ long RPC2_Init(
     rc = rpc2_CreateIPSocket(&rpc2_RequestSocket, &rpc2_LocalHost,
 	    	&rpc2_LocalPortal);
 
+    if ( Port ) 
+	    *Port = rpc2_LocalPortal; 
+
     if (rc < RPC2_ELIMIT) 
 	    rpc2_Quit(rc);
 

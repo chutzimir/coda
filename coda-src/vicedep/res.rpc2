@@ -45,8 +45,6 @@ server prefix "RS";
 client prefix "Res";
 
 Subsystem "resolution";
-
-#define RESPORTAL	1361
 #define RESOLUTIONSUBSYSID 5893
 
 /* 
@@ -101,6 +99,7 @@ COP2		(IN ViceStoreId StoreId,
 NewConnection	(IN RPC2_Integer SideEffectType,
 		 IN RPC2_Integer SecurityLevel,
 		 IN RPC2_Integer EncryptionType,
+		 IN RPC2_Integer AuthType,
 		 IN RPC2_CountedBS ClientIdent)
                  NEW_CONNECTION;
 

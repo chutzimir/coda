@@ -33,77 +33,50 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
+/*
 
+                         IBM COPYRIGHT NOTICE
 
+                          Copyright (C) 1986
+             International Business Machines Corporation
+                         All Rights Reserved
 
+This  file  contains  some  code identical to or derived from the 1986
+version of the Andrew File System ("AFS"), which is owned by  the  IBM
+Corporation.    This  code is provded "AS IS" and IBM does not warrant
+that it is free of infringement of  any  intellectual  rights  of  any
+third  party.    IBM  disclaims  liability of any kind for any damages
+whatsoever resulting directly or indirectly from use of this  software
+or  of  any  derivative work.  Carnegie Mellon University has obtained
+permission to distribute this code, which is based on Version 2 of AFS
+and  does  not  contain the features and enhancements that are part of
+Version 3 of AFS.  Version 3 of  AFS  is  commercially  available  and
+supported by Transarc Corporation, Pittsburgh, PA.
 
-
-
+*/
 
 /*
- *
- * process.c -- Implementation of process abstraction
- *
- */
+	cunlog -- tell Venus to clean up your connecion
+
+*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
 
-#include <stdio.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-
+#include <auth2.h>
+#include "avenus.h"
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include "process.h"
 
 
-process::process(char *n, PROCBODY f) {
-    pid = 0;
-    name = new char[strlen(n) + 1];
-    strcpy(name, n);
-    func = f;
-}
 
-
-process::process(process& p) {
-    abort();
-}
-
-
-process::operator=(process& p) {
-    abort();
-    return(0); /* keep C++ happy */
-}
-
-
-process::~process() {
-    delete name;
-}
-
-
-void process::print() {
-    print(stderr);
-}
-
-
-void process::print(FILE *fp) {
-    fflush(fp);
-    print(fileno(fp));
-}
-
-
-void process::print(int fd) {
-    char buf[40];
-    sprintf(buf, "%#08x : %-16s : pid = %d, func = %#08x\n",
-	     (long)this, name, pid, func);
-    write(fd, buf, strlen(buf));
+int main(int argc, char **argv)
+{
+    U_DeleteLocalTokens();
+    exit(0);
 }

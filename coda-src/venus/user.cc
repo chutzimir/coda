@@ -414,7 +414,7 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	mcid.Value.InetAddress = htonl(host);
 	RPC2_PortalIdent pid;
 	pid.Tag = RPC2_PORTALBYNAME;
-	strcpy(pid.Value.Name, "coda_filesrv");
+	strcpy(pid.Value.Name, "codasrv");
 	RPC2_SubsysIdent ssid;
 	ssid.Tag = RPC2_SUBSYSBYID;
 	ssid.Value.SubsysId = SUBSYS_SRV;
@@ -455,7 +455,7 @@ int userent::Connect(RPC2_Handle *cid, int *auth, unsigned long host) {
 	hid.Value.InetAddress = htonl(host);
 	RPC2_PortalIdent pid;
 	pid.Tag = RPC2_PORTALBYNAME;
-	strcpy(pid.Value.Name, "coda_filesrv");
+	strcpy(pid.Value.Name, "codasrv");
 	RPC2_SubsysIdent ssid;
 	ssid.Tag = RPC2_SUBSYSBYID;
 	ssid.Value.SubsysId = SUBSYS_SRV;

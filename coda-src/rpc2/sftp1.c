@@ -74,6 +74,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <netinet/in.h>
 #include <netdb.h>
 #include <errno.h>
+#include <assert.h>
 #include "lwp.h"
 #include "timer.h"
 #include "rpc2.h"

@@ -204,7 +204,7 @@ class conninfo {
   friend class conninfo_iterator;
   friend void srvent::Reset();
   friend void ResCommInit();
-  friend long RS_NewConnection(RPC2_Handle , RPC2_Integer, RPC2_Integer, RPC2_Integer, RPC2_CountedBS *);
+  friend long RS_NewConnection(RPC2_Handle , RPC2_Integer, RPC2_Integer,RPC2_Integer, RPC2_Integer, RPC2_CountedBS *);
     /* globals state */
     static  olist *CInfoTab;
     static  int ncinfos;

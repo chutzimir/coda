@@ -382,7 +382,7 @@ copcodes(head, who, where)
 	    if (server_prefix)
 		fprintf(where, "extern long %s_%s(", server_prefix, head->name);
 	    else fprintf(where, "extern long %s(", head->name);
-	    if (strictproto) fprintf(where, "RPC2_Handle cid, RPC2_Integer SideEffectType, RPC2_Integer SecurityLevel, RPC2_Integer EncryptionType, RPC2_CountedBS *ClientIdent");
+	    if (strictproto) fprintf(where, "RPC2_Handle cid, RPC2_Integer SideEffectType, RPC2_Integer SecurityLevel, RPC2_Integer EncryptionType, RPC2_Integer AuthType, RPC2_CountedBS *ClientIdent");
 	    fprintf(where, ");\n");
 
 	    /* Other definitions */
@@ -1323,10 +1323,11 @@ static check_new_connection(proc)
     /* Check argument types */
     for (formals = proc->formals, len=0; *formals!=NIL; formals++, len++) ;
     formals = proc->formals;
-    if (len != 4 || formals[0]->type->type->tag != RPC2_INTEGER_TAG ||
+    if (len != 5 || formals[0]->type->type->tag != RPC2_INTEGER_TAG ||
 		    formals[1]->type->type->tag != RPC2_INTEGER_TAG ||
 		    formals[2]->type->type->tag != RPC2_INTEGER_TAG ||
-		    formals[3]->type->type->tag != RPC2_COUNTEDBS_TAG) {
+		    formals[3]->type->type->tag != RPC2_INTEGER_TAG ||
+		    formals[4]->type->type->tag != RPC2_COUNTEDBS_TAG) {
 	puts("RP2GEN: bad parameters for NEW_CONNECTION procedure");
 	exit(1);
     }

@@ -69,7 +69,7 @@ extern "C" {
 #include <sftp.h>
 #include <util.h>
 #include <partition.h>
-
+#include <ports.h>
 #include <vice.h>
 #include <callback.h>
 #include <volutil.h>
@@ -2095,10 +2095,10 @@ PRIVATE int V_BindToServer(char *fileserver, RPC2_Handle *RPCid)
 #ifdef __CYGWIN32__
 	/* XXX -JJK */
 	pident.Tag = RPC2_PORTALBYINETNUMBER;
-	pident.Value.InetPortNumber = htons(1361);
+	pident.Value.InetPortNumber = htons(PORT_codasrv);
 #else
     pident.Tag = RPC2_PORTALBYNAME;
-    strcpy(pident.Value.Name, "coda_filesrv");
+    strcpy(pident.Value.Name, "codasrv");
 #endif
     sident.Tag = RPC2_SUBSYSBYID;
     sident.Value.SubsysId = UTIL_SUBSYSID;

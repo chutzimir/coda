@@ -49,7 +49,6 @@ Subsystem "AdSrv";
 
 #define ADSRVSUBSYSID 300
 
-#define ADSRVPORTAL 1363  
 /* #define ADSRVPORTAL 1435  -- for fake_venus */
 
 

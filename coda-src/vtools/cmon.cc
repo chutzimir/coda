@@ -62,6 +62,7 @@ extern "C" {
 #include <curses.h>
 #endif
 
+#include <ports.h>
 #include <lwp.h>
 #include <rpc2.h>
 #include <se.h>
@@ -180,7 +181,7 @@ PRIVATE void srvlwp(int slot)
     hi.Tag = RPC2_HOSTBYNAME;
     strcpy(hi.Value.Name, moi->srvname);
     pi.Tag = RPC2_PORTALBYINETNUMBER;
-    pi.Value.InetPortNumber = htons(1361); /* wired-in! YUKKK! */
+    pi.Value.InetPortNumber = htons(PORT_codasrv);
     si.Tag = RPC2_SUBSYSBYID;
     si.Value.SubsysId= SUBSYS_SRV;
     

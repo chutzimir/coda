@@ -760,7 +760,7 @@ ViceNewConnection: Called after a new bind request is received.
 */
 
 long ViceNewConnection(RPC2_Handle RPCid, RPC2_Integer set, RPC2_Integer sl,
-			 RPC2_Integer et, RPC2_CountedBS *cid)
+			 RPC2_Integer et, RPC2_Integer at, RPC2_CountedBS *cid)
 {
     ClientEntry *client = 0;
     SecretToken st;

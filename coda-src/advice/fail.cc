@@ -57,6 +57,8 @@ extern "C" {
 #include <stdlib.h>
 #include <strings.h>
 #include <unistd.h>
+#include <ports.h>
+
 
 #include <rpc2.h>
 #include <fail.h>
@@ -403,12 +405,10 @@ void Quit()
     LWP_TerminateProcessSupport();
 }
 
-#define SERVER_PORT 1361
-#define CLIENT_PORT 1363
 int CheckServer(char *client, char *server) {
     int clientNumber, rc;
 
-    clientNumber = AddClient(server, SERVER_PORT);
+    clientNumber = AddClient(server, PORT_codasrv);
     if (clientNumber <= 0) return(-1);
     rc = CheckAllFilters(clientNumber, client);
     if (DeleteClient(clientNumber) != 0) return(-1);
@@ -416,12 +416,10 @@ int CheckServer(char *client, char *server) {
 }
 
 
-#define SERVER_PORT 1361
-#define CLIENT_PORT 1363
 int CheckClient(char *client, char *server) {
     int clientNumber, rc;
 
-    clientNumber = AddClient(client, CLIENT_PORT);
+    clientNumber = AddClient(client, PORT_venus);
     if (clientNumber <= 0) return(-1);
     rc = CheckAllFilters(clientNumber, server);
     if (DeleteClient(clientNumber) != 0) return(-1);
