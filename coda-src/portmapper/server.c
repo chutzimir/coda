@@ -2,6 +2,7 @@
 
 /* server.c -- receive incoming RPCs and perform appropriate activities */
 
+#include <netinet/in.h>
 #include <sys/param.h>
 #include <rpc2.h>
 #include "portmapper.h"

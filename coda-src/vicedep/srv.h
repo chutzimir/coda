@@ -100,7 +100,6 @@ extern long rvm_no_yield;
 extern void VAdjustDiskUsage(Error *, Volume *, int);
 extern int  VCheckVLDB();
 extern void VPrintCacheStats(FILE * =stdout);
-extern void VPrintDiskStats(FILE * =stdout);
 extern void ViceUpdateDB();
 extern void SwapLog();
 extern void SwapMalloc();

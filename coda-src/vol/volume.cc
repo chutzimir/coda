@@ -735,7 +735,7 @@ VAttachVolumeById(Error *ec, char *partition, VolumeId volid, int mode)
     if (*pt == volumeUtility) {
 	LogMsg(19, VolDebugLevel, stdout, "running as volume utility");
 	assert(VInit == 1);
-	VLockPartition(partition);
+	DP_LockPartition(partition);
     }
     if (*pt == fileServer) {
 	LogMsg(19, VolDebugLevel, stdout, "running as fileserver");
@@ -846,7 +846,7 @@ static Volume *attach2(Error *ec, char *path, register struct VolumeHeader *head
     vp = (Volume *) calloc(1, sizeof(Volume));
     assert(vp != NULL);
 
-    vp->partition = VGetPartition(partition);
+    vp->partition = DP_Get(partition);
     if (vp->partition == NULL) {
 	FreeVolume(vp);
 	return NULL;
@@ -1554,7 +1554,7 @@ void VSetDiskUsage() {
     static FifteenMinuteCounter;
 
     LogMsg(9, VolDebugLevel, stdout, "Entering VSetDiskUsage()");
-    VResetDiskUsage();
+    DP_ResetUsage();
     if (++FifteenMinuteCounter == 3) {
 	FifteenMinuteCounter = 0;
         VScanUpdateList();

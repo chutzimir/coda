@@ -62,6 +62,9 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 int32_t yydebug;
 
+static int32_t SetupFiles();
+
+
 extern char * coda_rp2_basename(char * name);
 
 extern no_storage();

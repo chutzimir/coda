@@ -122,7 +122,7 @@ Volume *VCreateVolume(Error *ec, char *partition, VolumeId volumeId,
     }
 
     /* let's see if the partition is there before locking it; if lock fails, we die */
-    dp = VGetPartition(partition);
+    dp = DP_Get(partition);
     if ( dp == NULL ) {
         LogMsg(0, SrvDebugLevel, stdout, 
 	       "VCreateVolume: Cannot find partition %s. Bailing out.\n", 
@@ -130,7 +130,7 @@ Volume *VCreateVolume(Error *ec, char *partition, VolumeId volumeId,
 	*ec = ENXIO;
 	return NULL;
     }
-    VLockPartition(partition);
+    DP_LockPartition(partition);
 
     /* set up volume disk info */
     bzero((char *)&vol, sizeof (vol));

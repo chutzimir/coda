@@ -176,9 +176,7 @@ static void COP2Update(Volume *, Vnode *, ViceVersionVector *, vmindex * =NULL);
 
 
 /*
-  BEGIN_HTML
-  <a name="ViceProbe"><strong>Empty routine - simply return the probe</strong></a> 
-  END_HTML
+  ViceProbe: Empty routine - simply return the probe 
 */
 
 long ViceProbe(RPC2_Handle cid, RPC2_CountedBS *Vids, RPC2_CountedBS *VVs) {

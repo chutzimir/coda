@@ -39,7 +39,8 @@ static char *rcsid = "$Header$";
 
 
 /* lookup.c
-   Manual lookup of volume location data base information for a particular volume.
+   Manual lookup of volume location data base information 
+   for a particular volume.
  */
 
 #ifdef __cplusplus
@@ -97,9 +98,8 @@ struct hostent *gethostent();
 char *voltypes[] = {"read/write", "read only", "backup", "unknown type", "unknown type"};
 
 /*
-  BEGIN_HTML
-  <a name="S_VolLookup"><strong>Return information for a volume specified by name or volume-id </strong></a>
-  END_HTML
+  S_VolLookup: Return information for a volume specified 
+  by name or volume-id
 */
 long int S_VolLookup(RPC2_Handle rpcid, RPC2_String formal_vol, SE_Descriptor *formal_sed) {
     VolumeInfo info;

@@ -286,7 +286,7 @@ static int SalvageFileSys(char *path, VolumeId singleVolumeNumber)
 	return(VFAIL);
     }
 
-    VLockPartition(path);
+    DP_LockPartition(path);
 
     /* house keeping to deal with FORCESALVAGE */
     if ( (strlen(path) + strlen("/FORCESALVAGE")) >= MAXPATHLEN ) {
@@ -1515,7 +1515,7 @@ static int GetInodeSummary(char *fspath, char *path, VolumeId singleVolumeNumber
     struct InodeSummary summary;
     FILE *summaryFile;
     char *dev = fileSysDeviceName;
-    struct DiskPartition *dp = VGetPartition(fspath);
+    struct DiskPartition *dp = DP_Get(fspath);
 
     if ( dp == NULL ) {
 	LogMsg(0, VolDebugLevel, stdout, 

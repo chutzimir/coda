@@ -41,6 +41,6 @@ Subsystem "volDump";
 #define VOLDUMP_SUBSYSTEMID 123
 typedef RPC2_Unsigned   VolumeId;
 
-WriteDump(IN RPC2_Unsigned offset, IN OUT RPC2_Unsigned nbytes, IN RPC2_Unsigned volid, IN OUT SE_Descriptor sed);
+1: WriteDump(IN RPC2_Unsigned offset, IN OUT RPC2_Unsigned nbytes, IN RPC2_Unsigned volid, IN OUT SE_Descriptor sed);
 
-ReadDump(IN RPC2_Unsigned offset, IN OUT RPC2_Integer nbytes, IN VolumeId volid, IN OUT SE_Descriptor sed);
+2: ReadDump(IN RPC2_Unsigned offset, IN OUT RPC2_Integer nbytes, IN VolumeId volid, IN OUT SE_Descriptor sed);

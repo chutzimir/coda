@@ -664,7 +664,7 @@ int dumpVolume(volinfo_t *vol, struct DiskPartition  *Parts)
 	    }
 
 	    /* Reset diskusage for the partition that was used */
-	    VSetPartitionDiskUsage(part);
+	    DP_SetUsage(part);
 	}
 
 	/* At this point, we know everything worked for this replica. */
@@ -802,7 +802,7 @@ int main(int argc, char **argv) {
     VUInitServerList();
 
     /* initialize the partitions */
-    InitPartitions("/vice/db/vicetab");
+    DP_Init("/vice/db/vicetab");
     Partitions = DiskPartitionList;
     /* change the name */
     if ( PreparePartitionEntries(Partitions) != 0 ) {
@@ -1201,7 +1201,7 @@ static void PollLWP(int naptime)
 
 	/* Recheck the disk usage for the partitions we are using. */
 	for (struct DiskPartition *part = Partitions; part ; part = part->next) {
-	    VSetPartitionDiskUsage(part);
+	    DP_SetUsage(part);
 	}
 
 	(void)IOMGR_Poll();

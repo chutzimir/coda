@@ -151,7 +151,7 @@ int fsobj::Open(int writep, int execp, int truncp, venus_cnode *cp, vuid_t vuid)
 
 	    /* XXX I reactivated this code. It seems a good idea
 	       pjb 9/21/98 */
-
+#if 0
 	    /* Reset a cache entry that others are still reading, but
                that we must now change. */
 	    if (openers > 1) {
@@ -176,7 +176,7 @@ int fsobj::Open(int writep, int execp, int truncp, venus_cnode *cp, vuid_t vuid)
 		if (::close(tfd) < 0) Choke("fsobj::Open: close");
 		data.dir->udcf->inode = tstat.st_ino;
 	    }
-
+#endif 0
 	    /* (Re)Build the Unix-format directory. */
 	    dir_Rebuild();
 	    struct stat tstat;
