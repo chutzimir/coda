@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.18.8  1997/11/26 15:28:57  rvb
- * Cant make downcall pbuf == union cfs_downcalls yet
+ * Revision 1.4.18.9  1997/12/05 08:58:07  rvb
+ * peter found this one
  *
+ * Revision 1.4.18.8  97/11/26  15:28:57  rvb
+ * Cant make downcall pbuf == union cfs_downcalls yet
+ * 
  * Revision 1.4.18.7  97/11/25  09:40:49  rvb
  * Final cfs_venus.c w/o macros, but one locking bug
  * 
@@ -603,7 +606,6 @@ cfscall(mntinfo, inSize, outSize, buffer)
 		myprintf(("vcclose woke op %d.%d flags %d\n",
 		       vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));
 	    
-	    if (!vmp->vm_flags & VM_WRITE)
 		error = ENODEV;
 	}
 
