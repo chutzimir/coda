@@ -74,7 +74,11 @@ extern "C" {
 int yylook(); /* forward refs; lex doesn't emit defs for C++ */
 int yyback(int *p, int m); /* ditto */
 
-#define RETURN(Arg) if (yydebug != 0) printf("Lex: token:%d\tvalue:'%s'\n",Arg,yylval);return(Arg);
+#if YYDEBUG != 0
+# define RETURN(Arg) if (yydebug != 0) printf("Lex: token:%d\tvalue:'%s'\n",Arg,yylval);return(Arg);
+#else
+# define RETURN(Arg) return(Arg);
+#endif
 #define YYLVAL 1000 /* length of yytext */
 
 %}

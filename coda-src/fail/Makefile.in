@@ -50,7 +50,7 @@ RP2FILES    = fcon.rpc2
 RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
 
 
-LIBS = ${LIBRPC2} ${LIBSE} ${LIBOLDLWP} ${LIBUTIL} ${LIBCOMPAT} \
+FLIBS = ${LIBRPC2} ${LIBSE} ${LIBOLDLWP} ${LIBUTIL} ${LIBCOMPAT} \
        ${LIBREADLINE} ${LIBTERMCAP}
 
 # No longer of interest: tvclient tvserver ftclient ftserver 
@@ -58,8 +58,8 @@ OBJS = fcon.client.o fcon.server.o filtutil.o fcon.o fail.o delay.o clear.o isol
 
 libfail.a: ${OBJS}
 
-filcon: filcon.o libfail.a ${LIBS}
-	${CC} ${LIBFLAGS} filcon.o libfail.a ${LIBS} -o filcon
+filcon: filcon.o libfail.a ${FLIBS}
+	${CC} ${LIBFLAGS} filcon.o libfail.a ${FLIBS} -o filcon
 
 fcon.client.o: fcon.client.c
 fcon.server.o: fcon.server.c

@@ -41,16 +41,16 @@ EXECUTABLES = repair
 CBINS       = repair
 # TESTS	    = reptest
 
-LIBS = ${LIBRESOLVE} ${LIBVV} ${LIBAUTH2} ${LIBKERNDEP} ${LIBUTIL} \
+RLIBS = ${LIBRESOLVE} ${LIBVV} ${LIBAUTH2} ${LIBKERNDEP} ${LIBUTIL} \
        $(LIBREADLINE) $(LIBTERMCAP)
 
 OFILES = rvol.o path.o
 
-reptest: reptest.o (OFILES) $(LIBS)
-	$(CXX) $(LIBFLAGS) reptest.o $(OFILES) $(LIBS) -o reptest
+reptest: reptest.o (OFILES) $(RLIBS)
+	$(CXX) $(LIBFLAGS) reptest.o $(OFILES) $(RLIBS) -o reptest
 
-repair:  repair.o $(OFILES) $(LIBS)
-	$(CXX) $(LIBFLAGS) repair.o $(OFILES) $(LIBS) -o repair
+repair:  repair.o $(OFILES) $(RLIBS)
+	$(CXX) $(LIBFLAGS) repair.o $(OFILES) $(RLIBS) -o repair
 
 include $(MAKDIR)/configs/Makerules
 

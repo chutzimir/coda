@@ -86,11 +86,5 @@ translate.sed: Makefile
 	echo "s%+HOSTNAME+%@HOSTNAME@%g" >> $@
 	echo "s%+TIXWISH+%@TIXWISH@%g" >> $@
 	echo "s%+GUIDIR+%${GUIDIR}%g" >> $@
-	echo "s%+CFS+%${BINDIR}/cfs%g" >> $@
-	echo "s%+CLOG+%${BINDIR}/clog%g" >> $@
-	echo "s%+CTOKENS+%${BINDIR}/ctokens%g" >> $@
-	echo "s%+CUNLOG+%${BINDIR}/cunlog%g" >> $@
-	echo "s%+HOARD+%${BINDIR}/hoard%g" >> $@
-	echo "s%+VUTIL+%${BINDIR}/vutil%g" >> $@
 
 include $(MAKDIR)/configs/Makerules

@@ -65,7 +65,7 @@ lex.yy.c: resolver.lex
 
 # YYuck!  I don't know how to tell yyac to deliver a .cc extension  GRRR..(pjb)
 y.tab.o: y.tab.c
-	$(CXX) -x c++ $(CFLAGS) -c $<
+	$(CC) -x c++ $(CFLAGS) -c $<
 
 
 include $(MAKDIR)/configs/Makerules

@@ -56,7 +56,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 
-
+#define YYDEBUG 0
 
 #define MAXSTRLEN 100
 

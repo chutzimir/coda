@@ -105,7 +105,11 @@ int main(int argc, char *argv[])
 
 #define ABORT {flock(fileno(yyin), LOCK_UN); fclose(yyin); exit(-1);}	
 
-    AvoidCheckSum = MyDebugFlag = yydebug = 0;
+    AvoidCheckSum = MyDebugFlag = 0;
+#if YYDEBUG != 0
+    yydebug = 0;
+#endif
+
     FileRoot[0] = '\0';
     for (i = 1; i < argc; i++)
 	{

@@ -82,7 +82,6 @@ extern "C" {
 #include "pcf.h"
 #include "parsepdb.h"
 
-#define	YYDEBUG 0
 #define DIE(x) {perror(x); fflush(stderr); abort();}
 
 int temp_Bound;
@@ -108,15 +107,21 @@ PRIVATE void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c);
 %%	    /* YACC rules section */
 OneDef		:	EmptyDef
 			    {
+#if YYDEBUG != 0
 			    if (yydebug) PrintEntry();
+#endif
 			    }
 		|	UserDef
 			    {
+#if YYDEBUG != 0
 			    if (yydebug) PrintEntry();
+#endif
 			    }
 		|	GroupDef
 			    {
+#if YYDEBUG != 0
 			    if (yydebug) PrintEntry();
+#endif
 			    }
 		;
 

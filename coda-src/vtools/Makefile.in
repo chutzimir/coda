@@ -53,7 +53,7 @@ HOARD_LIBS  = $(LIBUTIL) $(LIBKERNDEP)
 CXXFLAGS := $(CXXFLAGS) -UVENUS
 
 cmon: cmon.o $(CMON_LIBS)
-	$(CXX) $(LIBFLAGS) cmon.o $(CMON_LIBS) -ltermcap -o cmon
+	$(CXX) $(LIBFLAGS) cmon.o $(CMON_LIBS)  $(LIBTERMCAP) -o cmon
 
 codacon:    codacon.o
 	$(CXX) $(LIBFLAGS) -o codacon codacon.o
