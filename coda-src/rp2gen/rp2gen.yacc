@@ -270,6 +270,7 @@ header_line		: SUBSYSTEM subsystem_name compatability_stuff ';'
 			;
 
 compatability_stuff	: id_number protocol_version
+					{}
 			| empty
 			;
 
@@ -298,6 +299,7 @@ decl_or_proc_list	: decl_or_proc_list decl_or_proc
 decl_or_proc		: typedef
 			| define
 			| procedure_description
+					{}
 			;
 
 define			: DEFINE IDENTIFIER NUMBER

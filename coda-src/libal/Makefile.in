@@ -81,9 +81,10 @@ lex.yy.c: parsepdb.lex lexedit.sed
 	mv foo.c lex.yy.c
 
 y.tab.c: parsepdb.yacc
-	yacc $<
-	mv y.tab.c y.tab.tmp
-	sed 's/#if YY/#ifdef YY/' < y.tab.tmp > y.tab.c
+#	yacc $<
+#	mv y.tab.c y.tab.tmp
+#	sed 's/#if YY/#ifdef YY/' < y.tab.tmp > y.tab.c
+	$(YACC) $<
 	mv y.tab.c y.tab.tmp
 	sed 's/extern char \*getenv();//g' < y.tab.tmp > y.tab.c
 	rm y.tab.tmp

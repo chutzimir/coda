@@ -51,8 +51,10 @@ extern "C" {
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/file.h>
+#if !defined(__GLIBC__)
 #include <libc.h>
 #include <sysent.h>
+#endif
 
 #ifdef __cplusplus
 }

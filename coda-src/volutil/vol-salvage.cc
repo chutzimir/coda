@@ -82,7 +82,9 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#if !defined(__GLIBC__)
 #include <sysent.h>
+#endif
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/time.h>

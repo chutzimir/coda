@@ -74,10 +74,14 @@ extern "C" {
 #else
 #include <netinet/if_ether.h>
 #endif
+#if defined(__GLIBC__) && __GLIBC__ >= 2
+#include <libelf/nlist.h>
+#else
 #include <nlist.h>
 /* nlist.h defines this function but it isnt getting included because it is
    guarded by an ifdef of CMU which isnt getting defined.  XXXXX pkumar 6/13/95 */ 
 extern int nlist(const char*, struct nlist[]);
+#endif
 
 #ifdef __MACH__
 #include <sys/dk.h>

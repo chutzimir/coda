@@ -51,7 +51,7 @@ extern "C" {
 
 #include <lwp.h>
 #include <timer.h>
-#ifndef __FreeBSD__
+#if defined(__FreeBSD__) && !defined(__GLIBC__)
 #include <libc.h>
 #endif
 

@@ -69,6 +69,7 @@ extern olist	rules;
 rule_t	*crule;		// current rule 
 command_t *ccmd = NULL;
 int debug = 0;
+int yyerror(char *s);
 
 /* This file defines the syntax of the rule language used to specify an ASR 
    in a ResolveFile. Some macros understood by the language:

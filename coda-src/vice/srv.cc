@@ -82,10 +82,12 @@ extern "C" {
 #include <libc.h>
 #include <mach.h> 
 #endif
-#include <sysent.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#if !defined(__GLIBC__)
+#include <sysent.h>
 #include <libc.h>
+#endif
 
 #include <lwp.h>
 #include <timer.h>

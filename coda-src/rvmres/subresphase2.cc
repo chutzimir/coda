@@ -39,8 +39,10 @@ static char *rcsid = "$Header$";
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
-#include <libc.h>
 #include <stdio.h>
+#if !defined(__GLIBC__)
+#include <libc.h>
+#endif
 #include <rpc2.h>
 #ifdef __cplusplus
 }

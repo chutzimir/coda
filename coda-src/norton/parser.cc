@@ -41,7 +41,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef	__MACH__
+#if !defined(__MACH__) && !defined(__GLIBC__)
 #include <libc.h>
 #endif
 #include <libcs.h>

@@ -61,7 +61,11 @@ extern "C" {
 #include <sys/param.h>
 #include <sys/types.h>
 #ifdef	__linux__
+#if defined(__GLIBC__) && __GLIBC__ >= 2
+#include <dirent.h>
+#else
 #include <sys/dirent.h>
+#endif
 #else
 #include <sys/dir.h>
 #endif

@@ -41,7 +41,9 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#include <libc.h>    
+#if !defined(__GLIBC__)
+#include <libc.h>
+#endif
 #include <stdarg.h>
 #include <rpc2.h>
 #ifdef __cplusplus

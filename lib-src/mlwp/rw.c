@@ -63,6 +63,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 #include <sys/time.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "lwp.h"
 #include "lock.h"
@@ -309,4 +310,5 @@ main(argc, argv)
     /* Destroy the readers */
     for (i=nreaders-1; i>=0; i--) LWP_DestroyProcess(readers[i]);
     printf("\n*Exiting*\n");
+    return 0;
 }

@@ -48,7 +48,9 @@ extern "C" {
 
 #include <errno.h>
 #include <stdio.h>
+#if !defined(__GLIBC__)
 #include <libc.h>
+#endif
 #include <ctype.h>
 #include <assert.h>
 #include <struct.h>

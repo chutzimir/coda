@@ -88,7 +88,9 @@ extern "C" {
 int temp_Bound;
 int temp_Count;
 int *temp_List;
-
+extern int yydebug;
+extern int yylex(void);
+ 
 PRIVATE void yyerror(IN char *s);
 PRIVATE int BigEnough(INOUT int *b, IN int c, IN int s, INOUT char **a);
 PRIVATE void SwapAndClear(INOUT int **l, INOUT int *b, INOUT int *c);

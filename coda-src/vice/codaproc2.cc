@@ -58,7 +58,9 @@ extern "C" {
 #include <sys/dir.h>
 #include <sys/file.h>
 #include <stdarg.h>
+#if !defined(__GLIBC__)
 #include <sysent.h>
+#endif
 #ifdef __MACH__
 #include <libc.h>
 #endif

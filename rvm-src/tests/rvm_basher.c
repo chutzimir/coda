@@ -83,7 +83,9 @@ static char *rcsid = "$Header$";
 
 extern int errno;
 #ifdef	__linux__
+#if !defined(__GLIBC__) || __GLIBC__ < 2
 extern char *sys_errlist[]; /* XXX JET MUCKING */
+#endif
 #else
 extern const char *const sys_errlist[]; /* XXX JET MUCKING */
 #endif

@@ -55,9 +55,9 @@ extern "C" {
 #include <sys/time.h>
 #include <strings.h>
 #include <errno.h>
-#ifndef __FreeBSD__
+#if !defined(__FreeBSD__) && !defined(__GLIBC__)
 #include <libc.h>
-#endif  /*__FreeBSD__*/
+#endif  /*__FreeBSD__ && __GLIBC__ */
 #ifdef	__linux__
 #include <ncurses.h>
 #else

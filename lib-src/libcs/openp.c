@@ -58,6 +58,7 @@ static char *rcsid = "$Header$";
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #include "libcs.h"
 

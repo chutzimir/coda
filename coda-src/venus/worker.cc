@@ -70,7 +70,9 @@ extern "C" {
 #include <sys/param.h>
 #endif
 #ifdef __linux__
+#if !defined(__GLIBC__) || __GLIBC__ < 2
 #include <linux/fs.h>
+#endif
 #include <mntent.h>
 #endif
 
