@@ -44,7 +44,6 @@ LIBREADLINE   = /usr/local/lib/libreadline.a
 INCREADLINE   = -I/usr/local/include/readline
 INODEFSNAME   = libuinodefs.a
 INODEFSDIR    = kernel-src/inodefs/common
-LIBREADLINE   = /usr/lib/libreadline.a
 # When we are ready use kernel inode ops
 # INODEFSNAME   = libinodefs.a
 # INODEFSDIR    = kernel-src/inodefs/bsd44
