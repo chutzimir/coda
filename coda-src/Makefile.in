@@ -56,7 +56,7 @@ III =  rpc2 util
   VI = auth2 vv login
 #endif
  VII =  vol resolve
-VIII =  venus advice repair res
+VIII =  venus advice repair guitools res
   IX =  rvmres volutil vtools
    X =  vice
   XI =  update asr egasr norton
