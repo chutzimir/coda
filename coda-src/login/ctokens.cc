@@ -107,7 +107,7 @@ int main(int argc, char *argv[]) {
     if (clear.EndTimestamp <= time(0))
 	sprintf(cp, "[>> Expired <<]\n");
     else {
-	char *str = ctime(&clear.EndTimestamp);
+	char *str = ctime((time_t *)&clear.EndTimestamp);
 	str +=	4;
 	str[12] = '\0';
 	sprintf(cp, "[Expires %s]\n", str);
