@@ -925,7 +925,7 @@ rvm_bool_t chk_vm()
 /* temporary fix until linux get timeval.tv_sec defined to be long
  * as everybodies else.   -- clement
  */
-#ifdef LINUX
+#ifdef __linux__
     printf("  time: %s",ctime((time_t *)&time.tv_sec));
 #else
     printf("  time: %s",ctime(&time.tv_sec));
@@ -1380,7 +1380,7 @@ void set_data_file()
       case S_IFDIR:
       case S_IFLNK:
 /* LINUX use the same block device for raw control */
-#ifndef LINUX
+#ifndef __linux__
       case S_IFBLK: 
 #endif
 	printf("Illegal file type!\n");
@@ -1388,7 +1388,7 @@ void set_data_file()
 	return;
 
 /* LINUX use the same block device for raw control */
-#ifdef LINUX
+#ifdef __linux__
       case S_IFBLK:
 #endif
       case S_IFCHR:
@@ -1978,7 +1978,7 @@ static str_name_entry_t cmd_vec[MAX_CMDS] = /* command codes vector */
 /* temporary fix until linux get timeval.tv_sec defined to be long
  * as everybodies else.   -- clement
  */
-#ifdef LINUX
+#ifdef __linux__
         printf("\nTests started: %s\n",ctime((time_t *)&init_time.tv_sec));
 #else
         printf("\nTests started: %s\n",ctime(&init_time.tv_sec));

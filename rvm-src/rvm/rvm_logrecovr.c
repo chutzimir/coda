@@ -2498,7 +2498,7 @@ rvm_return_t apply_mods(log)
             if (open_dev(seg_dev,flags,0) < 0)
                 return RVM_EIO;
             ASSERT(log->trunc_thread == cthread_self());
-            if (set_dev_char(seg_dev,&seg_dev->num_bytes,NULL) < 0)
+            if (set_dev_char(seg_dev,&seg_dev->num_bytes) < 0)
                 {
                 close_dev(seg_dev);
                 return RVM_EIO;
