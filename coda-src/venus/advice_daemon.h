@@ -55,7 +55,7 @@ extern "C" {
 }
 #endif __cplusplus
 
-
+#include <admon.h>
 #include "vproc.h"
 
 extern int AdviceEnabled;
@@ -84,6 +84,26 @@ class adviceserver : public vproc {
 
 extern int MaxAMServers;
 extern void AdviceInit();
+
+extern void NotifyUsersOfServerDownEvent(char *);
+extern void NotifyUsersOfServerUpEvent(char *);
+extern void NotifyUsersOfServerWeakEvent(char *);
+extern void NotifyUsersOfServerStrongEvent(char *);
+extern void NotifyUsersOfServerBandwidthEvent(char *, long);
+extern void NotifyUsersOfHoardWalkBegin();
+extern void NotifyUsersOfHoardWalkProgress(int, int);
+extern void NotifyUsersOfHoardWalkEnd();
+extern void NotifyUsersOfHoardWalkPeriodicOn();
+extern void NotifyUsersOfHoardWalkPeriodicOff();
+extern void NotifyUsersObjectInConflict(char *, ViceFid *);
+extern void NotifyUsersObjectConsistent(char *, ViceFid *);
+extern void NotifyUsersTaskAvailability();
+
+extern void NotifyUserOfProgramAccess(vuid_t, int, int, ViceFid *);
+extern void SwapProgramLogs();
+
+extern void NotifyUserOfReplacement(ViceFid *, char *, int, int);
+extern void SwapReplacementLogs();
 
 #endif _VENUS_ADVICEDAEMON_H_
 

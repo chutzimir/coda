@@ -116,6 +116,8 @@ const int UNSET_CB = -1;
 const int MIN_CB = 2048;
 #define	UNSET_RV 0
 #define UNSET_PRIMARYUSER -1		    /* primary user of this machine */
+#define DFLT_SPOOLDIR "/usr/coda/spool"
+#define UNSET_SPOOLDIR 0
 
 
 const int FREE_FACTOR = 16;
@@ -385,6 +387,11 @@ extern char *CacheDir;
 extern int CacheBlocks;
 extern char *RootVolName;
 extern int PrimaryUser;
+
+/* spool.cc */
+extern void SpoolInit();
+extern void MakeUserSpoolDir(char *, vuid_t);
+
 
 #ifdef __cplusplus
 extern "C" {

@@ -51,17 +51,19 @@ binding::binding() {
 
     binder = 0;
     bindee = 0;
+    referenceCount = 0;
 
 #ifdef	VENUSDEBUG
     allocs++;
 #endif	VENUSDEBUG
 }
 
-
 binding::~binding() {
 #ifdef	VENUSDEBUG
     deallocs++;
 #endif	VENUSDEBUG
+    if (referenceCount != 0)
+      LOG(0, ("binding::~binding:  somebody forgot to decrement before delete\n"));
 
     if (binder != 0 || bindee != 0)
 	{ print(logFile); Choke("binding::~binding: something bogus");}
@@ -69,5 +71,5 @@ binding::~binding() {
 
 
 void binding::print(int fd) {
-    fdprint(fd, "binder = %x, bindee = %x\n", binder, bindee);
+    fdprint(fd, "binder = %x, bindee = %x, refCount = %d\n", binder, bindee, referenceCount);
 }

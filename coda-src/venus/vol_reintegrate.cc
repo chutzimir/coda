@@ -69,6 +69,8 @@ extern "C" {
 #include <stdio.h>
 #include <struct.h>
 
+#include <errors.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -82,15 +84,14 @@ extern "C" {
 #include "venus.private.h"
 #include "venusvol.h"
 #include "vproc.h"
-
-
-/* Temporary!  Move to inconsist.h! -JJK */
-#define	EINCOMPATIBLE	198
+#include "advice_daemon.h"
 
 
 /* must not be called from within a transaction */
 void volent::Reintegrate()
 {
+    userent *u;
+
     LOG(0, ("volent::Reintegrate\n"));
 
     /* 
@@ -102,6 +103,11 @@ void volent::Reintegrate()
      */
     if (IsReintegrating())
 	return;
+
+    GetUser(&u, CML.owner);
+    assert(u != NULL);
+    if (AdviceEnabled)
+        u->NotifyReintegrationActive(name);
 
     flags.reintegrating = 1;
 
@@ -179,6 +185,10 @@ void volent::Reintegrate()
 
     /* reset it, 'cause we can't leave errors just laying around */
     v->u.u_error = 0;
+
+    /* Let user know reintegration has completed */
+    if (AdviceEnabled)
+        u->NotifyReintegrationCompleted(name);
 }
 
 

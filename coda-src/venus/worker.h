@@ -75,7 +75,7 @@ class worker;
 class worker_iterator;
 
 
-const int DFLT_MAXWORKERS = 5;
+const int DFLT_MAXWORKERS = 20;
 const int UNSET_MAXWORKERS = -1;
 const int DFLT_MAXPREFETCHERS = 1;
 

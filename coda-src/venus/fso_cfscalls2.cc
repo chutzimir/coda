@@ -591,7 +591,8 @@ int fsobj::Lookup(fsobj **target_fso_addr, ViceFid *inc_fid, char *name, vuid_t 
 	    /* I think this was fixed by checking for BUSY(f) in fsdb::CallBackBreak()! -JJK */
 	}
 #endif	0
-	if (STREQ(name, "."))
+	/* Haven't we already choked if STREQ(name, ".") ??? */
+	if (STREQ(name, ".")) 
 	    target_fid = fid;
 	else if (STREQ(name, "..")) {
 	    if (IsRoot()) {

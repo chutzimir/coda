@@ -719,9 +719,9 @@ void ReportAdviceStatistics(vuid_t vuid)
 {
     userent *u;
     AdviceStatistics stats;
-    AdviceCalls calls[NumCallTypes];
+    AdviceCalls calls[MAXEVENTS];
     AdviceResults results[NumRPCResultTypes];
-    int numCalls = NumCallTypes;
+    int numCalls = MAXEVENTS;
     int numResults = NumRPCResultTypes;
 
     LOG(100, ("ReportAdviceStatistics(%d)\n", vuid));

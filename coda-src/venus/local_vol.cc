@@ -43,6 +43,8 @@ extern "C" {
 
 #include <struct.h>
 
+#include <errors.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -54,7 +56,7 @@ extern "C" {
 #include "local.h"
 #include "venusvol.h"
 
-#define  EINCOMPATIBLE   198
+
 /* must be called from within a transaction */
 void volent::TranslateCMLFid(ViceFid *global, ViceFid *local)
 {

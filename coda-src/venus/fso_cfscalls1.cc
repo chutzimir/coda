@@ -1940,5 +1940,7 @@ NonRepExit:
     /* Replica control rights are invalid in any case. */
     Demote();
 
+  LOG(0, ("MARIA:  We just SetVV'd.\n"));
+
     return(code);
 }

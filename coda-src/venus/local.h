@@ -262,6 +262,9 @@ public:
 	   ViceFid *, ViceFid *, char *);	/*T*/
     ~rfment();					/*T*/
     void operator delete(void *, size_t);	/*T*/
+
+  /* For a description of the layout, please refer to Lu's thesis, page 82 */
+
     ViceFid *GetFakeRootFid();			/*N*/
     ViceFid *GetGlobalRootFid();		/*N*/
     ViceFid *GetLocalRootFid();			/*N*/

@@ -461,6 +461,7 @@ int binaryfloor(int n) {
 void LogInit() {
     rename(LOGFILE, LOGFILE_OLD);
 
+    fclose(stderr);
     logFile = fopen(LOGFILE, "w+");
     if (logFile == NULL)
 	{ eprint("LogInit failed"); exit(-1); }
@@ -826,7 +827,7 @@ void StatsInit() {
 
 
 void ProfInit() {
-    LOG(0, ("ProfInit(): profiling is broken; fix it!"));
+    LOG(0, ("ProfInit(): profiling is broken; fix it!\n"));
     return;
 #if 0
     /* This code used to work once upon a time */

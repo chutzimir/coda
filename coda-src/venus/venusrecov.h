@@ -109,7 +109,7 @@ const int DFLT_MAXTS = 256 * 1024;			/* Maximum Truncate Size */
 const int UNSET_MAXTS = -1;
 
 const int RecovMagicNumber = 0x8675309;
-const int RecovVersionNumber = 27;			/* Update this when format changes. */
+const int RecovVersionNumber = 28;			/* Update this when format changes. */
 
 
 /*  *****  Types  *****  */

@@ -68,9 +68,12 @@ extern int ASRresult;
 #define HOARDLIST_FILENAME "/tmp/hoardlist."
 #define HOARDADVICE_FILENAME "/tmp/hoardadvice."
 
+#define PROGRAMLOG "program.log"
+#define REPLACEMENTLOG "replacement.log"
+
 /* User Patience Parameters. */
 const int UNSET_PATIENCE_ALPHA = -1;
-const int DFLT_PATIENCE_ALPHA = 2;
+const int DFLT_PATIENCE_ALPHA = 6;
 const int UNSET_PATIENCE_BETA = -1;
 const int DFLT_PATIENCE_BETA = 1;
 const int UNSET_PATIENCE_GAMMA = -1;

@@ -54,6 +54,7 @@ extern "C" {
 #include "venusrecov.h"
 #include "venus.private.h"
 #include "local.h"
+#include "advice_daemon.h"
 
 /* ***** Private constants ***** */
 PRIVATE const int LRDaemonStackSize = 32768;
@@ -92,6 +93,14 @@ void LRDBDaemon()
     }
 }
 
+/* MARIA testing */
+char *PrintFid(ViceFid *fid) {
+    static char fidString[128];
+    snprintf(fidString, 128, "%x.%x.%x", fid->Volume, fid->Vnode, fid->Unique);
+    return(fidString);
+}
+
+
 /*
   BEGIN_HTML
   <a name="checklocalsubtree"><strong> periodically check whether there are 
@@ -121,6 +130,13 @@ void lrdb::CheckLocalSubtree()
 	    RootParentObj->GetPath(RootPath, 1);
 	    eprint("Local inconsistent object at %s/%s, please check!\n",
 		   RootPath, rfm->GetName());
+	    char fullpath[MAXPATHLEN];
+	    snprintf(fullpath, MAXPATHLEN, "%s/%s", RootPath, rfm->GetName());
+	    ViceFid *objFid = rfm->GetGlobalRootFid();
+	    ASSERT(objFid);
+	    LOG(0, ("LocalInconsistentObj: objFid=%x.%x.%x\n",
+		    objFid->Volume, objFid->Vnode, objFid->Unique));
+	    NotifyUsersObjectInConflict(fullpath, objFid);
 	}
     }
     ReleaseReadLock(&rfm_lock);

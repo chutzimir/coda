@@ -716,7 +716,6 @@ class volent {
   friend class vdb;
   friend class vol_iterator;
   friend class fsdb;
-  friend void DisconnectedCacheMissEvent(vproc *vp, volent *v, fsobj *f, ViceFid *key, vuid_t vuid);
   friend class fsobj;
   friend class fso_vol_iterator;
   friend class vsgdb;
@@ -809,7 +808,8 @@ class volent {
     /* Advice stuff. */
     /* save stuff from the previous session for reporting to the advice monitor -- gross! */
     long DisconnectionTime;
-    long DiscoRefCounter;          /* value of FSDB->RefCounter at point of disconnection */
+    long DiscoRefCounter;     /* value of FSDB->RefCounter at disconnection */
+
     /*T*/int saved_uid;
     /*T*/int saved_hits;
     /*T*/ int saved_misses;
@@ -988,6 +988,7 @@ class volent {
     void CheckLocalSubtree();			/*U*/
 
     /* advice addition */
+    void DisconnectedCacheMiss(vproc *, vuid_t, ViceFid *, char *);
     void TriggerReconnectionQuestionnaire();
     void NotifyStateChange();
     void GetVolInfoForAdvice(int *, int *);

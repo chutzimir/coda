@@ -115,7 +115,9 @@ void HDBDaemon() {
     long LastHdbWalk = /*0*/Vtime();	    /* skip initial walk at startup! */
 
     for (;;) {
+LOG(0, ("HDBDaemon about to sleep on hdbdaemon_sync\n"));
 	VprocWait(&hdbdaemon_sync);
+LOG(0, ("HDBDaemon just woke up\n"));
 
 	START_TIMING();
 	long curr_time = Vtime();

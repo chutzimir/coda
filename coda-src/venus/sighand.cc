@@ -73,6 +73,7 @@ extern "C" {
 #include "venus.private.h"
 #include "venusrecov.h"
 #include "worker.h"
+#include "advice_daemon.h"
 #if defined(__linux__) && defined(sparc)
 #include <asm/sigcontext.h>
 #define sigcontext sigcontext_struct
@@ -158,6 +159,10 @@ PRIVATE void TRAP(int sig, int code, struct sigcontext *contextPtr) {
 
 
 PRIVATE void IOT(int sig, int code, struct sigcontext *contextPtr) {
+
+  LOG(0, ("Call into IOT\n"));
+  fflush(logFile);
+
   /* linux gets this signal when it shouldn't */
 #ifndef __linux__
     if (!Profiling)
@@ -291,6 +296,8 @@ PRIVATE void XFSZ(int sig, int code, struct sigcontext *contextPtr) {
 
 PRIVATE void VTALRM(int sig, int code, struct sigcontext *contextPtr) {
     SwapLog();
+    SwapProgramLogs();
+    SwapReplacementLogs();
 
     signal(SIGVTALRM, (void (*)(int))VTALRM);
 }

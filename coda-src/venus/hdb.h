@@ -59,6 +59,14 @@ extern "C" {
 /* interfaces */
 #include <vice.h>
 
+#define HDB_ASSERT(ex) \
+{\
+   if (!(ex)) {\
+     Choke("Assertion failed: file \"%s\", line %d\n", __FILE__, __LINE__);\
+   }\
+}
+
+
 /* Hoard priority range. */
 #define	H_MAX_PRI	1000
 #define	H_DFLT_PRI	10
@@ -246,16 +254,20 @@ class hdb {
     void ResetUser(vuid_t);
 
     /* Helper Routines hdb::Walk */
-    void ValidateCacheStatus(vproc *, int *);
+    void ValidateCacheStatus(vproc *, int *, int *);
     void ListPriorityQueue();
     int GetSuspectPriority(int, char *, int);
     void WalkPriorityQueue(vproc *, int *, int *);
-    void StatusWalk(vproc *);
-    void DataWalk(vproc *);
+    int CalculateTotalBytesToFetch();
+    void StatusWalk(vproc *, int *);
+    void DataWalk(vproc *, int);
+    void PostWalkStatus();
 
     /* Advice Related*/
     void SetSolicitAdvice(int uid)
-        { SolicitAdvice = uid; }
+        { LOG(0, ("SetSolicitAdvice: uid=%d\n",uid));
+	  SolicitAdvice = uid; }
+    int MakeAdviceRequestFile(char *);
     void RequestHoardWalkAdvice();
 
     void SetDemandWalkTime();
@@ -334,6 +346,7 @@ class namectxt {
   friend class hdb_iterator;
   friend void MetaExpand(long, char *, long, long);
   friend int NC_PriorityFN(bsnode *, bsnode *);
+  friend void NotifyUsersOfKillEvent(dlist *, int);
 
     /* Key. */
     ViceFid cdir;			/* starting directory of expansion */
@@ -388,6 +401,11 @@ class namectxt {
 
     void Demote(int =0);		/* --> immediate or eventual transition to suspect state */
     void CheckComponent(fsobj *);
+
+    int GetPriority()
+        { return(priority); }
+    vuid_t GetUid()
+        { return(vuid); }
 
     void print()  { print(stdout); }
     void print(FILE *fp)  { fflush(fp); print(fileno(fp)); }

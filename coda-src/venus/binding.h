@@ -75,11 +75,16 @@ class binding {
     void *binder;
     dlink bindee_handle;
     void *bindee;
+    int referenceCount;
 
     binding();
     binding(binding& b) { abort(); }	/* not supported! */
     operator=(binding&) { abort(); }	/* not supported! */
     ~binding();
+
+    IncrRefCount() { referenceCount++; }
+    DecrRefCount() { referenceCount--; }
+    GetRefCount() { return(referenceCount); }
 
     void print() { print(stdout); }
     void print(FILE *fp) { fflush(fp); print(fileno(fp)); }

@@ -88,6 +88,7 @@ extern "C" {
 #include "venusvol.h"
 #include "vproc.h"
 #include "worker.h" 
+#include "advice_daemon.h"
 
 
 /* local-repair modification */
@@ -684,6 +685,13 @@ O_FreeLocks:
 		    data->out_size = (endp - startp);
 		    u.u_error = v->Repair(fid, RepairFile,
 					  CRTORUID(u.u_cred), RWVols, ReturnCodes);
+
+ 	            LOG(0, ("MARIA: VIOC_REPAIR calls volent::Repair which returns %d\n",u.u_error));
+		    if ((AdviceEnabled) && (u.u_error == 0)) {
+ 		        /* We don't have the object so can't provide a pathname */
+		        NotifyUsersObjectConsistent("???UNKNOWN???",fid);
+		    }
+
 #undef	RepairFile
 #undef	startp
 #undef	RWVols
@@ -1274,10 +1282,25 @@ V_FreeLocks:
 			case REP_CMD_END:
 			    {			
 				int commit, dummy;
+				ViceFid *squirrelFid;
+
+				ASSERT(LRDB);
+				squirrelFid = LRDB->RFM_LookupGlobalRoot(LRDB->repair_root_fid);
+
 				sscanf(data->in, "%d %d", &dummy, &commit);
 				LRDB->EndRepairSession(commit, data->out);
 				data->out_size = (short)strlen(data->out) + 1;
 				u.u_error = 0;
+				if (strncmp(data->out, "repair session completed", strlen("repair session completed")) == 0) {
+
+				  LOG(0, ("MARIA:  End local repair successful\n"));
+				  if (AdviceEnabled) {
+				    /* We don't have the object so can't provide a pathname */
+				    NotifyUsersObjectConsistent("???UNKNOWN???", squirrelFid);
+				  }
+				} else {
+				  LOG(0, ("MARIA:  End local repair failed\n"));
+				}
 				break;
 			    }
 /*
