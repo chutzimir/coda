@@ -5,21 +5,21 @@
 /* NetBSD includes */
 /* Overkill...     */
 #ifdef KERNEL
-#include <types.h>              /* Needed by malloc.h */
-#include <time.h>
-#include <systm.h>
-#include <malloc.h>             /* No zalloc.h; malloc.h instead */
-#include <param.h>
-#include <mount.h>              /* no struct vfs, struct mount instead */
-#include <uio.h>
-#include <vnode.h>              /* vnode.h lives in sys, get via makefile */
+#include <sys/types.h>          /* Needed by malloc.h */
+#include <sys/time.h>
+#include <sys/systm.h>
+#include <sys/malloc.h>         /* No zalloc.h; malloc.h instead */
+#include <sys/param.h>
+#include <sys/mount.h>          /* no struct vfs, struct mount instead */
+#include <sys/uio.h>
+#include <sys/vnode.h>          /* vnode.h lives in sys, get via makefile */
 #include <cfs/mach_vioctl.h>    /* No viceioctl.h on NetBSD */
 #include <vcfs.h>               /* Number of minor devices */
-#include <signal.h>
-#include <proc.h>               /* Definition for struct proc */
-#include <namei.h>              /* For lookup operations */
+#include <sys/signal.h>
+#include <sys/proc.h>          /* Definition for struct proc */
+#include <sys/namei.h>         /* For lookup operations */
 #include <miscfs/specfs/specdev.h>  /* wow.  netbsd is screwed. */
-#include <dir.h>
+#include <sys/dir.h>
 #include <ufs/ifs/ifs.h>
 #else
 #include <sys/param.h>
@@ -314,13 +314,9 @@ do {                                                           \
 
 /****************** Prototypes missing from NetBSD includes */
 
-extern int _remque __P((caddr_t));
-extern int _insque __P((caddr_t, caddr_t));
 extern int vfinddev __P((dev_t, enum vtype, struct vnode **));
 extern int dounmount __P((struct mount *, int, struct proc *));
 extern int uiomove  __P((caddr_t, int, struct uio *));
 extern long makefstype __P((char *));
-extern int cache_purge __P((struct vnode *));
-extern int delay __P((int));
 
 #endif /* KERNEL */

@@ -14,6 +14,10 @@
 /*
  * HISTORY
  * $Log$
+ * Revision 1.3  1996/11/08 18:06:09  bnoble
+ * Minor changes in vnode operation signature, VOP_UPDATE signature, and
+ * some newly defined bits in the include files.
+ *
  * Revision 1.2  1996/01/02 16:56:50  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -101,7 +105,7 @@
 
 #ifdef __NetBSD__
 #ifndef insque
-#include <systm.h>
+#include <sys/systm.h>
 #endif /* insque */
 #endif /* __NetBSD__ */
 

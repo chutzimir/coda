@@ -15,6 +15,10 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.3  1996/11/08 18:06:05  bnoble
+ * Minor changes in vnode operation signature, VOP_UPDATE signature, and
+ * some newly defined bits in the include files.
+ *
  * Revision 1.2  1996/01/02 16:56:31  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -158,7 +162,7 @@ int cfs_vget      __P((VFS_T *, ino_t, struct vnode **));
 int cfs_fhtovp    __P((VFS_T *, struct fid *, struct mbuf *, struct vnode **,
 		       int *, struct ucred **));
 int cfs_vptofh    __P((struct vnode *, struct fid *));
-int cfs_init      __P((void));
+void cfs_init      __P((void));
 
 #endif KERNEL
 

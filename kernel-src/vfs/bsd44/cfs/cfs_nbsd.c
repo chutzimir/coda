@@ -15,6 +15,10 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.3  1996/11/08 18:06:11  bnoble
+ * Minor changes in vnode operation signature, VOP_UPDATE signature, and
+ * some newly defined bits in the include files.
+ *
  * Revision 1.2  1996/01/02 16:56:52  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
@@ -75,37 +79,36 @@ struct vfsops cfs_vfsops = {
 };
 
 /* NetBSD interfaces to the vnodeops */
-int cfs_nb_open      __P((struct vop_open_args *));
-int cfs_nb_close     __P((struct vop_close_args *));
-int cfs_nb_read      __P((struct vop_read_args *));
-int cfs_nb_write     __P((struct vop_write_args *));
-int cfs_nb_ioctl     __P((struct vop_ioctl_args *));
-int cfs_nb_select    __P((struct vop_select_args *));
-int cfs_nb_getattr   __P((struct vop_getattr_args *));
-int cfs_nb_setattr   __P((struct vop_setattr_args *));
-int cfs_nb_access    __P((struct vop_access_args *));
-int cfs_nb_readlink  __P((struct vop_readlink_args *));
-int cfs_nb_abortop   __P((struct vop_abortop_args *));
-int cfs_nb_fsync     __P((struct vop_fsync_args *));
-int cfs_nb_inactive  __P((struct vop_inactive_args *));
-int cfs_nb_lookup    __P((struct vop_lookup_args *));
-int cfs_nb_create    __P((struct vop_create_args *));
-int cfs_nb_remove    __P((struct vop_remove_args *));
-int cfs_nb_link      __P((struct vop_link_args *));
-int cfs_nb_rename    __P((struct vop_rename_args *));
-int cfs_nb_mkdir     __P((struct vop_mkdir_args *));
-int cfs_nb_rmdir     __P((struct vop_rmdir_args *));
-int cfs_nb_symlink   __P((struct vop_symlink_args *));
-int cfs_nb_readdir   __P((struct vop_readdir_args *));
-int cfs_nb_bmap      __P((struct vop_bmap_args *));
-int cfs_nb_strategy  __P((struct vop_strategy_args *));
-int cfs_nb_lock      __P((struct vop_lock_args *));
-int cfs_nb_unlock    __P((struct vop_unlock_args *));
-int cfs_nb_islocked  __P((struct vop_islocked_args *));
+int cfs_nb_open      __P((void *));
+int cfs_nb_close     __P((void *));
+int cfs_nb_read      __P((void *));
+int cfs_nb_write     __P((void *));
+int cfs_nb_ioctl     __P((void *));
+int cfs_nb_select    __P((void *));
+int cfs_nb_getattr   __P((void *));
+int cfs_nb_setattr   __P((void *));
+int cfs_nb_access    __P((void *));
+int cfs_nb_readlink  __P((void *));
+int cfs_nb_abortop   __P((void *));
+int cfs_nb_fsync     __P((void *));
+int cfs_nb_inactive  __P((void *));
+int cfs_nb_lookup    __P((void *));
+int cfs_nb_create    __P((void *));
+int cfs_nb_remove    __P((void *));
+int cfs_nb_link      __P((void *));
+int cfs_nb_rename    __P((void *));
+int cfs_nb_mkdir     __P((void *));
+int cfs_nb_rmdir     __P((void *));
+int cfs_nb_symlink   __P((void *));
+int cfs_nb_readdir   __P((void *));
+int cfs_nb_bmap      __P((void *));
+int cfs_nb_strategy  __P((void *));
+int cfs_nb_lock      __P((void *));
+int cfs_nb_unlock    __P((void *));
+int cfs_nb_islocked  __P((void *));
 int nbsd_vop_error   __P((void *));
 int nbsd_vop_nop     __P((void *));
-
-int cfs_nb_reclaim   __P((struct vop_reclaim_args *));
+int cfs_nb_reclaim   __P((void *));
 
 /* Definition of the vnode operation vector */
 
@@ -182,84 +185,104 @@ nbsd_vop_nop(void *anon) {
 }
 
 int
-cfs_nb_open(ap)
-    struct vop_open_args *ap;
+cfs_nb_open(v)
+    void *v;
 {
+    struct vop_open_args *ap = v;
+
     ENTRY;
     return (cfs_open(&(ap->a_vp), ap->a_mode, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_close(ap)
-    struct vop_close_args *ap;
+cfs_nb_close(v)
+    void *v;
 {
+    struct vop_close_args *ap = v;
+
     ENTRY;
     return (cfs_close(ap->a_vp, ap->a_fflag, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_read(ap)
-    struct vop_read_args *ap;
+cfs_nb_read(v)
+    void *v;
 {
+    struct vop_read_args *ap = v;
+
     ENTRY;
     return(cfs_rdwr(ap->a_vp, ap->a_uio, UIO_READ,
 		    ap->a_ioflag, ap->a_cred, ap->a_uio->uio_procp));
 }
 
 int
-cfs_nb_write(ap)
-    struct vop_write_args *ap;
+cfs_nb_write(v)
+    void *v;
 {
+    struct vop_write_args *ap = v;
+
     ENTRY;
     return(cfs_rdwr(ap->a_vp, ap->a_uio, UIO_WRITE,
 		    ap->a_ioflag, ap->a_cred, ap->a_uio->uio_procp));
 }
 
 int
-cfs_nb_ioctl(ap)
-    struct vop_ioctl_args *ap;
+cfs_nb_ioctl(v)
+    void *v;
 {
+    struct vop_ioctl_args *ap = v;
+
     ENTRY;
     return (cfs_ioctl(ap->a_vp, ap->a_command, ap->a_data, ap->a_fflag,
 		      ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_select(ap)
-    struct vop_select_args *ap;
+cfs_nb_select(v)
+    void *v;
 {
+    struct vop_select_args *ap = v;
+
     ENTRY;
     return (cfs_select(ap->a_vp, ap->a_which, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_getattr(ap)
-    struct vop_getattr_args *ap;
+cfs_nb_getattr(v)
+    void *v;
 {
+    struct vop_getattr_args *ap = v;
+
     ENTRY;
     return (cfs_getattr(ap->a_vp, ap->a_vap, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_setattr(ap)
-    struct vop_setattr_args *ap;
+cfs_nb_setattr(v)
+    void *v;
 {
+    struct vop_setattr_args *ap = v;
+
     ENTRY;
     return (cfs_setattr(ap->a_vp, ap->a_vap, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_access(ap)
-    struct vop_access_args *ap;
+cfs_nb_access(v)
+    void *v;
 {
+    struct vop_access_args *ap = v;
+
     ENTRY;
     return (cfs_access(ap->a_vp, ap->a_mode, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_readlink(ap)
-    struct vop_readlink_args *ap;
+cfs_nb_readlink(v)
+    void *v;
 {
+    struct vop_readlink_args *ap = v;
+
     ENTRY;
     return (cfs_readlink(ap->a_vp, ap->a_uio, ap->a_cred, 
 			 ap->a_uio->uio_procp));
@@ -273,29 +296,35 @@ cfs_nb_readlink(ap)
  */
 /* ARGSUSED */
 int
-cfs_nb_abortop(ap)
+cfs_nb_abortop(v)
+    void *v;
+{
 	struct vop_abortop_args /* {
 		struct vnode *a_dvp;
 		struct componentname *a_cnp;
-	} */ *ap;
-{
+	} */ *ap = v;
+
 	if ((ap->a_cnp->cn_flags & (HASBUF | SAVESTART)) == HASBUF)
 		free(ap->a_cnp->cn_pnbuf, M_NAMEI);
 	return (0);
 }
 
 int
-cfs_nb_fsync(ap)
-    struct vop_fsync_args *ap;
+cfs_nb_fsync(v)
+    void *v;
 {
+    struct vop_fsync_args *ap = v;
+
     ENTRY;
     return (cfs_fsync(ap->a_vp, ap->a_cred, ap->a_p));
 }
 
 int
-cfs_nb_inactive(ap)
-    struct vop_inactive_args *ap;
+cfs_nb_inactive(v)
+    void *v;
 {
+    struct vop_inactive_args *ap = v;
+
     ENTRY;
     /* XXX - at the moment, inactive doesn't look at cred, and doesn't
        have a proc pointer.  Oops. */
@@ -303,9 +332,11 @@ cfs_nb_inactive(ap)
 }
 
 int
-cfs_nb_lookup(ap)
-    struct vop_lookup_args *ap;
+cfs_nb_lookup(v)
+    void *v;
 {
+    struct vop_lookup_args *ap = v;
+
     /* 
      * It looks as though ap->a_cnp->ni_cnd->cn_nameptr holds the rest
      * of the string to xlate, and that we must try to get at least
@@ -401,9 +432,10 @@ cfs_nb_lookup(ap)
 }
 
 int
-cfs_nb_create(ap)
-    struct vop_create_args *ap;
+cfs_nb_create(v)
+    void *v;
 {
+    struct vop_create_args *ap = v;
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *cnp = ap->a_cnp;
     int                    result;
@@ -452,9 +484,10 @@ cfs_nb_create(ap)
 }
 
 int
-cfs_nb_remove(ap)
-    struct vop_remove_args *ap;
+cfs_nb_remove(v)
+    void *v;
 {
+    struct vop_remove_args *ap = v;
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *cnp = ap->a_cnp;
     int                    result;
@@ -484,9 +517,10 @@ cfs_nb_remove(ap)
 }
 
 int
-cfs_nb_link(ap)
-    struct vop_link_args *ap;
+cfs_nb_link(v)
+    void *v;
 {
+    struct vop_link_args *ap = v;
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *cnp = ap->a_cnp;
     int                    result;
@@ -498,7 +532,7 @@ cfs_nb_link(ap)
 	struct cnode *tdcp;
 
 	cp = VTOC(ap->a_vp);
-	tdcp = VTOC(ap->a_tdvp);
+	tdcp = VTOC(ap->a_dvp);
 	myprintf(("nb_link:   vp fid: (%x.%x.%x)\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
 	myprintf(("nb_link: tdvp fid: (%x.%x.%x)\n",
@@ -514,7 +548,7 @@ cfs_nb_link(ap)
      * The link system call, in it's infinite wisdom, packs it's
      * arguments as (directory-in-which-link-goes, vnode-to-link-to,
      * name) but VOP_LINK expects (vnode, directory, name).  As a
-     * result, tdvp is *really* what vp should be, and vice versa.
+     * result, dvp is *really* what vp should be, and vice versa.
      * So, DON'T PANIC.  I *know* they're backwards here.  Sigh.
      */
 
@@ -523,23 +557,23 @@ cfs_nb_link(ap)
      *     We enter with the thing called "vp" (the directory) locked.
      *     We must unconditionally drop locks on "vp"
      *
-     *     We enter with the thing called "tdvp" (the linked-to) unlocked,
+     *     We enter with the thing called "dvp" (the linked-to) unlocked,
      *       but ref'd (?)
      *     We seem to need to lock it before calling cfs_link, and
      *       unconditionally unlock it after.
      */
     
-    if ((ap->a_vp != ap->a_tdvp) && (result = VOP_LOCK(ap->a_tdvp))) {
+    if ((ap->a_vp != ap->a_dvp) && (result = VOP_LOCK(ap->a_dvp))) {
 	goto exit;
     }
 	
-    result = cfs_link(ap->a_tdvp, ap->a_vp, tname, cnp->cn_cred, 
+    result = cfs_link(ap->a_dvp, ap->a_vp, tname, cnp->cn_cred, 
 		      cnp->cn_proc);
 
  exit:
 
-    if (ap->a_vp != ap->a_tdvp) {
-	VOP_UNLOCK(ap->a_tdvp);
+    if (ap->a_vp != ap->a_dvp) {
+	VOP_UNLOCK(ap->a_dvp);
     }
     vput(ap->a_vp);
 
@@ -554,9 +588,10 @@ cfs_nb_link(ap)
 }
 
 int
-cfs_nb_rename(ap)
-    struct vop_rename_args *ap;
+cfs_nb_rename(v)
+    void *v;
 {
+    struct vop_rename_args *ap = v;
     char                   fname[MAXPATHLEN];   /* overkill, but... */
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *fcnp = ap->a_fcnp;
@@ -601,9 +636,10 @@ cfs_nb_rename(ap)
 }
 
 int
-cfs_nb_mkdir(ap)
-    struct vop_mkdir_args *ap;
+cfs_nb_mkdir(v)
+    void *v;
 {
+    struct vop_mkdir_args *ap = v;
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *cnp = ap->a_cnp;
     int                    result;
@@ -638,9 +674,10 @@ cfs_nb_mkdir(ap)
 }
 
 int
-cfs_nb_rmdir(ap)
-    struct vop_rmdir_args *ap;
+cfs_nb_rmdir(v)
+    void *v;
 {
+    struct vop_rmdir_args *ap = v;
     char                   tname[MAXPATHLEN];   /* overkill, but... */
     struct componentname  *cnp = ap->a_cnp;
     int                    result;
@@ -669,9 +706,10 @@ cfs_nb_rmdir(ap)
 }
 
 int
-cfs_nb_symlink(ap)
-    struct vop_symlink_args *ap;
+cfs_nb_symlink(v)
+    void *v;
 {
+    struct vop_symlink_args *ap = v;
     /* 
      * XXX I'm assuming the following things about cfs_symlink's
      * arguments: 
@@ -725,18 +763,22 @@ cfs_nb_symlink(ap)
 }
 
 int
-cfs_nb_readdir(ap)
-    struct vop_readdir_args *ap;
+cfs_nb_readdir(v)
+    void *v;
 {
+    struct vop_readdir_args *ap = v;
+
     ENTRY;
     return (cfs_readdir(ap->a_vp, ap->a_uio, ap->a_cred, ap->a_eofflag,
 			ap->a_cookies, ap->a_ncookies, ap->a_uio->uio_procp));
 }
 
 int
-cfs_nb_bmap(ap)
-    struct vop_bmap_args *ap;
+cfs_nb_bmap(v)
+    void *v;
 {
+    struct vop_bmap_args *ap = v;
+
     /* XXX on the global proc */
     ENTRY;
 
@@ -744,9 +786,11 @@ cfs_nb_bmap(ap)
 }
 
 int
-cfs_nb_strategy(ap)
-    struct vop_strategy_args *ap;
+cfs_nb_strategy(v)
+    void *v;
 {
+    struct vop_strategy_args *ap = v;
+
     ENTRY;
     /* XXX  for the GLOBAL_PROC */
     return (cfs_strategy(ap->a_bp, GLOBAL_PROC));
@@ -754,9 +798,10 @@ cfs_nb_strategy(ap)
 
 /***************************** NetBSD-only vnode operations */
 int
-cfs_nb_reclaim(ap) 
-    struct vop_reclaim_args *ap;
+cfs_nb_reclaim(v) 
+    void *v;
 {
+    struct vop_reclaim_args *ap = v;
     struct vnode *vp = ap->a_vp;
 
     ENTRY;
@@ -773,9 +818,10 @@ cfs_nb_reclaim(ap)
 }
 
 int
-cfs_nb_lock(ap)
-    struct vop_lock_args *ap;
+cfs_nb_lock(v)
+    void *v;
 {
+    struct vop_lock_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp;
     struct proc  *p = curproc; /* XXX */
@@ -808,9 +854,10 @@ cfs_nb_lock(ap)
 }
 
 int
-cfs_nb_unlock(ap)
-    struct vop_unlock_args *ap;
+cfs_nb_unlock(v)
+    void *v;
 {
+    struct vop_unlock_args *ap = v;
     struct cnode *cp = VTOC(ap->a_vp);
 
     ENTRY;
@@ -831,9 +878,11 @@ cfs_nb_unlock(ap)
 }
 
 int
-cfs_nb_islocked(ap)
-    struct vop_islocked_args *ap;
+cfs_nb_islocked(v)
+    void *v;
 {
+    struct vop_islocked_args *ap = v;
+
     ENTRY;
     if (VTOC(ap->a_vp)->c_flags & CN_LOCKED)
 	return (1);
@@ -918,11 +967,11 @@ print_vattr( attr )
     myprintf(("      gen %ld flags %ld vaflags %d\n",
 	      attr->va_gen, attr->va_flags, attr->va_vaflags));
     myprintf(("      atime sec %d nsec %d\n",
-	      (int)attr->va_atime.ts_sec, (int)attr->va_atime.ts_nsec));
+	      (int)attr->va_atime.tv_sec, (int)attr->va_atime.tv_nsec));
     myprintf(("      mtime sec %d nsec %d\n",
-	      (int)attr->va_mtime.ts_sec, (int)attr->va_mtime.ts_nsec));
+	      (int)attr->va_mtime.tv_sec, (int)attr->va_mtime.tv_nsec));
     myprintf(("      ctime sec %d nsec %d\n",
-	      (int)attr->va_ctime.ts_sec, (int)attr->va_ctime.ts_nsec));
+	      (int)attr->va_ctime.tv_sec, (int)attr->va_ctime.tv_nsec));
 }
 
 /* How to print a ucred */
