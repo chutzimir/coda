@@ -261,9 +261,8 @@ static bool MorePackets()
  * for FIONREAD, so this should work too. --JH */
 #if defined(FIONREAD)
 	int amount_ready = 0;
-	if (ioctl(rpc2_RequestSocket, FIONREAD, &amount_ready) == 0 &&
-	    amount_ready != 0)
-	    return(TRUE);
+	if (ioctl(rpc2_RequestSocket, FIONREAD, &amount_ready) == 0)
+	    return (amount_ready != 0);
 #endif
 	tv.tv_sec = tv.tv_usec = 0;	    /* do polling select */
 	FD_ZERO(&rmask);
