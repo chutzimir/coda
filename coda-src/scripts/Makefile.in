@@ -79,7 +79,7 @@ SCRIPTS := $(UPDATE-SCRIPTS) $(VOL-SCRIPTS) $(SUP-SCRIPTS)\
 # Note scripts that are entirely CMU dependent have been left out
 
 CSBINS = newvenus vutil $(VENUS-SETUP)
-SSBINS = $(BACKUP-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCIPTS) $(VOL-SCRIPTS) $(VICE-SETUP)
+SSBINS = $(BACKUP-SCRIPTS) $(VICE-SCRIPTS) $(REINIT-SCRIPTS) $(VOL-SCRIPTS) $(VICE-SETUP)
 
 include $(MAKDIR)/Makerules
 
