@@ -165,7 +165,7 @@ extern free_block_t  *RecoverableHeapHighAddress;
 extern RVM_MUTEX heap_lock;
 
 extern int tracing_rds;
-extern void (*rds_trace_printer) ();
+extern void (*rds_trace_printer) (char *, ...);
 
 #define HEAP_INIT   		(RecoverableHeapStartAddress != 0)
 #define RDS_VERSION_STAMP	(RecoverableHeapStartAddress->version)

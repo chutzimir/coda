@@ -185,12 +185,12 @@ static rvm_return_t fork_daemon(log)
     log_daemon_t    *daemon = &log->daemon; /* truncation daemon descriptor */
 
     /* create daemon thread */
-    if (daemon->thread == NULL)
+    if (daemon->thread == (cthread_t)NULL)
         {
         daemon->state = rvm_idle;
         mutex_init(&daemon->lock);
-        daemon->thread = cthread_fork(log_daemon,log);
-        if (daemon->thread == NULL)
+        daemon->thread = cthread_fork((void *)log_daemon,log);
+        if (daemon->thread == (cthread_t)NULL)
             return RVM_ELOG;
         }
 
@@ -205,7 +205,7 @@ static rvm_return_t join_daemon(log)
     daemon_state_t  state;              /* daemon control state code */
     rvm_return_t    retval = RVM_SUCCESS;
 
-    if (daemon->thread != NULL)
+    if (daemon->thread != (cthread_t)NULL)
         {
         /* terminate the daemon */
         CRITICAL(daemon->lock,          /* begin daemon lock crit sec */
@@ -219,7 +219,7 @@ static rvm_return_t join_daemon(log)
 
         /* wait for daemon thread to terminate */
         retval = (rvm_return_t)cthread_join(daemon->thread);
-        daemon->thread = NULL;
+        daemon->thread = (cthread_t)NULL;
         }
     daemon->truncate = 0;
 
@@ -239,7 +239,7 @@ static rvm_return_t set_truncate_options(log,rvm_options)
     /* set truncation threshold if parameter within range and
        thread package installed */
     if ((rvm_options->truncate > 0) && (rvm_options->truncate <= 100)
-        && (cthread_self() != NULL))
+        && (cthread_self() != (cthread_t)NULL))
         {
         /* update daemon thread */
         retval = fork_daemon(log);      /* create daemon if necessary */

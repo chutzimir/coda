@@ -260,7 +260,7 @@ rvm_return_t rvm_query(rvm_options,rvm_region)
                                                = tid->uname;
                     rvm_options->tid_array[rvm_options->
                                            n_uncommit-1].tid
-                                               = (rvm_length_t)tid;
+                                               = tid;
                     }
                 }
 err_exit:;

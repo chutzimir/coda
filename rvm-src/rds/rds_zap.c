@@ -60,7 +60,7 @@ rds_zap_heap(DevName, DevLength, startAddr, staticLength, heapLength, nlists, ch
 {
     rvm_region_def_t regions[2], *loadregions;
     rvm_tid_t *tid;
-    int n_loadregions;
+    unsigned long n_loadregions;
     rvm_return_t rvmret;
     
     regions[0].length = heapLength;

@@ -44,7 +44,7 @@ static char *rcsid = "$Header$";
 #include <rvm_segment.h>
 
 int tracing_rds = FALSE;
-void (*rds_trace_printer) ();
+void (*rds_trace_printer) (char *, ...);
     
 /*
  * Print out the current statistics

@@ -42,10 +42,10 @@ static char *rcsid = "$Header$";
 #include <lock.h>
 
 #ifdef RVM_LWPPID
-extern int rvm_lwppid;
+extern PROCESS rvm_lwppid;
 #else  RVM_LWPPID
 #define RVM_LWPPID
-int                     rvm_lwppid;     /* LWP process id */
+PROCESS                     rvm_lwppid;     /* LWP process id */
 #endif RVM_LWPPID
 
 #ifndef MACRO_BEGIN
@@ -63,12 +63,12 @@ int                     rvm_lwppid;     /* LWP process id */
 #define	MUTEX_INITIALIZER		{0, 0, 0, 0}
 /* Supported cthread definitions */
 
-#define cthread_t			long
+#define cthread_t			PROCESS
 #define cthread_fork(fname, arg)	(LWP_CreateProcess((fname), STACKSIZE, \
 					  LWP_NORMAL_PRIORITY,	\
 					  (char *)arg, 		\
 					  (char *)"rvm_thread",	\
-					  (PROCESS *)&rvm_lwppid), \
+					  &rvm_lwppid), \
                                          rvm_lwppid)
 #define cthread_join(foo)		(0)
 #define cthread_init()			MACRO_BEGIN \
@@ -95,7 +95,7 @@ int                     rvm_lwppid;     /* LWP process id */
 #define mutex_clear(m)			/* nop */
 #define LOCK_FREE(m)			(!WriteLocked(&(m)))
 #define cthread_self() \
-    (LWP_CurrentProcess((PROCESS *)&rvm_lwppid), rvm_lwppid)
+    (LWP_CurrentProcess(&rvm_lwppid), rvm_lwppid)
 /* synchronization tracing definitions of lock/unlock */
 
 #ifdef DEBUGRVM
