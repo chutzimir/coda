@@ -284,7 +284,7 @@ switch (RvmType) {							    \
 	    LogMsg(0, 0, stdout, "Setting Rvm Truncate threshhold to %d.\n", _Rvm_Truncate); \
 	    options->truncate = _Rvm_Truncate;				    \
 	} 								    \
-	sbrk(0x20000000 - sbrk(0)); /* for garbage reasons. */		    \
+	sbrk((void *)(0x20000000 - (int)sbrk(0))); /* for garbage reasons. */		    \
 	stackLimit.rlim_cur = CODA_STACK_LENGTH;			    \
 /*	setrlimit(RLIMIT_STACK, &stackLimit);*/	/* Set stack growth limit */ \
         if ((err = RVM_INIT(options)) != RVM_SUCCESS)	/* Start rvm */	    \
