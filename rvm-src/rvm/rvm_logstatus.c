@@ -470,18 +470,26 @@ rvm_return_t do_log_options(log_ptr,rvm_options)
         
         /* build log descriptor */
         if ((retval=open_log(log_dev,&log,NULL,rvm_options))
-            != RVM_SUCCESS) return retval;
+            != RVM_SUCCESS) {
+		printf("open_log failed.\n");
+		return retval;
+	}
         /* do recovery processing for log */
         log->in_recovery = rvm_true;
         if ((retval = log_recover(log,&log->status.tot_recovery,
-                                  rvm_false,RVM_RECOVERY)) != RVM_SUCCESS)
-            return retval;
+                                  rvm_false,RVM_RECOVERY)) != RVM_SUCCESS) {
+		printf("log_recover failed.\n");
+		return retval;
+	}
 
         /* pre-load write buffer with new tail sector */
         if (log->dev.raw_io)
             {
             CRITICAL(log->dev_lock,retval=preload_wrt_buf(log));
-            if (retval != RVM_SUCCESS) return retval;
+            if (retval != RVM_SUCCESS) {
+		    return retval;
+		    printf("preload_wrt_buff failed\n");
+	    }
             }
         }
 

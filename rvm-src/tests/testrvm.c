@@ -608,7 +608,9 @@ rvm_bool_t test_complex_range_commit(tid)
 
     return rvm_false;
     }
-main()
+
+
+main()
     {
     rvm_return_t        retval;         /* rvm return code */
     long                i;              /* loop counter */

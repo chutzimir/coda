@@ -121,7 +121,7 @@ rvm_load_segment(DevName, DevLength, options, nregions, regions)
 	    if (err != RVM_SUCCESS)
 		return err; 	/* Some error condition exists, abort */
 
-/*    printf("Just mapped in region (%x,%d)\n",region->vmaddr, region->length); */
+	    printf("Just mapped in region (%x,%d)\n",region->vmaddr, region->length);
 	}
 
     /* Clean up, we no longer need the header region */

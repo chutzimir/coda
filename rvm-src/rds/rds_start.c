@@ -104,8 +104,9 @@ rds_load_heap(DevName, DevLength, static_addr, err)
     rvmret = rvm_load_segment(DevName, DevLength, NULL,
                               &NRegionDefs, &RegionDefs);
     if (rvmret != RVM_SUCCESS) {
-	(*err) = (int) rvmret;
-	return -1;
+	    printf("Error rvm_load_segment returns %d\n", rvmret);
+	    (*err) = (int) rvmret;
+	    return -1;
     }
 
     if (NRegionDefs != 2) {
@@ -117,15 +118,6 @@ rds_load_heap(DevName, DevLength, static_addr, err)
     (*static_addr) = (char *)RegionDefs[1].vmaddr;
 
     rds_start_heap(RegionDefs[0].vmaddr, err);
-
-    /* God only knows why this is here. */
-/*
-    if (!rds_testsw) {
-        free(RegionDefs);
-        RegionDefs = NULL;
-	return -1;
-    }
-*/
 
     return 0;
 }

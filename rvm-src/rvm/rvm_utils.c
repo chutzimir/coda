@@ -368,7 +368,11 @@ long init_unames()
     long            retval;
 
     retval= gettimeofday(&new_uname,(struct timezone *)NULL);
-    if (retval != 0) return retval;
+    if ( retval ) {
+	    printf("init_unames: retval %d\n");
+	    perror("init_names:");
+	    return retval;
+    }
     
     CRITICAL(uname_lock,
         {

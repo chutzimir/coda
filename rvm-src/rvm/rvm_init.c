@@ -109,19 +109,24 @@ rvm_return_t rvm_initialize(char *rvm_version, rvm_options_t *rvm_options)
         if ((init_utils()) != 0)
             {
             retval =  RVM_EIO;          /* can't get time stamp */
+	    printf("Error in init_utils\n");
             goto err_exit;
             }
         init_map_roots();               /* mapping list and tree */
         init_log_list();                /* log device list */
 
         /* process options */
-        if ((retval=do_rvm_options(rvm_options)) != RVM_SUCCESS)
-            goto err_exit;
+        if ((retval=do_rvm_options(rvm_options)) != RVM_SUCCESS) {
+		printf("do_rvm_options failed\n");
+		goto err_exit;
+	}
 
         /* take care of default log */
         if (default_log == NULL) {
-            if ((retval=do_log_options(NULL,NULL)) != RVM_SUCCESS)
-		goto err_exit;
+		if ((retval=do_log_options(NULL,NULL)) != RVM_SUCCESS) {
+			printf("do_rvm_options failed\n");
+			goto err_exit;
+		}
 	}
         inited = rvm_true;              /* all done */
 
