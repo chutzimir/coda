@@ -50,7 +50,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
+#include <sys/param.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -120,6 +120,9 @@ int MAXTS = UNSET_MAXTS;
 #ifdef MACH
 PRIVATE const char *VM_RVGADDR = (char *)0x00c00000;
 PRIVATE const char *VM_RDSADDR = (char *)0x01c00000;
+#elif defined(NetBSD1_3)
+PRIVATE const char *VM_RVGADDR = (char *)0x50000000;
+PRIVATE const char *VM_RDSADDR = (char *)0x51000000;
 #elif defined(__BSD44__)
 PRIVATE const char *VM_RVGADDR = (char *)0x40000000;
 PRIVATE const char *VM_RDSADDR = (char *)0x41000000;
