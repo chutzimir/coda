@@ -1644,6 +1644,10 @@ void volent::CancelStores(ViceFid *Fid) {
 	    }
 	} while (cancellation);
     , MAXFP)
+
+    /* we may have cancelled the last record. */
+    if (CML.count() == 0)
+        CML.owner = UNSET_UID;
 }
 
 
