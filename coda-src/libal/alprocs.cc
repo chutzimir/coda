@@ -687,7 +687,7 @@ int AL_Initialize(IN char *Version, IN char *pdbFile, IN char *pcfFile)
 	(flock(fileno(pfd), LOCK_SH) < 0)	||
 	(fstat(fileno(pfd), &PdbStatBuf) < 0))
 	    {
-	    perror("AL_Initialize");
+	    perror("AL_Initialize (opening vice.pdb file)");
 	    fclose(pfd);
 	    return(-1);
 	    }
