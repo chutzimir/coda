@@ -69,16 +69,26 @@ extern "C" {
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
+#ifdef LINUX
+#include <linux/if_ether.h>
+#include <stdlib.h>
+#include <unistd.h>
+#else
 #include <netinet/if_ether.h>
+#endif
 #include <nlist.h>
 /* nlist.h defines this function but it isnt getting included because it is
    guarded by an ifdef of CMU which isnt getting defined.  XXXXX pkumar 6/13/95 */ 
 extern int nlist(const char*, struct nlist[]);
-    
+
+#ifndef LINUX    
 #include <sys/dk.h>
+#endif
 #include <strings.h>
 #include <sysent.h>
+#ifdef __MACH__
 #include <mach.h>
+#endif
 
 #include <lwp.h>
 #include <rpc2.h>
@@ -1009,6 +1019,7 @@ PRIVATE void SetVolumeStats(ViceStatistics *stats)
 
 PRIVATE void SetSystemStats(ViceStatistics *stats)
 {
+#ifdef __MACH__
     struct	timeval	time;
     static	int	kmem = 0;
 /*  static	struct	mapent	*swapMap = 0;
@@ -1079,7 +1090,7 @@ PRIVATE void SetSystemStats(ViceStatistics *stats)
     for(i = 0; i < DK_NDRIVE; i++) {
 	stats->TotalIO += xfer[i];
     }
-  
+#endif  
 /*
  * Mach doesn't do swapping.  Later we should use an alternative means of finding
  * memory usage and process size; for now we will consider them 0.
