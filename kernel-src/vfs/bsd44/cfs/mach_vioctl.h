@@ -9,9 +9,15 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.2  1996/01/02 16:57:27  bnoble
- * Added support for Coda MiniCache and raw inode calls (final commit)
+ * Revision 1.3  1997/12/05 10:39:31  rvb
+ * Read CHANGES
  *
+ * Revision 1.2.34.1  97/11/12  12:39:54  rvb
+ * First cut at prototype
+ * 
+ * Revision 1.2  96/01/02  16:57:27  bnoble
+ * Added support for Coda MiniCache and raw inode calls (final commit)
+ * 
  * Revision 1.1.2.1  1995/12/20 01:57:54  bnoble
  * Added CFS-specific files
  *

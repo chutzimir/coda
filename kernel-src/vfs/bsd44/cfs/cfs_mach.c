@@ -13,11 +13,17 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.3  1997/01/13 17:11:02  bnoble
+ * Revision 1.4  1997/12/05 10:39:12  rvb
+ * Read CHANGES
+ *
+ * Revision 1.3.14.1  97/11/12  12:09:35  rvb
+ * reorg pass1
+ * 
+ * Revision 1.3  97/01/13  17:11:02  bnoble
  * Coda statfs needs to return something other than -1 for blocks avail. and
  * files available for wabi (and other windowsish) programs to install
  * there correctly.
- *
+ * 
  * Revision 1.2  1996/01/02 16:56:49  bnoble
  * Added support for Coda MiniCache and raw inode calls (final commit)
  *
