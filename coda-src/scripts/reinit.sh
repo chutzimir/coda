@@ -1,4 +1,4 @@
-#!/usr/misc/bin/ksh 
+#!/bin/sh
 #ifndef _BLURB_
 #define _BLURB_
 #/*

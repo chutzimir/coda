@@ -115,6 +115,9 @@ extern void PrintTimeStamp(FILE *fout);
 int UtilHostEq(char *name1, char *name2);
 char *hostname(char *);
 
+  /* Process releted utilities */
+void UtilDetach();
+
 /* Useful locking macros */
 #define U_wlock(b)     ObtainWriteLock(&((b)->lock))
 #define U_rlock(b)    ObtainReadLock(&((b)->lock))
@@ -143,3 +146,6 @@ long int gethostid(void);
 #ifdef __cplusplus
 }
 #endif __cplusplus
+
+
+

@@ -167,6 +167,7 @@ int main(int argc, char **argv)
     struct stat buff;
     FILE *file; 
 
+    UtilDetach();
     InitGlobals(argc, argv);
     InitLog();
     InitSignals();
@@ -299,7 +300,7 @@ PRIVATE void InitSignals()
     {
     FILE *file;
     (void) signal(SIGHUP, (void (*)(int))ResetDebug);
-    (void) signal(SIGTSTP, (void (*)(int))SetDebug);
+    (void) signal(SIGUSR1, (void (*)(int))SetDebug);
 #ifndef __CYGWIN32__
     (void) signal(SIGXCPU, (void (*)(int))CheckSignal);
 #endif

@@ -78,8 +78,8 @@ if ($NSERVERS == 0 || $NSERVERS > $MAXSERVERS) then
 endif
 set N=0
 foreach SERVER ($SERVERS)
-	if ($SERVER != `awk ' $2 ~/^'$SERVER'$/  {print $2}' /vice/db/hosts`) then
-		echo Server $SERVER not in host file
+	if ($SERVER != `awk ' $1 ~/^'$SERVER'$/  {print $1}' /vice/db/servers`) then
+		echo Server $SERVER not in servers file
 		exit
 	endif
 	@ N++

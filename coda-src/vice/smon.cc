@@ -49,9 +49,6 @@ extern "C" {
 
 #include <sys/types.h>
 #include <sys/time.h>
-#ifdef __MACH__
-#include <sys/dk.h>
-#endif
 #include <netinet/in.h>
 #include <errno.h>
 #if defined(__GLIBC__) && __GLIBC__ >= 2

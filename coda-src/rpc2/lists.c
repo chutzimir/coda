@@ -124,22 +124,28 @@ struct LinkEntry *rpc2_MoveEntry(fromPtr, toPtr, p, fromCount, toCount)
 {
     struct LinkEntry *victim;
 
-    if (p == NULL) victim = *fromPtr;	
-    else victim = p;
+    if (p == NULL) 
+	    victim = *fromPtr;	
+    else 
+	    victim = p;
     assert(victim->Qname == fromPtr);    /* sanity check for list corruption */
 
     /* first remove element from the first list */
-    if (victim == *fromPtr) *fromPtr = victim->NextEntry;
+    if (victim == *fromPtr) 
+	    *fromPtr = victim->NextEntry;
     remque(victim);
-    if (victim == *fromPtr) *fromPtr = NULL;
+    if (victim == *fromPtr) 
+	    *fromPtr = NULL;
     (*fromCount)--;
 
     /* make victim a singleton list */
     victim->NextEntry = victim->PrevEntry = victim;
 
     /* then insert into second list */
-    if (*toPtr == NULL) *toPtr = victim;
-    else insque(victim, (*toPtr)->PrevEntry);
+    if (*toPtr == NULL) 
+	    *toPtr = victim;
+    else 
+	    insque(victim, (*toPtr)->PrevEntry);
 	/* PrevEntry because semantics of insque() causes non-FIFO queue */
     victim->Qname = toPtr;
     (*toCount)++;

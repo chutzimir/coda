@@ -278,3 +278,27 @@ int UtilHostEq(char *name1, char *name2)
 	return 0;
 
 }
+
+void UtilDetach()
+{
+    pid_t child; 
+    int rc;
+
+    child = fork();
+    
+    if ( child < 0 ) { 
+	fprintf(stderr, "Cannot fork: exiting.\n");
+	exit(1);
+    }
+
+    if ( child != 0 ) /* parent */
+	exit(0); 
+
+    rc = setsid();
+
+    if ( rc < 0 ) {
+	fprintf(stderr, "Error detaching from terminal.\n");
+	exit(1);
+    }
+
+}

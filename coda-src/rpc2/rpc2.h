@@ -193,10 +193,10 @@ Fatal Errors
      code == RPC2_BADMGROUP)
 
 
-/*
-Universal opcode values:  opcode values equal to or less than 0 are reserved.  Values greater than 0
-are  usable by mutual agreement between clients and servers.  
-*/
+/* Universal opcode values: opcode values equal to or less than 0 are
+reserved.  Values greater than 0 are usable by mutual agreement
+between clients and servers.  */
+
 #define RPC2_INIT1OPENKIMONO	-2	/* Begin a new connection with security level RPC2_OPENKIMONO */
 #define RPC2_INIT1AUTHONLY 	-3	/* Begin a new connection with security level RPC2_AUTHONLY */
 #define RPC2_INIT1HEADERSONLY	-4	/* Begin a new connection with security level RPC2_HEADERSONLY */

@@ -46,7 +46,7 @@ cd /vice/vol/remote
 #  - the listed servers (if argc > 1) 
 
 if [ $#  = 0 ]; then
-	SERVERS=`awk '{ print $2 }' /vice/db/hosts`
+	SERVERS=`awk '{ print $1 }' /vice/db/servers`
 else
 	SERVERS=$*
 fi

@@ -63,9 +63,7 @@ static char *rcsid = "$Header$";
  */
 
 
-#ifndef lint
-static char sccsid[] = "@(#)compress.c	@(#)compress.c	5.9 (Berkeley) 5/11/86";
-#endif not lint
+
 
 /* 
  * Compress - data compression program 

@@ -126,6 +126,8 @@ int main(int argc, char **argv)
     RPC2_SubsysIdent server;
     SFTP_Initializer sftpi;
 
+    UtilDetach();
+
     strcpy(pname,"coda_udpsrv");
 
     for (i = 1; i < argc; i++) {
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
     }
 
     (void) signal(SIGHUP, (void (*)(int))ResetDebug);
-    (void) signal(SIGTSTP, (void (*)(int))SetDebug);
+    (void) signal(SIGUSR1, (void (*)(int))SetDebug);
     (void) signal(SIGQUIT, (void (*)(int))Terminate);
     
     if (chdir(prefix)) {
