@@ -7,7 +7,7 @@
 #                            Coda File System
 #                               Release 5
 # 
-#           Copyright (c) 1987-1999 Carnegie Mellon University
+#           Copyright (c) 1987-2003 Carnegie Mellon University
 #                   Additional copyrights listed below
 # 
 # This  code  is  distributed "AS IS" without warranty of any kind under
@@ -16,7 +16,6 @@
 # listed in the file CREDITS.
 # 
 #                         Additional copyrights
-#                            none currently
 # 
 #*/
 #  Coda top level Makefile
@@ -36,7 +35,7 @@ III =  util vicedep dir
  IV =  al portmapper
   V =  partition
 
-  VI =  auth2 vv
+  VI =  auth2 vv lka
  VII =  vol librepair venus
 VIII =  repair sidekick
   IX =  resolution volutil vtools
