@@ -49,8 +49,8 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 # presto changeo!
-LIBDIR := $(LIBSPECIAL)
 INCLDIR := $(INCLSPECIAL)
+SHOB_LIB_DIR := $(SHOB_LIB_SPECIAL)
 
 LIBRARIES = liboldlwp.a
 HEADERS   = lock.h lwp.h lwp.camelot.h preempt.h timer.h cargs.h

@@ -51,8 +51,8 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 # presto changeo!
-LIBDIR := $(LIBSPECIAL)
 INCLDIR := $(INCLSPECIAL)
+SHOB_LIB_DIR := $(SHOB_LIB_SPECIAL)
 
 LIBRARIES = libcs.a
 HEADERS   = ci.h del.h libcs.h

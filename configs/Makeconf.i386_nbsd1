@@ -34,9 +34,7 @@
 # 
 
 # the following may need editing depending on your preferences
-BINDIR = $(exec_prefix)/bin
-SBINDIR = $(exec_prefix)/sbin
-MANDIR = $(exec_prefix)/man
+SBINDIR = $(prefix)/etc
 
 MACHINE_FLAGS = -D__BSD44__
 SHORTSYS      = bsd44
@@ -58,7 +56,3 @@ LIBTHREADS    =
 LIBMACH       = 
 
 #ALPHACI = $(SCRIPTDIR)/alphaci
-
-BINDIR := $(exec_prefix)/bin
-SBINDIR := $(exec_prefix)/bin
-MANDIR := $(exec_prefix)/man
