@@ -45,7 +45,7 @@ set SRVPIDFILE = "/vice/srv/pid"
 
 set SCMBINS=(purgevol purgevol_rep createvol createvol_rep bldvldb.sh)
 
-set SRVBINS=(auth2 authmon printvrdb srv updateclnt updatemon updatesrv volutil)
+set SRVBINS=(auth2 authmon printvrdb srv updateclnt updfetch norton updatemon updatesrv volutil)
 
 set SPCLBINS=( rds_test rdsinit rvmutl)
 
@@ -69,7 +69,7 @@ mkdir bin
 echo -n "copying bin files: "
 foreach f ($SRVBINS ) 
     echo -n $f " "
-    copy $BaseDir/bin/$f bin
+    cp -p $BaseDir/bin/$f bin
 end
 echo ""
 
@@ -77,7 +77,7 @@ if (`cat /.hostname` == `cat /.scm`) then
     echo -n "copying scm files: "
     foreach f ($SCMBINS)
         echo -n $f " "
-        copy $BaseDir/bin/$f bin
+        cp -p $BaseDir/bin/$f bin
     end
 endif
 echo ""
@@ -85,17 +85,17 @@ echo ""
 echo -n "copying special binaries(RVM): "
 foreach f ($SPCLBINS ) 
     echo -n $f " "
-    copy $BaseDir/bin/$f bin
+    cp -p $BaseDir/bin/$f bin
 end
 
 echo ""
 
 echo "copying old startserver script"
-/bin/cp /vice/bin.old/startserver /vice/bin/startserver
+/bin/cp -p /vice/bin.old/startserver /vice/bin/startserver
 
 echo "copying old restartserver script"
-/bin/cp /vice/bin.old/restartserver /vice/bin
+/bin/cp -p /vice/bin.old/restartserver /vice/bin
 
 echo "copying old startfromboot script"
-/bin/cp /vice/bin.old/startfromboot /vice/bin
+/bin/cp -p /vice/bin.old/startfromboot /vice/bin
 

@@ -30,7 +30,6 @@
 #Mellon the rights to redistribute these changes without encumbrance.
 #*/
 #
-#static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
