@@ -80,7 +80,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 
 /* Stack size for IOMGR process and processes instantiated to handle signals */
-#define STACK_SIZE	0x1000  /* 4K */
+#define STACK_SIZE	0x4000
                         
 /********************************\
 * 				 *
