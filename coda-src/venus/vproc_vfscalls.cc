@@ -472,7 +472,12 @@ FreeLocks:
 
 	/* Make a "fake" vattr block for the inconsistent object. */
 	va_init(vap);
+#ifndef __linux__
 	vap->va_mode = 0444 | FTTOVT(SymbolicLink);
+#else
+	vap->va_mode = 0444;
+	vap->va_type = FTTOVT(SymbolicLink);
+#endif
 	vap->va_uid = (short)V_UID;
 	vap->va_gid = (short)V_GID;
 	vap->va_fsid = 1;
