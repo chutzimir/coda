@@ -39,7 +39,6 @@ extern "C" {
 
 #ifdef __linux__
 #include <netinet/in.h>
-#include <sys/dirent.h>
 #endif __linux__
 
 #include <sys/param.h>

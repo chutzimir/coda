@@ -880,6 +880,10 @@ long FidToNodeid(ViceFid *fid) {
 #endif 
 
 #ifdef __linux__
+    if (fid->Vnode == ROOT_VNODE && fid->Unique == ROOT_UNIQUE) {
+	LOG(0, ("FidToNodeid: called for volume root (%x)!!!\n", 
+		fid->Volume));
+    }
     return coda_f2i(fid);
 #endif
 }
