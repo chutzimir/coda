@@ -208,7 +208,8 @@ long rpc2_RecvPacket(IN long whichSocket, OUT RPC2_PacketBuffer *whichBuff,
     
     /* WARNING: only Internet works; no warnings */
     fromlen = sizeof(sa);
-    rc = recvfrom(whichSocket, &whichBuff->Header, len, 0, &sa, &fromlen);
+    rc = recvfrom(whichSocket, &whichBuff->Header, len, 0, 
+        (struct sockaddr *) &sa, &fromlen);
 
     if (rc < 0) {
 	    say(10, RPC2_DebugLevel, "Error in recvf from: errno = %d\n", errno);
