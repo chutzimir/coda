@@ -465,7 +465,7 @@ char *Parser_getstr(const char *prompt, const char *deft, char *res,
     theprompt = malloc(size);
     assert(theprompt);
 
-    sprintf(theprompt, "%s, [%s]: ", prompt, deft);
+    sprintf(theprompt, "%s [%s]: ", prompt, deft);
 
     line  = readline(theprompt);
     free(theprompt);
