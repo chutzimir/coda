@@ -49,6 +49,8 @@ machine_inodefs   = mach
 LIBTHREADS    = /usr/mach/lib/libthreads.a
 LIBMACH       = /usr/mach/lib/libmach.a
 
+LEX 	      = flex
+
 # -- PLUMBERs -- not built for Linux and netbsd yet
 LIBPLUMBER    = $(LIBSPECIAL)/libplumber.a
 LIBNEWPLUMBER = $(LIBSPECIAL)/libnewplumb.a
