@@ -180,7 +180,7 @@ struct command cmdarray[] =
 	   "Expose replicas of inc. objects",
 	   NULL
      	},
-	{"checkservers", NULL, CheckServers, 
+	{"checkservers", "cs", CheckServers, 
 	    "cfs checkservers <servernames>",
 	    "Check up/down status of servers",
 	    NULL
