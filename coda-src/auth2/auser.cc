@@ -237,6 +237,7 @@ int U_BindToServer(char *DefAuthHost, char *uName, char *uPasswd, RPC2_Handle *R
 
 PRIVATE int TryBinding(char *viceName, char *vicePasswd, char *AuthHost, RPC2_Handle *RPCid)
 {
+    RPC2_BindParms bp;
     RPC2_HostIdent hident;
     RPC2_PortalIdent pident;
     RPC2_SubsysIdent sident;
@@ -255,8 +256,14 @@ PRIVATE int TryBinding(char *viceName, char *vicePasswd, char *AuthHost, RPC2_Ha
     cident.SeqBody = (RPC2_ByteSeq)viceName;
     bzero(hkey, RPC2_KEYSIZE);
     bcopy(vicePasswd, hkey, RPC2_KEYSIZE);
-    rc = RPC2_Bind(RPC2_SECURE, RPC2_XOR, &hident, &pident, &sident, NULL,
-		   &cident, &hkey, RPCid);
+
+    bp.SecurityLevel = RPC2_SECURE;
+    bp.EncryptionType = RPC2_XOR;
+    bp.SideEffectType = 0;
+    bp.ClientIdent = &cident;
+    bp.SharedSecret = &hkey;
+
+    rc = RPC2_NewBinding(&hident, &pident, &sident, &bp, RPCid);
 
     return (rc);
 }
