@@ -53,7 +53,7 @@ PROCESS                     rvm_lwppid;     /* LWP process id */
 #define MACRO_END			} while(0)
 #endif MACRO_BEGIN
 
-#define STACKSIZE	1024 * 8
+#define STACKSIZE	1024 * 12
 #define BOGUSCODE 	(BOGUS_USE_OF_CTHREADS)  /* force compilation error */
 
 #define RVM_MUTEX			struct Lock
