@@ -421,7 +421,7 @@ int rec_bstree::IsOrdered() {
 
 
 void rec_bstree::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -497,7 +497,7 @@ rec_bstree *rec_bsnode::tree() {
 
 
 void rec_bsnode::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

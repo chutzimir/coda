@@ -305,7 +305,7 @@ int bitmap::operator!=(bitmap& b) {
 }
 
 void bitmap::print() {
-    print(stdout);
+    print(stderr);
 }
 void bitmap::print(FILE *fp) {
     print(fileno(fp));

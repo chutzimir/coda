@@ -210,7 +210,7 @@ int olist::IsMember(olink *p) {
 
 
 void olist::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -300,7 +300,7 @@ olink::~olink() {
 
 
 void olink::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

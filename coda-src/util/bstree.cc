@@ -364,7 +364,7 @@ int bstree::IsOrdered() {
 
 
 void bstree::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -424,7 +424,7 @@ bstree *bsnode::tree() {
 
 
 void bsnode::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

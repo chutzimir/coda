@@ -185,7 +185,7 @@ int ohashtab::bucket(void *key) {
 
 
 void ohashtab::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

@@ -233,7 +233,7 @@ int rec_dhashtab::bucket(void *key) {
 }
 
 void rec_dhashtab::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

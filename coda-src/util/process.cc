@@ -91,7 +91,7 @@ process::~process() {
 
 
 void process::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

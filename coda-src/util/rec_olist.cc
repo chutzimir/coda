@@ -211,7 +211,7 @@ int rec_olist::IsMember(rec_olink *p) {
 
 
 void rec_olist::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -319,7 +319,7 @@ void rec_olink::DeInit() {
 
 
 void rec_olink::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

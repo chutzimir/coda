@@ -220,7 +220,7 @@ int rec_ohashtab::bucket(void *key) {
 
 
 void rec_ohashtab::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

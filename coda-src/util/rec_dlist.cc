@@ -286,7 +286,7 @@ int rec_dlist::IsMember(rec_dlink *p) {
 
 
 void rec_dlist::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -363,7 +363,7 @@ void rec_dlink::Init() {
     
 
 void rec_dlink::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

@@ -190,7 +190,7 @@ int dhashtab::bucket(void *key) {
 }
 
 void dhashtab::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

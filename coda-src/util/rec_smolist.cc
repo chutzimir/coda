@@ -148,7 +148,7 @@ int rec_smolist::IsEmpty() {
 }
 
 void rec_smolist::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -203,7 +203,7 @@ rec_smolink::~rec_smolink() {
 }
 
 void rec_smolink::print() {
-    print(stdout);
+    print(stderr);
 }
 
 

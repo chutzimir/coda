@@ -258,7 +258,7 @@ int dlist::IsMember(dlink *p) {
 
 
 void dlist::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
@@ -333,7 +333,7 @@ dlink::~dlink()
 
 
 void dlink::print() {
-    print(stdout);
+    print(stderr);
 }
 
 
