@@ -931,8 +931,8 @@ void MultiProbe(int HowMany, RPC2_Handle *Handles) {
     RPC2_Integer   *usecs_bufs =
 	(RPC2_Integer *)malloc(HowMany * sizeof(RPC2_Integer));
     ASSERT(usecs_bufs);
-    for (int i = 0; i < HowMany; i++)
-	usecs_ptrs[i] = &usecs_bufs[i]; 
+    for (int ii = 0; ii < HowMany; ii++)
+	usecs_ptrs[ii] = &usecs_bufs[ii]; 
 
     /* Make the RPC call. */
     MarinerLog("fetch::Probe\n");
