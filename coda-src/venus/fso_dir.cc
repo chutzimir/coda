@@ -147,10 +147,10 @@ PRIVATE void CVWriteEntry(char *name, ino_t inode, CVDescriptor *cvd) {
     dir.d_namlen = strlen(name);
 
     dir.d_fileno = inode;
-    dir.d_type = (u_int8_t) (cvd->vType == Directory ? DT_DIR : 
-			     (cvd->vType == File ? DT_REG : 
-			      (cvd->vType == SymbolicLink ? DT_LNK : 
-			       DT_UNKNOWN)));
+    dir.d_type = (u_int8_t) (cvd->vType == Directory ? CDT_DIR : 
+			     (cvd->vType == File ? CDT_REG : 
+			      (cvd->vType == SymbolicLink ? CDT_LNK : 
+			       CDT_UNKNOWN)));
 
     dir.d_reclen = DIRSIZ(&dir);
     strcpy(dir.d_name, name);
