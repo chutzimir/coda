@@ -66,4 +66,4 @@ rm -f /vice/src/CRASH
 echo You need to edit this script to set the parameters appropriately\!
 
 rm /vice/srv/pid
-
+rm /vice/srv/CRASH
