@@ -1212,7 +1212,8 @@ PRIVATE void Dispatcher()		/* Lightweight process dispatcher */
     if (PRE_Block != 1) Abort_LWP("PRE_Block not 1");
 
     old_cpptr = lwp_cpptr;
-    gettimeofday(&old_cpptr->lastReady, 0);	/* back in queue */
+    if (old_cpptr)
+        gettimeofday(&old_cpptr->lastReady, 0);	/* back in queue */
     lwp_cpptr = runnable[i].head;
     Cont_Sws++; /* number of context switches, for statistics */
 
