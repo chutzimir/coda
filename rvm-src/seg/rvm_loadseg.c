@@ -74,6 +74,7 @@ rvm_load_segment(DevName, DevLength, options, nregions, regions)
     RVM_ZERO_OFFSET(hdr_region->offset);
     hdr_region->length = RVM_SEGMENT_HDR_SIZE;
 
+    hdr_region->vmaddr = NULL;
     err = allocate_vm(&(hdr_region->vmaddr), hdr_region->length);
     if (err != RVM_SUCCESS)
 	return err;

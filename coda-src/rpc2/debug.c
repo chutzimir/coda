@@ -56,7 +56,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 */
 
 
-#ifdef RPC2DEBUG
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -68,6 +67,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include "se.h"
 #include "rpc2.private.h"
 #include "trace.h"
+
+#ifdef RPC2DEBUG
 
 /*----- Routines to aid in debugging -----*/
 

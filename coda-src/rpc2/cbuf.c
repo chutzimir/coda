@@ -55,11 +55,17 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-
-#ifdef RPC2DEBUG
 #include <stdio.h>
 #include <strings.h>
+#include <sys/time.h>
+
 #include "cbuf.h"
+#include <lwp.h>
+#include <timer.h>
+#include "rpc2.h"
+#include "rpc2.private.h"
+
+#ifdef RPC2DEBUG
 
 #ifdef CMUCS
 #include <stdlib.h>
