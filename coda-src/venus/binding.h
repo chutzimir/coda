@@ -82,9 +82,9 @@ class binding {
     operator=(binding&) { abort(); }	/* not supported! */
     ~binding();
 
-    IncrRefCount() { referenceCount++; }
-    DecrRefCount() { referenceCount--; }
-    GetRefCount() { return(referenceCount); }
+    void IncrRefCount() { referenceCount++; }
+    void DecrRefCount() { referenceCount--; }
+    int GetRefCount() { return(referenceCount); }
 
     void print() { print(stdout); }
     void print(FILE *fp) { fflush(fp); print(fileno(fp)); }

@@ -1883,8 +1883,10 @@ void fsdb::UpdateDisconnectedUseStatistics(volent *v) {
   }
 }
 
-void fsdb::OutputDisconnectedUseStatistics(char *StatisticsFileName) {
+void fsdb::OutputDisconnectedUseStatistics(char *StatisticsFileName, int discosSinceLastUse, int percentDiscosUsed, int totalDiscosUsed) {
     FILE *StatsFILE;
+    int totalUse;
+    double percentUse;
 
     StatsFILE = fopen(StatisticsFileName, "w");
     assert(StatsFILE != NULL);
@@ -1904,12 +1906,27 @@ void fsdb::OutputDisconnectedUseStatistics(char *StatisticsFileName) {
     while (f = next()) {
       assert(f);
 
-      fprintf(StatsFILE, "<%x.%x.%x> %d %d %d %d\n", 
-	      f->fid.Volume, f->fid.Vnode, f->fid.Unique,
-	      f->HoardPri,
-	      f->DisconnectionsSinceUse, 
-	      f->DisconnectionsUsed,
-	      f->DisconnectionsUnused);
+      totalUse = f->DisconnectionsUsed + f->DisconnectionsUnused;
+      LOG(0, ("%d + %d = %d\n", 
+	      f->DisconnectionsUsed, f->DisconnectionsUnused, totalUse));
+
+      if (totalUse == 0)
+	percentUse = (double)0;
+      else
+	percentUse = (double)(f->DisconnectionsUsed * (double)100) / (double)totalUse;
+      LOG(0, ("totalUse = %d ; percentUse = %g\n", totalUse, percentUse));
+
+      if (
+	  (f->DisconnectionsSinceUse > discosSinceLastUse) ||
+	  ((percentUse < percentDiscosUsed) && (totalUse >= totalDiscosUsed))
+	  ) {
+	fprintf(StatsFILE, "<%x.%x.%x> %d %d %d %d\n", 
+		f->fid.Volume, f->fid.Vnode, f->fid.Unique,
+		f->HoardPri,
+		f->DisconnectionsSinceUse, 
+		f->DisconnectionsUsed,
+		f->DisconnectionsUnused);
+      }
     }
   }
     VprocYield();

@@ -439,6 +439,7 @@ extern int NC_PriorityFN(bsnode *, bsnode *);
 /* hdb_daemon.c */
 extern void HDBD_Init();
 extern int HDBD_Request(hdbd_request, void *, vuid_t, vuid_t);
+extern long HDBD_GetNextHoardWalkTime();
 
 #define	PRINT_HDBDREQTYPE(type)\
     ((type) == HdbAdd ? "Add" :\

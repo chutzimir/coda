@@ -215,8 +215,8 @@ class userent {
     void LogReplacement(char *path, int status, int data)
         { admon.LogReplacement(path, status, data); }
 
-    int OutputUsageStatistics(vuid_t vuid, char *pathname)
-        { return(admon.OutputUsageStatistics(vuid, pathname)); }
+    int OutputUsageStatistics(vuid_t vuid, char *pathname, int discosSinceLastUse, int percentDiscosUsed, int totalDiscosUsed)
+        { return(admon.OutputUsageStatistics(vuid, pathname, discosSinceLastUse, percentDiscosUsed, totalDiscosUsed)); }
 
     void GetStatistics(AdviceCalls *calls, AdviceResults *results, AdviceStatistics *stats)
         { admon.GetStatistics(calls, results, stats); }

@@ -169,7 +169,7 @@ class adviceconn {
 
     int NewConnection(char *hostname, int port, int pgrp);
     int RegisterInterest(vuid_t vuid, long numEvents, InterestValuePair events[]);
-    int OutputUsageStatistics(vuid_t vuid, char *pathname);
+    int OutputUsageStatistics(vuid_t vuid, char *pathname, int discosSinceLastUse, int percentDiscosUsed, int totalDiscosUsed);
 
     void InitializeProgramLog(vuid_t vuid);
     void SwapProgramLog();
@@ -209,9 +209,9 @@ class adviceconn {
 
     int SendStoplightData()
         { return(stoplight_data); }
-    int SetStoplightData()
+    void SetStoplightData()
         { stoplight_data = 1; }
-    int UnsetStoplightData()
+    void UnsetStoplightData()
         { stoplight_data = 0; }
 
     int Getpgid();

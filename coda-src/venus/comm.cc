@@ -97,6 +97,7 @@ extern void SFTP_Activate (SFTP_Initializer *initPtr);
 
 /* interfaces */
 #include <vice.h>
+#include <adsrv.h>
 
 /* from vol */
 #include <errors.h>

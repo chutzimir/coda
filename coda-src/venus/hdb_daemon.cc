@@ -75,6 +75,8 @@ PRIVATE const int HdbWalkInterval = 10 * 60;
 PRIVATE const int HDBDaemonStackSize = 65536;
 PRIVATE const int HDBDaemonPriority = LWP_NORMAL_PRIORITY-1;
 
+PRIVATE long LastHdbWalk;
+
 /* *****  Private types  ***** */
 
 struct hdbd_msg : public olink {
@@ -103,6 +105,12 @@ void HDBD_Init() {
 		     VPT_HDBDaemon, HDBDaemonStackSize, HDBDaemonPriority);
 }
 
+long HDBD_GetNextHoardWalkTime() {
+  long currTime = Vtime();
+  LOG(0, ("HDBD_GetNextHoardWalkTime() returns %ld + %ld - %ld\n", 
+	  LastHdbWalk, (long)HdbWalkInterval, currTime));
+  return(LastHdbWalk + (long)HdbWalkInterval - currTime);
+}
 
 void HDBDaemon() {
 
@@ -112,7 +120,7 @@ void HDBDaemon() {
     vproc *vp = VprocSelf();
     RegisterDaemon(HDBDaemonInterval, &hdbdaemon_sync);
 
-    long LastHdbWalk = /*0*/Vtime();	    /* skip initial walk at startup! */
+    LastHdbWalk = /*0*/Vtime();	    /* skip initial walk at startup! */
 
     for (;;) {
 LOG(0, ("HDBDaemon about to sleep on hdbdaemon_sync\n"));

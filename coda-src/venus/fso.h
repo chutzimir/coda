@@ -268,7 +268,7 @@ class fsdb {
 
     void DisconnectedCacheMiss(vproc *, vuid_t, ViceFid *, char *);
     void UpdateDisconnectedUseStatistics(volent *);
-    void OutputDisconnectedUseStatistics(char *);
+    void OutputDisconnectedUseStatistics(char *, int, int, int);
 
     void GetStats(int *fa, int *fo, int *ba, int *bo) 
       { *fa = MaxFiles; *fo = htab.count(); *ba = MaxBlocks; *bo = blocks; }

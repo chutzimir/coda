@@ -66,6 +66,7 @@ extern "C" {
 /* interfaces */
 #include <callback.h>
 #include <vice.h>
+#include <adsrv.h>
 
 /* from util */
 #include <olist.h>
@@ -249,6 +250,7 @@ class srvent {
   friend void DownServers(char *, int *);
   friend void DownServers(int, unsigned long *, char *, int *);
   friend void ServerPrint(int);
+  friend long S_GetServerInformation(RPC2_Handle, RPC2_Integer, RPC2_Integer *, ServerEnt *);
   friend class srv_iterator;
   friend class connent;
   friend class mgrpent;

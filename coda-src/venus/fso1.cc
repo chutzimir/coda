@@ -2668,6 +2668,8 @@ void fsobj::RecordReplacement(int status, int data) {
       NotifyUserOfReplacement(&fid, path, status, 1);
     else
       NotifyUserOfReplacement(&fid, path, status, 0);
+
+    LOG(0, ("RecordReplacement complete.\n"));
 }
 
 /* local-repair modification */

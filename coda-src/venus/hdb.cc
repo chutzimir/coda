@@ -436,7 +436,10 @@ int hdb::MakeAdviceRequestFile(char *HoardListFileName) {
     FILE *HoardListFILE;
 
     HoardListFILE = fopen(HoardListFileName, "w");
-    assert(HoardListFILE != NULL);
+    if (HoardListFILE == NULL) {
+      LOG(0, ("hdb::MakeAdviceRequestFile: failed to open %s (errno=%d)\n", HoardListFileName, errno));
+      return(-1);
+    }
 
     /* Generate the initial cache state statistics */
     fprintf(HoardListFILE, "Cache Space Allocated: %d files (%d blocks)\n", 

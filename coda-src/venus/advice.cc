@@ -778,7 +778,7 @@ void adviceconn::NotifyProgramAccessLogAvailable(char *pathname) {
 
   ObtainWriteLock(&userLock);
   IncrRPCInitiated(callType); 
-  LOG(0, ("Calling C_ProgramAccessLogAvailable()\n"));
+  LOG(0, ("Calling C_ProgramAccessLogAvailable(%s)\n", pathname));
   fflush(logFile);
   rc = C_ProgramAccessLogAvailable(handle, (RPC2_String)pathname);
   LOG(0, ("Returned from C_ProgramAccessLogAvailable()\n"));
@@ -1083,17 +1083,19 @@ void adviceconn::LogReplacement(char *path, int status, int data) {
     return;
 }
 
-int adviceconn::OutputUsageStatistics(vuid_t uid, char *pathname) {
+int adviceconn::OutputUsageStatistics(vuid_t uid, char *pathname, int discosSinceLastUse, int percentDiscosUsed, int totalDiscosUsed) {
 
     if (!AuthorizedUser(uid)) {
       LOG(0, ("adviceconn::OutputUsageStatistics:  Unauthorized user (%d) requested usage statistics\n", uid));
       return(-1);
     }
 
-    LOG(0, ("E OutputUsageStatistics(%s)\n", pathname));
+    LOG(0, ("E OutputUsageStatistics(%s %d %d %d)\n", pathname,
+	    discosSinceLastUse, percentDiscosUsed, totalDiscosUsed));
 
     assert(FSDB);
-    FSDB->OutputDisconnectedUseStatistics(pathname);
+    FSDB->OutputDisconnectedUseStatistics(pathname, discosSinceLastUse, 
+					  percentDiscosUsed, totalDiscosUsed);
     LOG(0, ("L OutputUsageStatistics(%s)\n", pathname));
     return(0);
 }
