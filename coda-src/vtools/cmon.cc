@@ -157,10 +157,10 @@ main(int argc, char *argv[])
     InitRPC();
     DrawCaptions();
 
-    LWP_CreateProcess((PFIC)kbdlwp, 8192, LWP_NORMAL_PRIORITY, NULL, "KBD", (PROCESS *)&i);
+    LWP_CreateProcess((PFIC)kbdlwp, 0x4000, LWP_NORMAL_PRIORITY, NULL, "KBD", (PROCESS *)&i);
     for (i = 0; i < SrvCount; i++)
 	{
-	LWP_CreateProcess((PFIC)srvlwp, 16384, LWP_NORMAL_PRIORITY, (char *)i, (char *)srv[i].srvname, (PROCESS *)&srv[i].pid);
+	LWP_CreateProcess((PFIC)srvlwp, 0x8000, LWP_NORMAL_PRIORITY, (char *)i, (char *)srv[i].srvname, (PROCESS *)&srv[i].pid);
 	}
     
     LWP_WaitProcess(&Dummy); /* wait for Godot */
