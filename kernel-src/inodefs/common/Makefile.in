@@ -36,7 +36,7 @@ TOPOBJ = @TOPOBJ@
 
 include $(TOPDIR)/Makeconf
 
-# Nothing to do for now except to install inops.h...
-HEADERS   = inops.h
+# Nothing to do for now except to install inodefs.h...
+HEADERS   = inodefs.h
 
 include $(TOPDIR)/Makerules

@@ -63,7 +63,7 @@ extern "C" {
 #include <libc.h>
 #endif
 #include <netinet/in.h>
-#include <cfs/ifs.h>
+#include <inodefs.h>
 
 #include <rpc2.h>
 #include <se.h>

@@ -41,7 +41,7 @@ HEADERS	   =  rescomm.h logalloc.h pdlist.h remotelog.h resforce.h \
 RP2FILES   = $(VICE_RPC2) $(CALLBACK_RPC2) $(RES_RPC2)
 RP2HEADERS = $(notdir ${RP2FILES:.rpc2=.h})
 
-RESC_LIBS  = ${LIBCODASYS} ${LIBRPC2} ${LIBOLDLWP}
+RESC_LIBS  = ${LIBKERNDEP} ${LIBRPC2} ${LIBOLDLWP}
 
 RESLIBOBJS = logalloc.o pdlist.o remotelog.o resclient.o lockqueue.o\
              rescoord.o  resforce.o reslock.o reslog.o \

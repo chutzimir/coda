@@ -49,7 +49,14 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#if defined(__NetBSD__) || defined(__linux__)
+#include <unistd.h>
+#include <stdlib.h>
+#endif /* __NetBSD__ || __linux__ */
+#ifdef __MACH__
 #include <libc.h>
+#include <sysent.h>
+#endif /* __MACH__ */
 #include <errno.h>
 #include <assert.h>
 #include <ci.h>
@@ -64,7 +71,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/dir.h>
 #include <rpc2.h>
-
+#include <inodefs.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

@@ -63,12 +63,17 @@ extern "C" {
 #include <ctype.h>
 #include <errno.h>
 extern FILE *_findiop();
-#include <libc.h>
 #ifdef __MACH__
 extern int execvp(const char *, const char **);
-#endif
+#include <libc.h>
 #include <sysent.h>
+#endif /* __MACH__ */
+#if defined(__NetBSD__) || defined(__linux__)
+#include <unistd.h>
+#include <stdlib.h>
+#endif /* __NetBSD__ || __linux__ */
 #include <stdarg.h>
+#include <inodefs.h>
 
 #ifdef __cplusplus
 }

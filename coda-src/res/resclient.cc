@@ -47,12 +47,19 @@ extern "C" {
 #include <sys/types.h>
 #include <assert.h>
 #include <stdio.h>
+#if defined(__NetBSD__) || defined(__linux__)
+#include <unistd.h>
+#include <stdlib.h>
+#endif /* __NetBSD__ || __linux__ */
+#ifdef __MACH__
 #include <libc.h>
+#include <sysent.h>
+#endif /* __MACH__ */
 #include <struct.h>
 #include <sys/dir.h>
 #include <lwp.h>
 #include <rpc2.h>
-
+#include <inodefs.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

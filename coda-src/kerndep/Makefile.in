@@ -39,14 +39,13 @@ include $(TOPDIR)/Makeconf
 # presto changeo!
 INCLDIR := $(INCLDIR)/cfs
 
-LIBRARIES = libcodasys.a libuifs.a
-HEADERS   = mach_vioctl.h ifs.h
+LIBRARIES = libkerndep.a 
+HEADERS   = mach_vioctl.h
 
 CFLAGS += -DLINUX -DPRIVATE=static
 CXXFLAGS := $(CFLAGS)
 
-libuifs.a: ifsulib.o
-libcodasys.a:  setpag.o pioctl.o
+libkerndep.a:  setpag.o pioctl.o
 
 ifneq ($(SHORTSYS), mach)
 # On Linux and NetBSD, convert pioctl() to ioctl()
@@ -60,8 +59,7 @@ setpag.o: setpag.s
 pioctl.o: pioctl.s
 endif
 
-OFILES= setpag.o ifsulib.o pioctl.o
+OFILES= setpag.o pioctl.o
 $(OFILES): $(HEADERS)
-ifsulib.o: ifsulib.c
 
 include $(TOPDIR)/Makerules

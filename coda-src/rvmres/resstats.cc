@@ -40,9 +40,11 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
+#include <string.h>
 
 #ifdef	__MACH__
 #include <libc.h>
+#include <sysent.h>
 #endif /* MACH */
 
 #if defined(__linux__) || defined(__NetBSD__)

@@ -1,7 +1,7 @@
 # all:
 #	builds syscall interface
 # install:
-#	installs build & ifs.h
+#	installs build & inodefs.h
 #
 
 #
@@ -60,16 +60,13 @@ TOPOBJ= @TOPOBJ@
 
 include $(TOPDIR)/Makeconf
 
-HEADERS= ifs.h
-LIBRARIES = libifs.a
-
-# presto changeo!
-INCLDIR := $(INCLDIR)/cfs
+HEADERS= 
+LIBRARIES = libinodefs.a
 
 # ilib.s needs not flags!
 AFLAGS = 
 OFILES= ilib.o
 
-libifs.a: ilib.o
+libinodefs.a: ilib.o
 
 include $(TOPDIR)/Makerules

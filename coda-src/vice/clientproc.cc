@@ -201,12 +201,14 @@ PRIVATE HostTable *GetVenusId(RPC2_Handle RPCid) {
 
     /* Look up the Peer info corresponding to the given RPC handle. */
     RPC2_PeerInfo peer;
+    int i;
+
     assert(RPC2_GetPeerInfo(RPCid, &peer) == 0);
     assert(peer.RemoteHost.Tag == RPC2_HOSTBYINETADDR);
     assert(peer.RemotePortal.Tag == RPC2_PORTALBYINETNUMBER);
 
     /* Look for a corresponding host entry. */
-    for (int i = 0; i < maxHost; i++)
+    for (i = 0; i < maxHost; i++)
 	if (hostTable[i].host == (unsigned int) peer.RemoteHost.Value.InetAddress &&
 	    hostTable[i].port == peer.RemotePortal.Value.InetPortNumber)
 	    break;

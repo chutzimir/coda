@@ -61,13 +61,14 @@ extern "C" {
 #include <sysent.h>
 #include <libc.h>
 #endif /* __MACH__ */
-#ifdef __NetBSD__
+#if defined(__NetBSD__) || defined(__linux__)
 #include <unistd.h>
 #include <stdlib.h>
-#endif __NetBSD__
+#endif /* __NetBSD__ || __linux__ */
 #include <errno.h>
 #include <assert.h> 
 extern int getbool(char *, int);
+#include <inodefs.h>
 
 #ifdef __cplusplus
 }

@@ -38,7 +38,7 @@ include $(TOPDIR)/Makeconf
 LIBRARIES = libresolve.a
 HEADERS   = resolve.h repio.h
 
-LIBS= $(LIBCODASYS) $(LIBVV)
+LIBS= $(LIBKERNDEP) $(LIBVV)
 
 OFILES= resolve.o cure.o predicate.o repio.o 
 

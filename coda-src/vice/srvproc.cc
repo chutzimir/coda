@@ -74,9 +74,9 @@ extern "C" {
 #include <signal.h>
 #include <sysent.h>
 #include <strings.h>
+#include <inodefs.h>
 
 #ifdef	__linux__
-#include <cfs/ifs.h>
 #include <stdlib.h>
 #include <unistd.h>
 #endif
@@ -3996,13 +3996,14 @@ int FetchBulkTransfer(RPC2_Handle RPCid, ClientEntry *client, Volume *volptr, Vn
     RPC2_Integer Length = vptr->disk.length;
     char *buf = 0;
     int size = 0;
+    int i;
 START_TIMING(Fetch_Xfer);
 
     /* If fetching a directory first copy contents from rvm to a temp buffer. */
     if (vptr->disk.type == vDirectory){
 	assert(vptr->disk.inodeNumber != 0);
 	DirInode *inArr = (DirInode *)(vptr->disk.inodeNumber);
-	for (int i = 0; i < MAXPAGES; i++) {
+	for (i = 0; i < MAXPAGES; i++) {
 	    if (inArr->Pages[i]) 
 		size += PAGESIZE;
 	    else 

@@ -44,8 +44,8 @@ static char *rcsid = "$Header$";
    Created: Satya 1/24/97 from an old ifs.h file by Puneet Kumar
 */
 
-#ifndef _INOPS_H_
-#define _INOPS_H_
+#ifndef _INODEFS_H_
+#define _INODEFS_H_
 
 #ifdef KERNEL
 
@@ -58,7 +58,7 @@ extern int iread   __P((int, int, long, unsigned int, char *, unsigned int));
 extern int iwrite  __P((int, int, long, unsigned int, char *, unsigned int));
 extern int iinc    __P((int, int, long));
 extern int idec    __P((int, int, long));
-extern int pioctl  __P((char *, int, caddr_t, int));
+extern int pioctl  __P((char *, int, struct ViceIoctl *, int));
 #endif /* _KERNEL */
 
-#endif /* _INOPS_H_ */
+#endif /* _INODEFS_H_ */

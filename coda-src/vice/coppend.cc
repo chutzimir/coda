@@ -67,10 +67,11 @@ void AddToCopPendingTable(ViceStoreId *stid, ViceFid *fids) {
 }
 
 void AddPairToCopPendingTable(ViceStoreId *sid, ViceFid *fid) {
+    int i;
     cpent *cpe = CopPendingMan->find(sid);
     if (cpe) {
 	int found = 0;
-	for (int i = 0; i < MAXFIDS; i++) {
+	for (i = 0; i < MAXFIDS; i++) {
 	    if (FID_EQ(cpe->fids[i], NullFid))
 		break;
 	    if (FID_EQ(cpe->fids[i], *fid)) {

@@ -41,7 +41,7 @@ TOPOBJ = @TOPOBJ@
 include $(TOPDIR)/Makeconf
 
   I =  scripts
- II =  sys dir 
+ II =  kerndep dir 
 III =  rpc2 util
  IV =  libal rp2gen pdbstuff blurb camstuff
   V =  fail vicedep 

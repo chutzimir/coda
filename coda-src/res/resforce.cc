@@ -43,20 +43,19 @@ extern "C" {
 
 #include <sys/types.h>
 #include <sys/time.h>
-#ifdef CAMELOT
-#include <cam/camelot_prefixed.h>
-#include <camlib/camlib_prefixed.h>
-#include <cam/_setjmp.h>
-#endif CAMELOT
-
-#if 0
-#include <cthreads.h>
-#endif
 #include <netinet/in.h>
 #include <assert.h>
 #include <stdio.h>
+#ifdef __MACH__
 #include <libc.h>
+#include <sysent.h>
+#endif /* __MACH__ */
+#if defined(__NetBSD__) || defined(__linux__)
+#include <unistd.h>
+#include <stdlib.h>
+#endif /* __NetBSD__ || __linux__ */
 #include <rpc2.h>
+#include <inodefs.h>
 
 #ifdef __cplusplus
 }

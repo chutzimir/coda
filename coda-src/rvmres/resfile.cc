@@ -53,6 +53,7 @@ extern "C" {
 
 #ifdef	__MACH__
 #include <libc.h>
+#include <sysent.h>
 #endif	/* __MACH__ */
 
 #if defined(__linux__) || defined(__NetBSD__)
@@ -62,17 +63,8 @@ extern "C" {
 
 #include <struct.h>
 
-#ifdef CAMELOT
-#include <cam/camelot_prefixed.h>
-#include <camlib/camlib_prefixed.h>
-#include <cam/_setjmp.h>
-#endif CAMELOT
-#if 0
-#include <cthreads.h>
-#else
 #include <dummy_cthreads.h>
-#endif
-
+#include <inodefs.h>
 #include <rpc2.h>
 #include <se.h>
 

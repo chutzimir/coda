@@ -41,7 +41,6 @@ extern "C" {
 #include <errno.h>
 #include <assert.h>
 #include <ci.h>
-  /*#include <libcs.h>*/
 #include <sys/types.h>
 #include <sys/dir.h>
 #include <sys/file.h>
@@ -50,11 +49,15 @@ extern "C" {
 #include <strings.h>
 #include <sys/stat.h>
 #include <setjmp.h>
+#if defined(__NetBSD__) || defined(__linux__)
 #include <unistd.h>
+#include <stdlib.h>
+#endif /* __NetBSD__ || __linux__ */
 #ifdef	__MACH__
+#include <libc.h>
 #include <sysent.h>
 #endif	/* __MACH__ */
-#include <stdlib.h>
+#include <inodefs.h>
 #include <rpc2.h>
 #include <signal.h>
 

@@ -68,6 +68,7 @@ extern "C" {
 #include <unistd.h>
 #define MAXSYMLINKS 16
 #endif
+#include <inodefs.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

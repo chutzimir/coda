@@ -84,6 +84,7 @@ extern "C" {
 #include <lwp.h>
 #include <struct.h>
 #include <lock.h>
+#include <inodefs.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus

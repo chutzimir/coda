@@ -66,7 +66,7 @@ LIBS=	${LIBRPC2}\
 	${LIBAL}\
 	${LIBOLDLWP}\
 	${LIBUTIL} \
-	${LIBCODASYS} \
+	${LIBKERNDEP} \
 	${LIBCOMPAT}
 
 libauth2.a: avice.o auser.o avenus.o auth2.server.o auth2.client.o

@@ -38,7 +38,7 @@ EXECUTABLES = repair
 CBINS       = repair
 # TESTS	    = reptest
 
-LIBS = ${LIBRESOLVE} ${LIBVV} ${LIBAUTH2} ${LIBCODASYS}
+LIBS = ${LIBRESOLVE} ${LIBVV} ${LIBAUTH2} ${LIBKERNDEP}
 
 OFILES = rvol.o path.o
 

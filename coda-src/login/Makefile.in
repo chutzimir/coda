@@ -63,7 +63,7 @@ TESTS       = testlog
 LIBS=	${LIBAUTH2}	\
 	${LIBRPC2}	\
 	${LIBOLDLWP} 	\
-	${LIBCODASYS}	\
+	${LIBKERNDEP}	\
 	$(LIBFLAGS)	\
 	$(LIBCOMPAT)
 
