@@ -993,7 +993,7 @@ static pack(who, parm, prefix, ptr, where)
 	    break;
     case RPC2_BYTE_TAG:		
 	    if (parm->type->bound != NIL) {
-		    checkbuffer(where,ptr,parm->type->bound);
+		    checkbuffer(where,ptr,atoi(parm->type->bound));
 		    fprintf(where, "    bcopy((char *)%s, (char *)%s, (long)%s);\n", name, ptr, parm->type->bound);
 		    inc(ptr, parm->type->bound, where);
 	    } 
@@ -1134,7 +1134,7 @@ static unpack(who, parm, prefix, ptr, where)
 	    break;
     case RPC2_BYTE_TAG:
 	    if (parm->type->bound != NIL) {
-		    checkbuffer(where,ptr,parm->type->bound);
+		    checkbuffer(where,ptr,atoi(parm->type->bound));
 		    fputs("    ", where);
 		    fprintf(where, "bcopy((char *)%s, (char *)%s, (long)%s);\n", ptr, name, parm->type->bound);
 		    inc(ptr, parm->type->bound, where);
