@@ -241,7 +241,8 @@ iopen()
     }
 
 
-long NoteAuthFailure(cIdent, eType, pHost, pPortal)
+long NoteAuthFailure(authenticationtype, cIdent, eType, pHost, pPortal)
+    RPC2_Integer authenticationtype;
     RPC2_CountedBS *cIdent;
     RPC2_Integer eType;
     RPC2_HostIdent *pHost;
