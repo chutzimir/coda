@@ -448,6 +448,16 @@ main(int argc, char *argv[])
 	       "Main thread just did a RVM_SET_THREAD_DATA\n");
     }
 
+    InitializeServerRVM("codaserver"); 
+
+    /* Trace mallocs and frees in the persistent heap if requested. */
+    if (MallocTrace) {	
+      rds_trace_on(rds_printer);
+      rds_trace_dump_heap();
+    }
+    
+    coda_init();
+
 #ifdef PERFORMANCE 
     /* initialize the array of thread_t to 0 - Puneet */
     for (i = 0; i < NLWPS; i ++)
@@ -484,15 +494,6 @@ main(int argc, char *argv[])
     RPC2_Trace = trace;
 
     InitPartitions(VCT);
-    InitializeServerRVM("codaserver"); 
-
-    /* Trace mallocs and frees in the persistent heap if requested. */
-    if (MallocTrace) {	
-      rds_trace_on(rds_printer);
-      rds_trace_dump_heap();
-    }
-    
-    coda_init();
 
     FileMsg();
 
