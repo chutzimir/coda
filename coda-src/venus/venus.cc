@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 
     if (!Simulating) {
 	/* Get the Root Volume. */
-	while (!GetRooVolume()) {
+	while (!GetRootVolume()) {
 	    ServerProbe();
 
 	    struct timeval tv;
