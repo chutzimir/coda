@@ -68,15 +68,9 @@ extern "C" {
 
 #ifdef __MACH__
 /* Pick up private versions of vnode headers from vicedep */
-#include <vfs/vfs.h>
-#include <vfs/vnode.h>
+#include <cfs/mach_vfs.h>
+#include <cfs/mach_vnode.h>
 #endif __MACH__
-
-#ifdef __NetBSD__
-/* Pick up system versions of vnode headers from /usr/include */
-/* #include <sys/mount.h> (Satya, 11/25/96) */
-#include "venus_vnode.h"
-#endif __NetBSD__
 
 #ifdef LINUX
 #include <sys/uio.h>
