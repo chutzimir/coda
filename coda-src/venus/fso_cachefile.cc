@@ -261,6 +261,15 @@ void CacheFile::Truncate(unsigned newlen) {
 
     ASSERT(inode != (ino_t)-1);
 
+#ifdef	__MACH__
+#else
+    /*
+    if (length < newlen) {
+       eprint("Truncate: %d->%d:  -> ::truncate(name %s, length %d)\n",
+		length, newlen, name, newlen);
+    }
+    */
+#endif
     if (length != newlen) {
 	RVMLIB_REC_OBJECT(*this);
 	length = newlen;
