@@ -245,7 +245,8 @@ int fsobj::Close(int writep, int execp, vuid_t vuid)
 	    { print(logFile); Choke("fsobj::Close: !WRITING"); }
 	Writers--;
 
-	/* The object only gets sent to the server(s) if we are the last writer to close. */
+	/* The object only gets sent to the server(s) if we are the
+           last writer to close. */
 	if (WRITING(this)) {
 	    FSO_RELE(this);		    /* Unpin object. */
 	    return(0);
