@@ -2815,8 +2815,8 @@ int FailDisconnect(int nservers, unsigned long *hostids)
 		filter.factor = 0;
 		filter.speed = 0;
 
-		for (int i = 0; i < 2; i++) {
-		    if (i == 0) side = sendSide;
+		for (int lx = 0; lx < 2; lx++) {
+		    if (lx == 0) side = sendSide;
 		    else side = recvSide;
 
 		    /* 
