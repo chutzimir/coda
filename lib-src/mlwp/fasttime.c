@@ -69,6 +69,11 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #include <stdlib.h>
 #endif
 
+#if defined(__linux__) && defined(sparc)
+#include <asm/page.h>
+#define getpagesize() PAGE_SIZE
+#endif
+
 extern char *valloc ();
 int ft_debug;
 
@@ -160,7 +165,7 @@ int FT_Init(printErrors, notReally)
 	return (-1);
     }
     /* Ok, now figure out where the variables are so we can map them. */
-    pageSize = getpagesize ();
+    pageSize = getpagesize();
     pageMask = pageSize - 1;
     timeOff = nl[X_TIME].n_value;
     timeEnd = timeOff + sizeof (struct timeval);
