@@ -41,7 +41,7 @@ static char *rcsid = "$Header$";
 /*****  Definitions  *****/
 #define FALSE 0
 #define TRUE 1
-#define DFTSTACKSIZE  8            /* 8 k is the default stacksize for lwp's */
+#define DFTSTACKSIZE  16            /* 8 k is the default stacksize for lwp's */
 #define STARTASR_INTERVAL  300   /* Number seconds before asr can be retired */
 
 /* Definitions:  Pathnames to other executables... */
