@@ -421,7 +421,7 @@ NonRepExit:
 		break;
 		
 	case Directory:
-		rvmlib_set_range(((char *)data.dir + (int)sizeof(VenusDirData)), stat.Length);
+		rvmlib_set_range(DH_Data(&data.dir->dh), stat.Length);
 		break;
 		
 	case SymbolicLink:
