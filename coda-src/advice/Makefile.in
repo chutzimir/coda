@@ -74,6 +74,9 @@ AOBJS = console_handler.o counters.o daemon.o data.o \
 REALRPCSETUP = rpc_setup.o
 FAKERPCSETUP = fake_rpc_setup.o
 
+
+coda: advice_srv.h
+
 advice: advice_srv
 
 libadvice.a: ${AOBJS} ${REALRPCSETUP}
@@ -93,7 +96,7 @@ advice_srv.h: advice_srv.h.in translate.sed
 	sed -f translate.sed $< > $@
 
 translate.sed: Makefile
-	echo "s%+GUIDIR+%${LIBEXECDIR}%g" >> $@
+	echo "s%+GUIDIR+%${GUIDIR}%g" >> $@
 
 # Dependencies
 
