@@ -60,6 +60,7 @@ extern "C" {
 #include <stdarg.h>
 #include <sysent.h>
 #include <netinet/in.h>
+#include <ifs.h>
 
 #include <rpc2.h>
 #include <se.h>
@@ -67,6 +68,8 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif __cplusplus
+
+
 
 #include <util.h>
 #include <rvmlib.h>
@@ -1757,12 +1760,12 @@ START_TIMING(Reintegrate_CheckSemanticsAndPerform);
 						 (char *)r->u.u_rename.NewName, &r->sid);
 			else {
 			    // rvm resolution is on 
-			    if (errorCode = SpoolRenameLogRecord(sd_opcode, vlist, 
-								 s_v->vptr, t_v ? t_v->vptr : NULL,
-								 sd_v->vptr, td_v->vptr, volptr, 
+			    if (errorCode = SpoolRenameLogRecord((int) sd_opcode, (dlist *) vlist, 
+								 (Vnode *)s_v->vptr,(Vnode *)( t_v ? t_v->vptr : NULL) ,
+								 (Vnode *)sd_v->vptr, (Vnode *)td_v->vptr, (Volume *) volptr, 
 								 (char *)r->u.u_rename.OldName,
 								 (char *)r->u.u_rename.NewName, 
-								 &r->sid)) {
+								(ViceStoreId *) &r->sid)) {
 				LogMsg(0, SrvDebugLevel, stdout,
 				       "Reint: Error %d during spool log record for rename\n",
 				       errorCode);
