@@ -2331,4 +2331,4 @@ rvm_offset_t rvm_rnd_offset_to_sector(x)
     tmp.low = tmp.low & (SECTOR_MASK);
 
     return tmp;
-    } 
+    }
