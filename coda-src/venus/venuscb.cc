@@ -61,6 +61,18 @@ extern "C" {
 #else
 #include <machine/endian.h>
 #endif
+#ifdef __NetBSD__
+#include <dirent.h> /* to get definition of MAXNAMLEN */
+#endif __NetBSD__
+
+#ifdef __MACH__
+#include <sysent.h>
+#include <libc.h>
+#endif __MACH__
+#if __NetBSD__ || LINUX
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 
 #include <rpc2.h>
 #include <se.h>
