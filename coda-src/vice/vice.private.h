@@ -46,6 +46,8 @@ extern void CLIENT_CallBackCheck();
 HostTable *CLIENT_FindHostEntry(RPC2_Handle CBCid);
 int CLIENT_MakeCallBackConn(ClientEntry *Client);
 
+char *ViceErrorMsg(int errorCode);
+
 extern void Die (char *);
 extern int GetEtherStats();
 extern int InitCallBack();

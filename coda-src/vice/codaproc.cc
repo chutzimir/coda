@@ -60,24 +60,20 @@ extern "C" {
 #include <netinet/in.h>
 #include <struct.h>
 #include <inodeops.h>
-
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <rpc2.h>
 #include <se.h>
-
+#include <util.h>
+#include <prs.h>
+#include <al.h>
+#include <vice.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <rvmlib.h>
 #include <vmindex.h>
 #include <coda_dir.h>

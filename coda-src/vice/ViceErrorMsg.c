@@ -77,7 +77,6 @@ extern "C" {
 
 #include <inconsist.h>
 
-
 char *ViceErrorMsg(int errorCode)
 {
     if(errorCode < 0)

@@ -63,27 +63,22 @@ extern "C" {
 extern int nlist(const char*, struct nlist[]);
 #endif
 
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
 
 #include <lwp.h>
 #include <rpc2.h>
+#include <util.h>
+#include "mond.h"
+#include "vice.h"
+#include <callback.h>
+#include <res.h>
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <olist.h>
-#include "mond.h"
-#include "vice.h"
-#include <callback.h>
-#include <res.h>
 #include <logalloc.h>
 #include <resstats.h>
 #include <voldump.h>

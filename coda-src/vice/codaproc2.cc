@@ -60,14 +60,13 @@ extern "C" {
 #endif
 #include <sys/file.h>
 #include <stdarg.h>
-#ifdef __MACH__
-#include <libc.h>
-#endif
 #include <netinet/in.h>
 #include <inodeops.h>
 
 #include <rpc2.h>
 #include <se.h>
+#include <callback.h>
+#include <vice.h>
 
 #ifdef __cplusplus
 }
@@ -85,7 +84,6 @@ extern "C" {
 #include <vrdb.h>
 #include <repio.h>
 #include <vlist.h>
-#include <callback.h>
 #include <codaproc.h>
 #include <rvmdir.h>
 #include <dlist.h>
