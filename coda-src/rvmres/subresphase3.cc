@@ -53,7 +53,7 @@ extern "C" {
 #include <vcrcommon.h>
 #include <vlist.h>
 #include <vrdb.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <srv.h>
 #include <res.h>
 #include <operations.h>

@@ -101,7 +101,7 @@ extern "C" {
 #include <vice.h>
 
 /* from dir */
-#include <dir.h>
+#include <coda_dir.h>
 
 
 

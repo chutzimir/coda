@@ -50,7 +50,7 @@ extern "C" {
 #include <vcrcommon.h>
 
 /* from dir */
-#include <dir.h>
+#include <coda_dir.h>
 
 /* from venus */
 #include "fso.h"

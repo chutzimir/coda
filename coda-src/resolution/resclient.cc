@@ -61,7 +61,7 @@ extern "C" {
 #include <olist.h>
 #include <errors.h>
 #include <srv.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <rvmdir.h>
 #include <vlist.h>
 #include <operations.h>

@@ -48,8 +48,11 @@ extern "C" {
 #include <camlib/camlib_prefixed.h>
 #include <cam/_setjmp.h>
 #endif CAMELOT
-
+#ifdef __MACH__
 #include <cthreads.h>
+#else
+#include <dummy_cthreads.h>
+#endif
 #include <netinet/in.h>
 #include <stdio.h>
 #include <libc.h>
@@ -66,7 +69,7 @@ extern "C" {
 #include <errors.h>
 #include <res.h>
 #include <srv.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <rvmdir.h>
 #include <vrdb.h>
 #include <remotelog.h>

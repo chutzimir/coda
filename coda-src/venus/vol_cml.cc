@@ -89,7 +89,7 @@ extern void pack_struct(ARG *, PARM **, PARM **);
 #include <vice.h>	
 
 /* from dir */
-#include <dir.h>
+#include <coda_dir.h>
 
 /* from util */
 #include <dlist.h>

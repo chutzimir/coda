@@ -50,7 +50,7 @@ extern "C" {
 #include <dlist.h>
 #include <cvnode.h>
 #include <vcrcommon.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <vlist.h>
 #include <srv.h>
 #include <inconsist.h>

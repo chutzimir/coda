@@ -55,7 +55,7 @@ extern "C" {
 #include <vcrcommon.h>
 #include <vlist.h>
 #include <treeremove.h>
-#include <dir.h>
+#include <coda_dir.h>
 
 #include <resutil.h>
 #ifndef LINUX

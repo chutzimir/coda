@@ -81,7 +81,7 @@ extern "C" {
 #include <errors.h>
 #include <vcrcommon.h>
 #include <srv.h>
-#include <dir.h>
+#include <coda_dir.h>
 #include <vrdb.h>
 #include <inconsist.h>
 
