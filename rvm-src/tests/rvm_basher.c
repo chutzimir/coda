@@ -68,8 +68,8 @@ static char *rcsid = "$Header$";
 #endif VERSION_TEST
 
 #ifndef RVM_USELWP
-/* XXX bogus by Eric to get compile */
-#include "cthreads.h"
+/* XXX bogus by Eric and Peter to get compile */
+#include <dummy_cthreads.h>
 
 /* define types symbolically to permit use of non-Cthread thread support */
 #define RVM_MUTEX       struct mutex
