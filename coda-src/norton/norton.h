@@ -69,7 +69,7 @@ extern void show_volume_details(char *);
 extern void show_index(int, char **);
 extern void show_index(int);
 extern void show_index(char *);
-extern void delete_volume(int, char **);
+extern void sh_delete_volume(int, char **);
 extern void undelete_volume(int, char **);
 
 /* norton-vnode.c */
@@ -88,6 +88,8 @@ extern VolHead *VolByIndex(int);
 extern void show_dir(int, char **);
 extern void show_dir(int, int, int);
 extern void delete_name(int, char **);
+extern void sh_create_name(int, char **);
+
 
 /* norton-rds.c */
 extern void show_heap(int, char **);

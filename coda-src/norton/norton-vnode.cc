@@ -212,3 +212,49 @@ void show_free(int argc, char *argv[]) {
 	}
     }
 }    
+
+
+#if 0
+// delete the RVM held vnode
+PRIVATE void 
+delete_smallvnode(int volid, int vnum, int unique)
+{
+    char buf[SIZEOF_SMALLDISKVNODE];
+    struct VnodeDiskObject *vnode = (struct VnodeDiskObject *)buf;
+    Error   error;
+    VnodeId vnodeindex = vnodeIdToBitNumber(vnum);
+    int     vclass = vnodeIdToClass(vnum);
+    int	    volindex;
+    
+    volindex = GetVolIndex(volid);
+    if (volindex < 0) {
+	fprintf(stderr, "Unable to get volume 0x%x\n", volid);
+	return;
+    }
+
+    CAMLIB_BEGIN_TOP_LEVEL_TRANSACTION_2(CAM_TRAN_NV_SERVER_BASED)
+	    
+    if (ExtractVnode(&error, volindex, vclass, (VnodeId)vnodeindex,
+		     (Unique_t)unique, vnode) < 0) {
+	fprintf(stderr, "Unable to get vnode 0x%x.0x%x.0x%x\n", volid, vnum,
+		unique);
+	CAMLIB_ABORT(VFAIL);
+	return;
+    }
+
+
+    if (error = ReplaceVnode(volindex, vclass, (VnodeId)vnodeindex,
+			     (Unique_t)unique, vnode)) {
+	fprintf(stderr, "ERROR: ReplaceVnode returns %d, aborting\n", error);
+	CAMLIB_ABORT(VFAIL);
+	return;
+    }
+	    
+    CAMLIB_END_TOP_LEVEL_TRANSACTION_2(CAM_PROT_TWO_PHASED, error)
+
+    if (error) {
+	fprintf(stderr, "ERROR: Transaction aborted with status %d\n",
+		error);
+    }
+}
+#endif

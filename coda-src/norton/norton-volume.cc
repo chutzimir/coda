@@ -349,6 +349,56 @@ void show_volume(char *name) {
 }
 
 
+void delete_volume(VolHead *vol) {
+    byte destroyflag=0xD3;
+    Error error;
+
+    if (vol) {
+	CAMLIB_BEGIN_TOP_LEVEL_TRANSACTION_2(CAM_TRAN_NV_SERVER_BASED);
+	CAMLIB_MODIFY_BYTES(&(vol->data.volumeInfo->destroyMe), 
+			    &destroyflag, sizeof(byte));
+	CAMLIB_END_TOP_LEVEL_TRANSACTION_2(CAM_PROT_TWO_PHASED, error);
+	    }
+
+}
+
+void delete_volume_byid(int volid) 
+{
+    VolHead *vol = NULL;
+
+    vol = GetVol(volid);
+    if ( vol )
+	delete_volume(vol);
+    else
+	printf("Unable to find volume %d\n", volid);
+
+
+}
+void delete_volume_byname(char *name) {
+    VolHead *vol = NULL;
+
+    vol = GetVol(name);
+
+    if (vol) 
+	delete_volume(vol);
+    else 
+	printf("Unable to find volume named %s\n", name);
+}
+
+void sh_delete_volume(int argc, char **argv)
+{
+    int volid;
+
+    if (argc != 3) {
+	fprintf(stderr, "Usage: delete volume  <name> | <volid>");
+	return;
+    }
+    else if (parse_int(argv[2], &volid) == 1) 
+	delete_volume_byid(volid);
+    else 
+	delete_volume_byname(argv[2]);
+}
+
 
 void show_volume_details(int argc, char *argv[]) {
     int volid;

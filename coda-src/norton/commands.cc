@@ -56,7 +56,12 @@ command_t del_commands[] = {
 //    { "inode",		notyet,		0},
     { "name",		delete_name,		0},
 //    { "vnode",		notyet,		0},
-//    { "volume",		notyet,		0},
+    { "volume",		sh_delete_volume,	0},
+    { 0, 0, 0}
+};
+
+command_t create_commands[] = {
+    { "name",		sh_create_name,		0},
     { 0, 0, 0}
 };
 
@@ -103,6 +108,7 @@ command_t set_cmds[] = {
 command_t commands[] = {
     { "?",		quick_help, 	0},
     { "delete",	 	0,		del_commands},
+    { "create",         0,              create_commands},
     { "examine",	examine,	0},
     { "exit",		exit_parser,	0},
     { "help",		quick_help,	0},
