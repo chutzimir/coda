@@ -59,6 +59,9 @@ extern "C" {
 #ifdef __NetBSD__
 #include <dirent.h> /* NOT sys/dirent.h!!! (Satya, 8/12,96) */
 #endif __NetBSD__
+#ifdef LINUX /* platform independent directory structures (pjb 11/96) */
+#include <venus-dirent.h>
+#endif LINUX
 
 #include <sys/stat.h>
 #include <struct.h>

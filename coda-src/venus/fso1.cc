@@ -61,7 +61,7 @@ extern "C" {
 #include <string.h>
 #include <sys/param.h>
 #ifdef LINUX
-#include "dirent.h"  /* the new fashion: platform independent VFS for Venus */
+#include <venus-dirent.h>  /* the new fashion: platform independent VFS for Venus */
 #endif
 #ifdef __NetBSD__
 #include <sys/dirent.h>
