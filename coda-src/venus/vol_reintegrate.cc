@@ -145,9 +145,11 @@ void volent::Reintegrate()
         if (CML.HaveElements(thisTid)) {		
             int startedrecs = CML.count();
 
+	    /* Log how many entries we are going to reintegrate */
+            MarinerLog("reintegrate::%s, %d/%d\n", name, nrecs, startedrecs);
+
             code = IncReintegrate(thisTid);
 
-            MarinerLog("reintegrate::%s, %d/%d\n", name, nrecs, startedrecs);
             eprint("Reintegrate: %s, %d/%d records, result = %s", 
                     name, nrecs, startedrecs, VenusRetStr(code));
 
@@ -161,6 +163,9 @@ void volent::Reintegrate()
             eprint("Reintegrate: %s, partial record, result = %s", 
                     name, VenusRetStr(code));
         }
+
+	/* Log how many entries are left to reintegrate */
+	MarinerLog("reintegrate::%s, 0/%d\n", name, CML.count());
 
     /*
      * Keep going as long as we managed to reintegrate records without errors,

@@ -1246,8 +1246,10 @@ void srvent::Reset() {
 	    m->KillMember(host, 0);
     }
 
+#ifdef MAYBENOT
     /* Clear available bandwidth information. */
     InitBandwidth(UNSET_BW);
+#endif
 
     /* Unbind callback connection for this server. */
     int code = (int) RPC2_Unbind(connid);

@@ -80,6 +80,7 @@ int resent::deallocs = 0;
 
 void volent::Resolve() {
     LOG(0, ("volent::Resolve: %s\n", name));
+    MarinerLog("resolve::%s\n", name);
 
     int code = 0;
     vproc *v = VprocSelf();
