@@ -145,7 +145,7 @@ extern "C" {
 
 
 /* Auth2 imports. */
-extern "C" long GetKeysFromToken(RPC2_CountedBS *, RPC2_EncryptionKey, RPC2_EncryptionKey);
+extern "C" long GetKeysFromToken(IN RPC2_Integer AuthenticationType, RPC2_CountedBS *, RPC2_EncryptionKey, RPC2_EncryptionKey);
 extern "C" void SetServerKeys(RPC2_EncryptionKey, RPC2_EncryptionKey);
 
 
