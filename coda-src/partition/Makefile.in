@@ -45,7 +45,7 @@ OBJS = vicetab.o partition.o inodeops.o simpleifs.o  ftreeifs.o makeftree.o inod
 LIBOBS = vicetab.o partition.o inodeops.o simpleifs.o ftreeifs.o
 EXECUTABLES = makeftree inoder
 LIBRARIES = libpartition.a
-LIBS = $(LIBPARTITION) $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
+LIBS = libpartition.a $(LIBUTIL) $(LIBRDS) $(LIBSEG) $(LIBRVM) $(LIBOLDLWP)
 
 
 libpartition.a: $(LIBOBS)
