@@ -94,7 +94,7 @@ allocate_vm(addr, length)
     kern_return_t ret;
     int anywhere = (*addr == 0);
 	
-    ret = vm_allocate(task_self(), addr, length, anywhere);
+    ret = vm_allocate(task_self(), (vm_address_t *)addr, length, anywhere);
     if (ret == KERN_INVALID_ADDRESS) return RVM_ERANGE;
     if (ret == KERN_NO_SPACE) return RVM_ENO_MEMORY;
 
@@ -108,7 +108,7 @@ deallocate_vm(addr, length)
 {
     kern_return_t ret;
     
-    ret = vm_deallocate(task_self(), addr, length);
+    ret = vm_deallocate(task_self(), (vm_address_t)addr, length);
     if (ret == KERN_INVALID_ADDRESS) return RVM_ERANGE;
 
     return RVM_SUCCESS;
