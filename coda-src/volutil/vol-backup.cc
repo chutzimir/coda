@@ -82,7 +82,7 @@ extern "C" {
 #include <lwp.h>
 #include <struct.h>
 #include <lock.h>
-#include <inodefs.h>
+#include <inodeops.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -90,7 +90,7 @@ extern "C" {
 #include <volutil.h>
 #include <util.h>
 #include <rvmlib.h>
-#include <nfs.h>
+#include <voltypes.h>
 #include <vice.h>
 #include <cvnode.h>
 #include <volume.h>
