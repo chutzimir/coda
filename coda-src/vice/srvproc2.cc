@@ -118,8 +118,8 @@ unsigned int etherBytesWritten = 0;
 static unsigned Cont_Sws = 0;		/* Count context switches for LWP */
 
 /* *****  External routines ***** */
-extern int ValidateParms(RPC2_Handle, ClientEntry **, int, VolumeId *, 
-			 RPC2_CountedBS *);
+extern int ValidateParms(RPC2_Handle, ClientEntry **, int *ReplicatedOp,
+			 VolumeId *, RPC2_CountedBS *, int *Nservers);
 /* *****  Private routines  ***** */
 
 static long InternalRemoveCallBack(RPC2_Handle, ViceFid *);
@@ -469,7 +469,7 @@ long FS_ViceSetVolumeStatus(RPC2_Handle RPCid, VolumeId vid, VolumeStatus *statu
     int		anyrights;
     int tstatus = 0;		/* transaction status variable */
     int oldquota = -1;               /* Old quota if it was changed */
-    int ReplicatedOp = (PrimaryHost != 0);
+    int ReplicatedOp;
     vle *v = 0;
     dlist *vlist = new dlist((CFN)VLECmp);
 
@@ -492,8 +492,8 @@ long FS_ViceSetVolumeStatus(RPC2_Handle RPCid, VolumeId vid, VolumeStatus *statu
     }
 
     {
-	if (errorCode = ValidateParms(RPCid, &client, ReplicatedOp, &vid, 
-				      PiggyCOP2))
+	if (errorCode = ValidateParms(RPCid, &client, &ReplicatedOp, &vid, 
+				      PiggyCOP2, NULL))
 	    goto Final;
     }
 

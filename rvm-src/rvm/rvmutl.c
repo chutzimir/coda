@@ -4222,7 +4222,7 @@ static rvm_bool_t do_init_log()
         perror("? could not initialize log data area");
         exit(1);
         }
-    page_free(buf,log_buf->length);
+    page_free((char *)buf,log_buf->length);
 
     /* leave version string in local status i/o area for status printing */
     (void)strcpy(((log_dev_status_t *)status_io)->version,

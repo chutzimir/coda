@@ -42,7 +42,8 @@ static char *rcsid = "$Header$";
 
 typedef int (*VCP)(int, VnodeType, void *, void *);
 
-extern int ValidateParms(RPC2_Handle, ClientEntry **, int, VolumeId *, RPC2_CountedBS *);
+extern int ValidateParms(RPC2_Handle, ClientEntry **, int *ReplicatedOp,
+			 VolumeId *, RPC2_CountedBS *, int *Nservers);
 extern int AllocVnode(Vnode **, Volume *, ViceDataType,
 		       ViceFid *, ViceFid *, UserId, RPC2_Unsigned, int *);
 extern int CheckFetchSemantics(ClientEntry *, Vnode **, Vnode **,

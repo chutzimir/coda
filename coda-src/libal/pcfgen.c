@@ -77,9 +77,9 @@ extern "C" {
 #include "parsepdb.h"
 #include "pcf.h"
 
-#define MAXUID	10000	/* UIDs are in the range 1:MAXUID */
+#define MAXUID	30000	/* UIDs are in the range 1:MAXUID */
 			/* 0 <= HighestUID <= MAXUID */		
-#define MAXGID  1000   	/* GIDs are in the range -1:-MAXGID */
+#define MAXGID  2000   	/* GIDs are in the range -1:-MAXGID */
 			/* 0 <= -HighestGID <= MAXGID */
 #define POOLSIZE (MAXUID+MAXGID)*PRS_MAXNAMELEN/4	/* Average name expected to be 25% of max */
 							/* LitPoolSize <= POOLSIZE  */

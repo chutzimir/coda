@@ -480,7 +480,7 @@ int vdb::Get(volent **vpp, char *volname) {
 
 	PutConn(&c);
 
-	if (code == 0 || code == ENXIO) break;
+	if (code == 0) break; /* used to || with ENXIO (VNOVOL) */
 
 	if (code != 0 && code != ETIMEDOUT) return(code);
     }

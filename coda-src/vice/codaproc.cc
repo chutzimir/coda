@@ -554,7 +554,8 @@ long FS_ViceRepair(RPC2_Handle cid, ViceFid *Fid, ViceStatus *status,
     
     /* 1. validate parameters */
     {
-	if (errorCode = ValidateParms(cid, &client, 1, &Fid->Volume, NULL))
+	if (errorCode = ValidateParms(cid, &client, NULL, &Fid->Volume, NULL,
+				      NULL))
 	    goto FreeLocks;
     }
     
