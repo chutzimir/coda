@@ -38,7 +38,8 @@ TOPOBJ = @TOPOBJ@
 
 include $(MAKDIR)/Makeconf
 
-EXECUTABLES = advice_srv
+EXECUTABLES = advice_srv 
+LIBRARIES = libadvice.a libfakeadvice.a
 CBINS      = $(EXECUTABLES)
 
 # HEADERS     = advice_srv.h console_handler.h counters.h data.h filecopy.h globals.h helpers.h conversions.h miss.h mybstree.h rpc_setup.h volent.h
@@ -85,10 +86,14 @@ replacementlog.o: replacementlog.cc
 fake_rpc_setup.o: rpc_setup.cc
 	$(CXX) $(CFLAGS) -D__FAKE__ -c ${srcdir}/rpc_setup.cc -o fake_rpc_setup.o
 
-advice_srv: $(LIBS) libadvice.a advice_srv.o
+advice_srv: advice_srv.h $(LIBS) libadvice.a advice_srv.o
 	$(CXX) $(LIBFLAGS) advice_srv.o libadvice.a $(LIBS) $(OTHERLIBS) -o advice_srv
 
+advice_srv.h: advice_srv.h.in translate.sed
+	sed -f translate.sed $< > $@
 
+translate.sed: Makefile
+	echo "s%+GUIDIR+%${LIBEXECDIR}%g" >> $@
 
 # Dependencies
 
