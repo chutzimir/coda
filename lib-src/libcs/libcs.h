@@ -154,7 +154,6 @@ extern struct passwd *getpwwho __P((const char *));
 extern struct passwd *getpwambig __P((void));
 
 /*  CMU time additions */
-extern time_t gtime __P((const struct tm *));
 extern time_t atot __P((const char *));
 extern char *fdate __P((char *, const char *, const struct tm *));
 extern int parsedate __P((const char *, struct tm *, int, int, int));
