@@ -92,7 +92,8 @@ class olist {
 
 class olist_iterator {
     olist *clist;	    // current olist
-    olink *clink;	    // current olink
+    olink *clink;	    // current olink; may be deleted before next iter.
+    olink *nlink;	    // nlink save ahead the ptr to next olink in list
   public:
     olist_iterator(olist&);
     olink *operator()();    // return next object or 0
