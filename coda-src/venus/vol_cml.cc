@@ -447,12 +447,12 @@ void ClientModifyLog::GetReintegrateable(int tid, int *nrecs) {
 	 */
 	m->tid = tid;    
 	cur_reintegration_time += this_time;
-	(*nrecs)++;
 
-	/* By sending records in blocks of 100 CMLentries, we loosen the
-	   consistency, but avoid swamping the server, which only processes
-	   the CMLent's in blocks of 100 anyways. JH */
-	if (*nrecs == 100)
+	/*
+	 * By sending records in blocks of 100 CMLentries, we avoid
+	 * overloading the server. JH
+	 */
+	if (++(*nrecs) == 100)
 	    break;
     }
 
