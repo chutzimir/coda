@@ -44,6 +44,7 @@ extern void SetMallocCheckLevel(int);
 }
 #endif __cplusplus
 
+#include <new.h>
 #include <stdarg.h>
 #include <newplumb.h>
 
@@ -61,8 +62,8 @@ extern void SetMallocCheckLevel(int);
 #define UNWINDOBJ "/usr/mond/bin/unwind"
 
 /* Command line arguments */
-char WorkingDir[256] =	"/vmon/log";	        /* -wd */
-char DataBaseName[256] = "codastats";     	/* -db */
+char WorkingDir[256] =	"/usr/mond/log";        /* -wd */
+char DataBaseName[256] = "codastats2";     	/* -db */
 int VmonPort =	1356;				/* -mondp */
 int LogLevel = 0;				/* -d */
 int BufSize = 50;             		        /* -b */
@@ -70,7 +71,7 @@ int Listeners = 3;                     		/* -l */
 int LowWater = 0;                       	/* -w */
 int SleepTime = 60*60*2;                        /* -ui */
 int NoSpool = 0;                                /* -nospool */
-char *RemoveOnDone = "-r";                      /* -r(remove)/-R(!remove)*/
+char *RemoveOnDone = "-r";                      /* -r(!remove)/-R(remove)*/
 
 int started = 0;
 
@@ -96,7 +97,16 @@ PRIVATE const char *VICENM = "vice";
 
 #define	STREQ(a, b) (strcmp((a), (b)) == 0)
 
-void main(int argc, char *argv[]) {
+static void my_new_handler(void);
+
+static void my_new_handler(void) {
+	fprintf(stderr,"Ack!  new returned zero\n");
+	fflush(stderr);
+	assert(0);
+}
+
+int main(int argc, char *argv[]) {
+    set_new_handler(&my_new_handler);
     ParseArgs(argc, argv);
     SetDate();
     Log_Init();
@@ -213,6 +223,7 @@ void ListenerLWP(char *p)
     RPC2_RequestFilter VmonFilter;
     RPC2_Handle VmonHandle = 0;
     RPC2_PacketBuffer *VmonPacket = 0;
+    char *Hostname;
 
     LogMsg(1000,LogLevel,LogFile,"Starting listener number %d",listenerNo);
 
@@ -227,8 +238,9 @@ void ListenerLWP(char *p)
 	VmonFilter.ConnOrSubsys.SubsysId = MondSubsysId;
 	long code = RPC2_GetRequest(&VmonFilter, &VmonHandle, &VmonPacket, 
 				   0, 0, 0, 0);
-	LogMsg(1000,LogLevel,LogFile,"Listener %d recieved request w/ header opcode %d",
-	       listenerNo,VmonPacket->Header.Opcode);
+	Hostname = HostNameOfConn(VmonHandle);
+	LogMsg(1000,LogLevel,LogFile,"Listener %d received request w/ header opcode %d, client=%s",
+	       listenerNo,VmonPacket->Header.Opcode,Hostname);
 
 	if (VmonPacket->Header.Opcode == RPC2_NEWCONNECTION)
 	    PrintPinged(VmonHandle);
@@ -251,6 +263,8 @@ void ListenerLWP(char *p)
 	    LogMsg(1,LogLevel,LogFile, 
 		   "ExecuteRequest -> %s", RPC2_ErrorMsg((int)code));
     }
+
+  delete [] Hostname; 
 }
 
 void TalkerLWP(char *p)

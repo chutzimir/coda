@@ -62,12 +62,12 @@ extern "C" {
 /* command line arguments */
   
 /* unwindp is randomly assigned until RPC2_Init is idempotent */
-char *DataBaseName = "codastats";  	  /* -db */
-char *WorkingDir = "/vmon/log";           /* -dir */
-char *DataPrefix = "mond.data.";           /* -pre */
+char *DataBaseName = "codastats2";  	      /* -db */
+char *WorkingDir = "/usr/mond/log";           /* -dir */
+char *DataPrefix = "mond.data.";              /* -pre */
 int LogLevel = 0;                             /* -d */
-bool removeOnDone = mtrue;                     /* -R/r */
-bool doLog = mtrue;                            /* -L/l */
+bool removeOnDone = mtrue;                    /* -R/r */
+bool doLog = mtrue;                           /* -L/l */
 
 PRIVATE FILE *lockFile;
 PRIVATE bool done = mfalse;

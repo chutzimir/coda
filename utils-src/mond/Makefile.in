@@ -106,7 +106,7 @@ parselog.o: ${HEADERS} mond.h mondgen.h $(INCLDIR)/util.h datalog.h
 datalog.o: ${HEADERS} mond.h mondgen.h $(INCLDIR)/util.h datalog.h vargs.h
 
 clean:
-	rm -f *.o mond mondmon parselog sqlunlock unwind db.c mond.h \
+	rm -f *.o mond mondmon parselog sqlunlock unwind advice_unwind db.c mond.h \
 		*.client.c *.server.c *.multi.c
 
 bininstall:

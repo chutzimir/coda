@@ -36,6 +36,19 @@ static char *rcsid = "$Header$";
 /* buffer pools */
 /* TODO: think about being able to remove buffers from the pool */
 
+//
+// A Note about Copy Constructors:
+//    Copy constructors for those data classes that have specialized constructors 
+//    and destructors are not implemented.  I've created simple ones that simply
+//    cause an abort.  The reason is that the default copy constructor can cause
+//    obscure bugs in the case that the data class contains an imbedded array. 
+//    The default copy constructor will bcopy the array from the original.  If the
+//    specialized destructor knows to delete the imbedded array, you'll end up
+//    deleting the thing twice.  So, we've chosen to create simple copy constructors
+//    that abort in an obvious way to prevent new mond programmers from shooting
+//    themselves in the foot.  ;-)  If you want a copy constructor, feel free to
+//    implement one and remove the abort. 
+//
 
 class callCountArray;
 class multiCallArray;
@@ -58,10 +71,12 @@ class callCountArray {
     CallCountEntry *array;
 public:
     callCountArray(void);
+    callCountArray(callCountArray&) { abort(); }     /* Not implemented. See comment above. */
     ~callCountArray(void);
     void set(long,CallCountEntry*);
     long getSize(void) {return size;}
     CallCountEntry *getArray(void) {return array;}
+    Print(void);
 };
 
 class multiCallArray {
@@ -69,6 +84,7 @@ class multiCallArray {
     MultiCallEntry *array;
 public:
     multiCallArray();
+    multiCallArray(multiCallArray&) { abort(); }     /* Not implemented. See comment above. */
     ~multiCallArray();
     void set(long,MultiCallEntry*);
     long getSize(void) {return size;}
@@ -79,10 +95,12 @@ public:
 class vmon_data {
     vmon_data *next;
 public:
+    virtual ~vmon_data(void) =0;
     virtual void Report(void) =0;
     virtual dataClass Type(void) =0;
     virtual char *TypeName(void) =0;
     virtual void Release(void) =0;
+    virtual void Print(void);
     inline void SetNext(vmon_data* theNext) { next = theNext;  }
     inline void NotOnList(void) { next = NULL; }
     inline vmon_data *Next() { return next; }
@@ -138,8 +156,9 @@ public:
     inline dataClass Type(void) {return CLNTCALL;}
     char *TypeName(void) { return "Client Call";}
     void Release(void);
-    void Report(void) {(void) ReportClntCall(&Venus, Time, SrvCount); }
+    void Report(void) {(void) ReportClntCall(&Venus, Time, &SrvCount); }
     void init(VmonVenusId*,long,long,CallCountEntry*);
+    void Print(void);
 };
 
 class clientMCall_data : private vmon_data {
@@ -150,7 +169,7 @@ public:
     inline dataClass Type(void) {return CLNTMCALL;}
     char *TypeName(void) { return "Client Call";}
     void Release(void);
-    void Report(void) {(void) ReportClntMCall(&Venus, Time, MSrvCount); }
+    void Report(void) {(void) ReportClntMCall(&Venus, Time, &MSrvCount); }
     void init(VmonVenusId*,long,long,MultiCallEntry*);
 };
 
@@ -191,6 +210,7 @@ class advice_data : private vmon_data {
     AdviceResults *Result_Stats;
 public:
     advice_data();
+    advice_data(advice_data&) { abort(); }           /* Not implemented. See comment above. */
     ~advice_data();
     inline dataClass Type(void) {return ADVICE;}
     char *TypeName(void) { return "Client Advice Stats";}
@@ -213,6 +233,7 @@ class miniCache_data : private vmon_data {
     VmonMiniCacheStat *VFS_Stats;
 public:
     miniCache_data();
+    miniCache_data(miniCache_data&) { abort(); }     /* Not implemented. See comment above. */
     ~miniCache_data();
     inline dataClass Type(void) {return MINICACHE;}
     char *TypeName(void) {return "Client MiniCache Stats";}
@@ -259,8 +280,8 @@ public:
     dataClass Type(void) { return SRVCALL; }
     char *TypeName(void) { return "Server Call";}
     void Release(void);
-    void Report(void) { (void) ReportSrvrCall(&Vice, Time, CBCount, ResCount, 
-					      SmonCount, VolDCount, MultiCount, &Stats); }
+    void Report(void) { (void) ReportSrvrCall(&Vice, Time, &CBCount, &ResCount, 
+					      &SmonCount, &VolDCount, &MultiCount, &Stats); }
     void init(SmonViceId*,unsigned long, long, CallCountEntry*, long,
 	      CallCountEntry*, long, CallCountEntry*, long, CallCountEntry*,
 	      long, MultiCallEntry*, SmonStatistics*);
@@ -285,6 +306,7 @@ public:
     void init(SmonViceId*, RPC2_Unsigned, VolumeId, RPC2_Integer,
 	      RPC2_Integer, RPC2_Integer, RPC2_Integer, ResOpEntry[]);
     resEvent_data(void);
+    resEvent_data(resEvent_data&) { abort(); }       /* Not implemented. See comment above. */
     //no destructor is needed
 };
 
@@ -311,6 +333,7 @@ class iotInfo_data : private vmon_data {
     RPC2_String AppName;
 public:
     iotInfo_data();
+    iotInfo_data(iotInfo_data&) { abort(); }         /* Not implemented. See comment above. */
     ~iotInfo_data();
     inline dataClass Type(void) {return IOTINFO;}
     char *TypeName(void) { return "Client IOT Info";}
@@ -327,8 +350,6 @@ class iotStat_data : private vmon_data {
     RPC2_Integer Time;
     IOT_STAT Stats;
 public:
-    iotStat_data();
-    ~iotStat_data();
     inline dataClass Type(void) {return IOTSTAT;}
     char *TypeName(void) { return "Client IOT Stat";}
     void Release(void);
@@ -344,8 +365,6 @@ class subtree_data : private vmon_data {
     RPC2_Integer Time;
     LocalSubtreeStats Stats;
 public:
-    subtree_data();
-    ~subtree_data();
     inline dataClass Type(void) {return SUBTREE;}
     char *TypeName(void) { return "Client Localized Subtree Stats";}
     void Release(void);
@@ -361,8 +380,6 @@ class repair_data : private vmon_data {
     RPC2_Integer Time;
     RepairSessionStats Stats;
 public:
-    repair_data();
-    ~repair_data();
     inline dataClass Type(void) {return REPAIR;}
     char *TypeName(void) { return "Client Local/Global Repair Session Stats";}
     void Release(void);
@@ -378,8 +395,6 @@ class rwsStat_data : private vmon_data {
     RPC2_Integer Time;
     ReadWriteSharingStats Stats;
 public:
-    rwsStat_data();
-    ~rwsStat_data();
     inline dataClass Type(void) {return RWSSTAT;}
     char *TypeName(void) { return "Client RWS Stat";}
     void Release(void);
@@ -405,6 +420,7 @@ struct Histogram {
     HistoElem *buckets;
 
     Histogram();
+    Histogram(Histogram&) { abort(); }	            /* Not implemented. See comment above. */
     ~Histogram();
     void set(long _size, HistoElem _buckets[]);
 };
@@ -429,9 +445,9 @@ public:
     void Release(void);
     void Report(void) 
     { (void) ReportRvmResEvent(Vice, Time, VolID, FileRes, DirRes,
-			       LogSizeHisto, LogMaxHisto, Conflicts,
-			       SuccHierHist, FailHierHist, ResLog,
-			       VarLogHisto, LogSize); }
+			       &LogSizeHisto, &LogMaxHisto, Conflicts,
+			       &SuccHierHist, &FailHierHist, ResLog,
+			       &VarLogHisto, &LogSize); }
     void init(SmonViceId, unsigned long, unsigned long, FileResStats,
 	      DirResStats, long, HistoElem[], long, HistoElem[], 
 	      ResConflictStats, long, HistoElem[], long, HistoElem[], 

@@ -48,7 +48,16 @@ PRIVATE int InsertResOpArray();
 /*PRIVATE int InsertHistogram();*/
 
 /* bogus C++ linking problems */
-extern void LogMsg__FiT1P6_iobufPce(int,int,FILE*,char*,...);
+
+/* The following is the g++ name-mangled version of LogMsg */
+extern void LogMsg__FiiP6_iobufPce(int,int,FILE*,char*,...);
+#define LogMsg LogMsg__FiiP6_iobufPce
+
+/* The following is the AT&T C++ name-mangled version of LogMsg */
+/*
+ * extern void LogMsg__FiT1P6_iobufPce(int,int,FILE*,char*,...);
+ * #define LogMsg LogMsg__FiT1P6_iobufPce
+ */
 
 int ReportSession(Venus, Session, Volume, User, AVSG, StartTime,
 		   EndTime, CETime, Events, Stats, CacheStats)
@@ -94,7 +103,7 @@ CacheStatistics *CacheStats;
     VmonSessionEvent *Event;    
     int i;
 
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,
+    LogMsg(1000,LogLevel,LogFile,
 	   "SpoolSession: Venus = [%x %d], Session = %d, Volume = %x, User = %d, Time = [%d %d]",
 	      Venus->IPAddress, Venus->BirthTime, Session, Volume, User, 
 	      StartTime, EndTime);
@@ -131,7 +140,7 @@ CacheStatistics *CacheStats;
 
     if (sqlca.sqlcode != SQLNOTFOUND && sesstime <= inserttime)
     {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
 	       "Duplicate session: venus_index (%d) session (%d) volume (%x) uid (%d)",
 		venusindex, session, volume, uid);
 	return code;
@@ -161,7 +170,7 @@ CacheStatistics *CacheStats;
 		return code;
 	    } else {
 		$ commit work;
-		LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+		LogMsg(100,LogLevel,LogFile,
 			"Obsolete session deleted successfully");
 	    }
 	}
@@ -416,7 +425,7 @@ VmonCommEventType Type;
     $ int serverup;
     $ long dummy;
 
-    LogMsg__FiT1P6_iobufPce(1000, LogLevel,LogFile,
+    LogMsg(1000, LogLevel,LogFile,
 	   "SpoolCommEvent: Venus = [%x %d], Server = %x, Time = %d, Type = %d",
 	      Venus->IPAddress, Venus->BirthTime, ServerIPAddress, Time, 
 	      Type);
@@ -437,7 +446,7 @@ VmonCommEventType Type;
     CheckSQL("Looking for comm event",0);
     if (sqlca.sqlcode != SQLNOTFOUND)
     {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate comm event: venus_index (%d) server (%x) time (%d)",
 		venusindex, server, time);
     } else {
@@ -468,7 +477,7 @@ CallCountEntry *SrvCount;
     CheckSQL("Looking for entry in client_rvm_stats",0);
     
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate client call event record: venus_index (%d), time (%d)",
 	       venusindex, time);
 	return code;
@@ -524,7 +533,7 @@ MultiCallEntry *MSrvCount;
     CheckSQL("Looking for entry in client_rvm_stats",0);
     
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate client call event record: venus_index (%d), time (%d)",
 	       venusindex, time);
 	return code;
@@ -587,7 +596,7 @@ RvmStatistics *Stats;
     CheckSQL("Looking for entry in client_rvm_stats",0);
     
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate client call event record: venus_index (%d), time (%d)",
 	       venusindex, time);
 	return code;
@@ -657,7 +666,7 @@ VCBStatistics *Stats;
     $ long nostamp;
     $ long nostampobjs;
 
-    LogMsg__FiT1P6_iobufPce(1000, LogLevel,LogFile,
+    LogMsg(1000, LogLevel,LogFile,
 	"SpoolVCBRecord: Venus = [%x %d], InitTime = %d, Time = %d, Volume = 0x%x",
 	Venus->IPAddress, Venus->BirthTime, VenusInit, Time, Volume);
 
@@ -689,7 +698,7 @@ VCBStatistics *Stats;
     CheckSQL("Looking for entry in vcb_stats",0);
 
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate vcb event record: venus_index (%d), time (%d)",
 	       venusindex, time);
 	return code;
@@ -781,7 +790,7 @@ AdviceResults *Result_Stats;
     $ long rpc2_dead;
     $ long rpc2_othererrors;
 
-    LogMsg__FiT1P6_iobufPce(1000, LogLevel,LogFile,
+    LogMsg(1000, LogLevel,LogFile,
 	"SpoolAdviceRecord: Venus = [%x %d], Time = %d, User = %d",
 	Venus->IPAddress, Venus->BirthTime, Time, User);
 
@@ -830,7 +839,7 @@ AdviceResults *Result_Stats;
     CheckSQL("Looking for entry in advice_stats", 0);
 
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
 	       "Duplicate advice statistics record: venus_index (%d), time (%d)",
 		venusindex, time);
 	return code;
@@ -914,7 +923,7 @@ VmonMiniCacheStat *vfs_stats;
     CheckSQL("Looking for entry in mcache_events",0);
     
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-        LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+        LogMsg(100,LogLevel,LogFile,
 	       "Duplicate mini cache event record: venus_index (%d), time (%d)",
 	       venusindex, time);
 	return code;
@@ -1000,7 +1009,7 @@ RPC2_Integer RVMCount;
 
 {
 
-    int code;
+    int code = 0;
 
     $ long venusindex;
     $ long vmstarttime;
@@ -1011,10 +1020,10 @@ RPC2_Integer RVMCount;
     $ long rvmcnt;
     $ long dummy;
 
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,
+    LogMsg(1000,LogLevel,LogFile,
 	   "SpoolOverflow: Venus = [%x %d], VMTime = [%d %d], VMCount = %d",
 	       Venus->IPAddress, Venus->BirthTime, VMStartTime, VMEndTime, VMCount);
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,
+    LogMsg(1000,LogLevel,LogFile,
 	   "SpoolOverflow: Venus = [%x %d], RVMTime = [%d %d], RVMCount = %d",
 	       Venus->IPAddress, Venus->BirthTime, RVMStartTime, RVMEndTime, RVMCount);
 
@@ -1039,7 +1048,7 @@ RPC2_Integer RVMCount;
     CheckSQL("Looking for overflow event",0);
     if (!(sqlca.sqlcode == SQLNOTFOUND))
     {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
 	       "Duplicate overflow event: venus_index (%d) vm end (%d) rvm end (%d)",
 		venusindex, vmendtime, rvmendtime);
     } else {
@@ -1158,7 +1167,7 @@ SmonStatistics *Stats;
     CheckSQL("Looking for serverstats record",0);
     
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
            "Duplicate server call event record: vice_index (%ld) time (%ld)",
 	   viceindex,time);     
 	return code;
@@ -1246,24 +1255,24 @@ ResOpEntry ResOp[];
           and volume = $volid;
     CheckSQL("Looking for resolution stats record",0);
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,	
+	LogMsg(100,LogLevel,LogFile,	
 		 "Duplicate resolution stat record: vice_index (%ld) volid (%ld) time (%ld)",
 		 viceindex,volid,time);
 	return code;
     } else {
 	if (sqlca.sqlcode != SQLNOTFOUND) {
-	    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Starting transaction");	
+	    LogMsg(1000,LogLevel,LogFile,"Starting transaction");	
 	    $ begin work;
 	    code = CheckSQL("Start transaction",1);
 	    if (code != 0) {
 		$ rollback work;
 		return code;
 	    }
-	    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Deleteing from res_stats");
+	    LogMsg(1000,LogLevel,LogFile,"Deleteing from res_stats");
 	    $ delete from res_stats
 		where res_index = $resindex;
 	    code += CheckSQL("Deleting from res_stats",1);
-	    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Deleteing from res_ops");
+	    LogMsg(1000,LogLevel,LogFile,"Deleteing from res_ops");
 	    $ delete from res_ops
 		where res_index = $resindex;
 	    code += CheckSQL("Deleting from res_ops",1);
@@ -1274,33 +1283,33 @@ ResOpEntry ResOp[];
 		$commit work;
 	}
     }
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Starting transaction");	
+    LogMsg(1000,LogLevel,LogFile,"Starting transaction");	
     $ begin work;
     code = CheckSQL("Start transaction",1);
     if (code != 0) {
 	$ rollback work;
 	return code;
     }
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Inserting into res_stats");
+    LogMsg(1000,LogLevel,LogFile,"Inserting into res_stats");
     $ insert into res_stats
 	(vice_index, time, volume, high_water, alloc_number, 
 	 dealloc_number)
 	values ($viceindex,$time,$volid,$highwater,
 		$alloc,$dealloc);
     code += CheckSQL("Insert into res_stats",1);
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Getting res_index");
+    LogMsg(1000,LogLevel,LogFile,"Getting res_index");
     $ select res_index into $resindex
 	from res_stats
 	where vice_index = $viceindex
           and volume = $volid;
     code += CheckSQL("Getting res_index",1);
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Inserting res op array");
+    LogMsg(1000,LogLevel,LogFile,"Inserting res op array");
     code += InsertResOpArray(resindex,ResOpSize,ResOp);
     if (code != 0)
 	$ rollback work;
     else
 	$ commit work;
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,"Finished res record");
+    LogMsg(1000,LogLevel,LogFile,"Finished res record");
     return code;
 }
 
@@ -1329,7 +1338,7 @@ HistoElem *VarLogHisto;
 long LS_Size;
 HistoElem *LogSize;
 {
-    int code;
+    int code = 0;
     $long viceindex;
     $long time;
     $long volid;
@@ -1368,7 +1377,7 @@ HistoElem *LogSize;
     $long resindex;
     $long inserttime;
 
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,
+    LogMsg(1000,LogLevel,LogFile,
 		    "SpoolRvmResEntry: [0x%x:0x%x] @ %d",
 		    Vice->IPAddress, VolID, Time);
 
@@ -1387,7 +1396,7 @@ HistoElem *LogSize;
 
     if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime)
     {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
 	       "Duplicate RvmResEntry");
 	return code;
     } else {
@@ -1429,7 +1438,7 @@ HistoElem *LogSize;
 		return code;
 	    } else {
 		$commit work;
-		LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+		LogMsg(100,LogLevel,LogFile,
 			"Obsolete rvm res information deleted successfully");
 	    }
 	}
@@ -1529,7 +1538,7 @@ unsigned long StartTime;
 unsigned long EndTime;
 long Count;
 {
-    int code;
+    int code = 0;
 
     $long viceindex;
     $long time;
@@ -1538,7 +1547,7 @@ long Count;
     $long count;
     $long inserttime;
 
-    LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+    LogMsg(100,LogLevel,LogFile,
 	    "Spooling Server overflow");
 
     viceindex = GetViceIndex(Vice);
@@ -1555,7 +1564,7 @@ long Count;
     CheckSQL("Looking for server overflow event",0);
     if (!(sqlca.sqlcode == SQLNOTFOUND))
     {
-	LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	LogMsg(100,LogLevel,LogFile,
 	       "Duplicate overflow event: vice_index (%d) time (%d)",
 	       viceindex, time);
     } else {
@@ -2068,16 +2077,16 @@ PRIVATE int CheckSQL(where,fatal)
 char *where;
 int fatal;
 {
-    LogMsg__FiT1P6_iobufPce(1000,LogLevel,LogFile,
+    LogMsg(1000,LogLevel,LogFile,
 	     "Checking: %s",where);
     if (sqlca.sqlcode == 0 || sqlca.sqlcode == SQLNOTFOUND) return 0;
 
     if (fatal) 
-	LogMsg__FiT1P6_iobufPce(0,LogLevel,LogFile,
+	LogMsg(0,LogLevel,LogFile,
 	       "%s: Fatal SQL Error %d (%s)", where, sqlca.sqlcode,
 						       sqlca.sqlerrm);
     else
-        LogMsg__FiT1P6_iobufPce(1,LogLevel,LogFile,
+        LogMsg(1,LogLevel,LogFile,
 	       "%s: SQL Error %d (%s)", where, sqlca.sqlcode,
                                                  sqlca.sqlerrm);
     return -1;
@@ -2111,11 +2120,11 @@ RPC2_String *AppName;
     $ long pred_num;
     $ long succ_num;
 
-    LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolIotInfoRecord: Venus = [%x %d]",
+    LogMsg(100, LogLevel,LogFile, "SpoolIotInfoRecord: Venus = [%x %d]",
 			    Venus->IPAddress, Venus->BirthTime);
-    LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolIotInfoRecord: AppName = %d AppLen = %d\n",
+    LogMsg(100, LogLevel,LogFile, "SpoolIotInfoRecord: AppName = %d AppLen = %d\n",
 			    AppName, AppNameLen);
-    LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolIotInfoRecord: Tid = %d ResOpt = %d ElapsedTime = %d ReadSetSize = %d WriteSetSize = %d ReadVolNum = %d WriteVolNum = %d Validation = %d InvalidSize = %d BackupObjNum = %d LifeCycle = %d PredNum = %d SuccNum = %d\n", Info->Tid, Info->ResOpt, Info->ElapsedTime, Info->ReadSetSize, Info->WriteSetSize, Info->ReadVolNum, Info->WriteVolNum, Info->Validation, Info->InvalidSize, Info->BackupObjNum, Info->LifeCycle, Info->PredNum, Info->SuccNum);
+    LogMsg(100, LogLevel,LogFile, "SpoolIotInfoRecord: Tid = %d ResOpt = %d ElapsedTime = %d ReadSetSize = %d WriteSetSize = %d ReadVolNum = %d WriteVolNum = %d Validation = %d InvalidSize = %d BackupObjNum = %d LifeCycle = %d PredNum = %d SuccNum = %d\n", Info->Tid, Info->ResOpt, Info->ElapsedTime, Info->ReadSetSize, Info->WriteSetSize, Info->ReadVolNum, Info->WriteVolNum, Info->Validation, Info->InvalidSize, Info->BackupObjNum, Info->LifeCycle, Info->PredNum, Info->SuccNum);
 
     venus_index = GetVenusIndex(Venus);
     strncpy(app_name, AppName, 10);
@@ -2181,11 +2190,11 @@ IOT_STAT *Stats;
 	$ long resolved;
 	$ long repaired;
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile,
+	LogMsg(100, LogLevel,LogFile,
 		"SpoolIotStatsRecord: Venus = [%x %d], Time = %d",
 		Venus->IPAddress, Venus->BirthTime, Time);
 	
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolIotStatsRecord: MaxElapsedTime = %d AvgElapsedTime = %d MaxReadSetSize = %d AvgReadSetSize = %d MaxWriteSetSize = %d AvgWriteSetSize = %d MaxReadVolNum = %d AvgReadVolNum = %d MaxWriteVolNum = %d AvgWriteVolNum = %d Committed = %d Pending = %d Resolved = %d Repaired = %d\n", Stats->MaxElapsedTime, Stats->AvgElapsedTime, Stats->MaxReadSetSize, Stats->AvgReadSetSize, Stats->MaxWriteSetSize, Stats->AvgWriteSetSize, Stats->MaxReadVolNum, Stats->AvgReadVolNum, Stats->MaxWriteVolNum, Stats->AvgWriteVolNum, Stats->Committed, Stats->Pending, Stats->Resolved, Stats->Repaired);
+	LogMsg(100, LogLevel,LogFile, "SpoolIotStatsRecord: MaxElapsedTime = %d AvgElapsedTime = %d MaxReadSetSize = %d AvgReadSetSize = %d MaxWriteSetSize = %d AvgWriteSetSize = %d MaxReadVolNum = %d AvgReadVolNum = %d MaxWriteVolNum = %d AvgWriteVolNum = %d Committed = %d Pending = %d Resolved = %d Repaired = %d\n", Stats->MaxElapsedTime, Stats->AvgElapsedTime, Stats->MaxReadSetSize, Stats->AvgReadSetSize, Stats->MaxWriteSetSize, Stats->AvgWriteSetSize, Stats->MaxReadVolNum, Stats->AvgReadVolNum, Stats->MaxWriteVolNum, Stats->AvgWriteVolNum, Stats->Committed, Stats->Pending, Stats->Resolved, Stats->Repaired);
 
 	time = Time;
 	venus_index = GetVenusIndex(Venus);
@@ -2209,7 +2218,7 @@ IOT_STAT *Stats;
 	CheckSQL("Looking for entry in iot_stats", 0);
 
 	if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	    LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	    LogMsg(100,LogLevel,LogFile,
 	       "Duplicate iot statistics record: venus_index (%d), time (%d)",
 		venus_index, time);
 	    return code;
@@ -2277,11 +2286,11 @@ LocalSubtreeStats *Stats;
 	$ long max_mutation_num;
 	$ long avg_mutation_num;
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile,
+	LogMsg(100, LogLevel,LogFile,
 		"SpoolSubtreeStatsRecord: Venus = [%x %d], Time = %d",
 		Venus->IPAddress, Venus->BirthTime, Time);
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolSubtreeStatsRecord: SubtreeNum = %d MaxSubtreeSize = %d AvgSubtreeSize = %d MaxSubtreeHgt = %d AvgSubtreeHgt = %d MaxMutationNum = %d AvgMutationNum = %d\n", Stats->SubtreeNum, Stats->MaxSubtreeSize, Stats->AvgSubtreeSize, Stats->MaxSubtreeHgt, Stats->AvgSubtreeHgt, Stats->MaxMutationNum, Stats->AvgMutationNum);
+	LogMsg(100, LogLevel,LogFile, "SpoolSubtreeStatsRecord: SubtreeNum = %d MaxSubtreeSize = %d AvgSubtreeSize = %d MaxSubtreeHgt = %d AvgSubtreeHgt = %d MaxMutationNum = %d AvgMutationNum = %d\n", Stats->SubtreeNum, Stats->MaxSubtreeSize, Stats->AvgSubtreeSize, Stats->MaxSubtreeHgt, Stats->AvgSubtreeHgt, Stats->MaxMutationNum, Stats->AvgMutationNum);
 
 	time = Time;
 	venus_index = GetVenusIndex(Venus);
@@ -2298,7 +2307,7 @@ LocalSubtreeStats *Stats;
 	CheckSQL("Looking for entry in subtree_stats", 0);
 
 	if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	    LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	    LogMsg(100,LogLevel,LogFile,
 	       "Duplicate subtree statistics record: venus_index (%d), time (%d)",
 		venus_index, time);
 	    return code;
@@ -2383,11 +2392,11 @@ RepairSessionStats *Stats;
 	$ long remove_update_num;
 
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile,
+	LogMsg(100, LogLevel,LogFile,
 		"SpoolRepairStatsRecord: Venus = [%x %d], Time = %d",
 		Venus->IPAddress, Venus->BirthTime, Time);
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolRepairStatsRecord: SessionNum = %d CommitNum = %d AbortNum = %d CheckNum = %d PreserveNum = %d DiscardNum = %d RemoveNum = %d GlobalViewNum = %d LocalViewNum = %d KeepLocalNum = %d ListLocalNum = %d NewCommand1Num = %d NewCommand2Num = %d NewCommand3Num = %d NewCommand4Num = %d NewCommand5Num = %d NewCommand6Num = %d NewCommand7Num = %d NewCommand8Num = %d MissTargetNum = %d MissParentNum = %d AclDenyNum = %d UpdateUpdateNum = %d NameNameNum = %d RemoveUpdateNum = %d\n", Stats->SessionNum, Stats->CommitNum, Stats->AbortNum, Stats->CheckNum, Stats->PreserveNum, Stats->DiscardNum, Stats->RemoveNum, Stats->GlobalViewNum, Stats->LocalViewNum, Stats->KeepLocalNum, Stats->ListLocalNum, Stats->NewCommand1Num, Stats->NewCommand2Num, Stats->NewCommand3Num, Stats->NewCommand4Num, Stats->NewCommand5Num, Stats->NewCommand6Num, Stats->NewCommand7Num, Stats->NewCommand8Num, Stats->MissTargetNum, Stats->MissParentNum, Stats->AclDenyNum, Stats->UpdateUpdateNum, Stats->NameNameNum, Stats->RemoveUpdateNum);
+	LogMsg(100, LogLevel,LogFile, "SpoolRepairStatsRecord: SessionNum = %d CommitNum = %d AbortNum = %d CheckNum = %d PreserveNum = %d DiscardNum = %d RemoveNum = %d GlobalViewNum = %d LocalViewNum = %d KeepLocalNum = %d ListLocalNum = %d NewCommand1Num = %d NewCommand2Num = %d NewCommand3Num = %d NewCommand4Num = %d NewCommand5Num = %d NewCommand6Num = %d NewCommand7Num = %d NewCommand8Num = %d MissTargetNum = %d MissParentNum = %d AclDenyNum = %d UpdateUpdateNum = %d NameNameNum = %d RemoveUpdateNum = %d\n", Stats->SessionNum, Stats->CommitNum, Stats->AbortNum, Stats->CheckNum, Stats->PreserveNum, Stats->DiscardNum, Stats->RemoveNum, Stats->GlobalViewNum, Stats->LocalViewNum, Stats->KeepLocalNum, Stats->ListLocalNum, Stats->NewCommand1Num, Stats->NewCommand2Num, Stats->NewCommand3Num, Stats->NewCommand4Num, Stats->NewCommand5Num, Stats->NewCommand6Num, Stats->NewCommand7Num, Stats->NewCommand8Num, Stats->MissTargetNum, Stats->MissParentNum, Stats->AclDenyNum, Stats->UpdateUpdateNum, Stats->NameNameNum, Stats->RemoveUpdateNum);
 
 	time = Time;
 	venus_index = GetVenusIndex(Venus);
@@ -2423,7 +2432,7 @@ RepairSessionStats *Stats;
 	CheckSQL("Looking for entry in repair_stats", 0);
 
 	if (sqlca.sqlcode != SQLNOTFOUND && time <= inserttime) {
-	    LogMsg__FiT1P6_iobufPce(100,LogLevel,LogFile,
+	    LogMsg(100,LogLevel,LogFile,
 	       "Duplicate repair statistics record: venus_index (%d), time (%d)",
 		venus_index, time);
 	    return code;
@@ -2490,11 +2499,11 @@ ReadWriteSharingStats *Stats;
 	$ long disc_read_count;
 	$ long disc_duration;
 
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile,
+	LogMsg(100, LogLevel,LogFile,
 		"SpoolRwsStatsRecord: Venus = [%x %d], Time = %d",
 		Venus->IPAddress, Venus->BirthTime, Time);
 	
-	LogMsg__FiT1P6_iobufPce(100, LogLevel,LogFile, "SpoolRwsStatsRecord: Vid = %d RwSharingCount = %d DiscReadCount = %d DiscDuration = %d\n", Stats->Vid, Stats->RwSharingCount, Stats->DiscReadCount, Stats->DiscDuration);
+	LogMsg(100, LogLevel,LogFile, "SpoolRwsStatsRecord: Vid = %d RwSharingCount = %d DiscReadCount = %d DiscDuration = %d\n", Stats->Vid, Stats->RwSharingCount, Stats->DiscReadCount, Stats->DiscDuration);
 
 	time = Time;
 	venus_index = GetVenusIndex(Venus);

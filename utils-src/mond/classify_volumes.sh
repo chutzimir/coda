@@ -17,7 +17,7 @@ set i = 0
 # set defaults - make as appropriate for environment
 #
 
-set DATABASE = codastats
+set DATABASE = codastats2
 
 set i = 1
 

@@ -31,9 +31,9 @@ extern long ReportSession(VmonVenusId*, VmonSessionId, VolumeId, UserId,
 extern long ReportCommEvent(VmonVenusId *, RPC2_Unsigned, long, 
 			    RPC2_Unsigned, VmonCommEventType);
 
-extern long ReportClntCall(VmonVenusId*, long, class callCountArray);
+extern long ReportClntCall(VmonVenusId*, long, class callCountArray*);
 
-extern long ReportClntMCall(VmonVenusId*, long, class multiCallArray);
+extern long ReportClntMCall(VmonVenusId*, long, class multiCallArray*);
 
 extern long ReportClntRVM(VmonVenusId*, long, RvmStatistics*);
 
@@ -49,18 +49,18 @@ extern long ReportOverflow(VmonVenusId *, RPC2_Unsigned, RPC2_Unsigned,
 			   RPC2_Integer, RPC2_Unsigned, RPC2_Unsigned, 
 			   RPC2_Integer);
 
-extern long ReportSrvrCall(SmonViceId*,unsigned long, class callCountArray, 
-			   class callCountArray, class callCountArray, 
-			   class callCountArray, class multiCallArray, 
+extern long ReportSrvrCall(SmonViceId*,unsigned long, class callCountArray*, 
+			   class callCountArray*, class callCountArray*, 
+			   class callCountArray*, class multiCallArray*, 
 			   SmonStatistics*);
 
 extern long ReportResEvent(SmonViceId*,RPC2_Unsigned, VolumeId, RPC2_Integer, 
 			   RPC2_Integer, RPC2_Integer, RPC2_Integer, ResOpEntry[]);
 
 extern long ReportRvmResEvent(SmonViceId, unsigned long, unsigned long, FileResStats,
-			      DirResStats, class Histogram, class Histogram, 
-			      ResConflictStats, class Histogram, class Histogram, 
-			      ResLogStats, class Histogram, class Histogram);
+			      DirResStats, class Histogram*, class Histogram*, 
+			      ResConflictStats, class Histogram*, class Histogram*, 
+			      ResLogStats, class Histogram*, class Histogram*);
 
 extern long ReportSrvOverflow(SmonViceId *, unsigned long, unsigned long, 
 			      unsigned long, long);

@@ -111,7 +111,7 @@ int LogLevel = 0;
 FILE *DataFile = stdin;
 FILE *LogFile = stdin;
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
     int recordCounts[SRVOVRFLW+1];
     for (int i=0;i<=SRVOVRFLW;i++)
@@ -121,7 +121,9 @@ void main(int argc, char *argv[]) {
     bool error = mfalse;
     long rt;
     long count;
+    long counter = 0;
     while (done == mfalse) {
+	counter++;
 	count = ScanPastMagicNumber(&rt);
 	if (count > 0) {
 	    LogMsg(0,LogLevel,LogFile,
@@ -132,6 +134,7 @@ void main(int argc, char *argv[]) {
 	    LogMsg(0,LogLevel,LogFile,"End of data file");
 	    LogErrorPoint(recordCounts);
 	}
+	printf("Record #%d:  Type=%d\n", counter, rt); 
 	switch(rt) {
 	case -1:
 	    done = mtrue;

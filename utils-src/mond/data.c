@@ -42,6 +42,11 @@ extern "C" {
 #include "data.h"
 #include "util.h"
 
+
+extern int LogLevel;
+extern FILE *LogFile;
+
+
 /*
 ** global buffer pools -- one per data type
 */
@@ -89,6 +94,13 @@ void callCountArray::set(long newSize, CallCountEntry *newArray)
 	array[i].counttime = newArray[i].counttime;
     }
 }
+
+callCountArray::Print(void) {
+  LogMsg(0, LogLevel, LogFile, "callCountArray::Print:  this=%x, size=%d", this, size);
+  for (int i = 0; i < size; i++) 
+    LogMsg(0, LogLevel, LogFile, "callCountArray::Print: array[%d] = <%s, %d, %d, %d, %d, %d>", i, array[i].name, array[i].countent, array[i].countexit, array[i].tsec, array[i].tusec, array[i].counttime);
+}
+
 callCountArray::callCountArray(void) {
     size = 0;
     array = NULL;
@@ -141,6 +153,20 @@ void multiCallArray::set(long newSize, MultiCallEntry *newArray) {
     }
 }
 
+vmon_data::~vmon_data(void) 
+{ 
+  // This destructor *must* exist!  
+  // See explanation in "Effective C++" book by Meyers.
+}
+
+void vmon_data::Print(void) 
+{ 
+  // This is the default Print routine for vmon_data (and its
+  // subclasses.  If a Print() routine hasn't been specifically
+  // defined for a particular subclass, then we aren't interested
+  // in printing anything and so we do nothing.
+}
+
 void session_data::init(VmonVenusId *venus, VmonSessionId session, 
 			VolumeId volume, UserId user, VmonAVSG *avsg, 
 			unsigned long starttime, unsigned long endtime, 
@@ -150,8 +176,6 @@ void session_data::init(VmonVenusId *venus, VmonSessionId session,
 {
     int i;
     VmonSessionEvent *se1, se2;
-    extern int LogLevel;
-    extern FILE *LogFile;
     
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
@@ -217,6 +241,13 @@ void clientCall_data::init(VmonVenusId *venus, long time, long scsize,
 void clientCall_data::Release(void)
 {
     clientCall_pool.putSlot((vmon_data *) this);
+}
+
+void clientCall_data::Print(void)
+{
+  LogMsg(0, LogLevel, LogFile, "clientCall_data::Print: this = %x; Venus = %x; Time = %d\n", 
+	 this, Venus.IPAddress, Time);
+  SrvCount.Print();
 }
 
 void clientMCall_data::init(VmonVenusId *venus, long time, long mscsize,
@@ -287,9 +318,6 @@ void advice_data::init(VmonVenusId *venus,
 		       unsigned long result_size, 
 		       AdviceResults result_stats[])
 {
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
     Time = time;
@@ -527,11 +555,13 @@ void srvOverflow_data::Release(void)
     srvOverflow_pool.putSlot((vmon_data *) this);
 }
 
-iotInfo_data::iotInfo_data()
-{    
+iotInfo_data::iotInfo_data(void)
+{
+    AppNameLen = 0;
+    AppName = NULL;
 }
 
-iotInfo_data::~iotInfo_data()
+iotInfo_data::~iotInfo_data(void)
 {
     delete [] AppName;
 }
@@ -539,10 +569,6 @@ iotInfo_data::~iotInfo_data()
 void iotInfo_data::init(VmonVenusId *venus, IOT_INFO *info,
 			RPC2_Integer appnamelen, RPC2_String appname)
 {
-    /* for debug purposes */
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
 
@@ -569,20 +595,8 @@ void iotInfo_data::Release(void)
     iotInfo_pool.putSlot((vmon_data *) this);
 }
 
-iotStat_data::iotStat_data()
-{
-}
-
-iotStat_data::~iotStat_data()
-{
-}
-
 void iotStat_data::init(VmonVenusId *venus, RPC2_Integer time, IOT_STAT *stats)
 {
-    /* for debug purposes */
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
     Time = time;
@@ -609,20 +623,9 @@ void iotStat_data::Release(void)
     iotStat_pool.putSlot((vmon_data *) this);
 }
 
-subtree_data::subtree_data()
-{
-}
-
-subtree_data::~subtree_data()
-{
-}
-
 void subtree_data::init(VmonVenusId *venus, RPC2_Integer time,
 			LocalSubtreeStats *stats)
 {
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
     Time = time;
@@ -641,20 +644,9 @@ void subtree_data::Release(void)
     subtree_pool.putSlot((vmon_data *) this);
 }
 
-repair_data::repair_data()
-{
-}
-
-repair_data::~repair_data()
-{
-}
-
 void repair_data::init(VmonVenusId *venus, RPC2_Integer time,
 		       RepairSessionStats *stats)
 {
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
     Time = time;
@@ -692,20 +684,8 @@ void repair_data::Release(void)
     repair_pool.putSlot((vmon_data *) this);
 }
 
-rwsStat_data::rwsStat_data()
-{
-}
-
-rwsStat_data::~rwsStat_data()
-{
-}
-
 void rwsStat_data::init(VmonVenusId *venus, RPC2_Integer time, ReadWriteSharingStats *stats)
 {
-    /* for debug purposes */
-    extern int LogLevel;
-    extern FILE *LogFile;
-
     Venus.IPAddress = venus->IPAddress;
     Venus.BirthTime = venus->BirthTime;
     Time = time;

@@ -59,7 +59,7 @@ PRIVATE void PutCallCountArray(long,CallCountEntry[]);
 PRIVATE void PutMultiCallArray(long,MultiCallEntry[]);
 PRIVATE void PutFileResStats(FileResStats FileRes);
 PRIVATE void PutDirResStats(DirResStats DirRes);
-PRIVATE void PutHistogram(Histogram hist);
+PRIVATE void PutHistogram(Histogram *hist);
 PRIVATE void PutResConflictStats(ResConflictStats Conflicts);
 PRIVATE void PutResLogStats(ResLogStats ResLog);
 PRIVATE void PutAdviceStats(AdviceStatistics*);
@@ -114,28 +114,28 @@ long ReportCommEvent(VmonVenusId *Venus, RPC2_Unsigned ServerIPAddress,
 }
 
 long ReportClntCall(VmonVenusId *Venus, long Time, 
-		    class callCountArray SrvCount) 
+		    class callCountArray *SrvCount) 
 {
     int code = 0;
 
     PutLong((long) CLNTCALL_TAG);
     PutVenusId(Venus);
     PutLong(Time);
-    PutCallCountArray(SrvCount.getSize(),SrvCount.getArray());
+    PutCallCountArray(SrvCount->getSize(),SrvCount->getArray());
     PutLong((long) END_GUARD);
 
     return code;
 }
 
 long ReportClntMCall(VmonVenusId *Venus, long Time, 
-		     class multiCallArray MSrvCount) 
+		     class multiCallArray *MSrvCount) 
 {
     int code = 0;
 
     PutLong((long) CLNTMCALL_TAG);
     PutVenusId(Venus);
     PutLong(Time);
-    PutMultiCallArray(MSrvCount.getSize(),MSrvCount.getArray());
+    PutMultiCallArray(MSrvCount->getSize(),MSrvCount->getArray());
     PutLong((long) END_GUARD);
 
     return code;
@@ -179,7 +179,6 @@ long ReportAdviceCall(VmonVenusId *Venus, long Time,
     int code = 0;
 
     
-    printf("E ReportAdviceCall()\n");
     PutLong((long) ADVICE_TAG);
     PutVenusId(Venus);
     PutLong(Time);
@@ -231,22 +230,22 @@ long ReportOverflow(VmonVenusId *Venus, RPC2_Unsigned VMStartTime,
 }
 
 long ReportSrvrCall(SmonViceId *Vice, RPC2_Unsigned Time, 
-		    class callCountArray CBCount,
-		    class callCountArray ResCount,
-		    class callCountArray SmonCount,
-		    class callCountArray VolDCount,
-		    class multiCallArray MultiCount,
+		    class callCountArray *CBCount,
+		    class callCountArray *ResCount,
+		    class callCountArray *SmonCount,
+		    class callCountArray *VolDCount,
+		    class multiCallArray *MultiCount,
 		    SmonStatistics *Stats)
 {
     int code = 0;
     PutLong((long) SRVCALL_TAG);
     PutViceId(Vice);
     PutLong(Time);
-    PutCallCountArray(CBCount.getSize(),CBCount.getArray());
-    PutCallCountArray(ResCount.getSize(),ResCount.getArray());
-    PutCallCountArray(SmonCount.getSize(),SmonCount.getArray());
-    PutCallCountArray(VolDCount.getSize(),VolDCount.getArray());
-    PutMultiCallArray(MultiCount.getSize(),MultiCount.getArray());
+    PutCallCountArray(CBCount->getSize(),CBCount->getArray());
+    PutCallCountArray(ResCount->getSize(),ResCount->getArray());
+    PutCallCountArray(SmonCount->getSize(),SmonCount->getArray());
+    PutCallCountArray(VolDCount->getSize(),VolDCount->getArray());
+    PutMultiCallArray(MultiCount->getSize(),MultiCount->getArray());
     PutSmonStatistics(Stats);
     PutLong((long) END_GUARD);
     
@@ -276,10 +275,10 @@ long ReportResEvent(SmonViceId *Vice, RPC2_Unsigned Time,
 
 long ReportRvmResEvent(SmonViceId Vice, unsigned long Time, unsigned long VolID, 
 		       FileResStats FileRes, DirResStats DirRes, 
-		       Histogram LogSizeHisto, Histogram LogMaxHisto, 
-		       ResConflictStats Conflicts, Histogram SuccHierHist, 
-		       Histogram FailHierHist, ResLogStats ResLog, 
-		       Histogram VarLogHisto, Histogram LogSize) {
+		       Histogram *LogSizeHisto, Histogram *LogMaxHisto, 
+		       ResConflictStats Conflicts, Histogram *SuccHierHist, 
+		       Histogram *FailHierHist, ResLogStats ResLog, 
+		       Histogram *VarLogHisto, Histogram *LogSize) {
     long code =0;
     
     PutLong((long) SRVRVMRES_TAG);
@@ -343,7 +342,6 @@ long ReportIotInfoCall(VmonVenusId *Venus, IOT_INFO *Info, RPC2_Integer AppNameL
 		       RPC2_String AppName)
 {
     long code = 0;
-    printf("E ReportIotInfoCall()\n");
     PutLong((long)IOTINFO_TAG);
     PutVenusId(Venus);
 
@@ -379,7 +377,6 @@ void PutIotStats(IOT_STAT *stats)
 long ReportIotStatsCall(VmonVenusId *Venus, RPC2_Integer Time, IOT_STAT *Stats)
 {
     long code = 0;
-    printf("E ReportIotStatsCall()\n");
     PutLong((long)IOTSTAT_TAG);
     PutVenusId(Venus);
     PutLong(Time);
@@ -407,7 +404,6 @@ void PutSubtreeStats(LocalSubtreeStats *stats)
 long ReportSubtreeCall(VmonVenusId *Venus, RPC2_Integer Time, LocalSubtreeStats *Stats)
 {
     long code = 0;
-    printf("E ReportSubtreeCall()\n");
     PutLong((long)SUBTREE_TAG);
     PutVenusId(Venus);
     PutLong(Time);
@@ -453,7 +449,6 @@ void PutRepairStats(RepairSessionStats *stats)
 long ReportRepairCall(VmonVenusId *Venus, RPC2_Integer Time, RepairSessionStats *Stats)
 {
     long code = 0;
-    printf("E ReportRepairCall()\n");
     PutLong((long)REPAIR_TAG);
     PutVenusId(Venus);
     PutLong(Time);
@@ -477,7 +472,6 @@ void PutRwsStats(ReadWriteSharingStats *stats)
 long ReportRwsStatsCall(VmonVenusId *Venus, RPC2_Integer Time, ReadWriteSharingStats *Stats)
 {
     long code = 0;
-    printf("E ReportRwsStatsCall()\n");
     PutLong((long)RWSSTAT_TAG);
     PutVenusId(Venus);
     PutLong(Time);
@@ -688,11 +682,11 @@ PRIVATE void PutDirResStats(DirResStats DirRes) {
 	Die("PutDirResStats: fwrite");
 }
 
-PRIVATE void PutHistogram(Histogram hist) {
+PRIVATE void PutHistogram(Histogram *hist) {
 
-    PutLong(hist.size);
-    for (int i=0; i<hist.size; i++)
-	PutLong(hist.buckets[i].bucket);
+    PutLong(hist->size);
+    for (int i=0; i<hist->size; i++)
+	PutLong(hist->buckets[i].bucket);
 
 }
 
@@ -754,7 +748,6 @@ PRIVATE void PutVCBStats(VCBStatistics *stats)
 
 PRIVATE void PutAdviceStats(AdviceStatistics *stats)
 {
-	printf("E PutAdviceStats()\n");
     PutLong(stats->NotEnabled);
     PutLong(stats->NotValid);
     PutLong(stats->Outstanding);
@@ -766,7 +759,6 @@ PRIVATE void PutAdviceStats(AdviceStatistics *stats)
 
 PRIVATE void PutCallStatArray(long size, AdviceCalls array[])
 {
-	printf("E PutCallStatArray()\n");
     PutLong(size);
     for (int i=0; i<size; i++)
     {
@@ -777,7 +769,6 @@ PRIVATE void PutCallStatArray(long size, AdviceCalls array[])
 
 PRIVATE void PutResultStatArray(long size, AdviceResults array[])
 {
-    printf("E PutResultStatArray()\n");
     PutLong(size);
     for (int i=0; i<size; i++) 
 	PutLong(array[i].count);
