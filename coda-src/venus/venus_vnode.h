@@ -163,8 +163,8 @@ struct vnode {
  * is unavailable (getattr) or which is not to be changed (setattr).
  */
 
-#ifndef VUID_T
-#define VUID_T
+#ifndef _VUID_T_
+#define _VUID_T_
 typedef unsigned int vuid_t;
 typedef unsigned int vgid_t;
 #endif
