@@ -16,6 +16,10 @@
 #include "portmapper.h"
 #include "map.h"
 
+#ifdef __CYGWIN32__
+extern char *optarg;
+#endif
+
 FILE *portmaplog = NULL;
 #define PORTMAPLOG "/vice/srv/portmaplog"
 

@@ -110,7 +110,7 @@ int CLIENT_Build(RPC2_Handle RPCid, char *User, RPC2_Integer sl,
     char username[PRS_MAXNAMELEN + 1];
     if (STRNEQ(User, "UID=", 4)) {
 	if (AL_IdToName(atoi(User + 4), username))
-	    strcpy(username,"System:AnyUser");
+		strcpy(username,"System:AnyUser");
     } else {
 	    strcpy(username, User);
     }
