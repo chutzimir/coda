@@ -62,25 +62,23 @@ rvm_region_def_t;
 
 /* error code for damaged segment header */
 #define RVM_ESEGMENT_HDR 2000
-
+
 /* define regions within a segment for segement loader */
-extern rvm_return_t rvm_create_segment C_ARGS
-    ((
+extern rvm_return_t rvm_create_segment (
     char                *DevName,       /* pointer to data device name */
     rvm_offset_t        DevLength,      /* Length of dataDev if really a device */
     rvm_options_t       *options,       /* options record for RVM */
     rvm_length_t        nregions,       /* number of regions defined for segment*/
     rvm_region_def_t    *region_defs    /* array of region defs for segment */
-    ));
+    );
 
 /* load regions of a segment */
-extern rvm_return_t rvm_load_segment C_ARGS 
-    ((
+extern rvm_return_t rvm_load_segment (
     char                *DevName,       /* pointer to data device name */
     rvm_offset_t        DevLength,      /* Length of dataDev if really a device */
     rvm_options_t       *options,       /* options record for RVM */
     unsigned long       *nregions,      /* returned -- number of regions mapped */
     rvm_region_def_t    *regions[]      /* returned array of region descriptors */
-    ));
+    );
 
 #endif _RVM_SEGMENT_H_

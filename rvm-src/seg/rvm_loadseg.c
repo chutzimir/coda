@@ -73,6 +73,7 @@ rvm_load_segment(DevName, DevLength, options, nregions, regions)
     hdr_region->dev_length = DevLength;		/* Struct assignment */
     RVM_ZERO_OFFSET(hdr_region->offset);
     hdr_region->length = RVM_SEGMENT_HDR_SIZE;
+    hdr_region->vmaddr = 0;
 
     hdr_region->vmaddr = NULL;
     err = allocate_vm(&(hdr_region->vmaddr), hdr_region->length);
@@ -122,7 +123,6 @@ rvm_load_segment(DevName, DevLength, options, nregions, regions)
 	    if (err != RVM_SUCCESS)
 		return err; 	/* Some error condition exists, abort */
 
-	    printf("Just mapped in region (%x,%d)\n",region->vmaddr, region->length);
 	}
 
     /* Clean up, we no longer need the header region */

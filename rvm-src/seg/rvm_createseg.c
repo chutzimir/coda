@@ -41,12 +41,12 @@ static char *rcsid = "$Header$";
 #include "rvm_segment.h"
 #include "rvm_segment_private.h"
 
-/* rvm_create_segment erases the old contents of the recoverable segment, and 
- * write a new structure to it. The arguments specify the number of regions, and 
- * the form of each region in the new segment structure. It is important to 
- * realize that all information that used to exist in the segment will 
- * no longer be accessible.
- */
+/* rvm_create_segment erases the old contents of the recoverable
+ * segment, and write a new structure to it. The arguments specify the
+ * number of regions, and the form of each region in the new segment
+ * structure. It is important to realize that all information that
+ * used to exist in the segment will no longer be accessible.  */
+
 rvm_return_t 
 rvm_create_segment(DevName, DevLength, options, nregions, regionDefs) 
      char 	    	*DevName;
@@ -65,6 +65,8 @@ rvm_create_segment(DevName, DevLength, options, nregions, regionDefs)
     /* Make sure the region definitions do not overlap. */
     if (overlap(nregions, regionDefs))
 	return RVM_ERANGE;
+
+    assert( nregions <= RVM_MAX_REGIONS );
 	
     /* Erase the old contents of the segment, including entries in the log */
 
@@ -120,6 +122,9 @@ rvm_create_segment(DevName, DevLength, options, nregions, regionDefs)
      * in the segment, fill in the length and vmaddr fields, and
      * determine the next available spot in the segment.
      */
+
+    /* XXXXXX this needs a check to bound the number of regions */
+
     for (i = 0; i < nregions; i++) {
 	hptr->regions[i].offset = offset;
 	hptr->regions[i].length = regionDefs[i].length;

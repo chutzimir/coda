@@ -489,7 +489,7 @@ char *make_full_name(dev_str,dev_name,retval)
     if (dev_str[1] != ':')
 #endif
         {
-        if (getwd(wd_name) == 0)
+        if (getcwd(wd_name, sizeof(wd_name)) == 0)
             ASSERT(rvm_false);
         wd_len = strlen(wd_name);
         len += (wd_len+1);              /* one extra for '/' */
@@ -1143,15 +1143,14 @@ void rvm_free_tid(rvm_tid)
         (rvm_tid->from_heap))
         free_export((list_entry_t *)rvm_tid,tid_rvm_id);
     }
-void rvm_init_tid(rvm_tid)
-    rvm_tid_t    *rvm_tid;
-    { 
-    if (rvm_tid != NULL)
-        {
-        BZERO((char *)rvm_tid,sizeof(rvm_tid_t));
-        rvm_tid->struct_id = rvm_tid_id;
+
+void rvm_init_tid(rvm_tid_t *rvm_tid)
+{ 
+	if (rvm_tid != NULL) {
+		BZERO((char *)rvm_tid,sizeof(rvm_tid_t));
+		rvm_tid->struct_id = rvm_tid_id;
         }
-    }
+}
 
 rvm_tid_t *rvm_copy_tid(rvm_tid)
     rvm_tid_t    *rvm_tid;

@@ -43,6 +43,7 @@ static char *rcsid = "$Header$";
 
 #ifdef __STDC__
 #include <string.h>
+#include <assert.h>
 #endif 
 
 #include "rds.h"
@@ -164,8 +165,9 @@ extern heap_header_t *RecoverableHeapStartAddress;
 extern free_block_t  *RecoverableHeapHighAddress;
 extern RVM_MUTEX heap_lock;
 
-extern int tracing_rds;
-extern void (*rds_trace_printer) (char *, ...);
+extern int rds_tracing;
+extern FILE *rds_tracing_file;
+
 
 #define HEAP_INIT   		(RecoverableHeapStartAddress != 0)
 #define RDS_VERSION_STAMP	(RecoverableHeapStartAddress->version)
@@ -211,6 +213,10 @@ void coalesce();
 
 
 /* ASSERT that preserves stack */
+#define ASSERT(ex) assert(ex)
+
+
+#if 0
 #ifdef ASSERT
 #undef ASSERT
 #endif
@@ -227,5 +233,6 @@ void coalesce();
         abort(); \
          } \
     }
+#endif
 
 #endif _RDS_PRIVATE_H_

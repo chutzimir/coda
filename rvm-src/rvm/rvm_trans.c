@@ -518,7 +518,7 @@ rvm_return_t rvm_set_range(rvm_tid,dest,length)
 rvm_return_t rvm_modify_bytes(rvm_tid,dest,src,length)
     rvm_tid_t           *rvm_tid;       /* transaction affected */
     void                *dest;          /* base vm address of range */
-    void                *src;           /* source of nv's */
+    const void                *src;           /* source of nv's */
     rvm_length_t        length;         /* length of range */
     {
     rvm_return_t        retval;

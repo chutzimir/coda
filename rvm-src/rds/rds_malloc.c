@@ -149,10 +149,8 @@ rds_malloc(size, tid, err)
 
     if (*err != SUCCESS) return NULL;
 
-    if (tracing_rds) {
-        (*rds_trace_printer)("rdstrace: malloc addr %d size %d req %d\n",
-			     fbp, i * RDS_CHUNK_SIZE, orig_size);
-    }
+    RDS_LOG("rdstrace: malloc addr %p size %x req %x\n",
+			     USER_BLOCK(fbp), i * RDS_CHUNK_SIZE, orig_size);
     
     return(USER_BLOCK(fbp));
 }

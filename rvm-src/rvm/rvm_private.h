@@ -56,6 +56,7 @@ static char *rcsid = "$Header$";
 #include <sys/types.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "rvm.h"
 #include "rvm_statistics.h"
 
@@ -83,6 +84,11 @@ static char *rcsid = "$Header$";
 
 #define FORWARD     rvm_true            /* record scan forward */
 #define REVERSE     rvm_false           /* record scan reverse */
+
+
+
+#define ASSERT(ex) assert(ex)
+#if 0
 /* assert that preserves stack */
 #ifdef ASSERT
 #undef ASSERT
@@ -100,6 +106,9 @@ static char *rcsid = "$Header$";
         abort(); \
          } \
     MACRO_END
+
+#endif
+
 /* RVM Internal Error Messages */
 
 #define ERR_DATE_SKEW       "Current time before last recorded - check kernel date"
