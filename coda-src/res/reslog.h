@@ -67,7 +67,7 @@ extern "C" {
 class PMemMgr;
 class VNResLog;
 
-#define MAXVOLS	1024	/* XX taken from coda_globals.h */
+#define MAXVOLS	1024	/* size of the RVM volume array */
 #define DIROPNAMESIZE	48 /* FOR NOW USE LOW NUMBER - IN FINAL VERSION WE 
 			      WILL HAVE TO HAVE SOME OPTIMIZATION TRICKS AND THE
 			      NAME BE 256 CHARS LONG */

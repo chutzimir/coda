@@ -57,8 +57,8 @@ extern "C" {
 #include "resvsg.h" 
 
 
-#define VSGPATH "/tmp/VSGDB"
-void main(int argc, char **argv){
+void main(int argc, char **argv)
+{
     char string[1024];
     FILE *fp;
     unsigned long vsgaddr;
@@ -66,14 +66,17 @@ void main(int argc, char **argv){
     unsigned long Haddr[VSG_MEMBERS];
     char Host[VSG_MEMBERS][256];
 
-/*
-    ResVsgInit(); 
-*/
+
+    if ( argc != 2 ) {
+	    printf("Usage %s VSGDB\n", argv[0]);
+	    exit(1);
+    }
+
     res_vsgent::nvsgs = 0;
     res_vsgent::vsgtab = new olist;
 
-    if ((fp = fopen(VSGPATH, "r")) == NULL){
-	printf("Error while opening %s\n", VSGPATH);
+    if ((fp = fopen(argv[1], "r")) == NULL) {
+	printf("Error while opening %s\n", argv[1]);
 	exit(-1);
     }
     while(1){
@@ -85,6 +88,10 @@ void main(int argc, char **argv){
 	/* number of hosts = i - 1 */
 	for (int j = 0; j < i - 1; j++){
 	    he = gethostbyname(Host[j]);
+	    if ( he == NULL ) {
+		    herror(string);
+		    exit(1);
+	    }
 	    Haddr[j] = ntohl(*(unsigned long *)(he->h_addr));
 	}
 	res_vsgent *newrv = new res_vsgent(vsgaddr, Haddr, i-1);
@@ -112,7 +119,7 @@ void main(int argc, char **argv){
     res_vsg_iterator	next;
     res_vsgent *rv;
     while(rv = next())
-	rv->print();
+	    rv->print();
     printf("End of VSG group \n");
 
 }

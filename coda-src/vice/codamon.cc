@@ -80,7 +80,7 @@ extern "C" {
 
 
 int ShutDown = 0;
-PRIVATE void	Terminate();
+static void	Terminate();
 
 main(int argc, char **argv, char **envp) {
 
@@ -113,7 +113,7 @@ main(int argc, char **argv, char **envp) {
     }
 }
 
-PRIVATE void	Terminate()
+static void	Terminate()
 
 {
     struct timeval tp;

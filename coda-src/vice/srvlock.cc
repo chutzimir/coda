@@ -51,15 +51,14 @@ extern "C" {
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <libc.h>
+#include <util.h>
+#include <rvmlib.h>
 
 
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
-#include <rvmlib.h>
 #include <srv.h>
 #include <vicelock.h>
 

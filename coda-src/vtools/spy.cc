@@ -70,8 +70,8 @@ const char MarinerService[] = "venus";
 
 int Bind(const char *, const char *);
 void CheckMariner(FILE *);
-PRIVATE void TERM(int, int, struct sigcontext *);
-PRIVATE void usage();
+static void TERM(int, int, struct sigcontext *);
+static void usage();
 
 
 main(int argc, char **argv) {
@@ -175,7 +175,7 @@ void CheckMariner(FILE *fp) {
 }
 
 
-PRIVATE void TERM(int sig, int code, struct sigcontext *contextPtr) {
+static void TERM(int sig, int code, struct sigcontext *contextPtr) {
     fflush(stdout);
     fflush(stderr);
     exit(0);

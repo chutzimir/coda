@@ -71,7 +71,6 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define VOLUTIL_ABORT	1	/* do not restart this job */
 
 
-extern void SetSalvageDirHandle(DirHandle *dir, int volume, int device, int inode);
 extern void PrintVersionVector(FILE *outfile, vv_t vv);
 
 #endif _VOLUTIL_PRIVATE_H_

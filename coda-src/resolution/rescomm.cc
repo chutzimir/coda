@@ -469,7 +469,7 @@ int srvent::Connect(RPC2_Handle *cidp, int Force) {
 	ssid.Value.SubsysId = RESOLUTIONSUBSYSID;
 	RPC2_BindParms bp;
 	bp.SecurityLevel = RPC2_OPENKIMONO;
-	bp.EncryptionType = NULL;
+	bp.EncryptionType = 0;
 	bp.SideEffectType = SMARTFTP;
 	bp.ClientIdent  = NULL;
 	bp.SharedSecret = NULL;

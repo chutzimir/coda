@@ -41,8 +41,6 @@ static char *rcsid = "$Header$";
 #define _RES_FORCE_H 1
 #include "olist.h"
 typedef enum {CreateD=0, CreateF=1, CreateS=2, CreateL=3} dirop_t;
-
-#define DIROPNAMESIZE	255
  
 class diroplink : public olink {
   public:

@@ -44,18 +44,19 @@ extern "C" {
 #include <libc.h>
 #endif
 #include <rpc2.h>
+#include <util.h>
+#include <codadir.h>
+
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <olist.h>
 #include <dlist.h>
 #include <cvnode.h>
 #include <vcrcommon.h>
 #include <vlist.h>
 #include <vrdb.h>
-#include <coda_dir.h>
 #include <srv.h>
 #include <res.h>
 #include <operations.h>
@@ -72,7 +73,6 @@ extern "C" {
 #include "rvmrestiming.h"
 #include "resstats.h"
 
-// should be called Sub_ResPhase4 
 long RS_ResPhase4(RPC2_Handle RPCid, ViceFid *Fid, ViceVersionVector *VV,
 		  SE_Descriptor *sed) {
 

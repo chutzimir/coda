@@ -85,8 +85,8 @@ struct repvol *RepVolHead;
 static char compresult[2048];
 static char junk[2048];
 
-PRIVATE char *volstr(char *), *srvstr(char *, VolumeId);
-PRIVATE char *compstr(char *, VolumeId);
+static char *volstr(char *), *srvstr(char *, VolumeId);
+static char *compstr(char *, VolumeId);
 
 int repair_findrep(VolumeId vid, struct repvol **repv /* OUT */)
     /* Returns 0 and fills repv if an entry exists for rep vol vid.
@@ -225,7 +225,7 @@ int repair_countRWReplicas(struct repvol *repv)
 }
 
 
-PRIVATE char *volstr(char *path)
+static char *volstr(char *path)
     /* Returns a static string identifying volume name of path.
        String contains msg if pioctl fails */
 {
@@ -244,7 +244,7 @@ PRIVATE char *volstr(char *path)
 
 /* Returns a static string identifying servers with replicas of path
    String contains msg if pioctl fails */    
-PRIVATE char *srvstr(char *path, VolumeId rwid)
+static char *srvstr(char *path, VolumeId rwid)
 {
     struct ViceIoctl vioc;
     char junk[2048], tmp[64];
@@ -311,7 +311,7 @@ PRIVATE char *srvstr(char *path, VolumeId rwid)
     return(result);
 }
 
-PRIVATE char *compstr(char *path, VolumeId rwid)
+static char *compstr(char *path, VolumeId rwid)
 /* returns a static string identifying the component corresponding to
    this rw volume id. */
 {

@@ -100,7 +100,6 @@ LOCALOBJS = readstuff.o dumpstuff.o vvlist.o
 # comparison with ls output 
 VOLUTILOBJS = \
 	listinodes.o \
-	physio.o \
 	vol-ancient.o \
 	vol-backup.o \
 	vol-clone.o \

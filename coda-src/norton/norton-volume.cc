@@ -61,7 +61,7 @@ extern "C" {
 
 
 // Stolen from vol-info.c
-PRIVATE char * date(unsigned long date, char *result)
+static char * date(unsigned long date, char *result)
 {
     struct tm *tm = localtime((long *)&date);
     sprintf(result, "%02d/%02d/%02d.%02d:%02d:%02d", 
@@ -354,10 +354,10 @@ void delete_volume(VolHead *vol) {
     Error error;
 
     if (vol) {
-	CAMLIB_BEGIN_TOP_LEVEL_TRANSACTION_2(CAM_TRAN_NV_SERVER_BASED);
-	CAMLIB_MODIFY_BYTES(&(vol->data.volumeInfo->destroyMe), 
+	RVMLIB_BEGIN_TRANSACTION(restore);
+	rvmlib_modify_bytes(&(vol->data.volumeInfo->destroyMe), 
 			    &destroyflag, sizeof(byte));
-	CAMLIB_END_TOP_LEVEL_TRANSACTION_2(CAM_PROT_TWO_PHASED, error);
+	RVMLIB_END_TRANSACTION(flush, &(error));
 	    }
 
 }

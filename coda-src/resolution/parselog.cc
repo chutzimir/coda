@@ -62,7 +62,7 @@ extern "C" {
 
 // *********** Private Routines *************
 
-PRIVATE void ReadOpsFromBuf(char *, int, int, rsle **);
+static void ReadOpsFromBuf(char *, int, int, rsle **);
 
 /* ParseRemoteLogs
  *	Parse the byte stream of log entries shipped 
@@ -130,7 +130,7 @@ void DeallocateRemoteLogs(olist *AllLogs) {
 // ReadOpsFromBuf: 
 //	Parse buf into individual log entries
 //	Log entries are allocated in an array - RemoteLogEntries
-PRIVATE void ReadOpsFromBuf(char *buf, int bufsize, 
+static void ReadOpsFromBuf(char *buf, int bufsize, 
 			    int nentries, rsle **RemoteLogEntries) {
     *RemoteLogEntries = new rsle[nentries];
     char *tmpptr = buf;

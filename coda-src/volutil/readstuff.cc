@@ -104,7 +104,7 @@ extern "C" {
 #define VOLID DumpFd		/* Overload this field if using newstyle dump */
 
 
-PRIVATE char *get(DumpBuffer_t *buf, int size, int *error)
+static char *get(DumpBuffer_t *buf, int size, int *error)
 {
     char *retptr;
     unsigned long nbytes;
@@ -194,7 +194,7 @@ PRIVATE char *get(DumpBuffer_t *buf, int size, int *error)
     return (char *)retptr;
 }
 
-PRIVATE char *put(DumpBuffer_t *buf, int size, int *error)
+static char *put(DumpBuffer_t *buf, int size, int *error)
 {
     *error = 0;
     assert(buf->DumpBufPtr - size >= buf->DumpBuf);

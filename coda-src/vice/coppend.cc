@@ -33,9 +33,6 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
-
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif __cplusplus
@@ -44,11 +41,11 @@ extern "C" {
 
 #include <lwp.h>
 #include <lock.h>
+#include <util.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
-#include <util.h>
 #include <srv.h>
 #include "coppend.h"
 
@@ -71,9 +68,9 @@ void AddPairToCopPendingTable(ViceStoreId *sid, ViceFid *fid) {
     if (cpe) {
 	int found = 0;
 	for (i = 0; i < MAXFIDS; i++) {
-	    if (FID_EQ(cpe->fids[i], NullFid))
+	    if (FID_EQ(&cpe->fids[i], &NullFid))
 		break;
-	    if (FID_EQ(cpe->fids[i], *fid)) {
+	    if (FID_EQ(&cpe->fids[i], fid)) {
 		found = 1;
 		break;
 	    }
@@ -160,7 +157,7 @@ int cpman::func(int parm) {
 		LogMsg(1, SrvDebugLevel, stdout,  "StoreId = (%x.%x)",
 			cpe->StoreId.Host, cpe->StoreId.Uniquifier);
 		for (int i = 0; i < MAXFIDS; i++)
-		    if (!FID_EQ(cpe->fids[i], NullFid))
+		    if (!FID_EQ(&cpe->fids[i], &NullFid))
 			LogMsg(1, SrvDebugLevel, stdout,  ", fids[%d] = (0x%x.%x.%x)",
 				i, cpe->fids[i].Volume, cpe->fids[i].Vnode, cpe->fids[i].Unique);
 		LogMsg(1, SrvDebugLevel, stdout,  ", expired on BusyQueue");
@@ -188,7 +185,7 @@ void cpman::add(cpent *cpe) {
     LogMsg(9, SrvDebugLevel, stdout,  "StoreId = (0x%x.%x)", 
 	    cpe->StoreId.Host, cpe->StoreId.Uniquifier);	
     for (int i = 0; i < MAXFIDS; i++) 
-	if (!FID_EQ(cpe->fids[i], NullFid))
+	if (!FID_EQ(&cpe->fids[i], &NullFid))
 	    LogMsg(9, SrvDebugLevel, stdout,  ", fids[%d] = (0x%x.%x.%x)",
 		    i, cpe->fids[i].Volume, 
 		    cpe->fids[i].Vnode, cpe->fids[i].Unique);

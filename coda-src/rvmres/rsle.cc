@@ -81,8 +81,8 @@ rsle::rsle() {
     seqno = -1;
     storeid.Host = 0;
     storeid.Uniquifier = 0;
-    dvn = -1;
-    du = -1;
+    dvn = (long unsigned int)-1;
+    du = (long unsigned int)-1;
     opcode = 0;
     name1 = name2 = NULL;
     namesalloced = 0;

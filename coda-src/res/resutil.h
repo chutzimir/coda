@@ -144,7 +144,7 @@ extern int CreateResPhase2Objects(ViceFid *, dlist *, dlist *, Volume *,
 				   VolumeId, int *);
 extern void GetRemoteRemoveStoreId(ViceStoreId *, olist *, unsigned long, ViceFid *, ViceFid *, char *);
 extern ViceStoreId *GetRemoteRemoveStoreId(olist *, unsigned long , ViceFid *, ViceFid *,  char*);
-extern char *GetNameInParent(Vnode *, dlist *, Volume *, char *);
+extern int GetNameInParent(Vnode *, dlist *, Volume *, char *);
 
 /* declarations from rescoord.c */
 extern long DirResolve(res_mgrpent *, ViceFid *, ViceVersionVector **, int *);

@@ -45,9 +45,9 @@ CBINS       = $(EXECUTABLES) $(SCRIPTS)
 LIBS=	$(LIBKERNDEP)
 
 removeinc: removeinc.o $(LIBS)
-	$(CXX) $(LIBFLAGS) $^ ${LIBS} -o removeinc
+	$(CC) $(LIBFLAGS) $^ ${LIBS} -o removeinc
 
 filerepair: filerepair.o $(LIBS)
-	$(CXX) $(LIBFLAGS) $^ ${LIBS} -o filerepair
+	$(CC) $(LIBFLAGS) $^ ${LIBS} -o filerepair
 
 include $(MAKDIR)/configs/Makerules

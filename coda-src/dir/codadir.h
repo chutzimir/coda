@@ -220,16 +220,8 @@ void DI_VMFree(PDirInode pdi);
 void DI_VMDec(PDirInode pdi);
 
 /* dir handle cache */
-/* directory handle cache entry */
-struct DCEntry {
-	struct dllist_chain   dc_list;
-	int                   dc_count;  /* number of vnodes referencing us */
-	int                   dc_refcount; /* new refcount upon commit */
-	struct DirHandle      dc_dh;
-	PDirInode             dc_pdi;
-	PDirInode             dc_cowpdi;
-};
 
+int DC_Refcount(PDCEntry);
 void DC_Put(PDCEntry);
 void DC_Drop(PDCEntry);
 void DC_SetDirh(PDCEntry pdce, PDirHeader pdh);

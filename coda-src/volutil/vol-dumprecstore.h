@@ -55,7 +55,6 @@ static char *rcsid = "$Header$";
 #define	VOLDISKDATAT	5
 #define	DIRINODET	6
 #define	DIRPAGET	7
-#define CAMELOTFREESTORE 8
 #define	SFREEVNODEPTRARRT	9
 #define	LFREEVNODEPTRARRT	10
 #define	SFREEVNODEDISKPTRT	11

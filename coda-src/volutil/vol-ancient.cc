@@ -46,6 +46,9 @@ extern "C" {
 #include <lwp.h>
 #include <lock.h>
 #include <rpc2.h>
+#include <util.h>
+#include <rvmlib.h>
+
 #include <volutil.h>
 #ifdef __cplusplus
 }
@@ -58,8 +61,6 @@ extern "C" {
 #include <camprivate.h>
 #include <vutil.h>
 #include "vvlist.h"
-#include <util.h>
-#include <rvmlib.h>
 
 /*
   BEGIN_HTML

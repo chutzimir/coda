@@ -34,7 +34,7 @@
 #endif /*_BLURB_*/
 
 # The next line restarts using wish\
-exec /coda/misc/tcl/@sys/beta/bin/wish "$0" "$@"
+exec wish "$0" "$@"
 
 proc mkbuttons {frame} {
    radiobutton $frame.remove -text "Remove inconsistent file" -variable action \
@@ -75,7 +75,7 @@ proc GetIncResp {{w .f}} {
 
    #frame for announcing what has happened
    message $w.announce -font -Adobe-times-medium-r-normal--*-180* \
-	-relief raised -width [expr $width]c \
+	-relief raised \
 	-text "repairing inconsistent file $oname"
 
    # frame for making the buttons
