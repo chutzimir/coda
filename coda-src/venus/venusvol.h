@@ -861,7 +861,7 @@ class volent {
     int AllocFid(ViceDataType, ViceFid *, RPC2_Unsigned *, vuid_t, int =0);
     ViceFid GenerateLocalFid(ViceDataType);
     ViceFid GenerateFakeFid();
-    ViceStoreId GenerateStoreId(int recov = 0);
+    ViceStoreId GenerateStoreId();
 
     /* User-visible volume status. */
     int GetVolStat(VolumeStatus *, RPC2_BoundedBS *,

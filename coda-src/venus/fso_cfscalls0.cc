@@ -1063,7 +1063,10 @@ int fsobj::ConnectedStore(Date_t Mtime, vuid_t vuid, unsigned long NewLength) {
 	/* The COP1 call. */
 	long cbtemp; cbtemp = cbbreaks;
 	vv_t UpdateSet;
+
+	Recov_BeginTrans();
 	sid = vol->GenerateStoreId();
+	Recov_EndTrans(MAXFP);
 	{
 	    /* Make multiple copies of the IN/OUT and OUT parameters. */
 	    int ph_ix; unsigned long ph; ph = m->GetPrimaryHost(&ph_ix);
@@ -1350,7 +1353,10 @@ int fsobj::ConnectedSetAttr(Date_t Mtime, vuid_t vuid, unsigned long NewLength,
 	/* The COP1 call. */
 	long cbtemp; cbtemp = cbbreaks;
 	vv_t UpdateSet;
+
+	Recov_BeginTrans();
 	sid = vol->GenerateStoreId();
+	Recov_EndTrans(MAXFP);
 	{
 	    /* Make multiple copies of the IN/OUT and OUT parameters. */
 	    int ph_ix; unsigned long ph; ph = m->GetPrimaryHost(&ph_ix);
@@ -1678,7 +1684,10 @@ int fsobj::ConnectedCreate(Date_t Mtime, vuid_t vuid, fsobj **t_fso_addr,
 	/* The COP1 call. */
 	long cbtemp; cbtemp = cbbreaks;
 	vv_t UpdateSet;
+
+	Recov_BeginTrans();
 	sid = vol->GenerateStoreId();
+	Recov_EndTrans(MAXFP);
 	{
 	    /* Make multiple copies of the IN/OUT and OUT parameters. */
 	    vol->PackVS(m->nhosts, &OldVS);

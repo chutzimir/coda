@@ -205,7 +205,10 @@ int volent::ConnectedRepair(ViceFid *RepairFid, char *RepairFile, vuid_t vuid,
 	}
     }
 
+    Recov_BeginTrans();
     ViceStoreId sid = GenerateStoreId();
+    Recov_EndTrans(MAXFP);
+
     mgrpent *m = 0;
     int asy_resolve = 0;
 
