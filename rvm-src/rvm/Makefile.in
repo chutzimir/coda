@@ -98,6 +98,8 @@ CFLAGS += -DRVM_USELWP
 
 %.o : $(srcdir)/../rvm/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+	@mkdir -p .depfiles ; mv $*.d .depfiles
+
 
 LIBRARIES   = librvmlwp.a
 librvmlwp.a: $(LIBOBJ)
