@@ -40,6 +40,7 @@ VPATH = @srcdir@
 TOPOBJ= @TOPOBJ@
 
 include $(TOPDIR)/Makeconf
+CC=g++
 RP2FLAGS := -n $(RP2FLAGS)
 
 RVMRESOBJS=ops.o recle.o recov_vollog.o rsle.o rvmrescoord.o \

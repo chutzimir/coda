@@ -38,8 +38,9 @@ srcdir = @srcdir@
 VPATH = @srcdir@
 TOPOBJ= @TOPOBJ@
 
-CC=g++
 include $(TOPDIR)/Makeconf
+
+CC=g++
 
 
 RESLIBOBJS=logalloc.o pdlist.o remotelog.o resclient.o lockqueue.o\
