@@ -15,9 +15,15 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.17  1997/12/05 10:39:15  rvb
- * Read CHANGES
+ * Revision 1.18  1998/01/23 11:53:40  rvb
+ * Bring RVB_CFS1_1 to HEAD
  *
+ * Revision 1.17.2.1  97/12/09  16:07:11  rvb
+ * Sync with vfs/include/coda.h
+ * 
+ * Revision 1.17  97/12/05  10:39:15  rvb
+ * Read CHANGES
+ * 
  * Revision 1.16.6.5  97/11/20  11:46:39  rvb
  * Capture current cfs_venus
  * 
@@ -84,5 +90,3 @@
  * Added CFS-specific files
  *
  */
-
-int pass_process_info;
