@@ -98,7 +98,7 @@ long S_VolSetLogParms(RPC2_Handle rpcid, VolumeId Vid, RPC2_Integer OnFlag,
     }
 
     LogMsg(9, SrvDebugLevel, stdout, "S_VolSetLogParms: Got Volume %x",Vid);
-    switch OnFlag {
+    switch ( OnFlag ) {
     case RVMRES:
 	volptr->header->diskstuff.ResOn = OnFlag;
 	LogMsg(0, SrvDebugLevel, stdout, "S_VolSetLogParms: res flag on volume 0x%x set to %d (resolution enabled)", 
