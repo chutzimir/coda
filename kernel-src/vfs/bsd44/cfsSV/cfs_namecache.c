@@ -48,9 +48,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.1  1997/10/28 23:10:12  rvb
- * >64Meg; venus can be killed!
+ * Revision 1.5.4.2  1997/11/12 12:09:35  rvb
+ * reorg pass1
  *
+ * Revision 1.5.4.1  97/10/28  23:10:12  rvb
+ * >64Meg; venus can be killed!
+ * 
  * Revision 1.5  97/08/05  11:08:01  lily
  * Removed cfsnc_replace, replaced it with a cfs_find, unhash, and
  * rehash.  This fixes a cnode leak and a bug in which the fid is
@@ -154,9 +157,12 @@ static char *rcsid = "$Header$";
  */
 
 #include <sys/param.h>
-#include <sys/types.h>
 #include <sys/errno.h>
+#include <sys/malloc.h>
+#include <sys/select.h>
+
 #include <cfs/cfs.h>
+#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfsnc.h>
 
@@ -246,7 +252,7 @@ cfsnc_remove(cncp, dcstat)
 	enum dc_status dcstat;
 {
 	/* 
-	 * remove an entry -- VN_RELE(cncp->dcp, cp), crfree(cred),
+	 * remove an entry -- vrele(cncp->dcp, cp), crfree(cred),
 	 * remove it from it's hash chain, and
 	 * place it at the head of the lru list.
 	 */
@@ -259,14 +265,14 @@ cfsnc_remove(cncp, dcstat)
 
 	CFSNC_HSHNUL(cncp);		/* have it be a null chain */
 	if ((dcstat == IS_DOWNCALL) && (CNODE_COUNT(cncp->dcp) == 1)) {
-		cncp->dcp->c_flags |= CN_PURGING;
+		cncp->dcp->c_flags |= C_PURGING;
 	}
-	VN_RELE(CTOV(cncp->dcp)); 
+	vrele(CTOV(cncp->dcp)); 
 
 	if ((dcstat == IS_DOWNCALL) && (CNODE_COUNT(cncp->cp) == 1)) {
-		cncp->cp->c_flags |= CN_PURGING;
+		cncp->cp->c_flags |= C_PURGING;
 	}
-	VN_RELE(CTOV(cncp->cp)); 
+	vrele(CTOV(cncp->cp)); 
 
 	crfree(cncp->cred); 
 	bzero(DATA_PART(cncp),DATA_SIZE);
@@ -374,16 +380,16 @@ cfsnc_enter(dcp, name, cred, cp)
 	
 	cfsnc_stat.lru_rm++;	/* zapped a valid entry */
 	CFSNC_HSHREM(cncp);
-	VN_RELE(CTOV(cncp->dcp)); 
-	VN_RELE(CTOV(cncp->cp));
+	vrele(CTOV(cncp->dcp)); 
+	vrele(CTOV(cncp->cp));
 	crfree(cncp->cred);
     }
     
     /*
      * Put a hold on the current vnodes and fill in the cache entry.
      */
-    VN_HOLD(CTOV(cp));
-    VN_HOLD(CTOV(dcp));
+    vref(CTOV(cp));
+    vref(CTOV(dcp));
     crhold(cred); 
     cncp->dcp = dcp;
     cncp->cp = cp;
@@ -688,9 +694,9 @@ cfsnc_flush(dcstat)
 			if ((dcstat == IS_DOWNCALL) 
 			    && (CNODE_COUNT(cncp->dcp) == 1))
 			{
-				cncp->dcp->c_flags |= CN_PURGING;
+				cncp->dcp->c_flags |= C_PURGING;
 			}
-			VN_RELE(CTOV(cncp->dcp)); 
+			vrele(CTOV(cncp->dcp)); 
 			if (!ISDIR(cncp->cp->c_fid) && (CTOV(cncp->cp)->v_flag & VTEXT)) {
 			    if (cfs_vmflush(cncp->cp))
 				CFSDEBUG(CFS_FLUSH, 
@@ -700,9 +706,9 @@ cfsnc_flush(dcstat)
 			if ((dcstat == IS_DOWNCALL) 
 			    && (CNODE_COUNT(cncp->cp) == 1))
 			{
-				cncp->cp->c_flags |= CN_PURGING;
+				cncp->cp->c_flags |= C_PURGING;
 			}
-			VN_RELE(CTOV(cncp->cp));  
+			vrele(CTOV(cncp->cp));  
 
 			crfree(cncp->cred); 
 			bzero(DATA_PART(cncp),DATA_SIZE);

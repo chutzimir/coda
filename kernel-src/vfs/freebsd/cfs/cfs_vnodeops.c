@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.4.14.3  1997/11/06 21:03:28  rvb
- * don't include headers in headers
+ * Revision 1.4.14.4  1997/11/12 12:09:42  rvb
+ * reorg pass1
  *
+ * Revision 1.4.14.3  97/11/06  21:03:28  rvb
+ * don't include headers in headers
+ * 
  * Revision 1.4.14.2  97/10/29  16:06:30  rvb
  * Kill DYING
  * 
@@ -108,19 +111,23 @@
  */
 
 #include <sys/param.h>
-#include <sys/types.h>
+#include <sys/malloc.h>
 #include <sys/errno.h>
 #include <sys/acct.h>
 #include <sys/file.h>
 #include <sys/uio.h>
+#include <sys/namei.h>
 #include <sys/ioctl.h>
+#include <sys/mount.h>
 #include <sys/proc.h>
 #include <sys/user.h>
+#include <vm/vm_kern.h>
+
 #include <cfs/cfs.h>
+#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_opstats.h>
-#include <cfs/mach_vioctl.h>    /* No viceioctl.h on NetBSD */
-#include <vm/vm_kern.h>
+#include <cfs/pioctl.h>    /* No viceioctl.h on NetBSD */
 
 
 struct cnode *makecfsnode();
@@ -205,7 +212,7 @@ cfs_open(vpp, flag, cred, p)
     inp->d.cfs_open.VFid.Unique = cp->c_fid.Unique;
     inp->d.cfs_open.flags = flag;
     
-    error = cfscall(vftomi(VN_VFS(*vpp)), sizeof(struct inputArgs), 
+    error = cfscall(vtomi((*vpp)), sizeof(struct inputArgs), 
 		    &outSize, (char *)inp);
     if (!error) {
 	error = outp->result;
@@ -224,10 +231,10 @@ cfs_open(vpp, flag, cred, p)
 	goto exit;
     }
     /* We get the vnode back locked in both Mach and NetBSD.  Needs unlocked */
-    VOP_DO_UNLOCK(vp);
+    VOP_UNLOCK(vp);
     
     /* Keep a reference until the close comes in. */
-    VN_HOLD(*vpp);                
+    vref(*vpp);                
     
     /* Save the vnode pointer for the cache file. */
     if (cp->c_ovp == NULL) {
@@ -251,7 +258,7 @@ cfs_open(vpp, flag, cred, p)
     cp->c_inode = outp->d.cfs_open.inode;
     
     /* Open the cache file. */
-    error = VOP_DO_OPEN(&(cp->c_ovp), flag, cred, p); 
+    error = VOP_OPEN(cp->c_ovp, flag, cred, p); 
  exit:
     if (inp) CFS_FREE(inp,sizeof(struct inputArgs));
     return(error);
@@ -292,8 +299,8 @@ cfs_close(vp, flag, cred, p)
 	}
 	return ENODEV;
     } else {
-	VOP_DO_CLOSE(cp->c_ovp, flag, cred, p); /* Do errors matter here? */
-	VN_RELE(cp->c_ovp);
+	VOP_CLOSE(cp->c_ovp, flag, cred, p); /* Do errors matter here? */
+	vrele(cp->c_ovp);
     }
 
     if (--cp->c_ocount == 0)
@@ -311,12 +318,12 @@ cfs_close(vp, flag, cred, p)
     inp->d.cfs_close.VFid.Unique = cp->c_fid.Unique;
     inp->d.cfs_close.flags = flag;
     
-    error = cfscall(vftomi(VN_VFS(vp)), sizeof(struct inputArgs), 
+    error = cfscall(vtomi(vp), sizeof(struct inputArgs), 
 		    &outSize, (char *)inp);
     if (!error) 
 	error = outp->result;
     
-    VN_RELE(CTOV(cp));
+    vrele(CTOV(cp));
 
     if (inp) CFS_FREE(inp,sizeof(struct inputArgs));
     CFSDEBUG(CFS_CLOSE, myprintf(("close: result %d\n",error)); )
@@ -377,7 +384,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 		 * We get the vnode back locked in both Mach and
 		 * NetBSD.  Needs unlocked 
 		 */
-		VOP_DO_UNLOCK(cfvp);
+		VOP_UNLOCK(cfvp);
 	    }
 	    else {
 		opened_internally = 1;
@@ -397,9 +404,9 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 				  cp->c_fid.Volume, cp->c_fid.Vnode, 
 				  cp->c_fid.Unique, CNODE_COUNT(cp))); )
 	if (rw == UIO_READ) {
-	    error = VOP_DO_READ(cfvp, uiop, ioflag, cred);
+	    error = VOP_READ(cfvp, uiop, ioflag, cred);
 	} else {
-	    error = VOP_DO_WRITE(cfvp, uiop, ioflag, cred);
+	    error = VOP_WRITE(cfvp, uiop, ioflag, cred);
 	}
 	
 	if (error)
@@ -451,7 +458,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 	    in->d.cfs_rdwr.offset = uiop->uio_offset;
 	    in->d.cfs_rdwr.ioflag = ioflag;
 	    
-	    error = cfscall(vftomi(VN_VFS(CTOV(cp))), sizeof(struct inputArgs) 
+	    error = cfscall(vtomi(CTOV(cp)), sizeof(struct inputArgs) 
 			    + count, &size, buf);
 	    
 	    if (!error) error = out->result;
@@ -525,7 +532,7 @@ cfs_ioctl(vp, com, data, flag, cred, p)
        lookupname sooner or later anyway, right? */
     
     DO_LOOKUP(iap->path, UIO_USERSPACE, 
-	      (iap->follow ? FOLLOW_LINK : NO_FOLLOW),
+	      (iap->follow ? FOLLOW : NOFOLLOW),
 	      (struct vnode **)0, &tvp, p, ndp, error);
 
     if (error) {
@@ -540,8 +547,8 @@ cfs_ioctl(vp, com, data, flag, cred, p)
      * different vfsp 
      */
     /* XXX: this totally violates the comment about vtagtype in vnode.h */
-    if (!IS_CODA_VNODE(tvp)) {
-	VN_RELE(tvp);
+    if (tvp->v_tag != VT_CFS) {
+	vrele(tvp);
 	MARK_INT_FAIL(CFS_IOCTL_STATS);
 	CFSDEBUG(CFS_IOCTL, 
 		 myprintf(("cfs_ioctl error: %s not a coda object\n", 
@@ -551,7 +558,7 @@ cfs_ioctl(vp, com, data, flag, cred, p)
     
     /* Copy in the IN buffer. */
     if (iap->vidata.in_size > VC_DATASIZE) {
-	VN_RELE(tvp);
+	vrele(tvp);
 	return(EINVAL);
     }
     
@@ -577,14 +584,14 @@ cfs_ioctl(vp, com, data, flag, cred, p)
     error = copyin(iap->vidata.in, (char*)in + (int)in->d.cfs_ioctl.data, 
 		   iap->vidata.in_size);
     if (error) {
-	VN_RELE(tvp);
+	vrele(tvp);
 	CFS_FREE(buf, VC_MAXMSGSIZE);
 	MARK_INT_FAIL(CFS_IOCTL_STATS);
 	return(error);
     }
     
     size = VC_MAXMSGSIZE;
-    error = cfscall(vftomi(VN_VFS(tvp)), 
+    error = cfscall(vtomi(tvp), 
 		    VC_INSIZE(cfs_ioctl_in) + iap->vidata.in_size, 
 		    &size, buf);
     
@@ -607,7 +614,7 @@ cfs_ioctl(vp, com, data, flag, cred, p)
 	}
     }
     
-    VN_RELE(tvp);
+    vrele(tvp);
     if (buf) CFS_FREE(buf, VC_MAXMSGSIZE);
     return(error);
 }
@@ -683,7 +690,7 @@ cfs_getattr(vp, vap, cred, p)
 	
 	*vap = cp->c_vattr;
 	MARK_INT_SAT(CFS_GETATTR_STATS);
-	if (scp) VN_RELE(vp);
+	if (scp) vrele(vp);
 	return(0);
     }
 
@@ -693,7 +700,7 @@ cfs_getattr(vp, vap, cred, p)
     INIT_IN(inp, CFS_GETATTR, cred);
     inp->d.cfs_getattr.VFid = cp->c_fid;
     size = VC_OUTSIZE(cfs_getattr_out);
-    error = cfscall(vftomi(VN_VFS(vp)), VC_INSIZE(cfs_getattr_in),
+    error = cfscall(vtomi(vp), VC_INSIZE(cfs_getattr_in),
 		    &size, (char *)inp);
     
     if (!error) 
@@ -717,7 +724,7 @@ cfs_getattr(vp, vap, cred, p)
 	
 	*vap = outp->d.cfs_getattr.attr;
     }
-    if (scp) VN_RELE(vp);
+    if (scp) vrele(vp);
     if (inp) CFS_FREE(inp, sizeof(struct inputArgs));
     return(error);
 }
@@ -754,7 +761,7 @@ cfs_setattr(vp, vap, cred, p)
     if (cfsdebug & CFSDBGMSK(CFS_SETATTR)) {
 	print_vattr(vap);
     }
-    error = cfscall(vftomi(VN_VFS(vp)), VC_INSIZE(cfs_setattr_in),
+    error = cfscall(vtomi(vp), VC_INSIZE(cfs_setattr_in),
 		    &size, (char *)inp);
     
     if (!error) 
@@ -798,7 +805,7 @@ cfs_access(vp, mode, cred, p)
      * lookup access to it.
      */
     if (cfs_access_cache) {
-	if ((VN_TYPE(vp) == VDIR) && (mode & VEXEC)) {
+	if ((vp->v_type == VDIR) && (mode & VEXEC)) {
 	    if (cfsnc_lookup(cp, ".", cred)) {
 		MARK_INT_SAT(CFS_ACCESS_STATS);
 		return(0);                     /* it was in the cache */
@@ -814,7 +821,7 @@ cfs_access(vp, mode, cred, p)
     inp->d.cfs_access.flags = mode;
     size = VC_OUT_NO_DATA;
     
-    error = cfscall(vftomi(VN_VFS(vp)), VC_INSIZE(cfs_access_in),
+    error = cfscall(vtomi(vp), VC_INSIZE(cfs_access_in),
 		    &size, (char *)inp);
     
     if (inp) CFS_FREE(inp, sizeof(struct inputArgs));
@@ -847,7 +854,8 @@ cfs_readlink(vp, uiop, cred, p)
     }
     
     if ((cfs_symlink_cache) && (VALID_SYMLINK(cp))) { /* symlink was cached */
-	UIOMOVE(cp->c_symlink, (int)cp->c_symlen, UIO_READ, uiop, error);
+	uiop->uio_rw = UIO_READ;
+	error = uiomove(cp->c_symlink, (int)cp->c_symlen, uiop);
 	if (error)
 	    MARK_INT_FAIL(CFS_READLINK_STATS);
 	else
@@ -863,7 +871,7 @@ cfs_readlink(vp, uiop, cred, p)
     in->d.cfs_readlink.VFid = cp->c_fid;
     
     size = CFS_MAXPATHLEN + VC_OUTSIZE(cfs_readlink_out);
-    error = cfscall(vftomi(VN_VFS(vp)), VC_INSIZE(cfs_readlink_in),
+    error = cfscall(vtomi(vp), VC_INSIZE(cfs_readlink_in),
 		    &size, buf);
     
     error = error ? error : out->result;
@@ -877,8 +885,9 @@ cfs_readlink(vp, uiop, cred, p)
 	    cp->c_flags |= C_SYMLINK;
 	}
 	
-	UIOMOVE((char *)out + (int)out->d.cfs_readlink.data,
-			out->d.cfs_readlink.count, UIO_READ, uiop, error);
+	uiop->uio_rw = UIO_READ;
+	error = uiomove((char *)out + (int)out->d.cfs_readlink.data,
+			out->d.cfs_readlink.count, uiop);
     }
     
     if (buf) CFS_FREE(buf, CFS_MAXPATHLEN + VC_INSIZE(cfs_readlink_in));
@@ -918,7 +927,7 @@ cfs_fsync(vp, cred, p)
      * the (possibly untrue) invariant that it never purges an open
      * vnode.  Hopefully.
      */
-    if (cp->c_flags & CN_PURGING) {
+    if (cp->c_flags & C_PURGING) {
 	return(0);
     }
 
@@ -935,7 +944,7 @@ cfs_fsync(vp, cred, p)
     inp->d.cfs_fsync.VFid = cp->c_fid;
     size = VC_INSIZE(cfs_fsync_in);
     
-    error = cfscall(vftomi(VN_VFS(vp)), size, &size, (char *)inp);
+    error = cfscall(vtomi(vp), size, &size, (char *)inp);
     if (!error) 
 	error = outp->result;
     
@@ -964,7 +973,7 @@ cfs_inactive(vp, cred, p)
     
     CFSDEBUG(CFS_INACTIVE, myprintf(("in inactive, %x.%x.%x. vfsp %x\n",
 				  cp->c_fid.Volume, cp->c_fid.Vnode, 
-				  cp->c_fid.Unique, VN_VFS(vp)));)
+				  cp->c_fid.Unique, vp->v_mount));)
 	
     /* If an array has been allocated to hold the symlink, deallocate it */
     if ((cfs_symlink_cache) && (VALID_SYMLINK(cp))) {
@@ -978,11 +987,11 @@ cfs_inactive(vp, cred, p)
     
     /* Remove it from the table so it can't be found. */
     cfs_unsave(cp);
-    if ((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA) == NULL) {
+    if ((struct cfs_mntinfo *)(vp->v_mount->mnt_data) == NULL) {
 	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
 	panic("badness in cfs_inactive\n");
     } else {
-	((struct cfs_mntinfo *)(VN_VFS(vp)->VFS_DATA))->mi_refct--;
+	((struct cfs_mntinfo *)(vp->v_mount->mnt_data))->mi_refct--;
     }
 
     if (IS_UNMOUNTING(cp)) {
@@ -1001,7 +1010,7 @@ cfs_inactive(vp, cred, p)
 	    panic("cfs_inactive:  cp->ovp != NULL");
 	}
 #endif
-	CFS_CLEAN_VNODE(vp);
+	vgone(vp);
     }
 
     MARK_INT_SAT(CFS_INACTIVE_STATS);
@@ -1056,9 +1065,9 @@ cfs_lookup(dvp, nm, vpp, cred, p)
     /* Check for lookup of control object. */
     if (IS_CTL_NAME(dvp, nm)) {
 	*vpp = CFS_CTL_VP;
-	VN_HOLD(*vpp);
+	vref(*vpp);
 	MARK_INT_SAT(CFS_LOOKUP_STATS);
-	if (scp) VN_RELE(dvp);
+	if (scp) vrele(dvp);
 	return(0);
     }
     
@@ -1068,7 +1077,7 @@ cfs_lookup(dvp, nm, vpp, cred, p)
     cp = cfsnc_lookup(dcp, nm, cred);
     if (cp) {
 	*vpp = CTOV(cp);
-	VN_HOLD(*vpp);
+	vref(*vpp);
 	CFSDEBUG(CFS_LOOKUP, 
 		 myprintf(("lookup result %d vpp 0x%x\n",error,*vpp));)
     } else {
@@ -1096,7 +1105,7 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 	strncpy((char *)in + (int)in->d.cfs_lookup.name, nm, s);
 	size += s;
 	
-	error = cfscall(vftomi(VN_VFS(dvp)), size, &size, buf);
+	error = cfscall(vtomi(dvp), size, &size, buf);
 	
 	if (!error) 
 	    error = out->result;
@@ -1116,7 +1125,7 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 			    out->d.cfs_lookup.vtype,
 			    out->result)); )
 		
-	    cp = makecfsnode(&out->d.cfs_lookup.VFid, VN_VFS(dvp), 
+	    cp = makecfsnode(&out->d.cfs_lookup.VFid, dvp->v_mount, 
 			      out->d.cfs_lookup.vtype);
 	    *vpp = CTOV(cp);
 	    /*LOOKUP_LOCK(*vpp);*/  /* XXX - broken! */
@@ -1130,7 +1139,7 @@ cfs_lookup(dvp, nm, vpp, cred, p)
 
  exit:
     if (buf) CFS_FREE(buf, (VC_INSIZE(cfs_lookup_in) + CFS_MAXNAMLEN + 1));
-    if (scp) VN_RELE(dvp);
+    if (scp) vrele(dvp);
     return(error);
 }
 
@@ -1178,7 +1187,7 @@ cfs_create(dvp, nm, va, exclusive, mode, vpp, cred, p)
     strncpy((char*)in + (int)in->d.cfs_create.name, nm, s);
     size += s;
     
-    error = cfscall(vftomi(VN_VFS(dvp)), size, &size, buf);
+    error = cfscall(vtomi(dvp), size, &size, buf);
     
     if (!error) 
 	error = out->result;
@@ -1189,12 +1198,11 @@ cfs_create(dvp, nm, va, exclusive, mode, vpp, cred, p)
 	/* Venus should have detected the file and reported EEXIST. */
 
 	if ((exclusive == EXCL) &&
-	    (cfs_find(&out->d.cfs_create.VFid, VN_VFS(dvp)) != NULL))
+	    (cfs_find(&out->d.cfs_create.VFid, dvp->v_mount) != NULL))
 	    panic("cnode existed for newly created file!");
 	
-	cp = makecfsnode(&out->d.cfs_create.VFid, VN_VFS(dvp),
-			 VATTR_TYPE((struct vattr *)
-				    &(out->d.cfs_create.attr)));
+	cp = makecfsnode(&out->d.cfs_create.VFid, dvp->v_mount,
+			((struct vattr *) &(out->d.cfs_create.attr))->va_type);
 	*vpp = CTOV(cp);
 	
 	/* Update va to reflect the new attributes. */
@@ -1288,7 +1296,7 @@ cfs_remove(dvp, nm, cred, p)
     strncpy((char *)in + (int)in->d.cfs_remove.name, nm, s);
     s += VC_INSIZE(cfs_remove_in);
     
-    error = cfscall(vftomi(VN_VFS(dvp)), s, &s, (char *)in);
+    error = cfscall(vtomi(dvp), s, &s, (char *)in);
     
     if (!error) 
 	error = out->result;
@@ -1341,7 +1349,7 @@ cfs_link(vp, tdvp, tnm, cred, p)
     strncpy((char *)in + (int)in->d.cfs_link.tname, tnm, s);
     s += VC_INSIZE(cfs_link_in);
     
-    error = cfscall(vftomi(VN_VFS(vp)), s, &s, (char *)in);
+    error = cfscall(vtomi(vp), s, &s, (char *)in);
     if (!error) 
 	error = out->result;
     
@@ -1386,7 +1394,7 @@ cfs_rename(odvp, onm, ndvp, nnm, cred, p)
 	if (ovcp) {
 	    struct vnode *ovp = CTOV(ovcp);
 	    if ((ovp) &&
-		(VN_TYPE(ovp) == VDIR)) /* If it's a directory */
+		(ovp->v_type == VDIR)) /* If it's a directory */
 		cfsnc_zapfile(VTOC(ovp),"..");
 	}
     }
@@ -1430,7 +1438,7 @@ cfs_rename(odvp, onm, ndvp, nnm, cred, p)
     strncpy((char *)in + (int)in->d.cfs_rename.destname, nnm, s);
     
     size += s;
-    error = cfscall(vftomi(VN_VFS(odvp)), size, &size, (char *)in);
+    error = cfscall(vtomi(odvp), size, &size, (char *)in);
     if (!error) 
 	error = out->result;
     
@@ -1485,18 +1493,18 @@ cfs_mkdir(dvp, nm, va, vpp, cred, p)
     
     size += VC_INSIZE(cfs_mkdir_in);
     
-    error = cfscall(vftomi(VN_VFS(dvp)), size, &size, (char *)in);
+    error = cfscall(vtomi(dvp), size, &size, (char *)in);
     
     if (!error) 
 	error = out->result;
     
     if (!error) {
-	if (cfs_find(&out->d.cfs_mkdir.VFid, VN_VFS(dvp)) != NULL)
+	if (cfs_find(&out->d.cfs_mkdir.VFid, dvp->v_mount) != NULL)
 	    panic("cnode existed for newly created directory!");
 	
 	
 	cp =  makecfsnode(&out->d.cfs_mkdir.VFid, 
-			  VN_VFS(dvp), VATTR_TYPE(va));
+			  dvp->v_mount, va->va_type);
 	*vpp = CTOV(cp);
 	
 	/* enter the new vnode in the Name Cache */
@@ -1581,7 +1589,7 @@ cfs_rmdir(dvp, nm, cred, p)
     strncpy((char *)in + (int)in->d.cfs_rmdir.name, nm, size);
     size = VC_INSIZE(cfs_rmdir_in) + size;
     
-    error = cfscall(vftomi(VN_VFS(dvp)), size, &size, (char *)in);
+    error = cfscall(vtomi(dvp), size, &size, (char *)in);
     if (!error) 
 	error = out->result;
     
@@ -1645,7 +1653,7 @@ cfs_symlink(tdvp, tnm, tva, lnm, cred, p)
     strncpy((char *)in + (int)in->d.cfs_symlink.tname, tnm, s);
     
     size += s;
-    error = cfscall(vftomi(VN_VFS(tdvp)), size, &size, (char *)in);
+    error = cfscall(vtomi(tdvp), size, &size, (char *)in);
     if (!error)
 	error = out->result; 
     
@@ -1701,7 +1709,7 @@ cfs_readdir(vp, uiop, cred, eofflag, cookies, ncookies, p)
 	
 	/* Have UFS handle the call. */
 	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%x.%x.%x), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, CNODE_COUNT(VTOC(vp)))); )
-	error = VOP_DO_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
+	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
 			       ncookies);
 	
 	if (error)
@@ -1726,6 +1734,7 @@ cfs_readdir(vp, uiop, cred, eofflag, cookies, ncookies, p)
 	
 	
 	/* Make the count a multiple of DIRBLKSIZ (borrowed from ufs_readdir). */	
+#define DIRBLKSIZ DEV_BSIZE
 	if ((uiop->uio_iovcnt != 1) || (count < DIRBLKSIZ) ||
 	    (uiop->uio_offset & (DIRBLKSIZ - 1)))
 	    return (EINVAL);
@@ -1745,7 +1754,7 @@ cfs_readdir(vp, uiop, cred, eofflag, cookies, ncookies, p)
 	in->d.cfs_readdir.offset = uiop->uio_offset;
 	
 	size = VC_MAXMSGSIZE;
-	error = cfscall(vftomi(VN_VFS(CTOV(cp))), VC_INSIZE(cfs_readdir_in),
+	error = cfscall(vtomi(CTOV(cp)), VC_INSIZE(cfs_readdir_in),
 			&size, (char *)in);
 	
 	if (!error) error = out->result;

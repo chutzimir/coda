@@ -47,9 +47,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.4.3  1997/11/06 21:02:38  rvb
- * first pass at ^c ^z
+ * Revision 1.5.4.4  1997/11/12 12:09:39  rvb
+ * reorg pass1
  *
+ * Revision 1.5.4.3  97/11/06  21:02:38  rvb
+ * first pass at ^c ^z
+ * 
  * Revision 1.5.4.2  97/10/29  16:06:27  rvb
  * Kill DYING
  * 
@@ -156,14 +159,21 @@ static char *rcsid = "$Header$";
  * 4.	cfs_cacheprint (under DEBUG) prints names with vnode/cnode address
  */
 
-#include <cfs/cfs.h>
-#include <cfs/cnode.h>
 #include <vcfs.h>
+
+#include <sys/param.h>
+#include <sys/malloc.h>
+#include <sys/select.h>
+#include <sys/mount.h>
+
+#include <cfs/cfs.h>
+#include <cfs/cfsk.h>
+#include <cfs/cnode.h>
 
 #if	NVCFS
 
-struct cnode *cfs_alloc C_ARGS((void));
-struct cnode *cfs_find C_ARGS((ViceFid *fid));
+struct cnode *cfs_alloc(void);
+struct cnode *cfs_find(ViceFid *fid);
 #ifdef MACH
 extern struct fs *igetfs C_ARGS((dev_t));
 #endif /* MACH */
@@ -172,15 +182,6 @@ extern struct fs *igetfs C_ARGS((dev_t));
 
 /* God this kills me. Isn't there a better way of going about this? - DCS*/
 char pass_process_info;
-
-/*
- * Statistics
- */
-struct {
-	int	ncalls;			/* client requests */
-	int	nbadcalls;		/* upcall failures */
-	int	reqs[CFS_NCALLS];	/* count of each request */
-} cfs_clstat;
 
 
 /*
@@ -197,139 +198,6 @@ struct cnode *cfs_cache[CFS_CACHESIZE];
 
 #define cfshash(fid) \
     (((fid)->Volume + (fid)->Vnode) & (CFS_CACHESIZE-1))
-
-
-/* 
- * Key question: whether to sleep interuptably or uninteruptably when
- * waiting for Venus.  The former seems better (cause you can ^C a
- * job), but then GNU-EMACS completion breaks. Use tsleep with no
- * timeout, and no longjmp happens. But, when sleeping
- * "uninterruptibly", we don't get told if it returns abnormally
- * (e.g. kill -9).  
- */
-
-/* If you want this to be interruptible, set this to > PZERO */
-int cfscall_sleep = PZERO - 1;
-int cfs_pcatch = PCATCH;
-
-int
-cfscall(mntinfo, inSize, outSize, buffer) 
-     struct cfs_mntinfo *mntinfo; int inSize; int *outSize; caddr_t buffer;
-{
-	struct vcomm *vcp;
-	struct vmsg *vmp;
-	int error;
-
-	if (mntinfo == NULL) {
-	    /* Unlikely, but could be a race condition with a dying warden */
-	    return ENODEV;
-	}
-
-	vcp = &(mntinfo->mi_vcomm);
-	
-	cfs_clstat.ncalls++;
-	cfs_clstat.reqs[((struct inputArgs *)buffer)->opcode]++;
-
-	if (!VC_OPEN(vcp))
-	    return(ENODEV);
-
-	CFS_ALLOC(vmp,struct vmsg *,sizeof(struct vmsg));
-	/* Format the request message. */
-	vmp->vm_data = buffer;
-	vmp->vm_flags = 0;
-	vmp->vm_inSize = inSize;
-	vmp->vm_outSize 
-	    = *outSize ? *outSize : inSize; /* |buffer| >= inSize */
-	vmp->vm_opcode = ((struct inputArgs *)buffer)->opcode;
-	vmp->vm_unique = ++vcp->vc_seq;
-	if (cfsdebug)
-	    myprintf(("Doing a call for %d.%d\n", 
-		      vmp->vm_opcode, vmp->vm_unique));
-	
-	/* Fill in the common input args. */
-	((struct inputArgs *)buffer)->unique = vmp->vm_unique;
-
-	/* Append msg to request queue and poke Venus. */
-	INSQUE(vmp->vm_chain, vcp->vc_requests);
-	SELWAKEUP(vcp->vc_selproc);
-
-	/* We can be interrupted while we wait for Venus to process
-	 * our request.  If the interrupt occurs before Venus has read
-	 * the request, we dequeue and return. If it occurs after the
-	 * read but before the reply, we dequeue, send a signal
-	 * message, and return. If it occurs after the reply we ignore
-	 * it. In no case do we want to restart the syscall.  If it
-	 * was interrupted by a venus shutdown (vcclose), return
-	 * ENODEV.  */
-
-	/* Ignore return, We have to check anyway */
-	SLEEP(&vmp->vm_sleep, (cfscall_sleep));
-
-	if (VC_OPEN(vcp)) {	/* Venus is still alive */
- 	/* Op went through, interrupt or not... */
-	    if (vmp->vm_flags & VM_WRITE) {
-		error = 0;
-		*outSize = vmp->vm_outSize;
-	    }
-
-	    else if (!(vmp->vm_flags & VM_READ)) { 
-		/* Interrupted before venus read it. */
-		if (cfsdebug||1)
-		    myprintf(("interrupted before read: intr = %x, %x, op = %d.%d, flags = %x\n",
-			   SIGLIST, THECURSIG,
-			   vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));
-		REMQUE(vmp->vm_chain);
-		error = EINTR;
-	    }
-	    
-	    else { 	
-		/* (!(vmp->vm_flags & VM_WRITE)) means interrupted after
-                   upcall started */
-		/* Interrupted after start of upcall, send venus a signal */
-		struct inputArgs *dog;
-		struct vmsg *svmp;
-		
-		if (cfsdebug||1)
-		    myprintf(("Sending Venus a signal: intr = %x, %x, op = %d.%d, flags = %x\n",
-			   SIGLIST, THECURSIG,
-			   vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));
-		
-		REMQUE(vmp->vm_chain);
-		error = EINTR;
-		
-		CFS_ALLOC(svmp, struct vmsg *, sizeof (struct vmsg));
-
-		CFS_ALLOC((svmp->vm_data), char *, VC_IN_NO_DATA);
-		dog = (struct inputArgs *)svmp->vm_data;
-		
-		svmp->vm_flags = 0;
-		dog->opcode = svmp->vm_opcode = CFS_SIGNAL;
-		dog->unique = svmp->vm_unique = vmp->vm_unique;
-		svmp->vm_inSize = VC_IN_NO_DATA;
-		svmp->vm_outSize = VC_IN_NO_DATA;
-		
-		if (cfsdebug)
-		    myprintf(("cfscall: enqueing signal msg (%d, %d)\n",
-			   svmp->vm_opcode, svmp->vm_unique));
-		
-		/* insert at head of queue! */
-		INSQUE(svmp->vm_chain, vcp->vc_requests);
-		SELWAKEUP(vcp->vc_selproc);
-	    }
-	}
-
-	else {	/* If venus died (!VC_OPEN(vcp)) */
-	    if (cfsdebug)
-		myprintf(("vcclose woke op %d.%d flags %d\n",
-		       vmp->vm_opcode, vmp->vm_unique, vmp->vm_flags));
-	    
-	    if (!vmp->vm_flags & VM_WRITE)
-		error = ENODEV;
-	}
-
-	CFS_FREE(vmp, sizeof(struct vmsg));
-	return(error);
-}
 
 
 #define ODD(vnode)        ((vnode) & 0x1)
@@ -392,7 +260,7 @@ int handleDownCall(opcode, out)
 	  
 	  cp = cfs_find(&out->d.cfs_zapfile.CodaFid);
 	  if (cp != NULL) {
-	      VN_HOLD(CTOV(cp));
+	      vref(CTOV(cp));
 	      
 	      cp->c_flags &= ~C_VATTR;
 	      if (CTOV(cp)->v_flag & VTEXT)
@@ -405,9 +273,9 @@ int handleDownCall(opcode, out)
 					      cp->c_fid.Unique, 
 					      CNODE_COUNT(cp) - 1, error)););
 	      if (CNODE_COUNT(cp) == 1) {
-		  cp->c_flags |= CN_PURGING;
+		  cp->c_flags |= C_PURGING;
 	      }
-	      VN_RELE(CTOV(cp));
+	      vrele(CTOV(cp));
 	  }
 	  
 	  return(error);
@@ -421,7 +289,7 @@ int handleDownCall(opcode, out)
 	  
 	  cp = cfs_find(&out->d.cfs_zapdir.CodaFid);
 	  if (cp != NULL) {
-	      VN_HOLD(CTOV(cp));
+	      vref(CTOV(cp));
 	      
 	      cp->c_flags &= ~C_VATTR;
 	      cfsnc_zapParentfid(&out->d.cfs_zapdir.CodaFid, IS_DOWNCALL);     
@@ -432,9 +300,9 @@ int handleDownCall(opcode, out)
 					     cp->c_fid.Unique, 
 					     CNODE_COUNT(cp) - 1)););
 	      if (CNODE_COUNT(cp) == 1) {
-		  cp->c_flags |= CN_PURGING;
+		  cp->c_flags |= C_PURGING;
 	      }
-	      VN_RELE(CTOV(cp));
+	      vrele(CTOV(cp));
 	  }
 	  
 	  return(0);
@@ -458,7 +326,7 @@ int handleDownCall(opcode, out)
 	  
 	  cp = cfs_find(&out->d.cfs_purgefid.CodaFid);
 	  if (cp != NULL) {
-	      VN_HOLD(CTOV(cp));
+	      vref(CTOV(cp));
 	      
 	      if (ODD(out->d.cfs_purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
 		  cfsnc_zapParentfid(&out->d.cfs_purgefid.CodaFid,
@@ -477,9 +345,9 @@ int handleDownCall(opcode, out)
                                             cp->c_fid.Unique, 
 					    CNODE_COUNT(cp) - 1, error)););
 	      if (CNODE_COUNT(cp) == 1) {
-		  cp->c_flags |= CN_PURGING;
+		  cp->c_flags |= C_PURGING;
 	      }
-	      VN_RELE(CTOV(cp));
+	      vrele(CTOV(cp));
 	  }
 	  return(error);
       }
@@ -493,7 +361,7 @@ int handleDownCall(opcode, out)
 	  cp = cfs_find(&out->d.cfs_replace.OldFid);
 	  if (cp != NULL) { 
 	      /* remove the cnode from the hash table, replace the fid, and reinsert */
-	      VN_HOLD(CTOV(cp));
+	      vref(CTOV(cp));
 	      cfs_unsave(cp);
 	      cp->c_fid = out->d.cfs_replace.NewFid;
 	      cfs_save(cp);
@@ -504,7 +372,7 @@ int handleDownCall(opcode, out)
 					   out->d.cfs_replace.OldFid.Unique,
 					   cp->c_fid.Volume, cp->c_fid.Vnode, 
 					   cp->c_fid.Unique, cp));)
-	      VN_RELE(CTOV(cp));
+	      vrele(CTOV(cp));
 	  }
 	  return (0);
       }			   
@@ -523,9 +391,9 @@ int handleDownCall(opcode, out)
  */
 struct cnode *
 makecfsnode(fid, vfsp, type)
-     ViceFid *fid; VFS_T *vfsp; short type;
+     ViceFid *fid; struct mount *vfsp; short type;
 {
-    VFS_T        foo;
+    struct mount foo;
     struct cnode *cp;
     int          err;
     
@@ -535,15 +403,20 @@ makecfsnode(fid, vfsp, type)
 	cp = cfs_alloc();
 	cp->c_fid = *fid;
 	
-	SYS_VN_INIT(cp, vfsp, type);
-	
+	err = getnewvnode(VT_CFS, vfsp, cfs_vnodeop_p, &vp);  
+	if (err) {                                                
+	    panic("cfs: getnewvnode returned error %d\n", err);   
+	}                                                         
+	vp->v_data = cp;                                          
+	vp->v_type = type;                                      
+	cp->c_vnode = vp;                                         
 	cfs_save(cp);
 	
 	/* Otherwise vfsp is 0 */
 	if (!IS_CTL_FID(fid))
-	    ((struct cfs_mntinfo *)(vfsp->VFS_DATA))->mi_refct++;
+	    ((struct cfs_mntinfo *)(vfsp->mnt_data))->mi_refct++;
     } else {
-	VN_HOLD(CTOV(cp));
+	vref(CTOV(cp));
     }
     
     return cp;
@@ -556,7 +429,7 @@ makecfsnode(fid, vfsp, type)
  *
  */
 cfs_unmounting(whoIam)
-	VFS_T *whoIam;
+	struct mount *whoIam;
 {	
 	int hash;
 	struct cnode *cp;
@@ -564,8 +437,8 @@ cfs_unmounting(whoIam)
 
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (VN_VFS(CTOV(cp)) == whoIam) {
-				cp->c_flags |= CN_UNMOUNTING;
+			if (CTOV(cp)->v_mount == whoIam) {
+				cp->c_flags |= C_UNMOUNTING;
 			}
 		}
 	}
@@ -585,16 +458,16 @@ loop:
 		nvp = vp->v_mntvnodes.le_next;
 		cp = VTOC(vp);
 		count++;
-		if (!(cp->c_flags & CN_UNMOUNTING)) {
+		if (!(cp->c_flags & C_UNMOUNTING)) {
 			bad++;
 			printf("vp %x, cp %x missed\n", vp, cp);
-			cp->c_flags |= CN_UNMOUNTING;
+			cp->c_flags |= C_UNMOUNTING;
 		}
 	}
 }
 
 cfs_cacheprint(whoIam)
-	VFS_T *whoIam;
+	struct mount *whoIam;
 {	
 	int hash;
 	struct cnode *cp;
@@ -606,7 +479,7 @@ cfs_cacheprint(whoIam)
 
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (VN_VFS(CTOV(cp)) == whoIam) {
+			if (CTOV(cp)->v_mount == whoIam) {
 				printf("cfs_cacheprint: vp %x, cp %x", CTOV(cp), cp);
 				cfsnc_name(cp);
 				printf("\n");
@@ -630,7 +503,7 @@ cfs_cacheprint(whoIam)
 
 int
 cfs_kill(whoIam, dcstat)
-	VFS_T *whoIam;
+	struct mount *whoIam;
 	enum dc_status dcstat;
 {
 	int hash, count = 0;
@@ -651,7 +524,7 @@ cfs_kill(whoIam, dcstat)
 	
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
-			if (VN_VFS(CTOV(cp)) == whoIam) {
+			if (CTOV(cp)->v_mount == whoIam) {
 #ifdef	DEBUG
 				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
 #endif
@@ -771,7 +644,7 @@ cfs_alloc()
 	VNODE_VM_INFO_INIT(CTOV(cp));
 	cfs_new++;
     }
-    CN_INIT(cp);
+    bzero(cp, sizeof (struct cnode));
 
     return(cp);
 }

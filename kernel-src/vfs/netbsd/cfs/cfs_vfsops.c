@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.14.2  1997/10/29 16:06:28  rvb
- * Kill DYING
+ * Revision 1.5.14.3  1997/11/12 12:09:40  rvb
+ * reorg pass1
  *
+ * Revision 1.5.14.2  97/10/29  16:06:28  rvb
+ * Kill DYING
+ * 
  * Revision 1.5.14.1  1997/10/28 23:10:17  rvb
  * >64Meg; venus can be killed!
  *
@@ -79,11 +82,20 @@
  * 
  * 
  */ 
+#include <vcfs.h>
 
 #include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/malloc.h>
 #include <sys/conf.h>
-#include <sys/types.h>
+#include <sys/namei.h>
+#include <sys/mount.h>
+#include <sys/proc.h>
+/* for VN_RDEV */
+#include <miscfs/specfs/specdev.h>
+
 #include <cfs/cfs.h>
+#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_opstats.h>
 
@@ -111,7 +123,7 @@ struct cfs_op_stats cfs_vfsopstats[CFS_VFSOPS_SIZE];
 #define MRAK_INT_GEN(op) (cfs_vfsopstats[op].gen_intrn++)
 
 extern int cfsnc_initialized;     /* Set if cache has been initialized */
-
+extern int vc_nb_open __P((dev_t, int, int, struct proc *));
 extern struct cdevsw cdevsw[];    /* For sanity check in cfs_mount */
 
 cfs_vfsopstats_init()
@@ -136,7 +148,7 @@ cfs_vfsopstats_init()
  */
 /*ARGSUSED*/
 cfs_mount(vfsp, path, data, ndp, p)
-    VFS_T *vfsp;           /* Allocated and initialized by mount(2) */
+    struct mount *vfsp;           /* Allocated and initialized by mount(2) */
     char *path;            /* path covered: ignored by the fs-layer */
     caddr_t data;          /* Need to define a data type for this in netbsd? */
     struct nameidata *ndp; /* Clobber this to lookup the device name */
@@ -165,19 +177,19 @@ cfs_mount(vfsp, path, data, ndp, p)
     }
     
     /* Validate mount device.  Similar to getmdev(). */
-    DO_LOOKUP(data, UIO_USERSPACE, FOLLOW_LINK, NULL,
+    DO_LOOKUP(data, UIO_USERSPACE, FOLLOW, NULL,
 	      &dvp, p, ndp, error);
     if (error) {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return (error);
     }
-    if (VN_TYPE(dvp) != VCHR) {
+    if (dvp->v_type != VCHR) {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
-	VN_RELE(dvp);
+	vrele(dvp);
 	return(ENXIO);
     }
-    dev = VN_RDEV(dvp);
-    VN_RELE(dvp);
+    dev = dvp->v_specinfo->si_rdev;
+    vrele(dvp);
     if (major(dev) >= nchrdev || major(dev) < 0) {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return(ENXIO);
@@ -186,7 +198,7 @@ cfs_mount(vfsp, path, data, ndp, p)
     /*
      * See if the device table matches our expectations.
      */
-    if (cdevsw[major(dev)].d_open != VCOPEN) {
+    if (cdevsw[major(dev)].d_open != vc_nb_open) {
 	MARK_INT_FAIL(CFS_MOUNT_STATS);
 	return(ENXIO);
     }
@@ -209,9 +221,9 @@ cfs_mount(vfsp, path, data, ndp, p)
     mi->mi_refct = 0;
     
     /* No initialization (here) of mi_vcomm! */
-    vfsp->VFS_DATA = (VFS_ANON_T)mi;
-    VFS_FSID(vfsp).val[0] = 0;
-    VFS_FSID(vfsp).val[1] = makefstype(MOUNT_CFS);
+    vfsp->mnt_data = (qaddr_t)mi;
+    vfsp->mnt_stat.f_fsid.val[0] = 0;
+    vfsp->mnt_stat.f_fsid.val[1] = makefstype(MOUNT_CFS);
     mi->mi_vfschain.vfsp = vfsp;
     mi->mi_vfschain.next = NULL;
     
@@ -231,7 +243,7 @@ cfs_mount(vfsp, path, data, ndp, p)
     ADD_VFS_TO_MNTINFO(mi, vfsp, rootvp);
     
     /* set filesystem block size */
-    VFS_BSIZE(vfsp)	= 8192;	    /* XXX -JJK */
+    vfsp->mnt_stat.f_bsize = 8192;	    /* XXX -JJK */
     
     /* error is currently guaranteed to be zero, but in case some
        code changes... */
@@ -247,7 +259,7 @@ cfs_mount(vfsp, path, data, ndp, p)
 
 int
 cfs_start(vfsp, flags, p)
-    VFS_T *vfsp;
+    struct mount *vfsp;
     int flags;
     struct proc *p;
 {
@@ -257,7 +269,7 @@ cfs_start(vfsp, flags, p)
 
 int
 cfs_unmount(vfsp, mntflags, p)
-    VFS_T *vfsp;
+    struct mount *vfsp;
     int mntflags;
     struct proc *p;
 {
@@ -286,7 +298,7 @@ cfs_unmount(vfsp, mntflags, p)
 #ifdef	DEBUG
 	    printf("cfs_unmount: ROOT: vp %x, cp %x\n", op->rootvp, VTOC(op->rootvp));
 #endif
-	    VN_RELE(op->rootvp);
+	    vrele(op->rootvp);
 
 	    active = cfs_kill(vfsp, NOT_DOWNCALL);
 		
@@ -332,7 +344,7 @@ cfs_unmount(vfsp, mntflags, p)
  */
 int
 cfs_root(vfsp, vpp)
-	VFS_T *vfsp;
+	struct mount *vfsp;
 	struct vnode **vpp;
 {
     struct cfs_mntinfo *mi = vftomi(vfsp);
@@ -355,7 +367,7 @@ cfs_root(vfsp, vpp)
 		(VTOC(op->rootvp)->c_fid.Unique != 0))
 		{ /* Found valid root. */
 		    *vpp = op->rootvp;
-		    /* On Mach, this is VN_HOLD.  On NetBSD, VN_LOCK */
+		    /* On Mach, this is vref.  On NetBSD, VOP_LOCK */
 		    CFS_ROOT_REF(*vpp);
 		    MARK_INT_SAT(CFS_ROOT_STATS);
 		    return(0);
@@ -421,102 +433,9 @@ cfs_root(vfsp, vpp)
     return(error);
 }
 
-#ifndef __NetBSD__
-
-/* Locate a type-specific FS based on a name (tome) */
-int findTome(tome, data, coveredvp, vpp, p)
-    char *tome; 
-    char *data; 
-    struct vnode *coveredvp; 
-    struct vnode **vpp;
-    struct proc *p;
-{
-    struct vnode *rootvp;
-    struct cnode *cp;
-    char buf[VC_INSIZE(ody_mount_in) + CFS_MAXPATHLEN];
-    struct inputArgs *in;
-    struct outputArgs *out;
-    VFS_T *vfsp;
-    int i, size, error;
-
-    ENTRY;
-    *vpp = 0;
-    
-    if (!cfsnc_initialized) {
-	cfs_vfsopstats_init();
-	cfs_vnodeopstats_init();
-	cfsnc_init();
-    }
-    
-    for (i = 0; i < NVCFS; i++) {
-	if (cfs_mnttbl[i].mi_name) {
-	    if (strcmp(cfs_mnttbl[i].mi_name, tome) == 0) {
-		CFSDEBUG( CFS_ROOT, myprintf(("Mounting a tome for %s.%s\n", 
-					   tome, data)); )
-		/* We need to do the work of both a mount and a root
-		 * call here.  Since these funny fs's are never
-		 * explicity "mounted", but we want to treat them as
-		 * if they are.  */
-		    
-		/* Setup enough of vfs to allow ODY_MOUNT to go through */
-                VFS_ALLOC(vfsp);
-		VFS_INIT(vfsp, &cfs_vfsops, (VFS_ANON_T)0);
-
-		/* Initialize the cfs part of the vfs */
-		vfsp->VFS_DATA = (VFS_ANON_T)&cfs_mnttbl[i];
-		VFS_FSID(vfsp).val[0] = 0;
-		VFS_FSID(vfsp).val[1] = makefstype(MOUNT_CFS);
-
-		/* set filesystem block size */
-		VFS_BSIZE(vfsp)	= 8192;	    /* XXX -JJK */
-
-		/* Do the work to mount this thing */
-		FAKE_MOUNT(vfsp, coveredvp);
-		
-		/* Get a root vnode for the "volume" (like cfs_root) */
-		in = (struct inputArgs *)buf;
-		out = (struct outputArgs *)buf;
-
-		INIT_IN(in, ODY_MOUNT, GLOBAL_CRED);
-		in->d.ody_mount.name = (char*)VC_INSIZE(ody_mount_in);
-		size = strlen(data) + 1;
-		strncpy((char*)in + (int)in->d.ody_mount.name, data, size);
-
-		size +=  VC_INSIZE(ody_mount_in);
-		error = cfscall(vftomi(vfsp), size, &size, (char *)in);
-
-		if (error || out->result) {
-		    CFSDEBUG(CFS_ROOT, myprintf(("error %d in ODY_MOUNT\n",
-					      error? error : out->result)); )
-		    return( error? error : out->result );
-		}
-
-		CFSDEBUG( CFS_ROOT, myprintf(("ODY_MOUNT returns %x.%x.%x\n",
-					  out->d.ody_mount.VFid.Volume,
-					  out->d.ody_mount.VFid.Vnode,
-					  out->d.ody_mount.VFid.Unique)); )
-		    
-		cp = makecfsnode(&out->d.ody_mount.VFid, vfsp, VDIR);
-		rootvp = CTOV(cp);
-		rootvp->v_flag |= VROOT;
-		*vpp = rootvp;
-		VN_HOLD(*vpp);
-
-		/* Add this to the list of mounted things. */
-		ADD_VFS_TO_MNTINFO(vftomi(vfsp), vfsp, rootvp);
-
-		return (0);
-	    }	
-	}
-    }
-    return ENOENT;	/* Indicate that no matching warden was found */
-}
-
-#endif /* __NetBSD__ */
-
 int
 cfs_quotactl(vfsp, cmd, uid, arg, p)
-    VFS_T *vfsp;
+    struct mount *vfsp;
     int cmd;
     uid_t uid;
     caddr_t arg;
@@ -532,7 +451,7 @@ cfs_quotactl(vfsp, cmd, uid, arg, p)
  */
 int
 cfs_sync(vfsp, waitfor, cred, p)
-    VFS_T *vfsp;
+    struct mount *vfsp;
     int    waitfor;
     struct ucred *cred;
     struct proc *p;
@@ -546,7 +465,7 @@ cfs_sync(vfsp, waitfor, cred, p)
 
 int
 cfs_vget(vfsp, ino, vpp)
-    VFS_T *vfsp;
+    struct mount *vfsp;
     ino_t ino;
     struct vnode **vpp;
 {
@@ -561,7 +480,7 @@ cfs_vget(vfsp, ino, vpp)
  */
 int
 cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
-    register VFS_T *vfsp;    
+    register struct mount *vfsp;    
     struct fid *fhp;
     struct mbuf *nam;
     struct vnode **vpp;
@@ -581,7 +500,7 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
     /* Check for vget of control object. */
     if (IS_CTL_FID(&cfid->cfid_fid)) {
 	*vpp = CFS_CTL_VP;
-	VN_HOLD(CFS_CTL_VP);
+	vref(CFS_CTL_VP);
 	MARK_INT_SAT(CFS_VGET_STATS);
 	return(0);
     }
@@ -641,13 +560,13 @@ int getNewVnode(vpp)
 {
     struct ody_mntinfo *op;
     struct cfid cfid;
-    struct cfs_mntinfo *mi = vftomi(VN_VFS(*vpp));
+    struct cfs_mntinfo *mi = vftomi((*vpp)->v_mount);
     
     ENTRY;
 
     for (op = &mi->mi_vfschain; op; op = op->next) {
 	/* Look for a match between vfsp and op->vfsp */
-	if (VN_VFS(*vpp) == op->vfsp) {
+	if ((*vpp)->v_mount == op->vfsp) {
 	    break;
 	}
     }

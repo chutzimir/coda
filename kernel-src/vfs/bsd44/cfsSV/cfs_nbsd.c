@@ -15,9 +15,12 @@
 /* 
  * HISTORY
  * $Log$
- * Revision 1.16.6.1  1997/10/28 23:10:14  rvb
- * >64Meg; venus can be killed!
+ * Revision 1.16.6.2  1997/11/12 12:09:37  rvb
+ * reorg pass1
  *
+ * Revision 1.16.6.1  97/10/28  23:10:14  rvb
+ * >64Meg; venus can be killed!
+ * 
  * Revision 1.16  97/07/18  15:28:41  rvb
  * Bigger/Better/Faster than AFS
  * 
@@ -69,11 +72,17 @@
  * Added CFS-specific files
  *
  */
-
-/* NetBSD-specific routines for the cfs code */
-#ifdef __NetBSD__
+#include <sys/param.h>
+#include <sys/systm.h>
+#include <sys/mount.h>
+#include <sys/mbuf.h>
+#include <sys/namei.h>
+#include <sys/proc.h>
+#include <ufs/ifs/ifs.h>
 
 #include <cfs/cfs.h>
+#include <cfs/cfsk.h>
+#include <cfs/cfs_vfsops.h>
 #include <cfs/cfs_vnodeops.h>
 #include <cfs/cnode.h>
 
@@ -105,7 +114,7 @@ int cfs_vnop_print_entry = 0;
 #endif 
 
 /* NetBSD interface to statfs */
-int cfs_nb_statfs    __P((VFS_T *, struct statfs *, struct proc *));
+int cfs_nb_statfs    __P((struct mount *, struct statfs *, struct proc *));
 
 struct vfsops cfs_vfsops = {
     MOUNT_CFS,
@@ -212,7 +221,7 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
  */
 int
 cfs_nb_statfs(vfsp, sbp, p)
-    register VFS_T *vfsp;
+    register struct mount *vfsp;
     struct statfs *sbp;
     struct proc *p;
 {
@@ -231,8 +240,7 @@ cfs_nb_statfs(vfsp, sbp, p)
     sbp->f_bavail = NB_SFS_SIZ;
     sbp->f_files = NB_SFS_SIZ;
     sbp->f_ffree = NB_SFS_SIZ;
-    bcopy((caddr_t)&(VFS_FSID(vfsp)), (caddr_t)&(sbp->f_fsid),
-	  sizeof (fsid_t));
+    bcopy((caddr_t)&(vfsp->mnt_stat.f_fsid), (caddr_t)&(sbp->f_fsid), sizeof (fsid_t));
     strncpy(sbp->f_fstypename, MOUNT_CFS, MFSNAMELEN-1);
     strcpy(sbp->f_mntonname, "/coda");
     strcpy(sbp->f_mntfromname, "CFS");
@@ -832,7 +840,7 @@ cfs_nb_symlink(v)
      */
     
     vput(ap->a_dvp);
-    if (*ap->a_vpp) VN_RELE(*ap->a_vpp);
+    if (*ap->a_vpp) vrele(*ap->a_vpp);
 
     /* 
      * Free the name buffer 
@@ -937,8 +945,8 @@ cfs_nb_lock(v)
     if (vp->v_tag == VT_NON)
 	return (ENOENT);
 
-    if (cp->c_flags & CN_LOCKED) {
-	cp->c_flags |= CN_WANTED;
+    if (cp->c_flags & C_LOCKED) {
+	cp->c_flags |= C_WANTED;
 #ifdef DIAGNOSTIC
 	myprintf(("cfs_nb_lock: lock contention\n"));
 #endif
@@ -948,7 +956,7 @@ cfs_nb_lock(v)
 #endif
 	goto start;
     }
-    cp->c_flags |= CN_LOCKED;
+    cp->c_flags |= C_LOCKED;
     return (0);
 }
 
@@ -965,12 +973,12 @@ cfs_nb_unlock(v)
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
     }
 #ifdef DIAGNOSTIC
-    if ((cp->c_flags & CN_LOCKED) == 0) 
+    if ((cp->c_flags & C_LOCKED) == 0) 
 	panic("cfs_unlock: not locked");
 #endif
-    cp->c_flags &= ~CN_LOCKED;
-    if (cp->c_flags & CN_WANTED) {
-	cp->c_flags &= ~CN_WANTED;
+    cp->c_flags &= ~C_LOCKED;
+    if (cp->c_flags & C_WANTED) {
+	cp->c_flags &= ~C_WANTED;
 	wakeup((caddr_t)cp);
     }
     return (0);
@@ -983,7 +991,7 @@ cfs_nb_islocked(v)
     struct vop_islocked_args *ap = v;
 
     ENTRY;
-    if (VTOC(ap->a_vp)->c_flags & CN_LOCKED)
+    if (VTOC(ap->a_vp)->c_flags & C_LOCKED)
 	return (1);
     return (0);
 }
@@ -1095,5 +1103,3 @@ vcfsattach(n)
     int n;
 {
 }
-
-#endif /* __NetBSD__ */
