@@ -77,34 +77,21 @@ extern "C" {
 #include <sys/wait.h>
 #include <string.h>
 #include <setjmp.h>
-#ifdef __MACH__
-#include <sysent.h>
-#include <libc.h>
-#include <mach.h>
-#else	/* __linux__ || __BSD44__ */
 #include <unistd.h>
 #include <stdlib.h>
-#endif
-#ifdef	__linux__
-#include <dirent.h>
-#include <stdio.h>
-#include <mntent.h>
-#include <sys/vfs.h>
-#include <linux/ext2_fs.h>
-#endif
 
 #include <lwp.h>
 #include <lock.h>
 #include <util.h>
 #include <partition.h>
 
+#include <vice.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 #include <rvmlib.h>
 
-#include <vice.h>
 #include "cvnode.h"
 #include "volume.h"
 #include <recov_vollog.h>
