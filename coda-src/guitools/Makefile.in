@@ -85,7 +85,7 @@ translate.sed: Makefile
 	echo "s%+GREP+%@GREP@%g" >> $@
 	echo "s%+HOSTNAME+%@HOSTNAME@%g" >> $@
 	echo "s%+TIXWISH+%@TIXWISH@%g" >> $@
-	echo "s%+GUIDIR+%${LIBEXECDIR}%g" >> $@
+	echo "s%+GUIDIR+%${GUIDIR}%g" >> $@
 	echo "s%+CFS+%${BINDIR}/cfs%g" >> $@
 	echo "s%+CLOG+%${BINDIR}/clog%g" >> $@
 	echo "s%+CTOKENS+%${BINDIR}/ctokens%g" >> $@
