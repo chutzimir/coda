@@ -254,6 +254,8 @@ enum CacheType {    ATTR,
 		    DATA
 };
 
+#undef WRITE
+
 enum CacheEvent	{   HIT,
 		    MISS,
 		    RETRY,
