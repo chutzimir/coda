@@ -124,8 +124,8 @@ int main(int argc, char **argv) {
 #if ! defined(__CYGWIN32__) && ! defined(DJGPP)
     freopen("/dev/console", "w", stderr);
 #endif
-    fprintf(stderr, "Coda Venus, version %d.%d (%d)\n\r",
-	    VenusMajorVersion, VenusMinorVersion, RecovVersionNumber);
+    fprintf(stderr, "Coda Venus, version %d.%d.%d\n\r",
+	    VenusMajorVersion, VenusMinorVersion, VenusReleaseVersion);
     fflush(stderr);
 
     coda_assert_action = CODA_ASSERT_SLEEP;
@@ -392,8 +392,8 @@ static void ParseCmdline(int argc, char **argv) {
     if (consoleFile == UNSET_CONSOLE) consoleFile = DFLT_CONSOLE;
     if (SpoolDir == UNSET_SPOOLDIR) SpoolDir = DFLT_SPOOLDIR;
     freopen(consoleFile, "w", stderr);
-    fprintf(stderr, "Coda Venus, version %d.%d (%d)\n",
-             VenusMajorVersion, VenusMinorVersion, RecovVersionNumber);
+    fprintf(stderr, "Coda Venus, version %d.%d.%d\n",
+             VenusMajorVersion, VenusMinorVersion, VenusReleaseVersion);
     fflush(stderr);
 }
 

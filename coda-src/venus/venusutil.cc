@@ -456,8 +456,8 @@ void LogInit() {
     if (logFile == NULL)
 	{ eprint("LogInit failed"); exit(-1); }
     LogInited = 1;
-    LOG(0, ("Coda Venus, version %d.%d (%d)\n", 
-	    VenusMajorVersion, VenusMinorVersion, RecovVersionNumber));
+    LOG(0, ("Coda Venus, version %d.%d.%d\n", 
+	    VenusMajorVersion, VenusMinorVersion, VenusReleaseVersion));
 
     struct timeval now;
     gettimeofday(&now, 0);
