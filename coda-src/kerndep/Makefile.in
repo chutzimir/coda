@@ -39,30 +39,14 @@ TOPOBJ = @TOPOBJ@
 # Need to conditionalize this
 include $(MAKDIR)/Makeconf
 
-# presto changeo!
-INCLDIR := $(INCLDIR)/cfs
-
 LIBRARIES = libkerndep.a 
-HEADERS   = mach_vioctl.h
+HEADERS   = pioctl.h
 
-CFLAGS += -DLINUX -DPRIVATE=static
 CXXFLAGS := $(CFLAGS)
 
-libkerndep.a:  setpag.o pioctl.o
+libkerndep.a:  pioctl.o
 
-ifneq ($(SHORTSYS), mach)
-# On Linux and BSD44, convert pioctl() to ioctl()
-setpag.o: setpag.c
-	$(CC) $(CFLAGS) -c $<
 pioctl.o: pioctl.c
 	$(CC) $(CFLAGS) -c $<
-else
-# Actually, I'm not sure even Mach uses pioctl.s ... (Satya 1/9/97)
-setpag.o: setpag.s
-pioctl.o: pioctl.s
-endif
-
-OFILES= setpag.o pioctl.o
-$(OFILES): $(HEADERS)
 
 include $(MAKDIR)/Makerules

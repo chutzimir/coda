@@ -91,6 +91,7 @@ extern "C" {
 #include <coda_dir.h>
 
 /* from venus */
+#include "venus_vnode.h"
 #include "advice_daemon.h"
 #include "adviceconn.h"
 #include "advice.h"
@@ -120,7 +121,9 @@ int NameCtxt_deallocs = 0;
 
 /*  *****  Private Constants  *****  */
 
+#ifndef __linux__
 #define	UTMP_FILE   "/etc/utmp"
+#endif
 #define	CONSOLE	    "console"
 /*PRIVATE const*/ int HDB_YIELDMASK = 0x1;  /* yield every 2 iterations */
 
@@ -1744,7 +1747,7 @@ pestate namectxt::CheckExpansion() {
 	/* Expand/validate the context. */
 	if (expansion.count() > 0)
 	    next = new dlist_iterator(expansion);
-	struct vnode *vnp = 0;
+	struct venus_vnode *vnp = 0;
 	if (vp->namev(path, FOLLOW_SYMLINKS, &vnp)) {
 	    DISCARD_VNODE(vnp);
 	    vnp = 0;

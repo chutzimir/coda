@@ -804,7 +804,7 @@ vproc *vproc_iterator::operator()() {
 }
 
 
-void va_init(struct vattr *vap) {
+void va_init(struct coda_vattr *vap) {
     vap->va_mode = VA_IGNORE_MODE;
     vap->va_uid = VA_IGNORE_UID;
     vap->va_gid = VA_IGNORE_GID;
@@ -825,7 +825,7 @@ void va_init(struct vattr *vap) {
 }
 
 
-void VattrToStat(struct vattr *vap, struct stat *sp) {
+void VattrToStat(struct coda_vattr *vap, struct stat *sp) {
     sp->st_dev = (dev_t)(vap->va_fsid);
     sp->st_mode = vap->va_mode;
     sp->st_nlink = vap->va_nlink;

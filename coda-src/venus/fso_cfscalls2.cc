@@ -68,14 +68,6 @@ extern "C" {
 
 #include <rpc2.h>
 
-#if defined(__linux__) || defined(__BSD44__)
-
-#ifdef DIRSIZ
-#undef DIRSIZ
-#endif DIRSIZ
-#define DIRSIZ(dp)      ((sizeof (struct direct) - (MAXNAMLEN+1)) + \
-                         (((dp)->d_namlen+1 + 3) &~ 3))
-#endif /* __linux__ || __BSD44__ */
 
 #ifdef __cplusplus
 }
@@ -139,7 +131,7 @@ int fsobj::Open(int writep, int execp, int truncp, dev_t *devp, ino_t *inop, vui
 
     /* Do truncate if necessary. */
     if (truncp && writep) {	/* truncp is acted upon only if writep */
-	struct vattr va; va_init(&va);
+	struct coda_vattr va; va_init(&va);
 	va.va_size = 0;
 	if ((code = SetAttr(&va, vuid)) != 0)
 	    goto Exit;
@@ -725,7 +717,7 @@ int fsobj::Readdir(char *buf, int offset, int len, int *cc, vuid_t vuid) {
 
     if (LogLevel >= 1000) {
 	for (int pos = 0; pos < *cc;) {
-	    struct direct *dp = (struct direct *)&(buf[pos]);
+	    struct venus_dirent *dp = (struct venus_dirent *)&(buf[pos]);
 	    if (*cc - pos < DIRSIZ(dp))
 		{ print(logFile); Choke("fsobj::Readdir: dir entry too small"); }
 

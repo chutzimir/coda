@@ -1511,7 +1511,7 @@ int fsobj::DisconnectedSetAttr(Date_t Mtime, vuid_t vuid, unsigned long NewLengt
     return(code);
 }
 
-int fsobj::SetAttr(struct vattr *vap, vuid_t vuid, RPC2_CountedBS *acl) {
+int fsobj::SetAttr(struct coda_vattr *vap, vuid_t vuid, RPC2_CountedBS *acl) {
     LOG(10, ("fsobj::SetAttr: (%s), uid = %d\n",
 	      comp, vuid));
 
@@ -1598,7 +1598,7 @@ int fsobj::SetACL(RPC2_CountedBS *acl, vuid_t vuid) {
 	return(ETIMEDOUT);
     }
 
-    struct vattr va;
+    struct coda_vattr va;
     va_init(&va);
     int code = SetAttr(&va, vuid, acl);
 

@@ -61,9 +61,6 @@ extern "C" {
 #else
 #include <machine/endian.h>
 #endif
-#if    defined(__BSD44__) 
-#include <dirent.h> /* to get definition of MAXNAMLEN */
-#endif
 
 #ifdef __MACH__
 #include <sysent.h>
@@ -283,7 +280,7 @@ long CallBackFetch(RPC2_Handle RPCid, ViceFid *Fid, SE_Descriptor *BD) {
     /* Notify Codacon. */
     {
 	char *comp = f->comp;
-	char buf[MAXNAMLEN];
+	char buf[CFS_MAXNAMLEN];
 	if (comp[0] == '\0') {
 	    sprintf(buf, "[%x.%x.%x]", f->fid.Volume, f->fid.Vnode, f->fid.Unique);
 	    comp = buf;

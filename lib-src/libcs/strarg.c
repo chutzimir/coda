@@ -58,12 +58,7 @@ static char *rcsid = "$Header$";
 
 char *strarg (ptr, brk, prompt, defalt, buf)
 char **ptr;
-#ifdef	__MACH__
-const char *brk, *prompt;
-char *defalt;
-#else
 const char *brk, *prompt, *defalt;
-#endif
 char *buf;
 {
 	register char *arg;

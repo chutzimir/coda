@@ -74,7 +74,7 @@ extern "C" {
 #include <sys/viceioctl.h>
 #endif /* __MACH__ */
 #ifdef __BSD44__
-#include <cfs/mach_vioctl.h> /* new location/name of sys/viceioctl.h */
+#include <pioctl.h> /* new location/name of sys/viceioctl.h */
 #endif /* __BSD44__ */
 #include <sys/file.h>
 #include <netdb.h>

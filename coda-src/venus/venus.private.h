@@ -314,7 +314,7 @@ struct CacheStats {
     /* Assumes that ((a).Volume == (b).Volume)! */\
     (((((a).Vnode) < ((b).Vnode))) || (((a).Vnode == (b).Vnode) && (((a).Unique) < ((b).Unique))))
 
-#define	ISDIR(fid)  ((fid).Vnode & 1)	    /* Directory fids are odd */
+     /*#define	ISDIR(fid)  ((fid).Vnode & 1)	 */    /* Directory fids are odd */
 
 #define	ISFAKE(fid) ((fid).Vnode == FakeVnode)
 

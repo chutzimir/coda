@@ -49,7 +49,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#include <sys/types.h>
+#include <sys/param.h>
 #include <sys/time.h>
 #ifdef __MACH__
 #include <sysent.h>
@@ -70,7 +70,7 @@ extern "C" {
 extern "C" {
 #endif __cplusplus
 
-#include <cfs/cfs.h>
+#include <cfs/coda.h>
 #include <timer.h>
 
 #ifdef __cplusplus

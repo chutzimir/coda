@@ -730,17 +730,22 @@ MarkAsAncient(volinfo_t *vol) {
 
 
 int main(int argc, char **argv) {
+    /* Process arguments */
+    char *myname = argv[0];
+    char *filename = NULL;
+    char dumpdir[MAXPATHLEN];
+    time_t now = time(0);
+    char today[12];
+    volinfo_t *vol; /* for-loop index variable */
+    
     if (getuid() != 0) {
 	LogMsg(0, 0, stdout, "Volume utilities must be run as root; sorry\n");
 	exit(1);
     }
 
-    /* Process arguments */
-    char *myname = argv[0];
-    char *filename = NULL;
-    char *dumpdir = NULL;
-    volinfo_t *vol; /* for-loop index variable */
 
+
+    dumpdir[0]='\0';
     while ( argc > 1) {			/* While args left to parse. */
 	if (!strcmp(argv[1], "-t")) {
 	    Timeout = atoi(argv[2]);
@@ -755,11 +760,11 @@ int main(int argc, char **argv) {
 	} else if (filename == NULL) {/* Assume 1st unrecognized arg is filename*/
 	    filename = argv[1];
 	    argc--; argv++;
-	} else if (dumpdir == NULL) { /* Assume 2nd unrecognized arg is dumpdir */
-	    dumpdir = argv[1];
+	} else if(dumpdir[0] == '\0') { /* Assume 2nd unrecognized arg is dumpdir */
+	    strncpy(dumpdir, argv[1], MAXPATHLEN);
 	    argc--; argv++;
 	} else {	/* Must have had unrecognized input. */
-	    printf("Usage: %s [-p pollPeriod] [-t timeout] [-d debuglevel] <filename> [<backup dir>]\n", myname);
+	    printf("Usage: %s [-p pollPeriod] [-t timeout] [-d debuglevel] <dumpfile> [<backupdir>]\n", myname);
 	    exit(1);
 	}
     }
@@ -769,10 +774,22 @@ int main(int argc, char **argv) {
 	exit(1);
     }
 
+
+
+    strftime(today, sizeof(today), "%d%b%Y", localtime(&now));
     if (dumpdir) {	/* User specified a dump directory! */
 	if (chdir(dumpdir) != 0) {
-	    perror("Set dump directory");
+	    perror("Set dump directory.");
 	    exit(-1);
+	} else {
+	    strcat(dumpdir, "/");
+	    strcat(dumpdir, today);
+	    if ( mkdir(dumpdir, 0700) == -1 ) {
+		fprintf(stderr, "Cannot create %s:", dumpdir);
+		perror("");
+		exit(1);
+	    } else
+		chdir(dumpdir);
 	}
     }
 
@@ -786,7 +803,7 @@ int main(int argc, char **argv) {
     Partitions = DiskPartitionList;
     /* change the name */
     if ( PreparePartitionEntries(Partitions) != 0 ) {
-	eprint("Malformed partitions! Names too long.");
+	eprint("Malformed partitions! Cannot prepare for dumping.");
 	exit(1);
     }
 

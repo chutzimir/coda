@@ -71,8 +71,8 @@ extern "C" {
 
 
 #define DIRBLKSIZ       1024
-
-#include "bsd_dir.h"
+#include <time.h>
+#include <cfs/coda.h>
 
 #ifdef __cplusplus
 }
@@ -116,7 +116,7 @@ PRIVATE void CVOpen(char *filename, CVDescriptor *cvd) {
     cvd->dirBytes = 0;
     cvd->dirPos = 0;
     if (minFreeSize == -1) {
-	struct direct dir; /* equated to struct dirent on BSD44 */
+	struct venus_dirent dir; /* equated to struct dirent on BSD44 */
 	dir.d_namlen = 1;
 	minFreeSize = DIRSIZ(&dir);
     }
@@ -142,7 +142,7 @@ PRIVATE void CVClose(CVDescriptor *cvd) {
 PRIVATE void CVWriteEntry(char *name, ino_t inode, CVDescriptor *cvd) {
     if (name == 0 || *name == 0) return;
 
-    struct direct dir;
+    struct venus_dirent dir;
     dir.d_namlen = strlen(name);
 
     dir.d_fileno = inode;
@@ -172,7 +172,7 @@ PRIVATE void CVWriteEntry(char *name, ino_t inode, CVDescriptor *cvd) {
 /* CompleteCVBlock -- finish out this block */
 PRIVATE void CompleteCVBlock(CVDescriptor *cvd) {
     if (DIRBLKSIZ - cvd->dirPos > 0) {
-	struct direct dir;
+	struct venus_dirent dir;
 
         dir.d_fileno = 0;
 #if 0
