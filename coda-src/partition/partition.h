@@ -128,8 +128,8 @@ struct inodeops {
 
 
 extern struct inodeops inodeops_simple;
-extern struct inodeops inodeops_raw_mach;
 extern struct inodeops inodeops_ftree;
+extern struct inodeops inodeops_backup;
 
 
 

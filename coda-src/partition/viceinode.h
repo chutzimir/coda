@@ -79,7 +79,7 @@ struct ViceInodeInfo {
     bit32	InodeNumber;
     int		ByteCount;
     int		LinkCount;
-    VolId	VolumeId;
+    VolumeId	VolumeNo;
     VnodeId	VnodeNumber;
     Unique_t	VnodeUniquifier;
     FileVersion	InodeDataVersion;
