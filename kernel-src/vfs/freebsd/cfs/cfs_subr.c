@@ -29,7 +29,6 @@ improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
 
-static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 /* 
@@ -47,9 +46,12 @@ static char *rcsid = "$Header$";
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.1  1997/12/06 17:41:21  rvb
- * Sync with peters coda.h
+ * Revision 1.6.2.2  1997/12/16 12:40:06  rvb
+ * Sync with 1.3
  *
+ * Revision 1.6.2.1  97/12/06  17:41:21  rvb
+ * Sync with peters coda.h
+ * 
  * Revision 1.6  97/12/05  10:39:17  rvb
  * Read CHANGES
  * 
@@ -180,17 +182,20 @@ static char *rcsid = "$Header$";
 #include <vcfs.h>
 
 #include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/malloc.h>
 #include <sys/select.h>
 #include <sys/mount.h>
 
 #include <cfs/coda.h>
-#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
+#include <cfs/cfs_subr.h>
+#include <cfs/cfsnc.h>
+
+
+__RCSID("$Header$");
 
 #if	NVCFS
-
-struct cnode *cfs_find(ViceFid *fid);
 
 int cfs_active = 0;
 int cfs_reuse = 0;
@@ -210,7 +215,7 @@ struct cnode *cfs_cache[CFS_CACHESIZE];
  * Allocate a cnode.
  */
 struct cnode *
-cfs_alloc()
+cfs_alloc(void)
 {
     struct cnode *cp;
 
@@ -342,11 +347,11 @@ cfs_kill(whoIam, dcstat)
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
 			if (CTOV(cp)->v_mount == whoIam) {
 #ifdef	DEBUG
-				printf("cfs_kill: vp %x, cp %x\n", CTOV(cp), cp);
+				printf("cfs_kill: vp %p, cp %p\n", CTOV(cp), cp);
 #endif
 				count++;
 				CFSDEBUG(CFS_FLUSH, 
-					 myprintf(("Live cnode fid %x-%x-%x flags %d count %d\n",
+					 myprintf(("Live cnode fid %lx.%lx.%lx flags %d count %d\n",
 						   (cp->c_fid).Volume,
 						   (cp->c_fid).Vnode,
 						   (cp->c_fid).Unique, 
@@ -387,7 +392,7 @@ cfs_flush(dcstat)
  * name cache flush.  
  */
 void
-cfs_testflush()
+cfs_testflush(void)
 {
     int hash;
     struct cnode *cp;
@@ -396,7 +401,7 @@ cfs_testflush()
 	for (cp = cfs_cache[hash];
 	     cp != NULL;
 	     cp = CNODE_NEXT(cp)) {  
-	    myprintf(("Live cnode fid %x-%x-%x count %d\n",
+	    myprintf(("Live cnode fid %lx.%lx.%lx count %d\n",
 		      (cp->c_fid).Volume,(cp->c_fid).Vnode,
 		      (cp->c_fid).Unique, CTOV(cp)->v_usecount));
 	}
@@ -409,12 +414,12 @@ cfs_testflush()
  *         is dead, which would be a bad thing.
  *
  */
+void
 cfs_unmounting(whoIam)
 	struct mount *whoIam;
 {	
 	int hash;
 	struct cnode *cp;
-	int count = 0;
 
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
@@ -441,12 +446,13 @@ loop:
 		count++;
 		if (!(cp->c_flags & C_UNMOUNTING)) {
 			bad++;
-			printf("vp %x, cp %x missed\n", vp, cp);
+			printf("vp %p, cp %p missed\n", vp, cp);
 			cp->c_flags |= C_UNMOUNTING;
 		}
 	}
 }
 
+int
 cfs_cacheprint(whoIam)
 	struct mount *whoIam;
 {	
@@ -454,14 +460,14 @@ cfs_cacheprint(whoIam)
 	struct cnode *cp;
 	int count = 0;
 
-	printf("cfs_cacheprint: cfs_ctlvp %x, cp %x", cfs_ctlvp, VTOC(cfs_ctlvp));
+	printf("cfs_cacheprint: cfs_ctlvp %p, cp %p", cfs_ctlvp, VTOC(cfs_ctlvp));
 	cfsnc_name(cfs_ctlvp);
 	printf("\n");
 
 	for (hash = 0; hash < CFS_CACHESIZE; hash++) {
 		for (cp = cfs_cache[hash]; cp != NULL; cp = CNODE_NEXT(cp)) {
 			if (CTOV(cp)->v_mount == whoIam) {
-				printf("cfs_cacheprint: vp %x, cp %x", CTOV(cp), cp);
+				printf("cfs_cacheprint: vp %p, cp %p", CTOV(cp), cp);
 				cfsnc_name(cp);
 				printf("\n");
 				count++;
@@ -498,7 +504,7 @@ cfs_cacheprint(whoIam)
  */
 
 int handleDownCall(opcode, out)
-     int opcode; union cfs_downcalls *out;
+     int opcode; union outputArgs *out;
 {
     int error;
     
@@ -517,18 +523,18 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.reqs[CFS_PURGEUSER]++;
 	  
 	  /* XXX - need to prevent fsync's */
-	  cfsnc_purge_user(&out->purgeuser.cred, IS_DOWNCALL);
+	  cfsnc_purge_user(out->cfs_purgeuser.cred.cr_uid, IS_DOWNCALL);
 	  return(0);
       }
 	
       case CFS_ZAPFILE : {
 	  struct cnode *cp;
-	  int error = 0;
-	  
+
+	  error = 0;
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPFILE]++;
 	  
-	  cp = cfs_find(&out->zapfile.CodaFid);
+	  cp = cfs_find(&out->cfs_zapfile.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
@@ -536,7 +542,7 @@ int handleDownCall(opcode, out)
 	      if (CTOV(cp)->v_flag & VTEXT)
 		  error = cfs_vmflush(cp);
 	      
-	      CFSDEBUG(CFS_ZAPFILE, myprintf(("zapfile: fid = (%x.%x.%x), 
+	      CFSDEBUG(CFS_ZAPFILE, myprintf(("zapfile: fid = (%lx.%lx.%lx), 
                                               refcnt = %d, error = %d\n",
 					      cp->c_fid.Volume, 
 					      cp->c_fid.Vnode, 
@@ -557,14 +563,14 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPDIR]++;
 	  
-	  cp = cfs_find(&out->zapdir.CodaFid);
+	  cp = cfs_find(&out->cfs_zapdir.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
 	      cp->c_flags &= ~C_VATTR;
-	      cfsnc_zapParentfid(&out->zapdir.CodaFid, IS_DOWNCALL);     
+	      cfsnc_zapParentfid(&out->cfs_zapdir.CodaFid, IS_DOWNCALL);     
 	      
-	      CFSDEBUG(CFS_ZAPDIR, myprintf(("zapdir: fid = (%x.%x.%x), 
+	      CFSDEBUG(CFS_ZAPDIR, myprintf(("zapdir: fid = (%lx.%lx.%lx), 
                                           refcnt = %d\n",cp->c_fid.Volume, 
 					     cp->c_fid.Vnode, 
 					     cp->c_fid.Unique, 
@@ -582,35 +588,42 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_ZAPVNODE]++;
 	  
-	  cfsnc_zapvnode(&out->zapvnode.VFid, &out->zapvnode.cred,
-			 IS_DOWNCALL);
+	  myprintf(("CFS_ZAPVNODE: Called, but uniplemented\n"));
+	  /*
+	   * Not that below we must really translate the returned coda_cred to
+	   * a netbsd cred.  This is a bit muddled at present and the cfsnc_zapnode
+	   * is further unimplemented, so punt!
+	   * I suppose we could use just the uid.
+	   */
+	  /* cfsnc_zapvnode(&out->cfs_zapvnode.VFid, &out->cfs_zapvnode.cred,
+			 IS_DOWNCALL); */
 	  return(0);
       }	
 	
       case CFS_PURGEFID : {
 	  struct cnode *cp;
-	  int error = 0;
-	  
+
+	  error = 0;
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_PURGEFID]++;
 	  
-	  cp = cfs_find(&out->purgefid.CodaFid);
+	  cp = cfs_find(&out->cfs_purgefid.CodaFid);
 	  if (cp != NULL) {
 	      vref(CTOV(cp));
 	      
-	      if (ODD(out->purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
-		  cfsnc_zapParentfid(&out->purgefid.CodaFid,
+	      if (ODD(out->cfs_purgefid.CodaFid.Vnode)) { /* Vnode is a directory */
+		  cfsnc_zapParentfid(&out->cfs_purgefid.CodaFid,
 				     IS_DOWNCALL);     
 	      }
 	      
 	      cp->c_flags &= ~C_VATTR;
-	      cfsnc_zapfid(&out->purgefid.CodaFid, IS_DOWNCALL);
-	      if (!(ODD(out->purgefid.CodaFid.Vnode)) 
+	      cfsnc_zapfid(&out->cfs_purgefid.CodaFid, IS_DOWNCALL);
+	      if (!(ODD(out->cfs_purgefid.CodaFid.Vnode)) 
 		  && (CTOV(cp)->v_flag & VTEXT)) {
 		  
 		  error = cfs_vmflush(cp);
 	      }
-	      CFSDEBUG(CFS_PURGEFID, myprintf(("purgefid: fid = (%x.%x.%x), refcnt = %d, error = %d\n",
+	      CFSDEBUG(CFS_PURGEFID, myprintf(("purgefid: fid = (%lx.%lx.%lx), refcnt = %d, error = %d\n",
                                             cp->c_fid.Volume, cp->c_fid.Vnode,
                                             cp->c_fid.Unique, 
 					    CTOV(cp)->v_usecount - 1, error)););
@@ -628,24 +641,27 @@ int handleDownCall(opcode, out)
 	  cfs_clstat.ncalls++;
 	  cfs_clstat.reqs[CFS_REPLACE]++;
 	  
-	  cp = cfs_find(&out->replace.OldFid);
+	  cp = cfs_find(&out->cfs_replace.OldFid);
 	  if (cp != NULL) { 
 	      /* remove the cnode from the hash table, replace the fid, and reinsert */
 	      vref(CTOV(cp));
 	      cfs_unsave(cp);
-	      cp->c_fid = out->replace.NewFid;
+	      cp->c_fid = out->cfs_replace.NewFid;
 	      cfs_save(cp);
 
-	      CFSDEBUG(CFS_REPLACE, myprintf(("replace: oldfid = (%x.%x.%x), newfid = (%x.%x.%x), cp = 0x%x\n",
-					   out->replace.OldFid.Volume,
-					   out->replace.OldFid.Vnode,
-					   out->replace.OldFid.Unique,
+	      CFSDEBUG(CFS_REPLACE, myprintf(("replace: oldfid = (%lx.%lx.%lx), newfid = (%lx.%lx.%lx), cp = %p\n",
+					   out->cfs_replace.OldFid.Volume,
+					   out->cfs_replace.OldFid.Vnode,
+					   out->cfs_replace.OldFid.Unique,
 					   cp->c_fid.Volume, cp->c_fid.Vnode, 
 					   cp->c_fid.Unique, cp));)
 	      vrele(CTOV(cp));
 	  }
 	  return (0);
-      }			   
+      }
+      default:
+      	myprintf(("handleDownCall: unknown opcode %d\n", opcode));
+	return (EINVAL);
     }
 }
 
@@ -672,7 +688,7 @@ cfs_vmflush(cp)
  * kernel-internal debugging switches
  */
 
-void cfs_debugon()
+void cfs_debugon(void)
 {
     cfsdebug = -1;
     cfsnc_debug = -1;
@@ -681,7 +697,7 @@ void cfs_debugon()
     cfs_vfsop_print_entry = 1;
 }
 
-void cfs_debugoff()
+void cfs_debugoff(void)
 {
     cfsdebug = 0;
     cfsnc_debug = 0;

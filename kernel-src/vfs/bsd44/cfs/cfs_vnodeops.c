@@ -15,9 +15,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.4  1997/12/10 14:08:31  rvb
- * Fix O_ flags; check result in cfscall
+ * Revision 1.5.2.5  1997/12/16 12:40:14  rvb
+ * Sync with 1.3
  *
+ * Revision 1.5.2.4  97/12/10  14:08:31  rvb
+ * Fix O_ flags; check result in cfscall
+ * 
  * Revision 1.5.2.3  97/12/10  11:40:27  rvb
  * No more ody
  * 
@@ -154,20 +157,22 @@
 #include <sys/ioctl.h>
 #include <sys/mount.h>
 #include <sys/proc.h>
+#include <sys/select.h>
 #include <ufs/ifs/ifs.h>
 #include <sys/user.h>
-#include <vm/vm_kern.h>
+#include <vm/vm.h>
+#ifdef	NetBSD1_3
+#include <miscfs/genfs/genfs.h>
+#endif
 
 #include <cfs/coda.h>
-#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_vnodeops.h>
+#include <cfs/cfs_venus.h>
 #include <cfs/cfs_opstats.h>
-#include <cfs/pioctl.h>    /* No viceioctl.h on NetBSD */
-
-struct cnode *makecfsnode();
-struct cnode *cfsnc_lookup();
-struct cnode *cfs_find();
+#include <cfs/cfs_subr.h>
+#include <cfs/cfsnc.h>
+#include <cfs/pioctl.h>
 
 /* 
  * These flags select various performance enhancements.
@@ -210,7 +215,7 @@ extern int cfsdebug;
 
 /* Definition of the vnode operation vector */
 
-int (**cfs_vnodeop_p)();
+int (**cfs_vnodeop_p)(void *);
 struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_default_desc, nbsd_vop_error },
     { &vop_lookup_desc, cfs_lookup },	/* lookup */
@@ -225,10 +230,14 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_write_desc, cfs_write },		/* write */
     { &vop_lease_desc, nbsd_vop_nop },          /* lease */
     { &vop_ioctl_desc, cfs_ioctl },		/* ioctl */
-    { &vop_select_desc, cfs_select },	/* select */
+/* 1.3    { &vop_select_desc, cfs_select },	select */
     { &vop_mmap_desc, nbsd_vop_error },		/* mmap */
     { &vop_fsync_desc, cfs_fsync },		/* fsync */
+#ifdef	NetBSD1_3
+    { &vop_seek_desc, genfs_seek },		/* seek */
+#else
     { &vop_seek_desc, nbsd_vop_error },		/* seek */
+#endif
     { &vop_remove_desc, cfs_remove },	/* remove */
     { &vop_link_desc, cfs_link },		/* link */
     { &vop_rename_desc, cfs_rename },	/* rename */
@@ -254,7 +263,7 @@ struct vnodeopv_entry_desc cfs_vnodeop_entries[] = {
     { &vop_truncate_desc, nbsd_vop_error },	/* truncate */
     { &vop_update_desc, nbsd_vop_error },	/* update */
     { &vop_bwrite_desc, nbsd_vop_error },	/* bwrite */
-    { (struct vnodeop_desc*)NULL, (int(*)())NULL }
+    { (struct vnodeop_desc*)NULL, (int(*)(void *))NULL }
 };
 
 struct vnodeopv_desc cfs_vnodeop_opv_desc = 
@@ -287,7 +296,7 @@ nbsd_vop_nop(void *anon) {
 }
 
 int
-cfs_vnodeopstats_init()
+cfs_vnodeopstats_init(void)
 {
 	register int i;
 	
@@ -414,11 +423,11 @@ cfs_close(v)
 
     if (IS_UNMOUNTING(cp)) {
 	if (cp->c_ovp) {
-	    printf("cfs_close: destroying container ref %d, ufs vp %x of vp %x/cp %x\n",
+	    printf("cfs_close: destroying container ref %d, ufs vp %p of vp %p/cp %p\n",
 		    vp->v_usecount, cp->c_ovp, vp, cp);
 	    vgone(cp->c_ovp);
 	} else {
-	    printf("cfs_close: NO container vp %x/cp %x\n", vp, cp);
+	    printf("cfs_close: NO container vp %p/cp %p\n", vp, cp);
 	}
 	return ENODEV;
     } else {
@@ -481,7 +490,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
 
     MARK_ENTRY(CFS_RDWR_STATS);
 
-    CFSDEBUG(CFS_RDWR, myprintf(("cfs_rdwr(%d, %x, %d, %d, %d)\n", rw, 
+    CFSDEBUG(CFS_RDWR, myprintf(("cfs_rdwr(%d, %p, %d, %qd, %d)\n", rw, 
 			      uiop->uio_iov->iov_base, uiop->uio_resid, 
 			      uiop->uio_offset, uiop->uio_segflg)); )
 	
@@ -533,7 +542,7 @@ cfs_rdwr(vp, uiop, rw, ioflag, cred, p)
     }
 
     /* Have UFS handle the call. */
-    CFSDEBUG(CFS_RDWR, myprintf(("indirect rdwr: fid = (%x.%x.%x), refcnt = %d\n",
+    CFSDEBUG(CFS_RDWR, myprintf(("indirect rdwr: fid = (%lx.%lx.%lx), refcnt = %d\n",
 			      cp->c_fid.Volume, cp->c_fid.Vnode, 
 			      cp->c_fid.Unique, CTOV(cp)->v_usecount)); )
     if (rw == UIO_READ) {
@@ -575,11 +584,7 @@ cfs_ioctl(v)
     int error;
     struct vnode *tvp;
     struct nameidata ndp;
-    register struct a {
-	char *path;
-	struct ViceIoctl vidata;
-	int follow;
-    } *iap = (struct a *)data;
+    struct PioctlData *iap = (struct PioctlData *)data;
 
     MARK_ENTRY(CFS_IOCTL_STATS);
 
@@ -599,7 +604,7 @@ cfs_ioctl(v)
     /* Should we use the name cache here? It would get it from
        lookupname sooner or later anyway, right? */
 
-    NDINIT(&ndp, LOOKUP, (iap->follow ? FOLLOW : NOFOLLOW), UIO_USERSPACE, iap->path, p);
+    NDINIT(&ndp, LOOKUP, (iap->follow ? FOLLOW : NOFOLLOW), UIO_USERSPACE, ((caddr_t)iap->path), p);
     error = namei(&ndp);
     tvp = ndp.ni_vp;
 
@@ -624,7 +629,7 @@ cfs_ioctl(v)
 	return(EINVAL);
     }
 
-    if (iap->vidata.in_size > VC_DATASIZE) {
+    if (iap->vi.in_size > VC_DATASIZE) {
 	vrele(tvp);
 	return(EINVAL);
     }
@@ -639,6 +644,7 @@ cfs_ioctl(v)
     return(error);
 }
 
+#if	0
 int
 cfs_select(v)
     void *v;
@@ -658,6 +664,7 @@ cfs_select(v)
 	MARK_INT_FAIL(CFS_SELECT_STATS);
 	return (EOPNOTSUPP);
 }
+#endif
 
 /*
  * To reduce the cost of a user-level venus;we cache attributes in
@@ -708,7 +715,7 @@ cfs_getattr(v)
 
     /* Check to see if the attributes have already been cached */
     if (VALID_VATTR(cp)) { 
-	CFSDEBUG(CFS_GETATTR, { myprintf(("attr cache hit: (%x.%x.%x)\n",
+	CFSDEBUG(CFS_GETATTR, { myprintf(("attr cache hit: (%lx.%lx.%lx)\n",
 				       cp->c_fid.Volume,
 				       cp->c_fid.Vnode,
 				       cp->c_fid.Unique));});
@@ -724,7 +731,7 @@ cfs_getattr(v)
     error = venus_getattr(vtomi(vp), &cp->c_fid, cred, p, vap);
 
     if (!error) {
-	CFSDEBUG(CFS_GETATTR, myprintf(("getattr miss (%x.%x.%x): result %d\n",
+	CFSDEBUG(CFS_GETATTR, myprintf(("getattr miss (%lx.%lx.%lx): result %d\n",
 				     cp->c_fid.Volume,
 				     cp->c_fid.Vnode,
 				     cp->c_fid.Unique,
@@ -954,8 +961,8 @@ cfs_inactive(v)
     struct vop_inactive_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp = VTOC(vp);
-    struct ucred *cred = NULL;
-    struct proc *p = curproc;
+    struct ucred *cred __attribute__((unused)) = NULL;
+    struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
 
@@ -967,7 +974,7 @@ cfs_inactive(v)
 	return 0;
     }
 
-    CFSDEBUG(CFS_INACTIVE, myprintf(("in inactive, %x.%x.%x. vfsp %x\n",
+    CFSDEBUG(CFS_INACTIVE, myprintf(("in inactive, %lx.%lx.%lx. vfsp %p\n",
 				  cp->c_fid.Volume, cp->c_fid.Vnode, 
 				  cp->c_fid.Unique, vp->v_mount));)
 	
@@ -984,15 +991,15 @@ cfs_inactive(v)
     /* Remove it from the table so it can't be found. */
     cfs_unsave(cp);
     if ((struct cfs_mntinfo *)(vp->v_mount->mnt_data) == NULL) {
-	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %x wasn't dying\n", vp));
+	myprintf(("Help! vfsp->vfs_data was NULL, but vnode %p wasn't dying\n", vp));
 	panic("badness in cfs_inactive\n");
     }
 
     if (IS_UNMOUNTING(cp)) {
 #ifdef	DEBUG
-	printf("cfs_inactive: IS_UNMOUNTING use %d: vp %x, cp %x\n", vp->v_usecount, vp, cp);
+	printf("cfs_inactive: IS_UNMOUNTING use %d: vp %p, cp %p\n", vp->v_usecount, vp, cp);
 	if (cp->c_ovp != NULL)
-	    printf("cfs_inactive: cp->ovp != NULL use %d: vp %x, cp %x\n",
+	    printf("cfs_inactive: cp->ovp != NULL use %d: vp %p, cp %p\n",
 	    	   vp->v_usecount, vp, cp);
 #endif
     } else {
@@ -1039,7 +1046,7 @@ cfs_lookup(v)
 /* locals */
     struct cnode *cp;
     struct cnode *scp = NULL;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     ViceFid VFid;
     int	vtype;
@@ -1047,7 +1054,7 @@ cfs_lookup(v)
 
     MARK_ENTRY(CFS_LOOKUP_STATS);
 
-    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup: %s in %d.%d.%d\n",
+    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup: %s in %lx.%lx.%lx\n",
 				   nm, dcp->c_fid.Volume,
 				   dcp->c_fid.Vnode, dcp->c_fid.Unique)););
 
@@ -1077,7 +1084,7 @@ cfs_lookup(v)
 
     if (len+1 > CFS_MAXNAMLEN) {
 	MARK_INT_FAIL(CFS_LOOKUP_STATS);
-	CFSDEBUG(CFS_LOOKUP, myprintf(("name too long: lookup, %x.%x.%x(%s)\n",
+	CFSDEBUG(CFS_LOOKUP, myprintf(("name too long: lookup, %lx.%lx.%lx(%s)\n",
 				    dcp->c_fid.Volume, dcp->c_fid.Vnode,
 				    dcp->c_fid.Unique, nm)););
 	*vpp = (struct vnode *)0;
@@ -1091,7 +1098,7 @@ cfs_lookup(v)
 	*vpp = CTOV(cp);
 	vref(*vpp);
 	CFSDEBUG(CFS_LOOKUP, 
-		 myprintf(("lookup result %d vpp 0x%x\n",error,*vpp));)
+		 myprintf(("lookup result %d vpp %p\n",error,*vpp));)
     } else {
 	
 	/* The name wasn't cached, so we need to contact Venus */
@@ -1099,13 +1106,13 @@ cfs_lookup(v)
 	
 	if (error) {
 	    MARK_INT_FAIL(CFS_LOOKUP_STATS);
-	    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup error on %x.%x.%x(%s)%d\n",
+	    CFSDEBUG(CFS_LOOKUP, myprintf(("lookup error on %lx.%lx.%lx(%s)%d\n",
 					dcp->c_fid.Volume, dcp->c_fid.Vnode, dcp->c_fid.Unique, nm, error));)
 	    *vpp = (struct vnode *)0;
 	} else {
 	    MARK_INT_SAT(CFS_LOOKUP_STATS);
 	    CFSDEBUG(CFS_LOOKUP, 
-		     myprintf(("lookup: vol %x vno %x uni %x type %o result %d\n",
+		     myprintf(("lookup: vol %lx vno %lx uni %lx type %o result %d\n",
 			    VFid.Volume, VFid.Vnode, VFid.Unique, vtype,
 			    error)); )
 		
@@ -1217,7 +1224,7 @@ cfs_create(v)
 /* locals */
     int error;
     struct cnode *cp;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     ViceFid VFid;
     struct vattr attr;
@@ -1242,7 +1249,7 @@ cfs_create(v)
 	/* Venus should have detected the file and reported EEXIST. */
 
 	if ((exclusive == 1) &&
-	    (cfs_find(&VFid, dvp->v_mount) != NULL))
+	    (cfs_find(&VFid) != NULL))
 	    panic("cnode existed for newly created file!");
 	
 	cp = makecfsnode(&VFid, dvp->v_mount, attr.va_type);
@@ -1264,7 +1271,7 @@ cfs_create(v)
 	cfsnc_enter(VTOC(dvp), nm, len, cred, VTOC(*vpp));
 	
 	CFSDEBUG(CFS_CREATE, 
-		 myprintf(("create: (%x.%x.%x), result %d\n",
+		 myprintf(("create: (%lx.%lx.%lx), result %d\n",
 			VFid.Volume, VFid.Vnode, VFid.Unique, error)); )
     } else {
 	*vpp = (struct vnode *)0;
@@ -1317,13 +1324,13 @@ cfs_remove(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     struct cnode *tp;
 
     MARK_ENTRY(CFS_REMOVE_STATS);
 
-    CFSDEBUG(CFS_REMOVE, myprintf(("remove: %s in %d.%d.%d\n",
+    CFSDEBUG(CFS_REMOVE, myprintf(("remove: %s in %lx.%lx.%lx\n",
 				   nm, cp->c_fid.Volume, cp->c_fid.Vnode,
 				   cp->c_fid.Unique)););
 
@@ -1393,7 +1400,7 @@ cfs_link(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
 
     MARK_ENTRY(CFS_LINK_STATS);
@@ -1404,16 +1411,16 @@ cfs_link(v)
 
 	cp = VTOC(ap->a_vp);
 	tdcp = VTOC(ap->a_dvp);
-	myprintf(("nb_link:   vp fid: (%x.%x.%x)\n",
+	myprintf(("nb_link:   vp fid: (%lx.%lx.%lx)\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-	myprintf(("nb_link: tdvp fid: (%x.%x.%x)\n",
+	myprintf(("nb_link: tdvp fid: (%lx.%lx.%lx)\n",
 		  tdcp->c_fid.Volume, tdcp->c_fid.Vnode, tdcp->c_fid.Unique));
 	
     }
     if (cfsdebug & CFSDBGMSK(CFS_LINK)) {
-	myprintf(("link:   vp fid: (%d.%d.%d)\n",
+	myprintf(("link:   vp fid: (%lx.%lx.%lx)\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
-	myprintf(("link: tdvp fid: (%d.%d.%d)\n",
+	myprintf(("link: tdvp fid: (%lx.%lx.%lx)\n",
 		  tdcp->c_fid.Volume, tdcp->c_fid.Vnode, tdcp->c_fid.Unique));
 
     }
@@ -1476,10 +1483,10 @@ cfs_rename(v)
     struct ucred *cred = fcnp->cn_cred;
     struct proc *p = fcnp->cn_proc;
 /* true args */
-    int error, size;
-    char *fnm = fcnp->cn_nameptr;
+    int error;
+    const char *fnm = fcnp->cn_nameptr;
     int flen = fcnp->cn_namelen;
-    char *tnm = tcnp->cn_nameptr;
+    const char *tnm = tcnp->cn_nameptr;
     int tlen = tcnp->cn_namelen;
 
     MARK_ENTRY(CFS_RENAME_STATS);
@@ -1571,7 +1578,7 @@ cfs_mkdir(v)
     struct proc *p = cnp->cn_proc;
 /* locals */
     int error;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     struct cnode *cp;
     ViceFid VFid;
@@ -1595,7 +1602,7 @@ cfs_mkdir(v)
     error = venus_mkdir(vtomi(dvp), &dcp->c_fid, nm, len, va, cred, p, &VFid, &ova);
 
     if (!error) {
-	if (cfs_find(&VFid, dvp->v_mount) != NULL)
+	if (cfs_find(&VFid) != NULL)
 	    panic("cnode existed for newly created directory!");
 	
 	
@@ -1617,7 +1624,7 @@ cfs_mkdir(v)
 	/* Invalidate the parent's attr cache, the modification time has changed */
 	VTOC(dvp)->c_flags &= ~C_VATTR;
 	
-	CFSDEBUG( CFS_MKDIR, myprintf(("mkdir: (%x.%x.%x) result %d\n",
+	CFSDEBUG( CFS_MKDIR, myprintf(("mkdir: (%lx.%lx.%lx) result %d\n",
 				    VFid.Volume, VFid.Vnode, VFid.Unique, error)); )
     } else {
 	*vpp = (struct vnode *)0;
@@ -1660,7 +1667,7 @@ cfs_rmdir(v)
     struct proc *p = cnp->cn_proc;
 /* true args */
     int error;
-    char *nm = cnp->cn_nameptr;
+    const char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     struct cnode *cp;
    
@@ -1731,7 +1738,10 @@ cfs_symlink(v)
      *       t(foo) is the new name/parent/etc being created.
      *       lname is the contents of the new symlink. 
      */
-    char *nm = cnp->cn_nameptr;
+#ifdef	NetBSD1_3
+    const 
+#endif
+          char *nm = cnp->cn_nameptr;
     int len = cnp->cn_namelen;
     int plen = strlen(path);
 
@@ -1777,7 +1787,7 @@ cfs_symlink(v)
 	nd.ni_cnd.cn_cred = cred;
 	nd.ni_loopcnt = 0;
 	nd.ni_startdir = tdvp;
-	nd.ni_cnd.cn_pnbuf = nm;
+	nd.ni_cnd.cn_pnbuf = (char *)nm;
 	nd.ni_cnd.cn_nameptr = nd.ni_cnd.cn_pnbuf;
 	nd.ni_pathlen = len;
 	vput(tdvp);
@@ -1829,7 +1839,11 @@ cfs_readdir(v)
     register struct uio *uiop = ap->a_uio;
     struct ucred *cred = ap->a_cred;
     int *eofflag = ap->a_eofflag;
+#ifdef	NetBSD1_3
+    off_t *cookies = ap->a_cookies;
+#else
     u_long *cookies = ap->a_cookies;
+#endif
     int ncookies = ap->a_ncookies;
     struct proc *p = ap->a_uio->uio_procp;
 /* upcall decl */
@@ -1838,7 +1852,7 @@ cfs_readdir(v)
 
     MARK_ENTRY(CFS_READDIR_STATS);
 
-    CFSDEBUG(CFS_READDIR, myprintf(("cfs_readdir(%x, %d, %d, %d)\n", uiop->uio_iov->iov_base, uiop->uio_resid, uiop->uio_offset, uiop->uio_segflg)); )
+    CFSDEBUG(CFS_READDIR, myprintf(("cfs_readdir(%p, %d, %qd, %d)\n", uiop->uio_iov->iov_base, uiop->uio_resid, uiop->uio_offset, uiop->uio_segflg)); )
 	
     /* Check for readdir of control object. */
     if (IS_CTL_VP(vp)) {
@@ -1859,7 +1873,7 @@ cfs_readdir(v)
 	}
 	
 	/* Have UFS handle the call. */
-	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%x.%x.%x), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, vp->v_usecount)); )
+	CFSDEBUG(CFS_READDIR, myprintf(("indirect readdir: fid = (%lx.%lx.%lx), refcnt = %d\n",cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique, vp->v_usecount)); )
 	error = VOP_READDIR(cp->c_ovp, uiop, cred, eofflag, cookies,
 			       ncookies);
 	
@@ -1896,7 +1910,7 @@ cfs_readdir(v)
 	error = venus_readdir(vtomi(CTOV(cp)), &cp->c_fid, count, uiop->uio_offset, cred, p, iovp->iov_base, &size);
 	
 	CFSDEBUG(CFS_READDIR,
-		 myprintf(("cfs_readdir(%x, %d, %d, %d) returns (%d, %d)\n",
+		 myprintf(("cfs_readdir(%p, %d, %qd, %d) returns (%d, %d)\n",
 			iovp->iov_base, count,
 			uiop->uio_offset, uiop->uio_segflg, error,
 			size)); )	
@@ -1921,11 +1935,11 @@ cfs_bmap(v)
     /* XXX on the global proc */
 /* true args */
     struct vop_bmap_args *ap = v;
-    struct vnode *vp = ap->a_vp;	/* file's vnode */
-    daddr_t bn = ap->a_bn;		/* fs block number */
-    struct vnode **vpp = ap->a_vpp;	/* RETURN vp of device */
-    daddr_t *bnp = ap->a_bnp;		/* RETURN device block number */
-    struct proc *p = curproc;
+    struct vnode *vp __attribute__((unused)) = ap->a_vp;	/* file's vnode */
+    daddr_t bn __attribute__((unused)) = ap->a_bn;	/* fs block number */
+    struct vnode **vpp = ap->a_vpp;			/* RETURN vp of device */
+    daddr_t *bnp __attribute__((unused)) = ap->a_bnp;	/* RETURN device block number */
+    struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
 
@@ -1947,8 +1961,8 @@ cfs_strategy(v)
 {
 /* true args */
     struct vop_strategy_args *ap = v;
-    register struct buf *bp = ap->a_bp;
-    struct proc *p = curproc;
+    register struct buf *bp __attribute__((unused)) = ap->a_bp;
+    struct proc *p __attribute__((unused)) = curproc;
 /* upcall decl */
 /* locals */
 
@@ -1976,7 +1990,7 @@ cfs_reclaim(v)
 #ifdef	DEBUG
 	if (VTOC(vp)->c_ovp) {
 	    if (IS_UNMOUNTING(cp))
-		printf("cfs_reclaim: c_ovp not void: vp %x, cp %x\n", vp, cp);
+		printf("cfs_reclaim: c_ovp not void: vp %p, cp %p\n", vp, cp);
 	}
 #endif
     } else {
@@ -2002,7 +2016,7 @@ cfs_lock(v)
     struct vop_lock_args *ap = v;
     struct vnode *vp = ap->a_vp;
     struct cnode *cp;
-    struct proc  *p = curproc; /* XXX */
+    struct proc  *p __attribute__((unused)) = curproc; /* XXX */
 /* upcall decl */
 /* locals */
 
@@ -2010,7 +2024,7 @@ cfs_lock(v)
     cp = VTOC(vp);
 
     if (cfs_lockdebug) {
-	myprintf(("Attempting lock on %d.%d.%d\n",
+	myprintf(("Attempting lock on %lx.%lx.%lx\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
     }
 start:
@@ -2050,7 +2064,7 @@ cfs_unlock(v)
 
     ENTRY;
     if (cfs_lockdebug) {
-	myprintf(("Attempting unlock on %d.%d.%d\n",
+	myprintf(("Attempting unlock on %lx.%lx.%lx\n",
 		  cp->c_fid.Volume, cp->c_fid.Vnode, cp->c_fid.Unique));
     }
 #ifdef DIAGNOSTIC
@@ -2094,7 +2108,7 @@ cfs_grab_vnode(dev_t dev, ino_t ino, struct vnode **vpp)
     /* XXX - ensure that nonzero-return means failure */
     error = VFS_VGET(mp,ino,vpp);
     if (error) {
-	myprintf(("cfs_grab_vnode: iget/vget(%d, %d) returns %x, err %d\n", 
+	myprintf(("cfs_grab_vnode: iget/vget(%d, %d) returns %p, err %d\n", 
 		  dev, ino, *vpp, error));
 	return(ENOENT);
     }
@@ -2160,6 +2174,7 @@ print_vattr( attr )
 }
 
 /* How to print a ucred */
+void
 print_cred(cred)
 	struct ucred *cred;
 {
@@ -2178,8 +2193,6 @@ print_cred(cred)
   -----------------------------------------------------------------------------------
  */
 
-struct cnode *cfs_alloc();
-
 /*
  * Return a vnode for the given fid.
  * If no cnode exists for this fid create one and put it
@@ -2192,7 +2205,6 @@ struct cnode *
 makecfsnode(fid, vfsp, type)
      ViceFid *fid; struct mount *vfsp; short type;
 {
-    struct mount foo;
     struct cnode *cp;
     int          err;
 
@@ -2308,7 +2320,7 @@ cfs_page_read(vp, buffer, size, offset, cred)
 	struct iovec iov;
 	int error = 0;
 
-	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_read(%x, %d, %d), fid = (%x.%x.%x), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
+	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_read(%p, %d, %d), fid = (%lx.%lx.%lx), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
 
 	iov.iov_base = buffer;
 	iov.iov_len = size;
@@ -2344,7 +2356,7 @@ cfs_page_write(vp, buffer, size, offset, cred, init)
 	struct iovec iov;
 	int error = 0;
 
-	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_write(%x, %d, %d), fid = (%x.%x.%x), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
+	CFSDEBUG(CFS_RDWR, myprintf(("cfs_page_write(%p, %d, %d), fid = (%lx.%lx.%lx), refcnt = %d\n", buffer, size, offset, VTOC(vp)->c_fid.Volume, VTOC(vp)->c_fid.Vnode, VTOC(vp)->c_fid.Unique, vp->v_count)); )
 
 	if (init) {
 	    panic("cfs_page_write: called from data_initialize");

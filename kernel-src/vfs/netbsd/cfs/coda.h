@@ -125,8 +125,13 @@ enum coda_vtype	{ VCNON, VCREG, VCDIR, VCBLK, VCCHR, VCLNK, VCSOCK, VCFIFO, VCBA
 
 struct coda_vattr {
 	enum coda_vtype	va_type;	/* vnode type (for create) */
+#ifdef	NetBSD1_3
+	u_long		va_mode;	/* files access mode and type */
+	u_long		va_nlink;	/* number of references to file */
+#else
 	u_short		va_mode;	/* files access mode and type */
 	short		va_nlink;	/* number of references to file */
+#endif
 	vuid_t		va_uid;		/* owner user id */
 	vgid_t		va_gid;		/* owner group id */
 	long		va_fsid;	/* file system id (dev for now) */
@@ -144,9 +149,6 @@ struct coda_vattr {
 	u_int		va_vaflags;	/* operations flags, see below */
 	long		va_spare;	/* remain quad aligned */
 };
-#define VREAD 00400
-#define VWRITE 00200
-
 #endif 
 
 /*

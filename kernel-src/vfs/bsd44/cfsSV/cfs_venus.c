@@ -1,24 +1,17 @@
 #include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/malloc.h>
 #include <sys/proc.h>
 #include <sys/vnode.h>
+#include <sys/select.h>
 #include <sys/ioctl.h>
 /* for CNV_OFLAGS below */
 #include <sys/fcntl.h>
 
 #include <cfs/coda.h>
-#include <cfs/cfsk.h>
+#include <cfs/cnode.h>
+#include <cfs/cfs_venus.h>
 #include <cfs/pioctl.h>
-
-enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
-
-/* NOTES:
-	cfsk.h should not be here!!!
-	(then proc.h is not necessary ?? maybe)
-
-	The biggy, of course, is that I should use codacreds, but I don't
-	want to break venus yet.
- */
 
 #define DECL_NO_IN(name) \
     struct cfs_in_hdr *inp; \
@@ -53,10 +46,82 @@ enum vcexcl	{ NONEXCL, EXCL};		/* (non)excl create (create) */
     outp = &name ## _buf->out
 
 #define STRCPY(struc, name, len) \
-    strncpy((char *)inp + (int)inp->struc, name, len); \
+    bcopy(name, (char *)inp + (int)inp->struc, len); \
     ((char*)inp + (int)inp->struc)[len++] = 0; \
     Isize += len
 
+/* WARNING 
+ * These macros assume the presence of a process pointer p!
+ * And, they're wrong to do so.  Phhht.
+ */
+#define INIT_IN(in, op, ident) \
+	  (in)->opcode = (op); \
+	  (in)->pid = p ? p->p_pid : -1; \
+          (in)->pgid = p ? p->p_pgid : -1; \
+          if (ident != NOCRED) {                              \
+	      (in)->cred.cr_uid = ident->cr_uid;              \
+	      (in)->cred.cr_gid = ident->cr_gid;              \
+          } else {                                            \
+	      bzero(&((in)->cred),sizeof(struct coda_cred));  \
+	      (in)->cred.cr_uid = -1;                         \
+	      (in)->cred.cr_gid = -1;                         \
+          }                                                   \
+
+#define	CNV_OFLAG(to, from) 				\
+    do { 						\
+	  to = 0;					\
+	  if (from & FREAD)   to |= C_READ; 		\
+	  if (from & FWRITE)  to |= C_WRITE; 		\
+	  if (from & O_TRUNC) to |= C_TRUNC; 		\
+	  if (from & O_EXCL)  to |= C_EXCL; 		\
+    } while (0)
+
+#if	1
+	  /* this is ok for now */
+#define CNV_V2VV_ATTR(top, fromp)	\
+	  *(top) = *((struct coda_vattr *)(fromp))
+
+#define CNV_VV2V_ATTR(top, fromp)	\
+	  *(top) = *((struct vattr *)(fromp))
+#else
+	  /* this is better */
+#define CNV_VV2V_ATTR(top, fromp) \
+	  CNV_ATTR(top, fromp); \
+	  CNV_V_ZERO(top)
+
+#define CNV_V2VV_ATTR(top, fromp) \
+	  CNV_ATTR(top, fromp); \
+	  CNV_VV_ZERO(top)
+
+#define CNV_ATTR(top, fromp)	\
+	do { \
+		top->va_type = fromp->va_type; \
+		top->va_mode = fromp->va_mode; \
+		top->va_nlink = fromp->va_nlink; \
+		top->va_uid = fromp->va_uid; \
+		top->va_gid = fromp->va_gid; \
+		top->va_fsid = fromp->va_fsid; \
+		top->va_fileid = fromp->va_fileid; \
+		top->va_size = fromp->va_size; \
+		top->va_blocksize = fromp->va_blocksize; \
+		top->va_atime = fromp->va_atime; \
+		top->va_mtime = fromp->va_mtime; \
+		top->va_ctime = fromp->va_ctime; \
+		top->va_gen = fromp->va_gen; \
+		top->va_flags = fromp->va_flags; \
+		top->va_rdev = fromp->va_rdev; \
+		top->va_bytes = fromp->va_bytes; \
+		top->va_filerev = fromp->va_filerev; \
+		top->vaflags = fromp->vaflags; \
+		top->va_spare = fromp->va_spare; \
+	} while (0)
+
+#define CNV_V_ZERO(p)
+#define CNV_VV_ZERO(p)
+#endif
+
+
+int
 venus_root(void *mdp,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid)
@@ -75,6 +140,7 @@ venus_root(void *mdp,
     return error;
 }
 
+int
 venus_open(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p,
 /*out*/	dev_t *dev, ino_t *inode)
@@ -99,6 +165,7 @@ venus_open(void *mdp, ViceFid *fid, int flag,
     return error;
 }
 
+int
 venus_close(void *mdp, ViceFid *fid, int flag,
 	struct ucred *cred, struct proc *p)
 {
@@ -109,7 +176,7 @@ venus_close(void *mdp, ViceFid *fid, int flag,
     INIT_IN(&inp->ih, CFS_CLOSE, cred);
     inp->VFid = *fid;
     CNV_OFLAG(cflag, flag);
-    inp->flags = flag;
+    inp->flags = cflag;
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
@@ -121,11 +188,13 @@ venus_close(void *mdp, ViceFid *fid, int flag,
  * these two calls will not exist!!!  the container file is read/written
  * directly.
  */
-venus_read()
+void
+venus_read(void)
 {
 }
 
-venus_write()
+void
+venus_write(void)
 {
 }
 
@@ -133,16 +202,13 @@ venus_write()
  * this is a bit sad too.  the ioctl's are for the control file, not for
  * normal files.
  */
+int
 venus_ioctl(void *mdp, ViceFid *fid,
 	int com, int flag, caddr_t data,
 	struct ucred *cred, struct proc *p)
 {
     DECL(cfs_ioctl);			/* sets Isize & Osize */
-    register struct a {
-	char *path;
-	struct ViceIoctl vidata;
-	int follow;
-    } *iap = (struct a *)data;
+    struct PioctlData *iap = (struct PioctlData *)data;
     int tmp;
 
     cfs_ioctl_size = VC_MAXMSGSIZE;
@@ -160,26 +226,26 @@ venus_ioctl(void *mdp, ViceFid *fid,
     inp->cmd |= (tmp & IOCPARM_MASK) <<	16;
 
     inp->rwflag = flag;
-    inp->len = iap->vidata.in_size;
+    inp->len = iap->vi.in_size;
     inp->data = (char *)(sizeof (struct cfs_ioctl_in));
 
-    error = copyin(iap->vidata.in, (char*)inp + (int)inp->data, 
-		   iap->vidata.in_size);
+    error = copyin(iap->vi.in, (char*)inp + (int)inp->data, 
+		   iap->vi.in_size);
     if (error) {
 	CFS_FREE(cfs_ioctl_buf, cfs_ioctl_size);
 	return(error);
     }
 
     Osize = VC_MAXMSGSIZE;
-    error = cfscall(mdp, Isize + iap->vidata.in_size, &Osize, (char *)inp);
+    error = cfscall(mdp, Isize + iap->vi.in_size, &Osize, (char *)inp);
 
 	/* copy out the out buffer. */
     if (!error) {
-	if (outp->len > iap->vidata.out_size) {
+	if (outp->len > iap->vi.out_size) {
 	    error = EINVAL;
 	} else {
 	    error = copyout((char *)outp + (int)outp->data, 
-			    iap->vidata.out, iap->vidata.out_size);
+			    iap->vi.out, iap->vi.out_size);
 	}
     }
 
@@ -187,6 +253,7 @@ venus_ioctl(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_getattr(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	struct vattr *vap)
@@ -207,6 +274,7 @@ venus_getattr(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
 	struct ucred *cred, struct proc *p)
 {
@@ -224,6 +292,7 @@ venus_setattr(void *mdp, ViceFid *fid, struct vattr *vap,
     return error;
 }
 
+int
 venus_access(void *mdp, ViceFid *fid, int mode,
 	struct ucred *cred, struct proc *p)
 {
@@ -233,7 +302,11 @@ venus_access(void *mdp, ViceFid *fid, int mode,
     /* send the open to venus. */
     INIT_IN(&inp->ih, CFS_ACCESS, cred);
     inp->VFid = *fid;
+#ifdef	NetBSD1_3
+    inp->flags = mode<<6;
+#else
     inp->flags = mode;
+#endif
 
     error = cfscall(mdp, Isize, &Osize, (char *)inp);
 
@@ -241,6 +314,7 @@ venus_access(void *mdp, ViceFid *fid, int mode,
     return error;
 }
 
+int
 venus_readlink(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	char **str, int *len)
@@ -265,6 +339,7 @@ venus_readlink(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_fsync(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p)
 {
@@ -281,8 +356,9 @@ venus_fsync(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_lookup(void *mdp, ViceFid *fid,
-    	char *nm, int len,
+    	const char *nm, int len,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, int *vtype)
 {
@@ -307,12 +383,12 @@ venus_lookup(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_create(void *mdp, ViceFid *fid,
-    	char *nm, int len, int exclusive, int mode, struct vattr *va,
+    	const char *nm, int len, int exclusive, int mode, struct vattr *va,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *attr)
 {
-    struct coda_vattr vvap;
     DECL(cfs_create);			/* sets Isize & Osize */
     cfs_create_size += len + 1;
     ALLOC(cfs_create);			/* sets inp & outp */
@@ -337,8 +413,9 @@ venus_create(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_remove(void *mdp, ViceFid *fid,
-        char *nm, int len,
+        const char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
     DECL_NO_OUT(cfs_remove);		/* sets Isize & Osize */
@@ -358,8 +435,9 @@ venus_remove(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
-        char *nm, int len,
+        const char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
     DECL_NO_OUT(cfs_link);		/* sets Isize & Osize */
@@ -380,8 +458,9 @@ venus_link(void *mdp, ViceFid *fid, ViceFid *tfid,
     return error;
 }
 
+int
 venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
-        char *nm, int len, char *tnm, int tlen,
+        const char *nm, int len, const char *tnm, int tlen,
 	struct ucred *cred, struct proc *p)
 {
     DECL_NO_OUT(cfs_rename);		/* sets Isize & Osize */
@@ -405,12 +484,12 @@ venus_rename(void *mdp, ViceFid *fid, ViceFid *tfid,
     return error;
 }
 
+int
 venus_mkdir(void *mdp, ViceFid *fid,
-    	char *nm, int len, struct vattr *va,
+    	const char *nm, int len, struct vattr *va,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, struct vattr *ova)
 {
-    struct coda_vattr vvap;
     DECL(cfs_mkdir);			/* sets Isize & Osize */
     cfs_mkdir_size += len + 1;
     ALLOC(cfs_mkdir);			/* sets inp & outp */
@@ -433,8 +512,9 @@ venus_mkdir(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_rmdir(void *mdp, ViceFid *fid,
-    	char *nm, int len,
+    	const char *nm, int len,
 	struct ucred *cred, struct proc *p)
 {
     DECL_NO_OUT(cfs_rmdir);		/* sets Isize & Osize */
@@ -454,11 +534,11 @@ venus_rmdir(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_symlink(void *mdp, ViceFid *fid,
-        char *lnm, int llen, char *nm, int len, struct vattr *va,
+        const char *lnm, int llen, const char *nm, int len, struct vattr *va,
 	struct ucred *cred, struct proc *p)
 {
-    struct coda_vattr vvap;
     DECL_NO_OUT(cfs_symlink);		/* sets Isize & Osize */
     cfs_symlink_size += llen + 1 + len + 1;
     ALLOC(cfs_symlink);			/* sets inp & outp */
@@ -480,6 +560,7 @@ venus_symlink(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_readdir(void *mdp, ViceFid *fid,
     	int count, int offset,
 	struct ucred *cred, struct proc *p,
@@ -506,6 +587,7 @@ venus_readdir(void *mdp, ViceFid *fid,
     return error;
 }
 
+int
 venus_fhtovp(void *mdp, ViceFid *fid,
 	struct ucred *cred, struct proc *p,
 /*out*/	ViceFid *VFid, int *vtype)

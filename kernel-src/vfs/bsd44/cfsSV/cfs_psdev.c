@@ -24,9 +24,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.5.2.3  1997/12/10 14:08:24  rvb
- * Fix O_ flags; check result in cfscall
+ * Revision 1.5.2.4  1997/12/16 12:40:05  rvb
+ * Sync with 1.3
  *
+ * Revision 1.5.2.3  97/12/10  14:08:24  rvb
+ * Fix O_ flags; check result in cfscall
+ * 
  * Revision 1.5.2.2  97/12/10  11:40:24  rvb
  * No more ody
  * 
@@ -91,13 +94,18 @@ extern int cfsnc_initialized;    /* Set if cache has been initialized */
 #include <sys/param.h>
 #include <sys/systm.h>
 #include <sys/malloc.h>
+#include <sys/proc.h>
+#include <sys/mount.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
+#ifdef	NetBSD1_3
+#include <sys/poll.h>
+#endif
 #include <sys/select.h>
 
 #include <cfs/coda.h>
-#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
+#include <cfs/cfsnc.h>
 #include <cfs/cfsio.h>
 
 struct vnode *cfs_ctlvp = 0;
@@ -110,6 +118,33 @@ int cfs_psdev_print_entry = 0;
 #define ENTRY
 #endif 
 
+void vcfsattach(int n);
+int vc_nb_open(dev_t dev, int flag, int mode, struct proc *p);
+int vc_nb_close (dev_t dev, int flag, int mode, struct proc *p);
+int vc_nb_read(dev_t dev, struct uio *uiop, int flag);
+int vc_nb_write(dev_t dev, struct uio *uiop, int flag);
+int vc_nb_ioctl(dev_t dev, int cmd, caddr_t addr, int flag, struct proc *p);
+#ifdef	NetBSD1_3
+int vc_nb_poll(dev_t dev, int events, struct proc *p);
+#else
+int vc_nb_select(dev_t dev, int flag, struct proc *p);
+#endif
+int cfscall(struct cfs_mntinfo *mntinfo, int inSize, int *outSize, caddr_t buffer);
+
+struct vmsg {
+    struct queue vm_chain;
+    caddr_t	 vm_data;
+    u_short	 vm_flags;
+    u_short      vm_inSize;	/* Size is at most 5000 bytes */
+    u_short	 vm_outSize;
+    u_short	 vm_opcode; 	/* copied from data to save ptr lookup */
+    int		 vm_unique;
+    caddr_t	 vm_sleep;	/* Not used by Mach. */
+};
+
+#define	VM_READ	    1
+#define	VM_WRITE    2
+#define	VM_INTR	    4
 
 /* vcfsattach: do nothing */
 void
@@ -129,7 +164,6 @@ vc_nb_open(dev, flag, mode, p)
     struct proc *p;             /* NetBSD only */
 {
     register struct vcomm *vcp;
-    struct ody_mntinfo *op;
     struct cnode       *cp;
     
     ENTRY;
@@ -166,7 +200,6 @@ vc_nb_open(dev, flag, mode, p)
 
     return(0);
 }
-
 
 int 
 vc_nb_close (dev, flag, mode, p)    
@@ -233,7 +266,6 @@ vc_nb_close (dev, flag, mode, p)
     MARK_VC_CLOSED(vcp);
     return 0;
 }
-
 
 int 
 vc_nb_read(dev, uiop, flag)   
@@ -322,7 +354,7 @@ vc_nb_write(dev, uiop, flag)
     seq = buf[1];
 	
     if (cfsdebug)
-	myprintf(("vcwrite got a call for %d.%d\n", opcode, seq));
+	myprintf(("vcwrite got a call for %ld.%ld\n", opcode, seq));
     
     if (DOWNCALL(opcode)) {
 	union outputArgs pbuf;
@@ -331,7 +363,7 @@ vc_nb_write(dev, uiop, flag)
 	uiop->uio_rw = UIO_WRITE;
 	error = uiomove((caddr_t)&pbuf.cfs_purgeuser.oh.result, sizeof(pbuf) - (sizeof(int)*2), uiop);
 	if (error) {
-	    myprintf(("vcwrite: error (%d) on uiomove (Op %d seq %d)\n", 
+	    myprintf(("vcwrite: error (%d) on uiomove (Op %ld seq %ld)\n", 
 		      error, opcode, seq));
 	    return(EINVAL);
 	    }
@@ -349,7 +381,7 @@ vc_nb_write(dev, uiop, flag)
     
     if (EOQ(vmp, vcp->vc_replys)) {
 	if (cfsdebug)
-	    myprintf(("vcwrite: msg (%d, %d) not found\n", opcode, seq));
+	    myprintf(("vcwrite: msg (%ld, %ld) not found\n", opcode, seq));
 	
 	return(ESRCH);
 	}
@@ -373,7 +405,7 @@ vc_nb_write(dev, uiop, flag)
     uiop->uio_rw = UIO_WRITE;
     error = uiomove((caddr_t) &out->result, vmp->vm_outSize - (sizeof(int) * 2), uiop);
     if (error) {
-	myprintf(("vcwrite: error (%d) on uiomove (op %d seq %d)\n", 
+	myprintf(("vcwrite: error (%d) on uiomove (op %ld seq %ld)\n", 
 		  error, opcode, seq));
 	return(EINVAL);
     }
@@ -421,22 +453,48 @@ vc_nb_ioctl(dev, cmd, addr, flag, p)
 	    return(ENODEV);
 	}
 	break;
-    case ODYBIND:
-	/* Bind a name to our device. Used to allow more than one kind of FS */
-	return(EINVAL);
     default :
 	return(EINVAL);
 	break;
     }
 }
 
+#ifdef	NetBSD1_3
+int
+vc_nb_poll(dev, events, p)         
+    dev_t         dev;    
+    int           events;   
+    struct proc  *p;
+{
+    register struct vcomm *vcp;
+    int event_msk = 0;
+
+    ENTRY;
+    
+    if (minor(dev) >= NVCFS || minor(dev) < 0)
+	return(ENXIO);
+    
+    vcp = &cfs_mnttbl[minor(dev)].mi_vcomm;
+    
+    event_msk = events & (POLLIN|POLLRDNORM);
+    if (!event_msk)
+	return(0);
+    
+    if (!EMPTY(vcp->vc_requests))
+	return(events & (POLLIN|POLLRDNORM));
+
+    selrecord(p, &(vcp->vc_selproc));
+    
+    return(0);
+}
+#else
 int
 vc_nb_select(dev, flag, p)         
     dev_t         dev;    
     int           flag;   
     struct proc  *p;
 {
-    register struct vcomm *	vcp;
+    register struct vcomm *vcp;
     
     ENTRY;
     
@@ -455,7 +513,7 @@ vc_nb_select(dev, flag, p)
     
     return(0);
 }
-
+#endif
 
 /*
  * Statistics

@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.2  1997/12/10 11:40:25  rvb
- * No more ody
+ * Revision 1.6.2.3  1997/12/16 12:40:11  rvb
+ * Sync with 1.3
  *
+ * Revision 1.6.2.2  97/12/10  11:40:25  rvb
+ * No more ody
+ * 
  * Revision 1.6.2.1  97/12/06  17:41:24  rvb
  * Sync with peters coda.h
  * 
@@ -115,13 +118,15 @@
 #include <sys/namei.h>
 #include <sys/mount.h>
 #include <sys/proc.h>
+#include <sys/select.h>
 /* for VN_RDEV */
 #include <miscfs/specfs/specdev.h>
 
 #include <cfs/coda.h>
-#include <cfs/cfsk.h>
 #include <cfs/cnode.h>
 #include <cfs/cfs_vfsops.h>
+#include <cfs/cfs_venus.h>
+#include <cfs/cfs_subr.h>
 #include <cfs/cfs_opstats.h>
 
 int cfsdebug = 0;
@@ -153,7 +158,6 @@ extern struct cdevsw cdevsw[];    /* For sanity check in cfs_mount */
 
 
 /* NetBSD interface to statfs */
-int cfs_nb_statfs    __P((struct mount *, struct statfs *, struct proc *));
 
 struct vfsops cfs_vfsops = {
     MOUNT_CFS,
@@ -170,10 +174,14 @@ struct vfsops cfs_vfsops = {
 	eopnotsupp,
     (int (*) (struct vnode *, struct fid *)) eopnotsupp,
     cfs_init,
+#ifdef	NetBSD1_3
+    (int (*)(void)) eopnotsupp,
+#endif
     0
 };
 
-cfs_vfsopstats_init()
+int
+cfs_vfsopstats_init(void)
 {
 	register int i;
 	
@@ -187,19 +195,25 @@ cfs_vfsopstats_init()
 	
 	return 0;
 }
-	
+
 
 /*
  * cfs mount vfsop
  * Set up mount info record and attach it to vfs struct.
  */
 /*ARGSUSED*/
+int
 cfs_mount(vfsp, path, data, ndp, p)
-    struct mount *vfsp;           /* Allocated and initialized by mount(2) */
-    char *path;            /* path covered: ignored by the fs-layer */
-    caddr_t data;          /* Need to define a data type for this in netbsd? */
-    struct nameidata *ndp; /* Clobber this to lookup the device name */
-    struct proc *p;        /* The ever-famous proc pointer */
+    struct mount *vfsp;		/* Allocated and initialized by mount(2) */
+#ifdef	NetBSD1_3
+    const char *path;		/* path covered: ignored by the fs-layer */
+    void *data;			/* Need to define a data type for this in netbsd? */
+#else
+    char *path;			/* path covered: ignored by the fs-layer */
+    caddr_t data;		/* Need to define a data type for this in netbsd? */
+#endif
+    struct nameidata *ndp;	/* Clobber this to lookup the device name */
+    struct proc *p;		/* The ever-famous proc pointer */
 {
     struct vnode *dvp;
     struct cnode *cp;
@@ -213,9 +227,6 @@ cfs_mount(vfsp, path, data, ndp, p)
 
     cfs_vfsopstats_init();
     cfs_vnodeopstats_init();
-    if (!cfsnc_initialized) {
-	cfsnc_init();
-    }
     
     MARK_ENTRY(CFS_MOUNT_STATS);
     if (CFS_MOUNTED(vfsp)) {
@@ -336,16 +347,26 @@ cfs_unmount(vfsp, mntflags, p)
 	    return (EBUSY); 	/* Venus is still running */
 
 #ifdef	DEBUG
-	printf("cfs_unmount: ROOT: vp %x, cp %x\n", mi->mi_rootvp, VTOC(mi->mi_rootvp));
+	printf("cfs_unmount: ROOT: vp %p, cp %p\n", mi->mi_rootvp, VTOC(mi->mi_rootvp));
 #endif
 	vrele(mi->mi_rootvp);
 
+	active = cfs_kill(vfsp, NOT_DOWNCALL);
+#ifdef	NetBSD1_3
+	if ((error = vfs_busy(mi->mi_vfsp)) == 0) {
+		error = vflush(mi->mi_vfsp, NULLVP, FORCECLOSE);
+		printf("cfs_unmount: active = %d, vflush active %d\n", active, error);
+		error = 0;
+	} else {
+		printf("cfs_unmount: busy\n");
+	} 
+#else
 	active = cfs_kill(vfsp, NOT_DOWNCALL);
 
 	error = vflush(mi->mi_vfsp, NULLVP, FORCECLOSE);
 	printf("cfs_unmount: active = %d, vflush active %d\n", active, error);
 	error = 0;
-
+#endif
 	/* I'm going to take this out to allow lookups to go through. I'm
 	 * not sure it's important anyway. -- DCS 2/2/94
 	 */
@@ -362,6 +383,7 @@ cfs_unmount(vfsp, mntflags, p)
 
 	return(error);
     }
+    return (EINVAL);
 }
 
 /*
@@ -373,7 +395,7 @@ cfs_root(vfsp, vpp)
 	struct vnode **vpp;
 {
     struct cfs_mntinfo *mi = vftomi(vfsp);
-    struct vnode *rvp, **result;
+    struct vnode **result;
     int error;
     struct proc *p = curproc;    /* XXX - bnoble */
     ViceFid VFid;
@@ -554,7 +576,7 @@ cfs_fhtovp(vfsp, fhp, nam, vpp, exflagsp, creadanonp)
 	    *vpp = (struct vnode *)0;
     } else {
 	CFSDEBUG(CFS_VGET, 
-		 myprintf(("vget: vol %u vno %d uni %d type %d result %d\n",
+		 myprintf(("vget: vol %lx vno %lx uni %lx type %d result %d\n",
 			VFid.Volume, VFid.Vnode, VFid.Unique, vtype, error)); )
 	    
 	cp = makecfsnode(&VFid, vfsp, vtype);
@@ -573,7 +595,7 @@ cfs_vptofh(vnp, fidp)
 }
  
 void
-cfs_init()
+cfs_init(void)
 {
     ENTRY;
 }
@@ -584,10 +606,10 @@ cfs_init()
  * through, but without propagating ophan-ness.  So this function will
  * get a new vnode for the file from the current run of Venus.  */
  
-int getNewVnode(vpp)
+int
+getNewVnode(vpp)
      struct vnode **vpp;
 {
-    struct ody_mntinfo *op;
     struct cfid cfid;
     struct cfs_mntinfo *mi = vftomi((*vpp)->v_mount);
     
