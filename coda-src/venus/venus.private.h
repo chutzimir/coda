@@ -112,7 +112,7 @@ extern "C" {
 #endif
 
 #if defined(__CYGWIN32__)
-#define CF_PREFIX "/DosDevices"
+#define CF_PREFIX "/DosDevices/"
 #else
 #define CF_PREFIX ""
 #endif
