@@ -189,16 +189,14 @@ int test_proc4(cid, g1, g2, g3)
     g3->time = 0;
     return 4;
 }
-
-int RPC2_AllocBuffer(size, buff)
-    int size;
-    RPC2_PacketBuffer **buff;
+
+int RPC2_AllocBuffer(int size,     RPC2_PacketBuffer **buff)
 {
-    *buff = (RPC2_PacketBuffer *) malloc(sizeof(RPC2_PacketBuffer)+size-1);
-    if (*buff != 0)
-	return RPC2_SUCCESS;
-    else
-	return RPC2_FAIL;
+	*buff = (RPC2_PacketBuffer *) malloc(sizeof(RPC2_PacketBuffer)+size-1);
+	if (*buff != 0)
+		return RPC2_SUCCESS;
+	else
+		return RPC2_FAIL;
 }
 
 int RPC2_FreeBuffer(buff)
