@@ -15,6 +15,10 @@
 /* 
  * HISTORY
  * $Log$
+ * Revision 1.13  1997/02/18 23:46:25  bnoble
+ * NetBSD swapped the order of arguments to VOP_LINK between 1.1 and 1.2.
+ * This tracks that change.
+ *
  * Revision 1.12  1997/02/18 22:23:38  bnoble
  * Rename lockdebug to cfs_lockdebug
  *
@@ -617,31 +621,22 @@ cfs_nb_link(v)
     bcopy(cnp->cn_nameptr, tname,  cnp->cn_namelen);
     tname[cnp->cn_namelen] = '\0';
 
-    /* 
-     * WARNING! XXX 
-     * The link system call, in it's infinite wisdom, packs it's
-     * arguments as (directory-in-which-link-goes, vnode-to-link-to,
-     * name) but VOP_LINK expects (vnode, directory, name).  As a
-     * result, dvp is *really* what vp should be, and vice versa.
-     * So, DON'T PANIC.  I *know* they're backwards here.  Sigh.
-     */
-
     /*
      * According to the ufs_link operation here's the locking situation:
-     *     We enter with the thing called "vp" (the directory) locked.
-     *     We must unconditionally drop locks on "vp"
+     *     We enter with the thing called "dvp" (the directory) locked.
+     *     We must unconditionally drop locks on "dvp"
      *
-     *     We enter with the thing called "dvp" (the linked-to) unlocked,
+     *     We enter with the thing called "vp" (the linked-to) unlocked,
      *       but ref'd (?)
      *     We seem to need to lock it before calling cfs_link, and
      *       unconditionally unlock it after.
      */
     
-    if ((ap->a_vp != ap->a_dvp) && (result = VOP_LOCK(ap->a_dvp))) {
+    if ((ap->a_vp != ap->a_dvp) && (result = VOP_LOCK(ap->a_vp))) {
 	goto exit;
     }
 	
-    result = cfs_link(ap->a_dvp, ap->a_vp, tname, cnp->cn_cred, 
+    result = cfs_link(ap->a_vp, ap->a_dvp, tname, cnp->cn_cred, 
 		      cnp->cn_proc);
 
  exit:
@@ -655,8 +650,6 @@ cfs_nb_link(v)
     if ((cnp->cn_flags & SAVESTART) == 0) {
 	FREE(cnp->cn_pnbuf, M_NAMEI);
     }
-
-    
     
     return result;
 }
