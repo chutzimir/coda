@@ -135,7 +135,7 @@ const vuid_t V_UID = (vuid_t)0;	    /* UID that the venus process runs under. */
 const vuid_t V_GID = (vuid_t)65534;    /* GID that the venus process runs under. */
 #else
 /* On Mach and other systems with 16-bit gids, the -2 value gives a gid of 65534 */
-const vuid_t V_GID = (vuid_t)-2;    /* GID that the venus process runs under. */
+const vgid_t V_GID = (vgid_t)-2;    /* GID that the venus process runs under. */
 #endif /* __NetBSD__ */
 const vuid_t ALL_UIDS = (vuid_t)-1;
 const vuid_t HOARD_UID = (vuid_t)-2; /* uid of hoard daemon */

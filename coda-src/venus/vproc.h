@@ -511,6 +511,7 @@ extern int vnode_deallocs;
 #define VA_IGNORE_GID		((vgid_t) -1)
 #define VA_IGNORE_SIZE		((u_quad_t)-1) 
 #define VA_IGNORE_TIME1		((time_t)-1)
+#define VA_IGNORE_FLAGS		((u_long) -1)
 #endif /* __ NetBSD__ */
 
 #ifdef __linux__
