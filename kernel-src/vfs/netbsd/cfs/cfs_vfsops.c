@@ -14,9 +14,12 @@
 /*
  * HISTORY
  * $Log$
- * Revision 1.6.2.4  1997/12/19 14:26:05  rvb
- * session id
+ * Revision 1.6.2.5  1998/01/22 13:05:33  rvb
+ * Move makecfsnode ctlfid later so vfsp is known
  *
+ * Revision 1.6.2.4  97/12/19  14:26:05  rvb
+ * session id
+ * 
  * Revision 1.6.2.3  97/12/16  12:40:11  rvb
  * Sync with 1.3
  * 
@@ -135,7 +138,6 @@
 int cfsdebug = 0;
 
 int cfs_vfsop_print_entry = 0;
-
 #ifdef __GNUC__
 #define ENTRY    \
     if(cfs_vfsop_print_entry) myprintf(("Entered %s\n",__FUNCTION__))
@@ -144,6 +146,7 @@ int cfs_vfsop_print_entry = 0;
 #endif 
 
 
+struct vnode *cfs_ctlvp;
 struct cfs_mntinfo cfs_mnttbl[NVCFS]; /* indexed by minor device number */
 
 /* structure to keep statistics of internally generated/satisfied calls */
@@ -224,6 +227,7 @@ cfs_mount(vfsp, path, data, ndp, p)
     struct cfs_mntinfo *mi;
     struct vnode *rootvp;
     ViceFid rootfid;
+    ViceFid ctlfid;
     int error;
 
     ENTRY;
@@ -299,7 +303,13 @@ cfs_mount(vfsp, path, data, ndp, p)
     cp = makecfsnode(&rootfid, vfsp, VDIR);
     rootvp = CTOV(cp);
     rootvp->v_flag |= VROOT;
-    
+	
+    ctlfid.Volume = CTL_VOL;
+    ctlfid.Vnode = CTL_VNO;
+    ctlfid.Unique = CTL_UNI;
+    cp = makecfsnode(&ctlfid, vfsp, VCHR);
+    cfs_ctlvp = CTOV(cp);
+
     /* Add vfs and rootvp to chain of vfs hanging off mntinfo */
     mi->mi_vfsp = vfsp;
     mi->mi_rootvp = rootvp;
