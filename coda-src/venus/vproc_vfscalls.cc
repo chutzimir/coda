@@ -581,11 +581,16 @@ void vproc::setattr(struct vnode *vp, struct vattr *vap) {
 		if (u.u_error) goto FreeLocks;
 	    }
 	    /* gid should be V_GID for chown requests, VA_IGNORE_GID otherwise */
+#if	0
+	    /* whose idea was this anyways? */
 	    if (vap->va_gid != VA_IGNORE_GID &&	vap->va_gid != V_GID) {
 		u.u_error = EACCES;
 		goto FreeLocks;
 	    }
-
+#else
+	    if (vap->va_gid != VA_IGNORE_GID)
+	        vap->va_gid = V_GID;
+#endif
 	    /* truncate, ftruncate */
 	    if (vap->va_size != VA_IGNORE_SIZE) {
 		if (!f->IsFile())
