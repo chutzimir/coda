@@ -69,9 +69,9 @@ RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
 LIBS =	${LIBVOL} \
 	${LIBVV} \
 	${LIBUTIL} \
+	$(LIBVICEDEP)\
 	${LIBRPC2} \
 	${LIBSE} \
-	$(LIBVICEDEP)\
 	${LIBCODARDS} \
 	${LIBSEG} \
 	${LIBCODARVM} \

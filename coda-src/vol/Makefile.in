@@ -60,7 +60,7 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 LIBRARIES = libvol.a
-HEADERS	  = nfs.h errors.h viceinode.h vldb.h \
+HEADERS	  = nfs.h viceinode.h vldb.h \
 	    partition.h fssync.h recov.h vutil.h volinodes.h \
 	    srvsignal.h index.h vicelock.h rvmdir.h treeremove.h \
 	    vlist.h cvnode.h coda_globals.h voldefs.h volume.h camprivate.h \
