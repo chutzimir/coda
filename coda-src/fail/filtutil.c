@@ -384,7 +384,7 @@ void InitRPC()
 
   assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mylpid) == LWP_SUCCESS);
 
-  rc = RPC2_Init(RPC2_VERSION, 0, NULL, 0,  -1, NULL);
+  rc = RPC2_Init(RPC2_VERSION, 0, NULL,  -1, NULL);
   if (rc == RPC2_SUCCESS) return;
   PrintError("InitRPC", rc);
   if (rc < RPC2_ELIMIT) exit(-1);

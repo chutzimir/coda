@@ -49,8 +49,6 @@ HEADERS     = ${RP2FILES} fail.h ${RP2HEADERS}
 RP2FILES    = fcon.rpc2
 RP2HEADERS  = $(notdir ${RP2FILES:.rpc2=.h})
 
-# sadly this is not C++ so rp2gen needs different flags.
-RP2FLAGS:= -e 
 
 LIBS = ${LIBRPC2} ${LIBSE} ${LIBOLDLWP} ${LIBUTIL} ${LIBCOMPAT} \
        ${LIBREADLINE} ${LIBTERMCAP}
@@ -62,9 +60,6 @@ libfail.a: ${OBJS}
 
 filcon: filcon.o libfail.a ${LIBS}
 	${CC} ${LIBFLAGS} filcon.o libfail.a ${LIBS} -o filcon
-
-fcon.client.c: $(srcdir)/fcon.rpc2
-	${RP2GEN} ${RP2FLAGS} $<
 
 fcon.client.o: fcon.client.c
 fcon.server.o: fcon.server.c
