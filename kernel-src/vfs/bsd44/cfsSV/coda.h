@@ -15,11 +15,22 @@
 #include <sys/types.h>
 #endif 
 
-#ifdef __linux__
-#ifndef _UQUAD_T_
+#if defined(__linux__) || defined(__CYGWIN32__)
+#define cdev_t u_quad_t
+#if !defined(_UQUAD_T_) && (!defined(__GLIBC__) || __GLIBC__ < 2)
 #define _UQUAD_T_ 1
 typedef unsigned long long u_quad_t;
 #endif 
+#else
+#define cdev_t dev_t
+#endif
+
+#ifdef __CYGWIN32__
+typedef unsigned char u_int8_t;
+struct timespec {
+        time_t  tv_sec;         /* seconds */
+        long    tv_nsec;        /* nanoseconds */
+};
 #endif
 
 
@@ -66,21 +77,21 @@ struct venus_dirent {
 /*
  * File types
  */
-#define	DT_UNKNOWN	 0
-#define	DT_FIFO		 1
-#define	DT_CHR		 2
-#define	DT_DIR		 4
-#define	DT_BLK		 6
-#define	DT_REG		 8
-#define	DT_LNK		10
-#define	DT_SOCK		12
-#define	DT_WHT		14
+#define	CDT_UNKNOWN	 0
+#define	CDT_FIFO		 1
+#define	CDT_CHR		 2
+#define	CDT_DIR		 4
+#define	CDT_BLK		 6
+#define	CDT_REG		 8
+#define	CDT_LNK		10
+#define	CDT_SOCK		12
+#define	CDT_WHT		14
 
 /*
  * Convert between stat structure types and directory types.
  */
-#define	IFTODT(mode)	(((mode) & 0170000) >> 12)
-#define	DTTOIF(dirtype)	((dirtype) << 12)
+#define	IFTOCDT(mode)	(((mode) & 0170000) >> 12)
+#define	CDTTOIF(dirtype)	((dirtype) << 12)
 
 #endif
 
@@ -121,7 +132,11 @@ typedef u_long vgid_t;
 #define _CODACRED_T_
 struct coda_cred {
     vuid_t cr_uid, cr_euid, cr_suid, cr_fsuid; /* Real, efftve, set, fs uid*/
-    vgid_t cr_gid, cr_egid, cr_sgid, cr_fsgid; /* same for groups */
+#ifdef	__BSD44__
+    vgid_t cr_groupid, cr_egid, cr_sgid, cr_fsgid; /* same for groups */
+#else
+    vgid_t cr_gid,     cr_egid, cr_sgid, cr_fsgid; /* same for groups */
+#endif
 };
 #endif 
 
@@ -146,7 +161,7 @@ struct coda_vattr {
 	struct timespec	va_ctime;	/* time file changed */
 	u_long		va_gen;		/* generation number of file */
 	u_long		va_flags;	/* flags defined for file */
-	dev_t		va_rdev;	/* device the special file represents */
+	cdev_t	        va_rdev;	/* device special file represents */
 	u_quad_t	va_bytes;	/* bytes of disk space held by file */
 	u_quad_t	va_filerev;	/* file modification number */
 };
@@ -237,7 +252,7 @@ struct cfs_open_in {
 
 struct cfs_open_out {
     struct cfs_out_hdr oh;
-    dev_t	dev;
+    cdev_t	dev;
     ino_t	inode;
 };
 
