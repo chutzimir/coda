@@ -19,6 +19,10 @@ int portmapper_is_local_connection(RPC2_Handle cid)
 	ip = ntohl(pi.RemoteHost.Value.InetAddress);
 
 	/* 127.0.0.1 */
+#ifdef __CYGWIN32__	
+       	return 1;
+#endif
+       
 	return (ip == 0x7F000001);
 }
 

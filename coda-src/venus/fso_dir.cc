@@ -174,7 +174,7 @@ void fsobj::dir_MakeDir()
 }
 
 
-int fsobj::dir_Lookup(char *Name, ViceFid *Fid) 
+int fsobj::dir_Lookup(char *Name, ViceFid *Fid, int flags) 
 {
 	
 	if (!HAVEDATA(this)) { 
@@ -182,7 +182,7 @@ int fsobj::dir_Lookup(char *Name, ViceFid *Fid)
 		CHOKE("fsobj::dir_Lookup: (%s) no data", Name); 
 	}
 
-	int code = DH_Lookup(&data.dir->dh, Name, Fid);
+	int code = DH_Lookup(&data.dir->dh, Name, Fid, flags);
 	if (code != 0) 
 		return(code);
 

@@ -126,7 +126,7 @@ int fsobj::Open(int writep, int execp, int truncp, venus_cnode *cp, vuid_t vuid)
 	va.va_size = 0;
 	if ((code = SetAttr(&va, vuid)) != 0)
 	    goto Exit;
-    }
+   }
 
     /* Read/Write Sharing Stat Collection */
     if (EMULATING(this) && !flags.discread) {
@@ -520,7 +520,7 @@ static char systype [] = "i386_win32";
 /* local-repair modification */
 /* inc_fid is an OUT parameter which allows caller to form "fake symlink" if it desires. */
 /* Explicit parameter for TRAVERSE_MTPTS? -JJK */
-int fsobj::Lookup(fsobj **target_fso_addr, ViceFid *inc_fid, char *name, vuid_t vuid) {
+int fsobj::Lookup(fsobj **target_fso_addr, ViceFid *inc_fid, char *name, vuid_t vuid, int flags) {
     LOG(10, ("fsobj::Lookup: (%s/%s), uid = %d\n",
 	      comp, name, vuid));
 
@@ -579,7 +579,7 @@ int fsobj::Lookup(fsobj **target_fso_addr, ViceFid *inc_fid, char *name, vuid_t 
 	    }
 	}
 	else {
-	    code = dir_Lookup(name, &target_fid);
+	    code = dir_Lookup(name, &target_fid, flags);
 	    if (code) return(code);
 	}
     }

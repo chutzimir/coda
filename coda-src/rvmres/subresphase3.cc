@@ -614,7 +614,7 @@ static int NameExistsInParent(rsle *r, Vnode *pvptr) {
     if (name) {
 	PDirHandle dh;
 	dh = VN_SetDirHandle(pvptr);
-	if (DH_Lookup(dh, name, &nfid) == 0)
+	if (DH_Lookup(dh, name, &nfid, CLU_CASE_SENSITIVE) == 0)
 	    NameExists = TRUE;
     }
     SLog(39,  
@@ -656,7 +656,7 @@ static int IsNameFidBindingOK(rsle *r, Vnode *pvptr) {
     if (name) {
 	PDirHandle dh;
 	dh = VN_SetDirHandle(pvptr);
-	if ((DH_Lookup(dh, name, &nfid) == 0) &&
+	if ((DH_Lookup(dh, name, &nfid, CLU_CASE_SENSITIVE) == 0) &&
 	    (nfid.Vnode == cfid.Vnode) && (nfid.Unique == cfid.Unique))
 	    rc = TRUE;
     }

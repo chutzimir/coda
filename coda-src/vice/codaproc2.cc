@@ -2425,10 +2425,11 @@ Exit:
 int LookupChild(Volume *volptr, Vnode *vptr, char *Name, ViceFid *Fid) 
 {
 	int errorCode = 0;
+
     	PDirHandle dh;
 
 	dh = DC_DC2DH(vptr->dh);
-	errorCode = DH_Lookup(dh, Name, Fid);
+	errorCode = DH_Lookup(dh, Name, Fid, CLU_CASE_SENSITIVE);
 	if ( errorCode != 0) {
 		errorCode = ENOENT;
 		goto Exit;

@@ -612,7 +612,7 @@ class fsobj {
     int dir_Length();
     void dir_Delete(char *);
     void dir_MakeDir();
-    int dir_Lookup(char *, ViceFid *);
+    int dir_Lookup(char *, ViceFid *, int);
     int dir_LookupByFid(char *, ViceFid *);
     void dir_Rebuild();
     int dir_IsEmpty();
@@ -687,7 +687,7 @@ class fsobj {
     int Close(int, int, vuid_t);
     /*    int RdWr(char *, enum uio_rw, int, int, int *, vuid_t); */
     int Access(long, int, vuid_t);
-    int Lookup(fsobj **, ViceFid *, char *, vuid_t);
+    int Lookup(fsobj **, ViceFid *, char *, vuid_t, int);
     int Readdir(char *, int, int, int *, vuid_t);
     int Readlink(char *, int, int *, vuid_t);
 

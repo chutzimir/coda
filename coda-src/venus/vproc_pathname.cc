@@ -147,7 +147,7 @@ int vproc::namev(char *path, int flags, struct venus_cnode *vpp) {
 	}
 
 	/* Now lookup the object in the directory. */
-	lookup(&pvp, comp, &vp);
+	lookup(&pvp, comp, &vp, CLU_CASE_SENSITIVE);
 	if (u.u_error) goto Exit;
 
 	/* We have the new object.  The next action depends on what type of object it is. */

@@ -171,14 +171,14 @@ int main(int argc, char **argv)
     (void) signal(SIGUSR1, (void (*)(int))SetDebug);
     (void) signal(SIGQUIT, (void (*)(int))Terminate);
     
+    freopen("UpdateSrvLog","a+",stdout);
+    freopen("UpdateSrvLog","a+",stderr);
+
     if (chdir(prefix)) {
 	    perror("could not chdir to prefix directory");
 	    exit(-1);
     }
-
-    freopen("UpdateSrvLog","a+",stdout);
-    freopen("UpdateSrvLog","a+",stderr);
-
+    
     file = fopen("/vice/srv/updatesrv.pid", "w");
     if ( !file ) {
 	    perror("Error writing /vice/srv/updatesrv.pid");
@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 					 0, 17,  portal1.Value.InetPortNumber);
 
     if ( rc ) {
-	    fprintf(stderr, "Cannot register with rpc2portmap; exiting\n");
+	    fprintf(stderr, "Cannot register with rpc2portmap; exiting, rc = %i \n", rc);
 	    return 1;
     }
     RPC2_Unbind(portmapid); 

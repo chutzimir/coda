@@ -377,6 +377,7 @@ static void ParseCmdline(int argc, char **argv) {
 #ifdef DJGPP
      	    else if (STREQ(argv[i], "-child")) {
      	        IAmChild = 1;
+		InitMetaData = 1;
      	    }
 #endif
 	    else {
