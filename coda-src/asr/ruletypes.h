@@ -43,11 +43,7 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#ifdef	__linux__
 #include <stdlib.h>        
-#else
-#include <libc.h>        
-#endif
 #include <sys/param.h>
 #include <unistd.h>
 #ifdef __BSD44__

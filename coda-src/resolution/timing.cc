@@ -60,9 +60,6 @@ extern "C" {
 #endif
 
 #include <sys/ioctl.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <assert.h>
 
 #ifdef __cplusplus

@@ -59,9 +59,6 @@ extern "C" {
 
 #include <assert.h>
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <struct.h>
 
 #ifdef __cplusplus

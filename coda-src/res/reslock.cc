@@ -59,9 +59,6 @@ extern "C" {
 #include <cthreads.h>
 #endif
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <struct.h>
 #include "rpc2.h"
 

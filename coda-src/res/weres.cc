@@ -41,9 +41,6 @@ extern "C" {
 #endif __cplusplus
 
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <sys/types.h>
 #include <sys/time.h>
 #ifdef CAMELOT

@@ -55,9 +55,6 @@ extern "C" {
 #endif
 #include <netinet/in.h>
 #include <stdio.h>
-#if !defined(__GLIBC__)
-#include <libc.h>
-#endif
 #include <rpc2.h>
 
 #ifdef __cplusplus
