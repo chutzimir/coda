@@ -266,9 +266,13 @@ inline void rvmlib_set_range(void *base, unsigned long size){
 }
 
 inline void *rvmlib_rec_malloc(unsigned long size){
-    RvmType == VM ? malloc(size) : 
-     ((RvmType == RAWIO) || (RvmType == UFS)) ? rvmlib_internal_malloc(size, 1) : 
-     NULL;
+  switch ( RvmType ) {
+  case VM: return malloc(size);
+  case RAWIO: 
+  case UFS: return  rvmlib_internal_malloc(size, 1);
+  default: 
+    return NULL;
+  }
 }
 
 inline void rvmlib_rec_free(void *p)
