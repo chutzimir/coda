@@ -439,7 +439,8 @@ int k_Purge(ViceFid *fid, int severely) {
     }	
 
     /* Send the message. */
-    if (MsgWrite((char *)&msg, (int) sizeof(union outputArgs)) != (int) sizeof(union outputArgs)) {
+/*    if (MsgWrite((char *)&msg, (int) sizeof(union outputArgs)) != (int) sizeof(union outputArgs)) { */
+      if (MsgWrite((char *)&msg, (int) sizeof(msg)) !=  (int) sizeof(msg)) {
 	retcode = errno;
 	if (retcode != ETXTBSY)
 	    Choke("k_Purge: %s, message write returns %d", 
