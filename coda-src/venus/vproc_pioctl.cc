@@ -207,11 +207,11 @@ void vproc::do_ioctl(ViceFid *fid, unsigned int com, struct ViceIoctl *data) {
 			/* return early to user */
 			if (type == VPT_Worker) {
 			    worker *w = (worker *)this;
-			    struct outputArgs *out;
-			    out = (struct outputArgs *)w->msg->msg_buf;
-			    out->d.cfs_ioctl.len = 0;
-			    out->result = 0;
-			    w->Return(w->msg, VC_SIZE(out,cfs_ioctl));
+			    union outputArgs *out;
+			    out = (union outputArgs *)w->msg->msg_buf;
+			    out->cfs_ioctl.len = 0;
+			    out->cfs_ioctl.oh.result = 0;
+			    w->Return(w->msg, sizeof (struct cfs_ioctl_out));
 			}
 
 			/* Release and reacquire the target (data this time). */

@@ -175,7 +175,7 @@ class namectxt;
 class volent;
 struct uarea {
     int	u_error;		/* implicit return code */
-    struct CodaCred u_cred;	/* implicit user identifier */
+    struct coda_cred u_cred;	/* implicit user identifier */
     int	u_priority;		/* to be used in resource requests */
     ViceFid u_cdir;		/* for name lookup */
     int	u_flags;		/*  "	" */
@@ -338,10 +338,10 @@ extern long FidToNodeid(ViceFid *);
 #define	CRTOEUID(cred)	((vuid_t)((cred).cr_uid))
 #define	CRTORUID(cred)	((vuid_t)((cred).cr_uid))
 
-#define	FTTOVT(ft)	((ft) == (int)File ? VREG :\
-			 (ft) == (int)Directory ? VDIR :\
-			 (ft) == (int)SymbolicLink ? VLNK :\
-			 VREG)
+#define	FTTOVT(ft)	((ft) == (int)File ? VCREG :\
+			 (ft) == (int)Directory ? VCDIR :\
+			 (ft) == (int)SymbolicLink ? VCLNK :\
+			 VCREG)
 
 #define	VFSOP_UNSET	-1
 #define	VFSOP_MOUNT	/*CFS_MOUNT*/VFSOP_UNSET

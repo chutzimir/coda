@@ -2011,9 +2011,9 @@ PRIVATE void UpdateFsoName(char **f, char *r) {
 /* Temporary hack to cope with the fact that closes of devices are sometimes passed through! */
 PRIVATE ViceDataType VTTOFT(unsigned short vt) {
     switch (vt) {
-	case VREG: return(File);
-	case VDIR: return(Directory);
-	case VLNK: return(SymbolicLink);
+	case VCREG: return(File);
+	case VCDIR: return(Directory);
+	case VCLNK: return(SymbolicLink);
 
 	default:
 	    {
