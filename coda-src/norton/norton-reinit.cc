@@ -839,6 +839,14 @@ PRIVATE int dump_server_state(char *dump_file, char *skipvollist[], int nskipvol
 	if (InSkipVolumeList(vol->data.volumeInfo->id, skipvols, nskipvols))
 	    continue;
 
+	// Check that its not a backup of something we are skipping
+	// This check should probably go in InSkipVolumeList()
+	if ((vol->data.volumeInfo->type == BACKVOL) && 
+	    InSkipVolumeList(vol->data.volumeInfo->parentId, 
+			     skipvols, nskipvols)) {
+	  continue;
+	}
+	    
 	printf("Writing volume 0x%x\n", vol->data.volumeInfo->id);
 
 	if (!DumpVolHead(dump_fd, vol) ||
