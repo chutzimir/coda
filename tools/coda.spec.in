@@ -136,6 +136,8 @@ if [ -e /usr/coda/etc/vstab ]; then
 else
 	/usr/sbin/venus-setup testserver.coda.cs.cmu.edu
 fi
+cd /usr/lib/coda
+tixindex *tcl
 
 %post source
 cd /usr/src/redhat/BUILD
