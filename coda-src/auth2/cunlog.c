@@ -33,10 +33,6 @@ static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 
-
-
-
-
 /*
 
                          IBM COPYRIGHT NOTICE
@@ -59,11 +55,8 @@ supported by Transarc Corporation, Pittsburgh, PA.
 
 */
 
-
-
-
 /*
-initpw.c -- hack routine to initially generate the pw file used by auth2
+	cunlog -- tell Venus to clean up your connecion
 
 */
 
@@ -71,105 +64,19 @@ initpw.c -- hack routine to initially generate the pw file used by auth2
 extern "C" {
 #endif __cplusplus
 
-#include <stdio.h>
-#include <sys/file.h>
-#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-#include <lwp.h>
-#include <rpc2.h>
-#include <util.h>
-
+#include <auth2.h>
+#include "avenus.h"
 #ifdef __cplusplus
 }
 #endif __cplusplus
 
 
-int main(int argc, char **argv);
-PRIVATE void parse(char *line, RPC2_EncryptionKey outpw, char **last);
-
-PRIVATE int DebugLevel = 0;
-PRIVATE int KeyIsValid = FALSE;
-PRIVATE RPC2_EncryptionKey EKey;
 
 
 int main(int argc, char **argv)
-    {
-    register int i;
-    char thisline[1000], *lastpart;
-    RPC2_EncryptionKey thispw;
-    PROCESS mypid;
-
-    /* Obtain invocation options */
-    for (i = 1; i < argc; i++)
-	{
-	if (strcmp(argv[i], "-x") == 0 && i < argc -1)
-	    {
-	    DebugLevel = atoi(argv[++i]);
-	    continue;
-	    }
-	if (strcmp(argv[i], "-k") == 0 && i < argc -1)
-	    {
-	    KeyIsValid = TRUE;
-	    strncpy((char *)EKey, argv[++i], sizeof(RPC2_EncryptionKey));
-	    continue;
-	    }
-	printf("Usage: initpw [-x debuglevel] [-k key]\n");
-	exit(-1);
-	}    
-
-/* Reads lines from stdin of the form:
-	<ViceId> <Clear Password> <other junk>\n
-
-   Produces lines on stdout of the form:
-	<ViceId> <Hex representation of encrypted password> <other junk>\n
-
-*/
-    if (!KeyIsValid) 
-	fprintf(stderr, "WARNING: no key specified\n");
-
-    assert(LWP_Init(LWP_VERSION, LWP_NORMAL_PRIORITY, &mypid) == LWP_SUCCESS);
-    while(TRUE)
-	{
-	if (fgets(thisline, sizeof(thisline), stdin) == NULL) 
-		break;
-	if (thisline[strlen(thisline)-1] == '\n')
-		thisline[strlen(thisline)-1] = '\0';
-	parse(thisline, thispw, &lastpart);
-	if (KeyIsValid)
-	    rpc2_Encrypt((char *)thispw, (char *)thispw, sizeof(RPC2_EncryptionKey), (char *)EKey, RPC2_XOR);
-	printf("%s\t", thisline);	/* only viceid part */
-	for (i = 0; i < sizeof(RPC2_EncryptionKey); i++)
-	    printf("%02x", thispw[i]);
-	printf("\t%s\n", lastpart);
-	}
-    return(0);
-    }
-
-
-PRIVATE void parse(char *line, RPC2_EncryptionKey outpw, char **last)
-/* line:    input: first tab is replaced by null */
-/* outpw:   output: filled with password */
-/* last:    output: points to first character of uninterpreted part */
-    {
-    char *pp;
-    int i;
-    pp = (char *)index(line, '\t');
-    if (pp == NULL)
-	{
-	fprintf(stderr, "Bogus line in input file: \"%s\"\n", line);
-	abort();
-	}
-    *pp++ = 0;
-    bzero(outpw, sizeof(RPC2_EncryptionKey));
-    i = 0;
-    while(pp && *pp != 0 && *pp != '\t' && i < sizeof(RPC2_EncryptionKey))
-	outpw[i++] = *pp++;
-    while(pp && *pp != 0 && *pp != '\t') pp++;
-    if (*pp == 0) *last = pp;
-    else *last = pp + 1;	/* skip over tab */
-
-    }
-
-
+{
+    U_DeleteLocalTokens();
+    exit(0);
+}

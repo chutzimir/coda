@@ -495,6 +495,7 @@ typedef
 	RPC2_Integer SideEffectType;
 	RPC2_Integer SecurityLevel;
 	RPC2_Integer EncryptionType;
+	RPC2_Integer AuthenticationType;
 	RPC2_CountedBS ClientIdent;
 	}
     RPC2_NewConnectionBody;
@@ -517,6 +518,7 @@ typedef
 	long SecurityLevel;
 	long EncryptionType;
 	RPC2_EncryptionKey *SharedSecret;
+	RPC2_Integer AuthenticationType;
 	RPC2_CountedBS *ClientIdent;
 	long SideEffectType;
 	RPC2_Integer Color;

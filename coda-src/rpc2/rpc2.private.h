@@ -364,9 +364,9 @@ struct Init4Body		/* Server to Client */
     {
     RPC2_Integer InitialSeqNumber;	/* Seq number of first expected packet from client */
     RPC2_EncryptionKey	SessionKey;	/* for use from now on */
+    RPC2_Integer XRandomPlusTwo;	/* prevent replays of this packet -rnw 2/7/98 */
     RPC2_Integer Spare1;
     RPC2_Integer Spare2;
-    RPC2_Integer Spare3;
     };
 
 struct InitMulticastBody	/* Client to Server */
