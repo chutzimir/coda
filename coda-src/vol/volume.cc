@@ -69,7 +69,9 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/dir.h>
+#ifndef LINUX
 #include <fstab.h>
+#endif
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/wait.h>
@@ -360,12 +362,13 @@ void VInitVolumePackage(int nLargeVnodes, int nSmallVnodes, int DoSalvage) {
 	    }
 
 	    /* I think we are paranoia, but maybe that's good */
+#if 0
 	    if (!MountedAtRoot(part)) {
 	      LogMsg(0, VolDebugLevel, stdout, 
 		     "%s is not a mounted file system; ignored", part);
 	      continue;
 	    }
-
+#endif
 	    assert((dirp = opendir(part)) != NULL);
 	    closedir(dirp);
 
@@ -377,7 +380,9 @@ void VInitVolumePackage(int nLargeVnodes, int nSmallVnodes, int DoSalvage) {
     /* Setting Debug to 1 and List to 0; maybe remove later ***ehs***/
     /* invoke salvager for full salvage */
     *pt = salvager;	/* MUST set *pt to salvager before vol_salvage */
+#ifndef LINUX
     assert(S_VolSalvage(0, NULL, 0, DoSalvage, 1, 0) == 0);
+#endif
     *pt = fileServer;
 
     /* grab exclusive lock */
