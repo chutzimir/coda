@@ -128,7 +128,9 @@ char *ViceErrorMsg(int errorCode)
 	case EPIPE:		return("Broken pipe");
 	case EDOM:		return("Math argument");
 	case ERANGE:		return("Result too large");
-	case EWOULDBLOCK:	return("Operation would block");
+#ifndef LINUX
+    case EWOULDBLOCK:	return("Operation would block");
+#endif
 	case EINPROGRESS:	return("Operation now in progress");
 	case EALREADY:		return("Operation already in progress");
 	case ENOTSOCK:		return("Socket operation on a non-socket");
@@ -140,13 +142,15 @@ char *ViceErrorMsg(int errorCode)
 	case EADDRINUSE:	return("Address already in use");
 	case EADDRNOTAVAIL:	return("Cannot assign requested address");
 	case ENETDOWN:		return("Network is down");
+#ifndef LINUX
 	case ENETUNREACH:	return("Network is unreachable");
 	case ENETRESET:		return("Network dropped connection on reset");
 	case ECONNABORTED:	return("Software caused connection abort");
 	case ECONNRESET:	return("Connection reset by peer");
 	case ENOBUFS:		return("No buffer space available");
 	case EISCONN:		return("Socket is already connected");
-	case ENOTCONN:		return("Socket is not connected");
+        case ENOTCONN:		return("Socket is not connected");
+#endif
 	case ESHUTDOWN:		return("Cannot send after socket shutdown");
 	case ETIMEDOUT:		return("Connection timed out");
 	case ECONNREFUSED:	return("Connection refused");
