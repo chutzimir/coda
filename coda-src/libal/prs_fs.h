@@ -70,5 +70,6 @@ the possessor the corresponding privileges on ALL files in that directory
 #define PRSFS_DELETE          16 /*Remove files*/
 #define PRSFS_LOCK            32 /*Read-lock files*/
 #define PRSFS_ADMINISTER      64 /*Set access list of directory*/
+#define PRSFS_ALL            127
 
 #endif

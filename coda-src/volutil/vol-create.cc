@@ -78,7 +78,8 @@ extern "C" {
 
 #include <vice.h>
 #include <volutil.h>
-
+#include <prs_fs.h>
+#include <prs.h>
 #ifdef __cplusplus
 }
 #endif __cplusplus
@@ -252,11 +253,13 @@ static int ViceCreateRoot(Volume *vp)
     ACL = VVnodeDiskACL(vnode);
     ACL->MySize = sizeof(AL_AccessList);
     ACL->Version = AL_ALISTVERSION;
-    ACL->TotalNoOfEntries = 1;
-    ACL->PlusEntriesInUse = 1;
+    ACL->TotalNoOfEntries = 2;
+    ACL->PlusEntriesInUse = 2;
     ACL->MinusEntriesInUse = 0;
-    ACL->ActualEntries[0].Id = -101;
-    ACL->ActualEntries[0].Rights = 127;
+    ACL->ActualEntries[0].Id = PRS_SYSTEMADMINID;
+    ACL->ActualEntries[0].Rights = PRSFS_ALL;
+    ACL->ActualEntries[1].Id = PRS_ANYUSERID;
+    ACL->ActualEntries[1].Rights = PRSFS_READ | PRSFS_LOOKUP;
 
     /* set up vnode info */
     vnode->type = vDirectory;

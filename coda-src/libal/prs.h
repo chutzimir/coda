@@ -69,6 +69,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #define PRS_ANONYMOUSID 776   /*Userid of the fake user Anonymous*/
 
 #define PRS_ANYUSERID -101    /*GroupId of System:AnyUser*/
+#define PRS_SYSTEMADMINID -204    /*GroupId of System:AnyUser*/
 
 #define PRS_PDBNAME "vice.pdb"
                         /*default location of protection data base*/

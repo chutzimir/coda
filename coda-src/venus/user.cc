@@ -265,8 +265,7 @@ long userent::SetTokens(SecretToken *asecret, ClearToken *aclear) {
     LOG(100, ("userent::SetTokens: uid = %d\n", uid));
 
     if (uid == V_UID) {
-	eprint("root cannot acquire Coda tokens!");
-	return(0);
+	eprint("root acquiring Coda tokens!");
     }
 
     /* N.B. Using direct assignment to the Token structs rather than the bcopys doesn't seem to work! */
