@@ -514,34 +514,15 @@ int fsobj::Access(long rights, int modes, vuid_t vuid)
 
 /* Embed the processor/system name in the code for @cputype/@sys expansion. */
 
-#ifdef __MACH__
-#if defined(romp) || defined(ibm032) || defined(ibmrt)
-static char cputype[] = "ibm032";
-static char systype[] = "rt_mach";
-#endif
-#ifdef vax
-static char cputype [] = "vax";
-static char systype [] = "vax_mach";
-#endif
-#if defined(sun3) || defined(sun)
-static char cputype [] = "sun3";
-static char systype [] = "sun3_mach";
-#endif
-#ifdef mips
-static char cputype [] = "pmax";
-static char systype [] = "pmax_mach";
-#endif
-#ifdef i386
-static char cputype [] = "i386";
-static char systype [] = "i386_mach";
-#endif
-#endif /* __MACH__ */
-
 #ifdef __NetBSD__
 #ifdef i386
 static char cputype [] = "i386";
 static char systype [] = "i386_nbsd1";
 #endif /* i386 */
+#ifdef arm32
+static char cputype [] = "arm32";
+static char systype [] = "arm32_nbsd1";
+#endif
 #endif /* __NetBSD__ */
 
 #ifdef __FreeBSD__
