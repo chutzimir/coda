@@ -93,6 +93,15 @@ extern int SafeStrCpy(char *dest, char *src, int totalspace);
 void eprint(char *, ...);
 void fdprint(long afd, char *fmt, ...);
 
+#ifndef MAX
+#define MAX(a,b)  ( ((a) > (b)) ? (a) : (b) )
+#endif
+
+#ifndef MIN
+#define MIN(a,b)  ( ((a) < (b)) ? (a) : (b) )
+#endif
+
+
 
 /* Routine for conditionally printing timestamped log messages */
 extern void LogMsg(int msglevel, int debuglevel, FILE *fout, char *fmt,  ...);
