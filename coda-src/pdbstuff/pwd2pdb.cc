@@ -64,9 +64,15 @@ extern "C" {
 #include <sys/file.h>
 #include <sys/time.h>
 #include <ctype.h>
+#ifdef __MACH__
 #include <libc.h>
 #include <sysent.h>
-#include <strings.h>
+#endif __MACH__
+#ifdef __NetBSD__
+#include <unistd.h>
+#include <stdlib.h>
+#endif __NetBSD__
+#include <string.h>
 #include <errno.h>
 
 #ifdef __cplusplus
