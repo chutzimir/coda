@@ -48,4 +48,29 @@ include $(MAKDIR)/Makeconf
 
 replacementlog_test: ../replacementlog.o
 
+portability_test: portability_problems.o portability_test.o
+	$(CXX) $(CFLAGS) portability_problems.o portability_test.o $(LIBKVM) $(LIBS) -o portability_test
+
+fake_advice: $(AOBJS) $(LIBS) $(OTHERLIBS) fake_rpc
+	$(CXX) $(LIBFLAGS) $(AOBJS) $(LIBS) $(OTHERLIBS) -o advice_srv
+	rm ../rpc_setup.o
+
+
+replacementlog: ../replacementlog.o replacementlog_test.o
+	$(CXX) $(CFLAGS) ../replacementlog.o replacementlog_test.o $(LIBS) -o replacementlog -lgdbm
+
+fake_venus: fake_venus.o demo_handler.o conversions.o $(LIBS) $(OTHERLIBS)
+	$(CXX) $(CFLAGS) $(LIBFLAGS) fake_venus.o demo_handler.o conversions.o $(LIBS) $(OTHERLIBS) -o fake_venus
+
+programspy: programspy.o mybstree.o
+	$(CXX) $(CFLAGS) programspy.o mybstree.o $(LIBS) -o programspy
+
+fake_venus.o: 
+	$(CXX) $(CFLAGS) -D__FAKE__ -c ${srcdir}/fake_venus.cc
+
+fake_rpc: 
+	rm rpc_setup.o
+	$(CXX) $(CFLAGS) -D__FAKE__ -c ${srcdir}/rpc_setup.cc
+
+
 include $(MAKDIR)/configs/Makerules

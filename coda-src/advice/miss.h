@@ -54,8 +54,7 @@ class miss {
 };
 
 extern void InitMissQueue();
-extern void HandleWeakAdvice();
+extern void OutputMissStatistics();
 
 #define TMPMISSLIST "/tmp/misslist"
-#define MISSLIST "/usr/coda/etc/misslist"
 
