@@ -158,7 +158,7 @@ void volent::Reintegrate()
      * mutator will clear the owner on volume exit.
      */
     if (CML.count() == 0  &&  mutator_count == 0)
-        CML.owner = ALL_UIDS;
+        CML.owner = UNSET_UID;
 
     /* trigger a transition if necessary */
     if ((CML.count() == 0 || (CML.count() > 0 && !ContainUnrepairedCML()))

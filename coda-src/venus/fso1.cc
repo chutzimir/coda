@@ -65,7 +65,7 @@ extern "C" {
 #endif
 #ifdef __BSD44__
 #include <sys/dirent.h>
-#endif
+#endif /* __BSD44__ */
 #ifdef __MACH__
 #include <sysent.h>
 #include <libc.h>
@@ -2205,13 +2205,16 @@ void fsobj::GetVattr(struct vattr *vap) {
     VA_MTIME_2(vap) = 0;
     vap->va_atime = vap->va_mtime;
     vap->va_ctime = vap->va_mtime;
+#ifdef __BSD44__
+    vap->va_flags = 0;
+#endif /* __BSD44__ */
     vap->va_rdev = 1;
 #ifdef __MACH__
     vap->va_blocks = NBLOCKS(vap->va_size) << 1;    /* 512 byte units! */
 #endif /* __MACH__ */
 #ifdef __BSD44__
     vap->va_bytes = vap->va_size;
-#endif /* __BSD44 */
+#endif /* __BSD44__ */
 
     /* If the object is currently open for writing we must physically stat it to get its size and time info. */
     if (!Simulating && WRITING(this)) {

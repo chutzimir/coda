@@ -139,6 +139,7 @@ const vgid_t V_GID = (vgid_t)-2;    /* GID that the venus process runs under. */
 #endif /* __BSD44__ */
 const vuid_t ALL_UIDS = (vuid_t)-1;
 const vuid_t HOARD_UID = (vuid_t)-2; /* uid of hoard daemon */
+const vuid_t UNSET_UID = (vuid_t)-666; /* beastly but recognizable */
 const unsigned short V_MODE = 0600;
 const int OWNERBITS = 0700;
 const int OWNERREAD = 0400;

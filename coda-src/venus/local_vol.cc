@@ -114,7 +114,7 @@ void volent::CheckTransition()
       return;
     VOL_ASSERT(this, state == Logging);
     if (CML.count() == 0)
-      CML.owner = ALL_UIDS;
+      CML.owner = UNSET_UID;
     if ((CML.count() == 0 || (CML.count() > 0 && !ContainUnrepairedCML()))
 	&& flags.logv == 0)
       flags.transition_pending = 1;
@@ -125,7 +125,7 @@ void volent::IncAbort(int tid)
 {
     CML.IncAbort(tid);
     if (CML.count() == 0)
-      CML.owner = ALL_UIDS;
+      CML.owner = UNSET_UID;
 }
 
 /* need not be called from within a transaction */

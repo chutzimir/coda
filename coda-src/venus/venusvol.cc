@@ -1099,9 +1099,9 @@ int volent::Enter(int mode, vuid_t vuid) {
 		     * (read) lock on the CML to prevent the checkpointer from entering.
 		     * Note observers don't lock at all. 
 		     */
-		    if (CML.owner == ALL_UIDS) {
+		    if (CML.owner == UNSET_UID) {
 			if (mutator_count != 0 || CML.count() != 0 || IsReintegrating())
-			    { print(logFile); Choke("volent::Enter: mutating"); }
+			    { print(logFile); Choke("volent::Enter: mutating, CML owner == %d\n", CML.owner); }
 
 			mutator_count++;
 			CML.owner = vuid;
@@ -1114,7 +1114,7 @@ int volent::Enter(int mode, vuid_t vuid) {
 		    /* We might need to do something about fairness here eventually! -JJK */
 		    if (CML.owner == vuid) {
 			if (mutator_count == 0 && CML.count() == 0 && !IsReintegrating())
-			    { print(logFile); Choke("volent::Enter: mutating"); }
+			    { print(logFile); Choke("volent::Enter: mutating, CML owner == %d\n", CML.owner); }
 
 			mutator_count++;
 			shrd_count++;
@@ -1168,9 +1168,7 @@ int volent::Enter(int mode, vuid_t vuid) {
 	    ASSERT(type == REPVOL);
 	    if (state != Resolving || resolver_count != 0 || 
 		mutator_count != 0 || observer_count != 0 ||
-		flags.transition_pending /* || CML.owner != ALL_UIDS*/)
-		/* in logging mode the cml can be non-empty. check the counts
-		   for user threads */
+		flags.transition_pending)
 		{ print(logFile); Choke("volent::Enter: resolving"); }
 
 	    /* acquire exclusive volume-pgid-lock for RESOLVING */
@@ -1239,7 +1237,7 @@ void volent::Exit(int mode, vuid_t vuid) {
 		if (state == Emulating && !flags.transition_pending)
 		    flags.transition_pending = 1;
 
-		CML.owner = ALL_UIDS;
+		CML.owner = UNSET_UID;
 	    }
 	    break;
 	    }

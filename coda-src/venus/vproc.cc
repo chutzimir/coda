@@ -818,6 +818,9 @@ void va_init(struct vattr *vap) {
     vap->va_mtime = vap->va_atime;
     vap->va_ctime = vap->va_atime;
     vap->va_rdev = VA_IGNORE_RDEV;
+#ifdef __BSD44__
+    vap->va_flags = 0; /* not the ignore value, must be clear */
+#endif /* __BSD44__ */
 }
 
 
