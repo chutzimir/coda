@@ -61,7 +61,7 @@ TOPOBJ = @TOPOBJ@
 include $(MAKDIR)/Makeconf
 
 UPDATE-SCRIPTS	= files.bin files.db files.etc files.lib files.root
-VOL-SCRIPTS	= clone createvol createvol_rep purgevol purgevol_rep bldvldb.sh
+VOL-SCRIPTS	= clone createvol createvol_rep createvol_rep_ss purgevol purgevol_rep bldvldb.sh
 SUP-SCRIPTS	= supfile.pmax supfile.rt supfile.i386
 VENUS-SCRIPTS	= vutil newvenus swapmach
 INIT-SCRIPTS	= initfs initmtpts
