@@ -73,4 +73,9 @@ fake_rpc:
 	$(CXX) $(CFLAGS) -D__FAKE__ -c ${srcdir}/rpc_setup.cc
 
 
+CODAWISH_LIBS  = $(LIBTIX) $(LIBTK) $(LIBTCL) $(LIBMATH) $(LIBX11)
+
+CFLAGS = -I$(INCTIX) -I$(INCTK) -I$(INCTCL) -I$(INCX11)
+
+
 include $(MAKDIR)/configs/Makerules
