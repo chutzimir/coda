@@ -70,15 +70,11 @@ extern "C" {
 
 #include <fcntl.h>
 
-#if defined(__GLIBC__) && __GLIBC__ >= 2
-#include <libelf/nlist.h>
-#else
-#ifndef DJGPP
+#ifdef __BSD44__
 #include <nlist.h>
 /* nlist.h defines this function but it isnt getting included because it is
    guarded by an ifdef of CMU which isnt getting defined.  XXXXX pkumar 6/13/95 */ 
 extern int nlist(const char*, struct nlist[]);
-#endif
 #endif
 
     
@@ -133,7 +129,7 @@ PRIVATE int hertz = 0;
 
 
 /* Raw Statistic Entry. */
-#ifndef DJGPP
+#ifdef __BSD44__
 PRIVATE struct nlist RawStats[] = 
 {
 #define CPTIME	0

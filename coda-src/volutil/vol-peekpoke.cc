@@ -55,9 +55,7 @@ extern "C" {
 #include <struct.h>
 
 #include <ctype.h>
-#if defined(__GLIBC__) && __GLIBC__ >= 2
-#include <libelf/nlist.h>
-#else
+#ifdef __MACH__
 #include <nlist.h>
 /* nlist.h defines this function but it isnt getting included because it is
    guarded by an ifdef of CMU which isnt getting defined.  XXXXX pkumar 6/13/95 */ 
