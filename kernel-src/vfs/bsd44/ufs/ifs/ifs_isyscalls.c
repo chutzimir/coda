@@ -103,6 +103,7 @@ int sys_icreate(p, uap, retval)
     struct vnode *vp;
     struct inode *newip; 
     struct timeval tv;
+    struct timespec ts;
     int error = 0;
     
     printf("icreate(dev=%d inode=%d p1=%d p2=%d p3=%d p4=%d)called\n",
@@ -149,9 +150,11 @@ int sys_icreate(p, uap, retval)
     
     /*
      * Make sure inode goes to disk.
-     */
+     */ 
     tv = time;
-    error = VOP_UPDATE(vp, &tv, &tv, 1); 
+    ts.tv_sec = tv.tv_sec;
+    ts.tv_nsec = tv.tv_usec * 1000;
+    error = VOP_UPDATE(vp, &ts, &ts, 1); 
 
     /* ignore writing out the parent vnode (rootvp?) XXX */
     
@@ -486,6 +489,7 @@ iincdec(p, uap, retval, amount)
     register struct vnode *vp; 
     register struct inode *ip;
     struct timeval tv;
+    struct timespec ts;
     int error; 
     
     /*
@@ -530,7 +534,9 @@ iincdec(p, uap, retval, amount)
     /* write out the inode */ 
     ip->i_flag |= IN_CHANGE;
     tv = time; 
-    if (error = VOP_UPDATE(vp, &tv, &tv, 1)) {
+    ts.tv_sec = tv.tv_sec;
+    ts.tv_nsec = tv.tv_usec * 1000;
+    if (error = VOP_UPDATE(vp, &ts, &ts, 1)) {
 	*retval = EIO;
 	return(EIO); 
     }
