@@ -53,7 +53,7 @@ fi
 # Remove outdated logfiles
 rm /vice/srv/SrvErr
 rm /vice/srv/SrvLog-7
-
+rm -f /vice/src/CRASH
 
 # pass on arguments to srv
 # The -rvm flag takes 3 arguments. The first is the log device/file,
