@@ -69,7 +69,9 @@ extern "C" {
 #include <sys/stat.h>
 #include <sys/inode.h>
 #include <sys/time.h>
+#ifndef LINUX
 #include <fstab.h>
+#endif
 #ifdef __MACH__
 #include <libc.h>
 #include <sysent.h>

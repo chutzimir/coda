@@ -61,7 +61,9 @@ extern "C" {
 #include <sys/time.h>
 #include <sys/file.h>
 #include <sys/dir.h>
+#ifndef LINUX
 #include <fstab.h>
+#endif
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/wait.h>

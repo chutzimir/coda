@@ -69,7 +69,9 @@ extern "C" {
 #include <stdio.h>
 #include <sys/file.h>
 #include <sys/dir.h>
+#ifndef  LINUX
 #include <fstab.h>
+#endif
 #include <netdb.h>
 #include <netinet/in.h>
 #ifdef __MACH__
