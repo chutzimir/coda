@@ -120,7 +120,7 @@ echo ""
 echo -n "copying special binaries(RVM): "
 foreach f ($SPCLBINS ) 
     echo -n $f " "
-    copy $BaseDir/bin-special/$f bin
+    copy $BaseDir/BIN-SPECIAL/$f bin
 end
 
 echo ""
