@@ -247,9 +247,14 @@ int main(int argc, char **argv)
 		(tp.tv_sec > (operatorSecs + 2))) {
 		tp.tv_sec = operatorSecs + 1;
 		tp.tv_usec = operatorUsecs;
+		LogMsg(0, SrvDebugLevel, stdout,
+		    "Time between servers differs, "
+		    "use `xntpd' to keep the time synchronized");
+		/*
 		LogMsg(0, SrvDebugLevel, stdout, 
 		       "Settime to %s", ctime((long *)&tp.tv_sec));
 		settimeofday(&tp, &tsp);
+		*/
 	    }
 	}
 
@@ -658,7 +663,7 @@ PRIVATE int U_BindToServer(char *fileserver, RPC2_Handle *RPCid)
     rcode = RPC2_NewBinding(&hident, &pident, &sident, &bparms, RPCid);
     if (rcode < 0 && rcode > RPC2_ELIMIT)
 	rcode = 0;
-    if (rcode == 0 || rcode == RPC2_NOTAUTHENTICATED)
+    if (rcode == 0 || rcode == RPC2_NOTAUTHENTICATED || rcode == RPC2_NOBINDING)
 	return(rcode);
     else {
 	LogMsg(0, SrvDebugLevel, stdout, "RPC2_NewBinding to server %s failed with %s\n",

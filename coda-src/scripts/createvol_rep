@@ -71,6 +71,8 @@ set SERVERS=`awk '$1 ~ /^'$VSGADDR'$/ {print $2, $3, $4, $5, $6, $7, $8, $9}' /v
 echo Servers are \($SERVERS\)
 set NSERVERS=$#SERVERS
 
+
+
 # Validate the server list
 if ($NSERVERS == 0 || $NSERVERS > $MAXSERVERS) then
 	echo Specify 1 - $MAXSERVERS servers
@@ -78,7 +80,8 @@ if ($NSERVERS == 0 || $NSERVERS > $MAXSERVERS) then
 endif
 set N=0
 foreach SERVER ($SERVERS)
-	if ($SERVER != `awk ' $1 ~/^'$SERVER'$/  {print $1}' /vice/db/servers`) then
+	grep $SERVER /vice/db/servers > /dev/null 
+	if ( $? != 0 ) then
 		echo Server $SERVER not in servers file
 		exit
 	endif
