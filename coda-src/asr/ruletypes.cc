@@ -209,7 +209,8 @@ void command_t::expandname(char *p, char *incdirname, char *incfname) {
 void command_t::expandreplicas(int n, char **repnames) {
     // first count the number of args finally after expanding the [all] case
     int countargs = argc;
-    for (int i = 0; i < argc; i++) 
+    int i;
+    for (i = 0; i < argc; i++) 
 	if (arglist[i]->expandall()) 
 	    countargs += (n - 1);
 
