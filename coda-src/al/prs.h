@@ -37,8 +37,7 @@ supported by Transarc Corporation, Pittsburgh, PA.
 #ifndef _PRS_
 #define _PRS_
 
-
-#define PRS_VERSION "$Header$"
+#define PRS_VERSION "PRS v2003.05.23"
 
 #define PRS_MAXNAMELEN 100    /* Maximum length of group and user names */
 

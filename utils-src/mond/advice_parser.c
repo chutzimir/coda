@@ -28,8 +28,6 @@ Carnegie  Mellon  encourages  users  of  this  software  to return any
 improvements or extensions that  they  make,  and  to  grant  Carnegie
 Mellon the rights to redistribute these changes without encumbrance.
 */
-
-static char *rcsid = "$Header$";
 #endif /*_BLURB_*/
 
 #ifdef HAVE_CONFIG_H
