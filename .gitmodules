@@ -1,0 +1,9 @@
+[submodule "lib-src/lwp"]
+	path = lib-src/lwp
+	url = git://coda.cs.cmu.edu/project/coda/dev/lwp.git
+[submodule "lib-src/rpc2"]
+	path = lib-src/rpc2
+	url = git://coda.cs.cmu.edu/project/coda/dev/rpc2.git
+[submodule "lib-src/rvm"]
+	path = lib-src/rvm
+	url = git://coda.cs.cmu.edu/project/coda/dev/rvm.git
