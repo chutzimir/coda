@@ -118,7 +118,7 @@ static void get_principal(char *hostname, krb5_principal *principal)
     if (host) {
 	n = strlen(host);
 	for (i = 0; i < n; i++)
-	    host[i] = toupper(host[i]);
+	    host[i] = tolower(host[i]);
     }
 
     /* what is the realm? */
